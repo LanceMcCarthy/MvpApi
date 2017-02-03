@@ -15,7 +15,7 @@ namespace MvpApi
         {
             client = new HttpClient();
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
-            client.DefaultRequestHeaders.Add("Authorization", msaAccessToken);
+            client.DefaultRequestHeaders.Add("Authorization", msaAccessToken.Split('&')[0]);
         }
 
         public async Task<ProfileRoot> GetProfileAsync()

@@ -1,13 +1,51 @@
-﻿<Page
-    x:Class="MvpApi.Uwp.MainPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:MvpApi.Uwp"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+﻿<Page x:Class="MvpApi.Uwp.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:MvpApi.Uwp"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:models1="using:MvpApi.Models"
+      mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <WebView x:Name="browserWindow" Height="500"/>
+
+        <ScrollViewer Grid.Row="1">
+            <ContentControl x:Name="ProfileContentControl"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate x:DataType="models1:ProfileRoot">
+                        <Grid>
+                            <StackPanel Margin="20">
+                                <TextBlock Text="{x:Bind FullName}" />
+                                <TextBlock Text="{x:Bind DisplayName}" />
+                                <TextBlock Text="{x:Bind FirstAwardYear}" />
+                                <TextBlock Text="{x:Bind Headline}" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+        </ScrollViewer>
+
+        <CommandBar Grid.Row="2">
+            <AppBarButton x:Name="LoginButton"
+                          Label="Login"
+                          Click="LoginButton_Click"
+                          Icon="Account" />
+            <AppBarButton x:Name="GetProfileInfoButton"
+                          IsEnabled="True"
+                          Label="get profile"
+                          Icon="Contact"
+                          Click="GetProfileInfoButton_OnClick" />
+        </CommandBar>
 
     </Grid>
 </Page>
