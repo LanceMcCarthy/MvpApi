@@ -129,7 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MvpApi\MvpApi.csproj">
-      <Project>{8cfaabc4-cfb1-455c-acc4-3561598e087f}</Project>
+      <Project>{2a780b42-cbba-41a5-a0e0-5cfad1b65c3b}</Project>
       <Name>MvpApi</Name>
     </ProjectReference>
   </ItemGroup>

@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using MvpApi.Services;
 using MvpApi.Uwp.Common;
 using Newtonsoft.Json;
 
@@ -18,6 +23,12 @@ namespace MvpApi.Uwp
         private readonly ApplicationDataContainer localSettings;
         private MvpApiService mvpApiService;
         private bool isLoggedIn;
+        
+        private static Uri SignInUrl = new Uri($"https://login.live.com/oauth20_authorize.srf?client_id={Constants.ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={Constants.Scope}");
+        private static string RedirectUrl = "https://login.live.com/oauth20_desktop.srf";
+        private static string RefreshTokenUrl = $"https://login.live.com/oauth20_token.srf?client_id={Constants.ClientId}&client_secret={Constants.ClientSecret}&redirect_uri=https://login.live.com/oauth20_desktop.srf&grant_type=refresh_token&refresh_token=";
+
+        private static string AccessTokenUrl = $"https://login.live.com/oauth20_token.srf";
 
         public MainPage()
         {
@@ -54,7 +65,7 @@ namespace MvpApi.Uwp
                 isLoggedIn = false;
                 GetProfileInfoButton.IsEnabled = false;
 
-                var logOutUri = new Uri(string.Format($"https://login.live.com/oauth20_logout.srf?client_id={Constants.ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf"));
+                var logOutUri = new Uri(String.Format($"https://login.live.com/oauth20_logout.srf?client_id={Constants.ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf"));
                 browserWindow.Navigate(logOutUri);
 
                 SaveToken("access_token", "");
@@ -62,7 +73,7 @@ namespace MvpApi.Uwp
             }
             else
             {
-                browserWindow.Navigate(Constants.SignInUrl);
+                browserWindow.Navigate(SignInUrl);
             }
         }
         
@@ -77,6 +88,8 @@ namespace MvpApi.Uwp
 
                 var result = await mvpApiService.GetProfileAsync();
                 ProfileContentControl.DataContext = result;
+
+                await LoadProfileImage();
             }
             catch (Exception exception)
             {
@@ -84,11 +97,55 @@ namespace MvpApi.Uwp
             }
         }
 
+        public async Task<BitmapImage> Base64ToImage(string base64String)
+        {
+            // Convert base 64 string to byte[]
+            byte[] imageBytes = Convert.FromBase64String(base64String);
+            // Convert byte[] to Image
+            using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+            {
+                BitmapImage image = new BitmapImage();
+                await image.SetSourceAsync(ms.AsRandomAccessStream());
+                return image;
+            }
+        }
+
+        private async Task LoadProfileImage()
+        {
+            try
+            {
+                // Checkto see if we've previously saved it
+                var imageFile = await ApplicationData.Current.LocalFolder.TryGetItemAsync("ProfilePicture.jpg");
+
+                if (imageFile == null)
+                {
+                    // download the image
+                    var imageBytes = await mvpApiService.GetProfileImageAsync();
+
+                    using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+                    {
+                        // Save the image
+                        imageFile = await ApplicationData.Current.LocalFolder.CreateFileAsync("ProfilePicture.jpg", CreationCollisionOption.ReplaceExisting);
+                        using (var fileStream = await ((StorageFile)imageFile).OpenStreamForWriteAsync())
+                        {
+                            ms.CopyTo(fileStream);
+                        }
+                    }
+                }
+                
+                ProfileImageBrush.ImageSource = new BitmapImage(new Uri("ms-appdata:///local/ProfilePicture.jpg"));
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+        }
+
         #endregion
-        
+
         #region OAuth2 Login
 
-        private async void BrowserWindow_LoadCompleted(object sender, NavigationEventArgs e)
+        private void BrowserWindow_LoadCompleted(object sender, NavigationEventArgs e)
         {
             if (e.Uri.AbsoluteUri.Contains("code="))
             {
@@ -98,15 +155,15 @@ namespace MvpApi.Uwp
 
                 browserWindow.Visibility = Visibility.Collapsed;
 
-                await RequestAccessTokenAsync(Constants.AccessTokenUrl, authCode);
+                RequestAccessTokenAsync(AccessTokenUrl, authCode);
             }
             else if (e.Uri.AbsoluteUri.Contains("lc="))
             {
-                browserWindow.Navigate(Constants.SignInUrl);
+                browserWindow.Navigate(SignInUrl);
             }
         }
 
-        public async Task RequestAccessTokenAsync(string requestUrl, string authCode)
+        public async void RequestAccessTokenAsync(string requestUrl, string authCode)
         {
             using (var client = new HttpClient())
             {
@@ -115,7 +172,7 @@ namespace MvpApi.Uwp
                     new KeyValuePair<string, string>("client_id", Constants.ClientId),
                     new KeyValuePair<string, string>("grant_type", "authorization_code"),
                     new KeyValuePair<string, string>("code", authCode.Split('&')[0]),
-                    new KeyValuePair<string, string>("redirect_uri", Constants.RedirectUrl),
+                    new KeyValuePair<string, string>("redirect_uri", RedirectUrl),
                 };
 
                 var postContent = new FormUrlEncodedContent(content);
@@ -131,14 +188,15 @@ namespace MvpApi.Uwp
                         SaveToken("access_token", tokenData["access_token"]);
                         SaveToken("refresh_token", tokenData["refresh_token"]);
 
-                        mvpApiService = new MvpApiService(Constants.SubscriptionKey, tokenData["access_token"]);
+                        var cleanAccessToken = tokenData["access_token"].Split('&')[0];
+
+                        mvpApiService = new MvpApiService(Constants.SubscriptionKey, cleanAccessToken);
 
                         GetProfileInfoButton.IsEnabled = isLoggedIn = true;
                     }
                 }
             }
         }
-
 
         #endregion
 

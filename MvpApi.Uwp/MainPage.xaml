@@ -4,7 +4,7 @@
       xmlns:local="using:MvpApi.Uwp"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:models1="using:MvpApi.Models"
+      xmlns:models="using:MvpApi.Models"
       mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -14,21 +14,59 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <WebView x:Name="browserWindow" Height="500"/>
+        <WebView x:Name="browserWindow"
+                 Height="500" />
+
+        <Grid>
+
+            <Ellipse Margin="10"
+                     Width="150"
+                     Height="150">
+                <Ellipse.Fill>
+                    <ImageBrush x:Name="ProfileImageBrush"
+                                ImageSource="ms-appdata:///local/ProfileImage.jpg" />
+                </Ellipse.Fill>
+            </Ellipse>
+        </Grid>
 
         <ScrollViewer Grid.Row="1">
             <ContentControl x:Name="ProfileContentControl"
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch">
                 <ContentControl.ContentTemplate>
-                    <DataTemplate x:DataType="models1:ProfileRoot">
+                    <DataTemplate>
                         <Grid>
-                            <StackPanel Margin="20">
-                                <TextBlock Text="{x:Bind FullName}" />
-                                <TextBlock Text="{x:Bind DisplayName}" />
-                                <TextBlock Text="{x:Bind FirstAwardYear}" />
-                                <TextBlock Text="{x:Bind Headline}" />
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Margin="20"
+                                        Grid.Row="1">
+                                <TextBlock Text="{Binding FullName, FallbackValue=FullName}" />
+                                <TextBlock Text="{Binding DisplayName, FallbackValue=DisplayName}" />
+                                <TextBlock Text="{Binding FirstAwardYear, FallbackValue=FirstAwardYear}" />
+                                <TextBlock Text="{Binding Headline, FallbackValue=Headline}" />
                             </StackPanel>
+
+                            <ListView Grid.Row="0"
+                                      Grid.Column="1"
+                                      Grid.RowSpan="2">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:ActivityViewModel">
+                                        <StackPanel>
+                                            <TextBlock Text="{x:Bind TitleOfActivity, FallbackValue=TitleOfActivity}" />
+                                            <TextBlock Text="{x:Bind ActivityType, FallbackValue=ActivityType}" />
+                                            <TextBlock Text="{x:Bind DateOfActivity, FallbackValue=DateOfActivity}" />
+                                            <TextBlock Text="{x:Bind ReferenceUrl, FallbackValue=ReferenceUrl}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
                         </Grid>
                     </DataTemplate>
                 </ContentControl.ContentTemplate>
@@ -41,11 +79,10 @@
                           Click="LoginButton_Click"
                           Icon="Account" />
             <AppBarButton x:Name="GetProfileInfoButton"
-                          IsEnabled="True"
+                          IsEnabled="False"
                           Label="get profile"
                           Icon="Contact"
                           Click="GetProfileInfoButton_OnClick" />
         </CommandBar>
-
     </Grid>
 </Page>
