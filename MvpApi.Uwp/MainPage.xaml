@@ -17,9 +17,19 @@
         <WebView x:Name="browserWindow"
                  Height="500" />
 
-        <Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
 
-            <Ellipse Margin="10"
+            <Ellipse x:Name="ProfileImageEllipse"
+                     Visibility="Collapsed"
+                     Margin="10"
                      Width="150"
                      Height="150">
                 <Ellipse.Fill>
@@ -27,12 +37,12 @@
                                 ImageSource="ms-appdata:///local/ProfileImage.jpg" />
                 </Ellipse.Fill>
             </Ellipse>
-        </Grid>
 
-        <ScrollViewer Grid.Row="1">
             <ContentControl x:Name="ProfileContentControl"
+                            Visibility="Collapsed"
                             HorizontalContentAlignment="Stretch"
-                            VerticalContentAlignment="Stretch">
+                            VerticalContentAlignment="Stretch"
+                            Grid.Row="1">
                 <ContentControl.ContentTemplate>
                     <DataTemplate>
                         <Grid>
@@ -71,10 +81,50 @@
                     </DataTemplate>
                 </ContentControl.ContentTemplate>
             </ContentControl>
-        </ScrollViewer>
+
+            <ContentControl x:Name="ContributionsContentControl"
+                            Visibility="Collapsed"
+                            Grid.Column="1"
+                            Grid.RowSpan="2">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate x:DataType="models:ContributionViewModel">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <StackPanel HorizontalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Page-" />
+                                    <TextBlock Text="{x:Bind PagingIndex}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Total-" />
+                                    <TextBlock Text="{x:Bind TotalContributions}" />
+                                </StackPanel>
+                            </StackPanel>
+
+                            <ListView x:Name="ContributionsListView"
+                                      ItemsSource="{x:Bind Contributions}"
+                                      Grid.Row="1">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="models:ContributionsModel">
+                                        <StackPanel Margin="0,0,0,10">
+                                            <TextBlock Text="{x:Bind Title}" Style="{StaticResource TitleTextBlockStyle}"/>
+                                            <TextBlock Text="{x:Bind StartDate}" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </Grid>
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+        </Grid>
 
         <CommandBar Grid.Row="2">
-            <AppBarButton x:Name="LoginButton"
+            <AppBarButton x:Name="LoginLogOutButton"
                           Label="Login"
                           Click="LoginButton_Click"
                           Icon="Account" />

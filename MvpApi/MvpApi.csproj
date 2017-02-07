@@ -37,7 +37,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AkavacheSqliteLinkerOverride.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="Models\ActivityTechnologyViewModel.cs" />
     <Compile Include="Models\ActivityTypeViewModel.cs" />
     <Compile Include="Models\ActivityViewModel.cs" />

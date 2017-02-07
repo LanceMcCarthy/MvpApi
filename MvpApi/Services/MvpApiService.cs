@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using ModernHttpClient;
 using MvpApi.Models;
 using Newtonsoft.Json;
 
@@ -18,13 +19,13 @@ namespace MvpApi.Services
         /// <param name="msaAccessToken">Clean access token (e.g. minus any "lc=" paramaters)</param>
         public MvpApiService(string apiKey, string msaAccessToken)
         {
-            client = new HttpClient();
+            client = new HttpClient(new NativeMessageHandler());
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {msaAccessToken}");
         }
 
         /// <summary>
-        /// Retruns the profile data of the currently signed in MVP
+        /// Returns the profile data of the currently signed in MVP
         /// </summary>
         /// <returns>The MVP's profile information</returns>
         public async Task<ProfileViewModel> GetProfileAsync()
@@ -57,12 +58,12 @@ namespace MvpApi.Services
         /// <param name="offset">page to return</param>
         /// <param name="limit">number of items for the page</param>
         /// <returns></returns>
-        public async Task<List<ActivityViewModel>> GetContributionsAsync(int offset, int limit)
+        public async Task<ContributionViewModel> GetContributionsAsync(int offset, int limit)
         {
             using (var response = await client.GetAsync($"https://mvpapi.azure-api.net/mvp/api/contributions/{offset}/{limit}"))
             {
                 var json = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<ActivityViewModel>>(json);
+                return JsonConvert.DeserializeObject<ContributionViewModel>(json);
             }
         }
     }
