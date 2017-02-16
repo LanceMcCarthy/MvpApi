@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using ModernHttpClient;
 using MvpApi.Models;
 using Newtonsoft.Json;
 
 namespace MvpApi.Services
 {
-    public class MvpApiService
+    public class MvpApiService : IDisposable
     {
         private readonly HttpClient client;
 
@@ -19,7 +18,11 @@ namespace MvpApi.Services
         /// <param name="msaAccessToken">Clean access token (e.g. minus any "lc=" paramaters)</param>
         public MvpApiService(string apiKey, string msaAccessToken)
         {
-            client = new HttpClient(new NativeMessageHandler());
+            var handler = new HttpClientHandler();
+            if(handler.SupportsAutomaticDecompression)
+                handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+
+            client = new HttpClient(handler);
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {msaAccessToken}");
         }
@@ -65,6 +68,11 @@ namespace MvpApi.Services
                 var json = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<ContributionViewModel>(json);
             }
+        }
+
+        public void Dispose()
+        {
+            client?.Dispose();
         }
     }
 }

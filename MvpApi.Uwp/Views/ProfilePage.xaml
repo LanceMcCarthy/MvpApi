@@ -1,0 +1,109 @@
+﻿<Page
+    x:Class="MvpApi.Uwp.Views.ProfilePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MvpApi.Uwp.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:MvpApi.Models"
+    xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
+    xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
+    mc:Ignorable="d">
+    
+    <Page.DataContext>
+        <viewModels:ProfilePageViewModel x:Name="ViewModel"/>
+    </Page.DataContext>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Grid x:Name="HeaderGrid" Height="48"
+              Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
+            <TextBlock Text="Profile Page" 
+                       Style="{StaticResource TitleTextBlockStyle}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Ellipse x:Name="ProfileImageEllipse"
+                     Stroke="{ThemeResource ApplicationForegroundThemeBrush}"
+                     Margin="20"
+                     Width="150"
+                     Height="150">
+                <Ellipse.Fill>
+                    <ImageBrush x:Name="ProfileImageBrush"
+                                ImageSource="{Binding ProfileImagePath}" />
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <ContentControl x:Name="ProfileContentControl"
+                            DataContext="{x:Bind ViewModel.Mvp, Mode=OneWay}"
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            Grid.Column="1"
+                            Grid.RowSpan="2">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate x:DataType="models:ProfileViewModel">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Margin="20"
+                                        Grid.Row="1">
+                                <TextBlock Text="{x:Bind FullName}"
+                                           Style="{StaticResource TitleTextBlockStyle}" />
+                                <TextBlock Text="{x:Bind Headline}"
+                                           Style="{StaticResource SubtitleTextBlockStyle}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="First MVP award in:"
+                                               Margin="0,0,10,0" />
+                                    <TextBlock Text="{x:Bind FirstAwardYear}" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Years as MVP:"
+                                               Margin="0,0,10,0" />
+                                    <TextBlock Text="{x:Bind YearsAsMvp}" />
+                                </StackPanel>
+                                <TextBlock Text="{x:Bind Biography}" 
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+        </Grid>
+        
+        <CommandBar Grid.Row="2">
+            <AppBarButton x:Name="LoginButton"
+                          Label="log in"
+                          Click="{x:Bind ViewModel.LoginButton_Click}"
+                          Visibility="{Binding Mvp, Converter={StaticResource InvertedNullToVisibilityConverter}}"
+                          Icon="Account" />
+            <AppBarButton x:Name="LogoutButton"
+                          Label="log out"
+                          Click="{x:Bind ViewModel.LogoutButton_Click}"
+                          Visibility="{Binding Mvp, Converter={StaticResource NullToVisibilityConverter}}"
+                          Icon="Account" />
+        </CommandBar>
+    </Grid>
+</Page>

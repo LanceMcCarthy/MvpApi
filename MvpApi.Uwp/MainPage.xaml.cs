@@ -105,18 +105,18 @@ namespace MvpApi.Uwp
             }
         }
 
-        public async Task<BitmapImage> Base64ToImage(string base64String)
-        {
-            // Convert base 64 string to byte[]
-            byte[] imageBytes = Convert.FromBase64String(base64String);
-            // Convert byte[] to Image
-            using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
-            {
-                BitmapImage image = new BitmapImage();
-                await image.SetSourceAsync(ms.AsRandomAccessStream());
-                return image;
-            }
-        }
+        //public async Task<BitmapImage> Base64ToImage(string base64String)
+        //{
+        //    // Convert base 64 string to byte[]
+        //    byte[] imageBytes = Convert.FromBase64String(base64String);
+        //    // Convert byte[] to Image
+        //    using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+        //    {
+        //        BitmapImage image = new BitmapImage();
+        //        await image.SetSourceAsync(ms.AsRandomAccessStream());
+        //        return image;
+        //    }
+        //}
 
         private async Task LoadProfileImageAsync()
         {
