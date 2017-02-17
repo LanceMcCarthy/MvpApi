@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Services;
 using MvpApi.Uwp.Common;
-using Newtonsoft.Json;
+using MvpApi.Uwp.Helpers;
 using Template10.Common;
 using Template10.Mvvm;
 
@@ -21,14 +18,13 @@ namespace MvpApi.Uwp.ViewModels
     {
         #region Fields
 
-        private const string RedirectUrl = "https://login.live.com/oauth20_desktop.srf";
-        private const string AccessTokenUrl = "https://login.live.com/oauth20_token.srf";
+        private static string redirectUrl = "https://login.live.com/oauth20_desktop.srf";
+        private static string accessTokenUrl = "https://login.live.com/oauth20_token.srf";
         private static readonly Uri SignInUrl = new Uri($"https://login.live.com/oauth20_authorize.srf?client_id={Constants.ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={Constants.Scope}");
         private static string refreshTokenUrl = $"https://login.live.com/oauth20_token.srf?client_id={Constants.ClientId}&client_secret={Constants.ClientSecret}&redirect_uri=https://login.live.com/oauth20_desktop.srf&grant_type=refresh_token&refresh_token=";
         
         private readonly ApplicationDataContainer localSettings;
         
-
         // backing fields
         private Uri browserUri;
         private bool isBusy;
@@ -65,56 +61,32 @@ namespace MvpApi.Uwp.ViewModels
 
         #endregion
 
-        #region OAuth2 Login
+        #region event handlers
 
-        public void BrowserWindow_LoadCompleted(object sender, NavigationEventArgs e)
+        public async void BrowserWindow_LoadCompleted(object sender, NavigationEventArgs e)
         {
             if (e.Uri.AbsoluteUri.Contains("code="))
             {
                 var authCode = Regex.Split(e.Uri.AbsoluteUri, "code=")[1];
 
-                SaveToken("auth_code", authCode);
+                // get access token
+                var apiAuthorization = await OauthHelpers.RequestAuthorizationAsync(accessTokenUrl, authCode);
+
+                if (string.IsNullOrEmpty(apiAuthorization))
+                {
+                    Debug.WriteLine("BrowserWindow_LoadCompleted - apiAuthorization was null");
+                    return;
+                }
                 
-                RequestAccessTokenAsync(AccessTokenUrl, authCode);
+                // Auth is good, new up the ApiService
+                App.ApiService = new MvpApiService(Constants.SubscriptionKey, apiAuthorization);
+
+                await LoadProfileInfoAsync();
+
             }
             else if (e.Uri.AbsoluteUri.Contains("lc="))
             {
                 BrowserUri = SignInUrl;
-            }
-        }
-
-        private async void RequestAccessTokenAsync(string requestUrl, string authCode)
-        {
-            using (var client = new HttpClient())
-            {
-                var content = new List<KeyValuePair<string, string>>
-                {
-                    new KeyValuePair<string, string>("client_id", Constants.ClientId),
-                    new KeyValuePair<string, string>("grant_type", "authorization_code"),
-                    new KeyValuePair<string, string>("code", authCode.Split('&')[0]),
-                    new KeyValuePair<string, string>("redirect_uri", RedirectUrl),
-                };
-
-                var postContent = new FormUrlEncodedContent(content);
-
-                using (var response = await client.PostAsync(new Uri(requestUrl), postContent))
-                {
-                    var responseTxt = await response.Content.ReadAsStringAsync();
-
-                    var tokenData = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseTxt);
-
-                    if (tokenData.ContainsKey("access_token"))
-                    {
-                        SaveToken("access_token", tokenData["access_token"]);
-                        SaveToken("refresh_token", tokenData["refresh_token"]);
-
-                        var cleanAccessToken = tokenData["access_token"].Split('&')[0];
-
-                        App.ApiService = new MvpApiService(Constants.SubscriptionKey, cleanAccessToken);
-                        
-                        await LoadProfileInfoAsync();
-                    }
-                }
             }
         }
         
@@ -160,18 +132,9 @@ namespace MvpApi.Uwp.ViewModels
                 // download the image
                 var imageBytes = await App.ApiService.GetProfileImageAsync();
 
-                using (var ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
-                {
-                    // Save the image
-                    var imageFile = await ApplicationData.Current.LocalFolder.CreateFileAsync("ProfilePicture.jpg", CreationCollisionOption.ReplaceExisting);
+                var imageFile = await StorageHelpers.SaveImageFileAsync(imageBytes, "ProfilePicture.jpg");
 
-                    using (var fileStream = await imageFile.OpenStreamForWriteAsync())
-                    {
-                        ms.CopyTo(fileStream);
-                    }
-
-                    return imageFile.Path;
-                }
+                return imageFile.Path;
             }
             catch (Exception e)
             {
@@ -181,26 +144,7 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #endregion
-
-        //TODO Will be updated to use Password Vault or Windows Cryptograpy https://msdn.microsoft.com/en-us/windows/uwp/security/data-protection
-        #region Key Storage
-
-        private void SaveToken(string key, string value)
-        {
-            localSettings.Values["key"] = value;
-            Debug.WriteLine($"SaveToken - Key:{key}, Value: {value}");
-        }
-
-        private string LoadToken(string key)
-        {
-            var value = localSettings.Values["key"] as string;
-            Debug.WriteLine($"LoadToken - Key:{key}, Value: {value}");
-            return value;
-        }
-
-        #endregion
-
-
+        
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
@@ -215,8 +159,8 @@ namespace MvpApi.Uwp.ViewModels
                 // Log out
                 BrowserUri = new Uri($"https://login.live.com/oauth20_logout.srf?client_id={Constants.ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf");
 
-                SaveToken("access_token", "");
-                SaveToken("refresh_token", "");
+                StorageHelpers.DeleteToken("access_token");
+                StorageHelpers.DeleteToken("refresh_token");
 
                 // Clean up Mvp info
                 var shellVm = App.ShellPage.DataContext as ShellPageViewModel;

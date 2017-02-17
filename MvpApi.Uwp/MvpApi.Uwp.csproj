@@ -99,6 +99,8 @@
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\PathToBitmapImageConverter.cs" />
     <Compile Include="Helpers\DesignTimeHelpers.cs" />
+    <Compile Include="Helpers\OauthHelpers.cs" />
+    <Compile Include="Helpers\StorageHelpers.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

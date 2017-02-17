@@ -94,16 +94,21 @@
         </Grid>
         
         <CommandBar Grid.Row="2">
+            <AppBarButton x:Name="EditProfileButton"
+                          Label="log in"
+                          Icon="Edit"
+                          Click="{x:Bind ViewModel.LoginButton_Click}"
+                          Visibility="{Binding Mvp, Converter={StaticResource InvertedNullToVisibilityConverter}}" />
             <AppBarButton x:Name="LoginButton"
                           Label="log in"
+                          Icon="AddFriend"
                           Click="{x:Bind ViewModel.LoginButton_Click}"
-                          Visibility="{Binding Mvp, Converter={StaticResource InvertedNullToVisibilityConverter}}"
-                          Icon="Account" />
+                          Visibility="{Binding Mvp, Converter={StaticResource InvertedNullToVisibilityConverter}}" />
             <AppBarButton x:Name="LogoutButton"
                           Label="log out"
+                          Icon="BlockContact"
                           Click="{x:Bind ViewModel.LogoutButton_Click}"
-                          Visibility="{Binding Mvp, Converter={StaticResource NullToVisibilityConverter}}"
-                          Icon="Account" />
+                          Visibility="{Binding Mvp, Converter={StaticResource NullToVisibilityConverter}}" />
         </CommandBar>
     </Grid>
 </Page>
