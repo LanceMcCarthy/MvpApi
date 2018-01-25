@@ -1,8 +1,11 @@
 # MVP API 
 
-Adding new features shortly to help renewing MVPs (Jan 2018):
+Increasing effort development to help renewing MVPs for Jan 2018 push. 
 
-- Working on adding Excel bulk upload.
-- Easier form entry
+The target goal of this app is to allow bulk uploads via Excel file parsing.
 
-**NOTE**: The UWP app is the operational project. Xamarin Forms will follow once the API is fleshed out.
+Here's a screenshot of the current `HomePage` using open source Telerik DataGrid and grouping
+
+
+
+![image](https://user-images.githubusercontent.com/3520532/35409019-0692c234-01df-11e8-89cb-8a87a4a5068f.png)

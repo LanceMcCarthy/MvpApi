@@ -17,7 +17,7 @@ namespace MvpApi.Uwp.ViewModels
         private bool isBusy;
         private string isBusyMessage;
         private int currentPage;
-        private int itemsPerPage;
+        private int itemsPerPage = 50;
 
         #endregion
 
@@ -103,7 +103,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public async void PreviousButton_Click(object sender, RoutedEventArgs e)
@@ -128,9 +128,10 @@ namespace MvpApi.Uwp.ViewModels
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            var shellVm = App.ShellPage.DataContext as ShellPageViewModel;
-            if (shellVm != null && shellVm.IsLoggedIn)
+            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
+            {
                 await GetNextContributionAsync(0);
+            }
         }
 
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)

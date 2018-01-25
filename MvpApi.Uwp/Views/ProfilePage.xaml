@@ -48,51 +48,35 @@
                                 ImageSource="{Binding ProfileImagePath}" />
                 </Ellipse.Fill>
             </Ellipse>
-
-            <ContentControl x:Name="ProfileContentControl"
-                            DataContext="{x:Bind ViewModel.Mvp, Mode=OneWay}"
-                            HorizontalContentAlignment="Stretch"
-                            VerticalContentAlignment="Stretch"
-                            Grid.Column="1"
-                            Grid.RowSpan="2">
-                <ContentControl.ContentTemplate>
-                    <DataTemplate x:DataType="models:ProfileViewModel">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel Margin="20"
-                                        Grid.Row="1">
-                                <TextBlock Text="{x:Bind FullName}"
-                                           Style="{StaticResource TitleTextBlockStyle}" 
-                                           TextWrapping="Wrap"/>
-                                <TextBlock Text="{x:Bind Headline}"
-                                           Style="{StaticResource SubtitleTextBlockStyle}" />
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="First MVP award in:"
-                                               Margin="0,0,10,0" />
-                                    <TextBlock Text="{x:Bind FirstAwardYear}" 
-                                               TextWrapping="Wrap"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Years as MVP:"
-                                               Margin="0,0,10,0" />
-                                    <TextBlock Text="{x:Bind YearsAsMvp}" 
-                                               TextWrapping="Wrap"/>
-                                </StackPanel>
-                                <TextBlock Text="{x:Bind Biography}" 
-                                           TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Grid>
-                    </DataTemplate>
-                </ContentControl.ContentTemplate>
-            </ContentControl>
+            
+            <StackPanel Margin="20"
+                        Grid.Column="1">
+                <TextBlock Text="{Binding ViewModel.Mvp.FullName}"
+                           Style="{StaticResource TitleTextBlockStyle}" 
+                           TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding ViewModel.Mvp.Headline}"
+                           Style="{StaticResource SubtitleTextBlockStyle}" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="First MVP award in:"
+                               Margin="0,0,10,0" />
+                    <TextBlock Text="{Binding ViewModel.Mvp.FirstAwardYear}" 
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Years as MVP:"
+                               Margin="0,0,10,0" />
+                    <TextBlock Text="{Binding ViewModel.Mvp.YearsAsMvp}" 
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </StackPanel>
+            
+            <TextBlock Text="{Binding ViewModel.Mvp.Biography}" 
+                       TextWrapping="Wrap" 
+                       Margin="20"
+                       Grid.Row="1"/>
+            
         </Grid>
         
         <CommandBar Grid.Row="2">
