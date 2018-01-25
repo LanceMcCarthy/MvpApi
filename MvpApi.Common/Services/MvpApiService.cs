@@ -98,10 +98,13 @@ namespace MvpApi.Common.Services
         /// <param name="offset">page to return</param>
         /// <param name="limit">number of items for the page</param>
         /// <returns></returns>
-        public async Task<ContributionViewModel> GetContributionsAsync(int offset, int limit)
+        public async Task<ContributionViewModel> GetContributionsAsync(int? offset, int limit)
         {
             try
             {
+                if (offset == null)
+                    return null;
+
                 using (var response = await client.GetAsync($"https://mvpapi.azure-api.net/mvp/api/contributions/{offset}/{limit}"))
                 {
                     var json = await response.Content.ReadAsStringAsync();

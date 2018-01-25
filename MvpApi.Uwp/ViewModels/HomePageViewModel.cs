@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Views;
+using Telerik.Core.Data;
 using Template10.Mvvm;
 
 namespace MvpApi.Uwp.ViewModels
@@ -12,30 +12,38 @@ namespace MvpApi.Uwp.ViewModels
     public class HomePageViewModel : ViewModelBase
     {
         #region Fields
-
-        private ContributionViewModel currentContributionView;
+        
         private bool isBusy;
         private string isBusyMessage;
-        private int currentPage;
-        private int itemsPerPage = 50;
+        private int? currentOffset = 0;
+        private string displayTotal;
 
         #endregion
 
         public HomePageViewModel()
         {
-            //Activities = new IncrementalLoadingCollection<ContributionsSource, ContributionsModel>(20, OnLoading, OnEndLoading);
+            Activities = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 100 };
+        }
+
+        private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
+        {
+            var result = await App.ApiService.GetContributionsAsync(currentOffset, (int)count);
+            
+            currentOffset = result.PagingIndex;
+
+            DisplayTotal = $"{currentOffset} of {result.TotalContributions}";
+
+            // If we've recieved all the contributions, return null to stop automatic loading
+            if (result.PagingIndex == result.TotalContributions)
+                return null;
+
+            return result.Contributions;
         }
 
         #region Properties
-
-        //public IncrementalLoadingCollection<ContributionsSource, ContributionsModel> Activities { get; set; }
         
-        public ContributionViewModel CurrentContributionView
-        {
-            get => currentContributionView;
-            set => Set(ref currentContributionView, value);
-        }
-
+        public IncrementalLoadingCollection<ContributionsModel> Activities { get; set; }
+        
         public bool IsBusy
         {
             get => isBusy;
@@ -47,54 +55,17 @@ namespace MvpApi.Uwp.ViewModels
             get => isBusyMessage;
             set => Set(ref isBusyMessage, value);
         }
-
-        public int CurrentPage
+        
+        public string DisplayTotal
         {
-            get => currentPage;
-            set => Set(ref currentPage, value);
-        }
-
-        public int ItemsPerPage
-        {
-            get => itemsPerPage;
-            set => Set(ref itemsPerPage, value);
+            get => displayTotal;
+            set => Set(ref displayTotal, value);
         }
         
         #endregion
         
         #region Methods
-
-        private async Task GetNextContributionAsync(int pageToGet)
-        {
-            try
-            {
-                IsBusy = true;
-                IsBusyMessage = $"loaging page {CurrentPage}...";
-                CurrentContributionView = await App.ApiService.GetContributionsAsync(pageToGet, ItemsPerPage);
-
-                if(CurrentContributionView?.PagingIndex != null)
-                    CurrentPage = (int)CurrentContributionView.PagingIndex;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
-            finally
-            {
-                IsBusy = false;
-                IsBusyMessage = "";
-            }
-        }
         
-        //private void OnLoading()
-        //{
-
-        //}
-
-        //private void OnEndLoading()
-        //{
-
-        //}
 
         #endregion
 
@@ -105,23 +76,7 @@ namespace MvpApi.Uwp.ViewModels
         {
             //throw new NotImplementedException();
         }
-
-        public async void PreviousButton_Click(object sender, RoutedEventArgs e)
-        {
-            var previousPage = CurrentPage - 1;
-            if (previousPage < 0)
-                previousPage = 0;
-
-            await GetNextContributionAsync(previousPage);
-        }
-
-        public async void NextButton_Click(object sender, RoutedEventArgs e)
-        {
-            var nextPage = CurrentPage + 1;
-            await GetNextContributionAsync(nextPage);
-        }
-
-
+        
         #endregion
 
         #region Navigation
@@ -130,7 +85,11 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
             {
-                await GetNextContributionAsync(0);
+
+            }
+            else
+            {
+                await NavigationService.NavigateAsync(typeof(LoginPage));
             }
         }
 
@@ -142,18 +101,4 @@ namespace MvpApi.Uwp.ViewModels
         #endregion
 
     }
-
-    // TODO continue testing IIncrementalLoading solution. Problem is result is wrapped in a result object, dont want to lose that data
-    //public class ContributionsSource : IIncrementalSource<ContributionsModel>
-    //{
-    //    public ContributionsSource()
-    //    {
-    //    }
-
-    //    public async Task<IEnumerable<ContributionsModel>> GetPagedItemsAsync(int pageIndex, int pageSize, CancellationToken cancellationToken = new CancellationToken())
-    //    {
-    //        var contrib = await App.ApiService.GetContributionsAsync(pageIndex, pageSize);
-    //        return contrib.Contributions;
-    //    }
-    //}
 }

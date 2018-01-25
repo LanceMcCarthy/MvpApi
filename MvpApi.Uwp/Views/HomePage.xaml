@@ -3,7 +3,6 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:models="using:MvpApi.Common.Models"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
       mc:Ignorable="d">
@@ -27,9 +26,16 @@
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
+            
+            <TextBlock Text="{Binding DisplayTotal}"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Right"
+                       Margin="0,0,10,0"/>
         </Grid>
 
-        <grid:RadDataGrid ItemsSource="{Binding CurrentContributionView.Contributions}" 
+        <grid:RadDataGrid ItemsSource="{Binding Activities}" 
+                          IsBusyIndicatorEnabled="{Binding IsBusy}" 
+                          IncrementalLoadingMode="Auto"
                           AutoGenerateColumns="False"
                           Grid.Row="1">
             <grid:RadDataGrid.Columns>
@@ -54,40 +60,13 @@
                                               Header="Annual Quantity"/>
                 <grid:DataGridNumericalColumn PropertyName="AnnualReach"
                                               Header="Annual Reach"/>
-                <!--<grid:DataGridTemplateColumn Header="Template Column">
-                    <grid:DataGridTemplateColumn.CellContentTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <Grid Background="Orange"
-                                      Margin="0, 10, 0, 0">
-                                    <TextBlock Text="{Binding ContributionTechnology.Name}" 
-                                           Margin="0, 5, 0, 5"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-                                </Grid>
-                                <TextBlock Text="Some Custom Text" 
-                                       Foreground="DarkGreen"
-                                       FontSize="10"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </grid:DataGridTemplateColumn.CellContentTemplate>
-                </grid:DataGridTemplateColumn>-->
             </grid:RadDataGrid.Columns>
         </grid:RadDataGrid>
 
         <CommandBar Grid.Row="2">
-            <AppBarButton x:Name="AddActivityButton"
-                          Label="add activity"
+            <AppBarButton Label="add activity"
                           Click="{x:Bind ViewModel.AddActivityButton_Click}"
                           Icon="Add" />
-            <AppBarButton x:Name="PreviousButton"
-                          Label="previous"
-                          Click="{x:Bind ViewModel.PreviousButton_Click}"
-                          Icon="Previous" />
-            <AppBarButton x:Name="NextButton"
-                          Label="next"
-                          Click="{x:Bind ViewModel.NextButton_Click}"
-                          Icon="Next" />
         </CommandBar>
     </Grid>
 </Page>
