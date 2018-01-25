@@ -64,13 +64,5 @@ namespace MvpApi.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "Active")]
         public bool? Active { get; set; }
-
-        /// <summary>
-        /// Validate the object. Throws ValidationException if validation fails.
-        /// </summary>
-        public virtual void Validate()
-        {
-            //Nothing to validate
-        }
     }
 }

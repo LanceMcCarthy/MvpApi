@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.UI.Xaml.Navigation;
-using MvpApi.Services;
+using MvpApi.Common.Services;
 using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
@@ -26,7 +26,6 @@ namespace MvpApi.Uwp.ViewModels
         
         private readonly ApplicationDataContainer localSettings;
         
-        // backing fields
         private Uri browserUri;
         private bool isBusy;
         private string isBusyMessage;
@@ -45,19 +44,19 @@ namespace MvpApi.Uwp.ViewModels
 
         public Uri BrowserUri
         {
-            get { return browserUri; }
-            set { Set(ref browserUri, value); }
+            get => browserUri;
+            set => Set(ref browserUri, value);
         }
         public bool IsBusy
         {
-            get { return isBusy; }
-            set { Set(ref isBusy, value); }
+            get => isBusy;
+            set => Set(ref isBusy, value);
         }
 
         public string IsBusyMessage
         {
-            get { return isBusyMessage; }
-            set { Set(ref isBusyMessage, value); }
+            get => isBusyMessage;
+            set => Set(ref isBusyMessage, value);
         }
 
         #endregion

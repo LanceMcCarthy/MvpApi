@@ -31,6 +31,5 @@ namespace MvpApi.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "Description")]
         public string Description { get; set; }
-
     }
 }

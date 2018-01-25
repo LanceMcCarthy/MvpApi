@@ -50,6 +50,5 @@ namespace MvpApi.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "SystemCollectionEnabled")]
         public bool? SystemCollectionEnabled { get; set; }
-
     }
 }

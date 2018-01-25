@@ -42,6 +42,5 @@ namespace MvpApi.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "LocalizeKey")]
         public string LocalizeKey { get; set; }
-
     }
 }

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
-using MvpApi.Services;
+using MvpApi.Common.Services;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Controls;

@@ -5,9 +5,8 @@
     xmlns:local="using:MvpApi.Uwp.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="using:MvpApi.Models"
+    xmlns:models="using:MvpApi.Common.Models"
     xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
-    xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
     mc:Ignorable="d">
     
     <Page.DataContext>
@@ -71,18 +70,21 @@
                             <StackPanel Margin="20"
                                         Grid.Row="1">
                                 <TextBlock Text="{x:Bind FullName}"
-                                           Style="{StaticResource TitleTextBlockStyle}" />
+                                           Style="{StaticResource TitleTextBlockStyle}" 
+                                           TextWrapping="Wrap"/>
                                 <TextBlock Text="{x:Bind Headline}"
                                            Style="{StaticResource SubtitleTextBlockStyle}" />
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="First MVP award in:"
                                                Margin="0,0,10,0" />
-                                    <TextBlock Text="{x:Bind FirstAwardYear}" />
+                                    <TextBlock Text="{x:Bind FirstAwardYear}" 
+                                               TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Years as MVP:"
                                                Margin="0,0,10,0" />
-                                    <TextBlock Text="{x:Bind YearsAsMvp}" />
+                                    <TextBlock Text="{x:Bind YearsAsMvp}" 
+                                               TextWrapping="Wrap"/>
                                 </StackPanel>
                                 <TextBlock Text="{x:Bind Biography}" 
                                            TextWrapping="Wrap" />

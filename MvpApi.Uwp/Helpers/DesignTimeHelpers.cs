@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using MvpApi.Models;
+using MvpApi.Common.Models;
 
 namespace MvpApi.Uwp.Helpers
 {

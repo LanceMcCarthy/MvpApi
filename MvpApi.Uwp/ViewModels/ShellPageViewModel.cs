@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using MvpApi.Models;
+using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
@@ -39,7 +36,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public string ProfileImagePath
         {
-            get { return profileImagePath; }
+            get => profileImagePath;
             set
             {
                 //enforcing propChanged
@@ -50,14 +47,14 @@ namespace MvpApi.Uwp.ViewModels
 
         public ProfileViewModel Mvp
         {
-            get { return mvp; }
-            set { Set(ref mvp, value); }
+            get => mvp;
+            set => Set(ref mvp, value);
         }
 
         public bool IsLoggedIn
         {
-            get { return isLoggedIn; }
-            set { Set(ref isLoggedIn, value); }
+            get => isLoggedIn;
+            set => Set(ref isLoggedIn, value);
         }
 
         #endregion

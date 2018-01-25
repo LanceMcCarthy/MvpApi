@@ -51,23 +51,5 @@ namespace MvpApi.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "CertificationVisibility")]
         public VisibilityViewModel CertificationVisibility { get; set; }
-
-        /// <summary>
-        /// Validate the object. Throws ValidationException if validation fails.
-        /// </summary>
-        public virtual void Validate()
-        {
-            if (this.Title != null)
-            {
-                if (this.Title.Length > 100)
-                {
-                    throw new ValidationException(ValidationRules.MaxLength, "Title", 100);
-                }
-                if (this.Title.Length < 0)
-                {
-                    throw new ValidationException(ValidationRules.MinLength, "Title", 0);
-                }
-            }
-        }
     }
 }

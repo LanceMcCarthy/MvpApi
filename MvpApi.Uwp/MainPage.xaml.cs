@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using MvpApi.Services;
+using MvpApi.Common.Services;
 using MvpApi.Uwp.Common;
 using Newtonsoft.Json;
 

@@ -183,6 +183,12 @@
       <Version>1.1.12</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj">
+      <Project>{3159ae84-b479-420c-ba42-e328d4159144}</Project>
+      <Name>MvpApi.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

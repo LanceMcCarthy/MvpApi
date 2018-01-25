@@ -38,6 +38,5 @@ namespace MvpApi.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "PagingIndex")]
         public int? PagingIndex { get; set; }
-
     }
 }

@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Toolkit.Uwp;
-using MvpApi.Models;
+using MvpApi.Common.Models;
 using Template10.Mvvm;
 
 namespace MvpApi.Uwp.ViewModels
@@ -37,32 +32,32 @@ namespace MvpApi.Uwp.ViewModels
         
         public ContributionViewModel CurrentContributionView
         {
-            get { return currentContributionView; }
-            set { Set(ref currentContributionView, value); }
+            get => currentContributionView;
+            set => Set(ref currentContributionView, value);
         }
 
         public bool IsBusy
         {
-            get { return isBusy; }
-            set { Set(ref isBusy, value); }
+            get => isBusy;
+            set => Set(ref isBusy, value);
         }
 
         public string IsBusyMessage
         {
-            get { return isBusyMessage; }
-            set { Set(ref isBusyMessage, value); }
+            get => isBusyMessage;
+            set => Set(ref isBusyMessage, value);
         }
 
         public int CurrentPage
         {
-            get { return currentPage; }
-            set { Set(ref currentPage, value); }
+            get => currentPage;
+            set => Set(ref currentPage, value);
         }
 
         public int ItemsPerPage
         {
-            get { return itemsPerPage; }
-            set { Set(ref itemsPerPage, value); }
+            get => itemsPerPage;
+            set => Set(ref itemsPerPage, value);
         }
         
         #endregion

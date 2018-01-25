@@ -146,6 +146,5 @@ namespace MvpApi.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "UpcomingEvent")]
         public IList<MvpHighlightViewModel> UpcomingEvent { get; set; }
-
     }
 }

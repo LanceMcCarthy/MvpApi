@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
-using MvpApi.Models;
+using MvpApi.Common.Models;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Mvvm;

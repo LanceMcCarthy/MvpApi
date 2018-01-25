@@ -98,6 +98,5 @@ namespace MvpApi.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "Submitted")]
         public bool? Submitted { get; set; }
-
     }
 }

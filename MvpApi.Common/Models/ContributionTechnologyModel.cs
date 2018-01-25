@@ -49,6 +49,5 @@ namespace MvpApi.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "AwardCategory")]
         public string AwardCategory { get; set; }
-
     }
 }
