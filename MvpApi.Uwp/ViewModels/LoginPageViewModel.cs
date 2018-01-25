@@ -8,6 +8,7 @@ using Windows.Storage;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Services;
 using MvpApi.Uwp.Common;
+using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using Template10.Common;
 using Template10.Mvvm;
@@ -67,7 +68,8 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (e.Uri.AbsoluteUri.Contains("code="))
             {
-                var authCode = Regex.Split(e.Uri.AbsoluteUri, "code=")[1];
+                var authCode = e.Uri.ExtractQueryValue("code");
+                //var authCode = Regex.Split(e.Uri.AbsoluteUri, "code=")[1];
 
                 // get access token
                 var apiAuthorization = await OauthHelpers.RequestAuthorizationAsync(accessTokenUrl, authCode);

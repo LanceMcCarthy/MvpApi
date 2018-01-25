@@ -14,8 +14,7 @@ namespace MvpApi.Uwp.Helpers
         private const string AccessTokenUrl = "https://login.live.com/oauth20_token.srf";
         private static readonly Uri SignInUrl = new Uri($"https://login.live.com/oauth20_authorize.srf?client_id={Constants.ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={Constants.Scope}");
         private static string refreshTokenUrl = $"https://login.live.com/oauth20_token.srf?client_id={Constants.ClientId}&client_secret={Constants.ClientSecret}&redirect_uri=https://login.live.com/oauth20_desktop.srf&grant_type=refresh_token&refresh_token=";
-
-
+        
         public static async Task<string> RequestAuthorizationAsync(string requestUrl, string authCode)
         {
             try
