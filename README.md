@@ -1,5 +1,8 @@
 # MVP API 
 
-This is a test app to interact with the MVP API. 
+Adding new features shortly to help renewing MVPs (Jan 2018):
 
-**NOTE**: Currently only the UWP app is the operational project. Xamarin Forms will follow once the API is fleshed out.
+- Working on adding Excel bulk upload.
+- Easier form entry
+
+**NOTE**: The UWP app is the operational project. Xamarin Forms will follow once the API is fleshed out.
