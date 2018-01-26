@@ -46,9 +46,16 @@ namespace MvpApi.Uwp.ViewModels
 
         #region Navigation
 
-        public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            return base.OnNavigatedToAsync(parameter, mode, state);
+            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
+            {
+
+            }
+            else
+            {
+                await NavigationService.NavigateAsync(typeof(LoginPage));
+            }
         }
 
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)

@@ -72,9 +72,9 @@ namespace MvpApi.Uwp.ViewModels
 
         #region Event Handlers
 
-        public void AddActivityButton_Click(object sender, RoutedEventArgs e)
+        public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            //throw new NotImplementedException();
+            await NavigationService.NavigateAsync(typeof(AddSubmissionPage));
         }
         
         #endregion
