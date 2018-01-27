@@ -41,8 +41,9 @@
                         VerticalAlignment="Center">
                 <ProgressRing x:Name="BusyIndicator"
                               IsActive="{Binding IsBusy}"
-                              Width="100"
-                              Height="100" />
+                              Width="80"
+                              Height="80"
+                              Margin="20"/>
                 <TextBlock Text="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
                            HorizontalAlignment="Center" />
             </StackPanel>
