@@ -9,12 +9,10 @@ using Template10.Mvvm;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class HomePageViewModel : ViewModelBase
+    public class HomePageViewModel : PageViewModelBase
     {
         #region Fields
         
-        private bool isBusy;
-        private string isBusyMessage;
         private int? currentOffset = 0;
         private string displayTotal;
 
@@ -43,18 +41,6 @@ namespace MvpApi.Uwp.ViewModels
         #region Properties
         
         public IncrementalLoadingCollection<ContributionsModel> Activities { get; set; }
-        
-        public bool IsBusy
-        {
-            get => isBusy;
-            set => Set(ref isBusy, value);
-        }
-
-        public string IsBusyMessage
-        {
-            get => isBusyMessage;
-            set => Set(ref isBusyMessage, value);
-        }
         
         public string DisplayTotal
         {

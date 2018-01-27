@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -14,20 +12,22 @@ using Windows.UI.Xaml.Navigation;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using MvpApi.Common.Models;
-using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
-using Template10.Mvvm;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class AddSubmissionViewModel : ViewModelBase
+    public class AddSubmissionViewModel : PageViewModelBase
     {
         private StorageFile selectedFile;
-        private Visibility readFileButtonVisibility = Visibility.Collapsed;
+        private bool isReadEnabled;
+        private bool isLoadFileEnabled;
+        private bool isUploadEnabled;
 
         public AddSubmissionViewModel()
         {
         }
+
+        #region Properties
 
         public ObservableCollection<ContributionsModel> Contributions { get; set; } = new ObservableCollection<ContributionsModel>();
 
@@ -37,11 +37,27 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref selectedFile, value);
         }
 
-        public Visibility ReadFileButtonVisibility
+        public bool IsReadEnabled
         {
-            get => readFileButtonVisibility;
-            set => Set(ref readFileButtonVisibility, value);
+            get => isReadEnabled;
+            set => Set(ref isReadEnabled, value);
         }
+
+        public bool IsLoadFileEnabled
+        {
+            get => isLoadFileEnabled;
+            set => Set(ref isLoadFileEnabled, value);
+        }
+
+        public bool IsUploadEnabled
+        {
+            get => isUploadEnabled;
+            set => Set(ref isUploadEnabled, value);
+        }
+
+        #endregion
+        
+        #region Event handlers
 
         public async void LoadFileButton_Click(object sender, RoutedEventArgs e)
         {
@@ -51,118 +67,173 @@ namespace MvpApi.Uwp.ViewModels
 
             SelectedFile = await fop.PickSingleFileAsync();
 
-            ReadFileButtonVisibility = SelectedFile != null ? Visibility.Visible : Visibility.Collapsed;
+            IsReadEnabled = SelectedFile != null;
         }
 
         public async void ReadFileButton_Click(object sender, RoutedEventArgs e)
         {
+            await ReadDocumentAsync(SelectedFile);
+        }
+
+        public async void UploadContributionsButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+            await UploadContributionsAsync();
+        }
+
+        #endregion
+        
+        #region methods
+
+        private async Task ReadDocumentAsync(StorageFile file)
+        {
             try
             {
-                await ReadDocumentAsync(SelectedFile);
+                IsBusy = true;
+                IsBusyMessage = "reading file...";
+
+                using (var fileStream = await file.OpenReadAsync())
+                using (var doc = SpreadsheetDocument.Open(fileStream.AsStream(), false))
+                {
+                    var workbookPart = doc.WorkbookPart;
+                    var worksheetPart = workbookPart.WorksheetParts.First();
+                    var sheet = worksheetPart.Worksheet;
+
+                    var rows = sheet.Descendants<Row>();
+
+                    Debug.WriteLine("Row count = {0}", rows.LongCount());
+
+                    foreach (Row row in rows)
+                    {
+                        // TODO Investigate if I can build a datatable instead
+                        string[] columnValues = new string[4];
+
+                        foreach (Cell cell in row.Elements<Cell>())
+                        {
+                            string cellValue = string.Empty;
+
+                            // Skip if null or header cell
+                            if (cell.DataType == null ||
+                                cell.CellReference == "A1" ||
+                                cell.CellReference == "B1" ||
+                                cell.CellReference == "C1")
+                                continue;
+
+                            if (cell.DataType == CellValues.SharedString || cell.DataType == CellValues.Date || cell.DataType == CellValues.Number)
+                            {
+                                if (int.TryParse(cell.InnerText, out var id))
+                                {
+                                    var item = workbookPart.SharedStringTablePart.SharedStringTable.Elements<SharedStringItem>().ElementAt(id);
+
+                                    if (item.Text != null)
+                                    {
+                                        cellValue = item.Text.Text;
+                                    }
+                                    else if (item.InnerText != null)
+                                    {
+                                        cellValue = item.InnerText;
+                                    }
+                                    else if (item.InnerXml != null)
+                                    {
+                                        cellValue = item.InnerXml;
+                                    }
+                                }
+
+                                IsBusyMessage = $"reading file, parsed cell {cell.CellReference}";
+
+                                Debug.WriteLine($"Cell {cell.CellReference}, Value = {cellValue}");
+
+                                
+                                int columnIndex = 0;
+
+                                var cr = cell.CellReference.ToString().ToUpper();
+
+                                for (int i = 0; i < cr.Length && cr[i] >= 'A'; i++)
+                                    columnIndex = columnIndex * 26 + (cr[i] - 64);
+                                
+                                // Finally, add the cell value to the array
+                                columnValues[columnIndex - 1] = cellValue;
+                            }
+                        }
+
+                        // TODO need a safer way to do this
+                        var contribution = new ContributionsModel();
+
+                        contribution.Title = columnValues[0];
+
+                        if (DateTime.TryParse(columnValues[1], out DateTime date))
+                        {
+                            contribution.StartDate = date;
+                        }
+
+                        contribution.ReferenceUrl = columnValues[2];
+
+                        Contributions.Add(contribution);
+                    }
+                }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"ReadDocumentAsync Exception: {ex}");
             }
-        }
-
-        private async Task ReadDocumentAsync(StorageFile file)
-        {
-            using (var fileStream = await file.OpenReadAsync())
-            using (var doc = SpreadsheetDocument.Open(fileStream.AsStream(), false))
+            finally
             {
-                var workbookPart = doc.WorkbookPart;
-                var worksheetPart = workbookPart.WorksheetParts.First();
-                var sheet = worksheetPart.Worksheet;
-                
-                var rows = sheet.Descendants<Row>();
-
-                Debug.WriteLine("Row count = {0}", rows.LongCount());
-                
-                foreach (Row row in rows)
-                {
-                    string[] columnValues = new string[4];
-
-                    foreach (Cell cell in row.Elements<Cell>())
-                    {
-                        string cellValue = string.Empty;
-
-                        // Skip if null or header cell
-                        if(cell.DataType == null ||
-                           cell.CellReference == "A1" ||
-                           cell.CellReference == "B1" ||
-                           cell.CellReference == "C1" )
-                            continue;
-
-                        if (cell.DataType == CellValues.SharedString || cell.DataType == CellValues.Date || cell.DataType == CellValues.Number)
-                        {
-                            if (int.TryParse(cell.InnerText, out var id))
-                            {
-                                var item = GetSharedStringItemById(workbookPart, id);
-
-                                if (item.Text != null)
-                                {
-                                    cellValue = item.Text.Text;
-                                }
-                                else if (item.InnerText != null)
-                                {
-                                    cellValue = item.InnerText;
-                                }
-                                else if (item.InnerXml != null)
-                                {
-                                    cellValue = item.InnerXml;
-                                }
-                            }
-
-
-                            Debug.WriteLine($"Cell {cell.CellReference}, Value = {cellValue}");
-                            
-                            // TODO Investigate if I can build a Datatable using index instead, it would be more reliable
-                            columnValues[ColumnIndex(cell.CellReference)] = cellValue;
-                        }
-                    }
-                    
-                    // TODO need a safer way to do this
-                    var contribution = new ContributionsModel();
-                    
-                    contribution.Title = columnValues[0];
-                    
-                    if (DateTime.TryParse(columnValues[1], out DateTime date))
-                    {
-                        contribution.StartDate = date;
-                    }
-
-                    contribution.ReferenceUrl = columnValues[2];
-                    
-                    Contributions.Add(contribution);
-                }
+                IsBusyMessage = "";
+                IsBusy = false;
             }
         }
 
-        private static int ColumnIndex(string cellReference)
+        private async Task UploadContributionsAsync()
         {
-            int columnIndex = 0;
+            try
+            {
+                IsBusy = true;
+                IsBusyMessage = "uploading...";
 
-            var cr = cellReference.ToUpper();
+                // TODO add upload method to MvpApiService.cs
+                var success = await Task.Run(async () =>
+                {
+                    // TODO add upload method to MvpApiService.cs
+                    await Task.Delay(2000);
 
-            for (int i = 0; i < cr.Length && cr[i] >= 'A';i++ ) 
-                columnIndex = columnIndex * 26 + (cr[i] - 64);
+                    // task would return true or false depending on if the upload was successful
+                    return true;
+                });
 
-            return columnIndex - 1;
+                if (success)
+                {
+                    SelectedFile = null;
+                    IsLoadFileEnabled = true;
+                    IsReadEnabled = false;
+                    IsUploadEnabled = false;
+
+                    Contributions.Clear();
+                }
+                else
+                {
+                    // show error dialog
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"UploadContributionsAsync Exception: {ex}");
+            }
+            finally
+            {
+                IsBusyMessage = "";
+                IsBusy = false;
+            }
         }
-
-        private static SharedStringItem GetSharedStringItemById(WorkbookPart workbookPart, int id)
-        {
-            return workbookPart.SharedStringTablePart.SharedStringTable.Elements<SharedStringItem>().ElementAt(id);
-        }
-
+        
+        #endregion
+        
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
             {
-
+                IsLoadFileEnabled = true;
             }
             else
             {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml.Navigation;
@@ -7,11 +6,10 @@ using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
-using Template10.Mvvm;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class ShellPageViewModel : ViewModelBase
+    public class ShellPageViewModel : PageViewModelBase
     {
         #region Fields
 

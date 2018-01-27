@@ -5,11 +5,10 @@ using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Views;
 using Template10.Common;
-using Template10.Mvvm;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class ProfilePageViewModel : ViewModelBase
+    public class ProfilePageViewModel : PageViewModelBase
     {
         #region Fields
         
@@ -42,8 +41,7 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #endregion
-
-
+        
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)

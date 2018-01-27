@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
+      xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -28,36 +29,84 @@
         </Grid>
         
         <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            
             <StackPanel>
-                <TextBlock Text="Selected File"
-                           Style="{ThemeResource TitleTextBlockStyle}"
-                           Margin="10"/>
-                <TextBlock Text="{Binding SelectedFile.Name}"
-                           Style="{ThemeResource SubtitleTextBlockStyle}"
-                           Margin="10"/>
-                <Button Content="Read File"
-                        Visibility="{Binding ReadFileButtonVisibility}"
-                        Click="{x:Bind ViewModel.ReadFileButton_Click}"
-                        Margin="10"/>
                 
-                <ListView ItemsSource="{Binding Contributions}" >
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <TextBlock Text="{Binding Title}"/>
-                                <TextBlock Text="{Binding ReferenceUrl}"/>
-                                <TextBlock Text="{Binding StartDate}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Bulk Upload:"
+                               Style="{ThemeResource TitleTextBlockStyle}"
+                               Margin="10,10,0,10"/>
+                    <Button Content="Load File"
+                            IsEnabled="{Binding IsLoadFileEnabled}"
+                            Click="{x:Bind ViewModel.LoadFileButton_Click}"
+                            Margin="10,10,0,10"/>
+                    <Button Content="Read File"
+                            IsEnabled="{Binding IsReadEnabled}"
+                            Click="{x:Bind ViewModel.ReadFileButton_Click}"
+                            Margin="10,10,0,10"/>
+                    <TextBlock Text="{Binding SelectedFile.Name}"
+                               Style="{ThemeResource SubtitleTextBlockStyle}"
+                               Margin="10,10,0,10"/>
+                </StackPanel>
             </StackPanel>
+
+            <grid:RadDataGrid ItemsSource="{Binding Contributions}" 
+                              IsBusyIndicatorEnabled="{Binding IsBusy}" 
+                              IncrementalLoadingMode="Auto"
+                              AutoGenerateColumns="False"
+                              Grid.Row="1">
+                <grid:RadDataGrid.Columns>
+                    <!--<grid:DataGridDateColumn PropertyName="StartDate"
+                                             Header="Start Date"/>-->
+                    <grid:DataGridTextColumn PropertyName="Title" 
+                                             Header="Title"/>
+                    <!--<grid:DataGridTextColumn PropertyName="ContributionTypeName" 
+                                             Header="Contribution Type"/>
+                    <grid:DataGridTextColumn PropertyName="Description" 
+                                             Width="200"
+                                             Header="Description">
+                        <grid:DataGridTextColumn.CellContentStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                            </Style>
+                        </grid:DataGridTextColumn.CellContentStyle>
+                    </grid:DataGridTextColumn>-->
+                    <grid:DataGridTextColumn PropertyName="ReferenceUrl" 
+                                             Header="Url"/>
+                    <!--<grid:DataGridNumericalColumn PropertyName="AnnualQuantity"
+                                                  Header="Annual Quantity"/>
+                    <grid:DataGridNumericalColumn PropertyName="AnnualReach"
+                                                  Header="Annual Reach"/>-->
+                </grid:RadDataGrid.Columns>
+            </grid:RadDataGrid>
         </Grid>
 
         <CommandBar Grid.Row="2">
-            <AppBarButton Label="load file"
-                          Click="{x:Bind ViewModel.LoadFileButton_Click}"
-                          Icon="OpenFile" />
+            <AppBarButton Label="upload"
+                          Click="{x:Bind ViewModel.UploadContributionsButton_Click}"
+                          Icon="Upload" />
         </CommandBar>
+        
+        <Grid x:Name="BusyOverlay"
+              Grid.Row="1"
+              Grid.RowSpan="2"
+              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
+              Background="{ThemeResource SystemControlForegroundAltMediumHighBrush}">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <ProgressRing x:Name="BusyIndicator"
+                              IsActive="{Binding IsBusy}"
+                              Width="80"
+                              Height="80"
+                              Margin="20"/>
+                <TextBlock Text="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

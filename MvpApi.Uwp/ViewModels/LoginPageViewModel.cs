@@ -15,7 +15,7 @@ using Template10.Mvvm;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class LoginPageViewModel : ViewModelBase
+    public class LoginPageViewModel : PageViewModelBase
     {
         #region Fields
 
@@ -25,10 +25,7 @@ namespace MvpApi.Uwp.ViewModels
         private static string refreshTokenUrl = $"https://login.live.com/oauth20_token.srf?client_id={Constants.ClientId}&client_secret={Constants.ClientSecret}&redirect_uri=https://login.live.com/oauth20_desktop.srf&grant_type=refresh_token&refresh_token=";
         
         private readonly ApplicationDataContainer localSettings;
-        
         private Uri browserUri;
-        private bool isBusy;
-        private string isBusyMessage;
 
         #endregion
 
@@ -46,17 +43,6 @@ namespace MvpApi.Uwp.ViewModels
         {
             get => browserUri;
             set => Set(ref browserUri, value);
-        }
-        public bool IsBusy
-        {
-            get => isBusy;
-            set => Set(ref isBusy, value);
-        }
-
-        public string IsBusyMessage
-        {
-            get => isBusyMessage;
-            set => Set(ref isBusyMessage, value);
         }
 
         #endregion
