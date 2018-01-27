@@ -1,11 +1,9 @@
 # MVP API 
 
-Increasing effort development to help renewing MVPs for Jan 2018 push. 
+Increasing effort development to help renewing MVPs for Jan 2018 push. The next goal of this app is to allow bulk uploads via Excel file parsing.
 
-The target goal of this app is to allow bulk uploads via Excel file parsing.
+Here's a screenshot of the current `HomePage` using open source Telerik DataGrid and grouping. The grid uses automatic load on demand to fetch items from the server.
 
-Here's a screenshot of the current `HomePage` using open source Telerik DataGrid and grouping
+![image](https://user-images.githubusercontent.com/3520532/35474307-6be817f2-035a-11e8-800a-e4070e4df570.png)
 
-
-
-![image](https://user-images.githubusercontent.com/3520532/35409019-0692c234-01df-11e8-89cb-8a87a4a5068f.png)
+![image](https://user-images.githubusercontent.com/3520532/35474311-7dfd8aee-035a-11e8-920c-47a74fa59493.png)
