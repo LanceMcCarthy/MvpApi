@@ -9,8 +9,12 @@ namespace MvpApi.Common.Models
     /// <summary>
     /// The visibility.
     /// </summary>
-    public partial class VisibilityViewModel
+    public partial class VisibilityViewModel : ObservableObject
     {
+        private int? id;
+        private string description;
+        private string localizeKey;
+
         /// <summary>
         /// Initializes a new instance of the VisibilityViewModel class.
         /// </summary>
@@ -30,17 +34,29 @@ namespace MvpApi.Common.Models
         /// Gets or sets the id.
         /// </summary>
         [JsonProperty(PropertyName = "Id")]
-        public int? Id { get; set; }
+        public int? Id
+        {
+            get => id;
+            set => SetProperty(ref id, value);
+        }
 
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
         [JsonProperty(PropertyName = "Description")]
-        public string Description { get; set; }
+        public string Description
+        {
+            get => description;
+            set => SetProperty(ref description, value);
+        }
 
         /// <summary>
         /// </summary>
         [JsonProperty(PropertyName = "LocalizeKey")]
-        public string LocalizeKey { get; set; }
+        public string LocalizeKey
+        {
+            get => localizeKey;
+            set => SetProperty(ref localizeKey, value);
+        }
     }
 }

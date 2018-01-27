@@ -7,8 +7,12 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class ContributionTypeModel
+    public partial class ContributionTypeModel : ObservableObject
     {
+        private Guid? id;
+        private string name;
+        private string englishName;
+
         /// <summary>
         /// Initializes a new instance of the ContributionTypeModel class.
         /// </summary>
@@ -28,18 +32,30 @@ namespace MvpApi.Common.Models
         /// Gets or sets the id.
         /// </summary>
         [JsonProperty(PropertyName = "Id")]
-        public Guid? Id { get; set; }
+        public Guid? Id
+        {
+            get => id;
+            set => SetProperty(ref id, value);
+        }
 
         /// <summary>
         /// Gets or sets the localized name.
         /// </summary>
         [JsonProperty(PropertyName = "Name")]
-        public string Name { get; set; }
+        public string Name
+        {
+            get => name;
+            set => SetProperty(ref name, value);
+        }
 
         /// <summary>
         /// Gets or sets the english name
         /// </summary>
         [JsonProperty(PropertyName = "EnglishName")]
-        public string EnglishName { get; set; }
+        public string EnglishName
+        {
+            get => englishName;
+            set => SetProperty(ref englishName, value);
+        }
     }
 }

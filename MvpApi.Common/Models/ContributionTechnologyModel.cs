@@ -7,8 +7,13 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class ContributionTechnologyModel
+    public partial class ContributionTechnologyModel : ObservableObject
     {
+        private Guid? id;
+        private string awardCategory;
+        private string awardName;
+        private string name;
+
         /// <summary>
         /// Initializes a new instance of the ContributionTechnologyModel
         /// class.
@@ -31,23 +36,39 @@ namespace MvpApi.Common.Models
         /// Gets or sets the id.
         /// </summary>
         [JsonProperty(PropertyName = "Id")]
-        public Guid? Id { get; set; }
+        public Guid? Id
+        {
+            get => id;
+            set => SetProperty(ref id, value);
+        }
 
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
         [JsonProperty(PropertyName = "Name")]
-        public string Name { get; set; }
+        public string Name
+        {
+            get => name;
+            set => SetProperty(ref name, value);
+        }
 
         /// <summary>
         /// </summary>
         [JsonProperty(PropertyName = "AwardName")]
-        public string AwardName { get; set; }
+        public string AwardName
+        {
+            get => awardName;
+            set => SetProperty(ref awardName, value);
+        }
 
         /// <summary>
         /// Property to hold the Award Category value
         /// </summary>
         [JsonProperty(PropertyName = "AwardCategory")]
-        public string AwardCategory { get; set; }
+        public string AwardCategory
+        {
+            get => awardCategory;
+            set => SetProperty(ref awardCategory, value);
+        }
     }
 }
