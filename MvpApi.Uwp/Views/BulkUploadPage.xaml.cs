@@ -2,9 +2,9 @@
 
 namespace MvpApi.Uwp.Views
 {
-    public sealed partial class AddContributionPage : Page
+    public sealed partial class BulkUploadPage : Page
     {
-        public AddContributionPage()
+        public BulkUploadPage()
         {
             this.InitializeComponent();
         }

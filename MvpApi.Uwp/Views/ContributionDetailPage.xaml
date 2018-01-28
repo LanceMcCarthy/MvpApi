@@ -27,102 +27,139 @@
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
-            
-            <StackPanel Orientation="Horizontal"
+
+            <!--<StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center">
                 <TextBlock Text="Id:"
                            Margin="10"/>
-                <TextBlock Text="{Binding Contribution.ContributionId}"
+                <TextBlock Text="{Binding ActiveContribution.ContributionId}"
                            Margin="10"/>
-            </StackPanel>
+            </StackPanel>-->
         </Grid>
 
         <Grid Grid.Row="1">
             <ScrollViewer>
                 <StackPanel>
-                <TextBox Text="{Binding Contribution.Title, Mode=TwoWay}" 
+                    <!-- START Cascading Comboboxes -->
+
+                    <ComboBox ItemsSource="{Binding ContributionAreaAwardCategories}"
+                              SelectedItem="{Binding SelectedContributionAreaAwardCategory, Mode=TwoWay}"
+                              Header="Step 1: Choose starting category"
+                              HorizontalAlignment="Left"
+                              DisplayMemberPath="AwardCategory"
+                              Margin="10,10,10,0"/>
+
+                    <ComboBox ItemsSource="{Binding SelectedContributionAreaAwardCategory.Contributions}"
+                              SelectedItem="{Binding SelectedContributionAreaContributionModel, Mode=TwoWay}"
+                              Header="Step 2: Select an award category "
+                              DisplayMemberPath="AwardName"
+                              HorizontalAlignment="Left"
+                              Margin="10,10,10,0"/>
+
+                    <ComboBox ItemsSource="{Binding SelectedContributionAreaContributionModel.ContributionAreas}"
+                              SelectedItem="{Binding SelectedContributionAreaModel, Mode=TwoWay}"
+                              Header="Step 3: Select a category technology"
+                              DisplayMemberPath="Name"
+                              HorizontalAlignment="Left"
+                              Margin="10,10,10,20"/>
+
+                    <!-- END Cascading Comboboxes -->
+
+                    <Rectangle Height="2" HorizontalAlignment="Stretch" Fill="Black" Margin="5,0"/>
+
+                    
+                    
+
+                    <TextBox Text="{Binding ActiveContribution.Title, Mode=TwoWay}" 
                          Header="Title"
                          HorizontalAlignment="Left"
                          Margin="10"
                          TextChanged="{x:Bind ViewModel.TextBox_OnTextChanged}"/>
 
-                <TextBox Text="{Binding Contribution.Description, Mode=TwoWay}"
+                    <TextBox Text="{Binding ActiveContribution.Description, Mode=TwoWay}"
                          Header="Description"
                          HorizontalAlignment="Left"
                          Margin="10"
                          TextChanged="{x:Bind ViewModel.TextBox_OnTextChanged}"/>
-                    
-                    <TextBox Text="{Binding Contribution.ReferenceUrl, Mode=TwoWay}" 
+
+                    <TextBox Text="{Binding ActiveContribution.ReferenceUrl, Mode=TwoWay}" 
                              Header="Reference Url"
                              HorizontalAlignment="Left"
                              Margin="10"
                              TextChanged="{x:Bind ViewModel.TextBox_OnTextChanged}"/>
 
-                <ComboBox ItemsSource="{x:Bind ViewModel.ContributionTypes}"
-                          SelectedItem="{Binding Contribution.ContributionType, Mode=TwoWay}"
-                          IsTextSearchEnabled="True"
-                          Header="Select Contribution Type"
-                          DisplayMemberPath="Name"
-                          HorizontalAlignment="Left"
-                          Margin="10"
-                          SelectionChanged="{x:Bind ViewModel.Selector_OnSelectionChanged}"/>
-                    
-                    <TextBlock Text="{Binding Contribution.ContributionTypeName}"
+                    <TextBlock Text="{Binding ActiveContribution.ContributionTypeName}"
                                HorizontalAlignment="Left"
-                               Margin="10"/>
+                               Margin="10,10,10,0"/>
 
-                <ComboBox ItemsSource="{x:Bind ViewModel.ContributionTechnologies}"
-                          SelectedItem="{Binding Contribution.ContributionTechnology, Mode=TwoWay}"
-                          IsTextSearchEnabled="True"
-                          Header="Select Contribution Technology (Area)"
-                          HorizontalAlignment="Left"
-                          DisplayMemberPath="AwardCategory"
-                          Margin="10"
-                          SelectionChanged="{x:Bind ViewModel.Selector_OnSelectionChanged}"/>
+                    <ComboBox ItemsSource="{Binding ContributionTypes}"
+                              SelectedItem="{Binding ActiveContribution.ContributionType, Mode=TwoWay}"
+                              Header="Select Contribution Type"
+                              IsEnabled="{Binding IsContributionTypeEditable}"
+                              DisplayMemberPath="Name"
+                              HorizontalAlignment="Left"
+                              Margin="10,10,10,0"/>
 
-                <ComboBox ItemsSource="{x:Bind ViewModel.ContributionVisibilies}"
-                          SelectedItem="{Binding Contribution.Visibility, Mode=TwoWay}"
-                          IsTextSearchEnabled="True"
-                          Header="Select Visibility"
-                          DisplayMemberPath="Description"
-                          HorizontalAlignment="Left"
-                          Margin="10"
-                          SelectionChanged="{x:Bind ViewModel.Selector_OnSelectionChanged}"/>
+                    <ComboBox ItemsSource="{x:Bind ViewModel.ContributionVisibilies}"
+                              SelectedItem="{Binding ActiveContribution.Visibility, Mode=TwoWay}"
+                              IsTextSearchEnabled="True"
+                              Header="Select Visibility"
+                              DisplayMemberPath="Description"
+                              HorizontalAlignment="Left"
+                              Margin="10"
+                              SelectionChanged="{x:Bind ViewModel.Selector_OnSelectionChanged}"/>
 
-                <DatePicker Date="{Binding Contribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}}"
+                    <DatePicker Date="{Binding ActiveContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}}"
                             Header="Start Date"
                             HorizontalAlignment="Left"
                             Margin="10"
                             DateChanged="{x:Bind ViewModel.DatePicker_OnDateChanged}"/>
 
-                <input:RadNumericBox Value="{Binding Contribution.AnnualQuantity, Mode=TwoWay}"
+                    <input:RadNumericBox Value="{Binding ActiveContribution.AnnualQuantity, Mode=TwoWay}"
                                      Header="Annual Quantity"
                                      HorizontalAlignment="Left"
                                      Margin="10"
                                      ValueChanged="{x:Bind ViewModel.RadNumericBox_OnValueChanged}"/>
 
-                <input:RadNumericBox Value="{Binding Contribution.SecondAnnualQuantity, Mode=TwoWay}"
+                    <input:RadNumericBox Value="{Binding ActiveContribution.SecondAnnualQuantity, Mode=TwoWay}"
                                      Header="Second Annual Quantity"
                                      HorizontalAlignment="Left"
                                      Margin="10"
                                      ValueChanged="{x:Bind ViewModel.RadNumericBox_OnValueChanged}"/>
 
-                <input:RadNumericBox Value="{Binding Contribution.AnnualReach, Mode=TwoWay}" 
+                    <input:RadNumericBox Value="{Binding ActiveContribution.AnnualReach, Mode=TwoWay}" 
                                      Header="Annual Reach"
                                      HorizontalAlignment="Left"
                                      Margin="10"
                                      ValueChanged="{x:Bind ViewModel.RadNumericBox_OnValueChanged}"/>
-            </StackPanel>
+                </StackPanel>
             </ScrollViewer>
         </Grid>
 
         <CommandBar Grid.Row="2">
             <AppBarButton Label="save"
                           Icon="save" 
-                          IsEnabled="{x:Bind ViewModel.IsDirty}"
+                          IsEnabled="{Binding IsDirty}"
                           Click="{x:Bind ViewModel.UploadContributionsButton_Click}"/>
         </CommandBar>
+
+        <Grid x:Name="BusyOverlay"
+              Grid.Row="1"
+              Grid.RowSpan="2"
+              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
+              Background="{ThemeResource SystemControlForegroundAltMediumHighBrush}">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <ProgressRing x:Name="BusyIndicator"
+                              IsActive="{Binding IsBusy}"
+                              Width="80"
+                              Height="80"
+                              Margin="20"/>
+                <TextBlock Text="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+        </Grid>
 
     </Grid>
 </Page>

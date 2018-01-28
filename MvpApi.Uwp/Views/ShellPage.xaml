@@ -50,7 +50,7 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
-                <controls:HamburgerButtonInfo PageType="local:AddContributionPage"
+                <controls:HamburgerButtonInfo PageType="local:BulkUploadPage"
                                               ClearHistory="True">
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">

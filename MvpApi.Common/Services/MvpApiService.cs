@@ -29,6 +29,8 @@ namespace MvpApi.Common.Services
             client = new HttpClient(handler);
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
             client.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
+
+            //client.DefaultRequestHeaders.Add("ContentType", "application/json");
         }
 
         /// <summary>
@@ -160,13 +162,12 @@ namespace MvpApi.Common.Services
             {
                 var serializedContribution = JsonConvert.SerializeObject(contribution);
                 byte[] byteData = Encoding.UTF8.GetBytes(serializedContribution);
-
-                // BUG Getting 500 response, need to investigate body construction further
+                
                 using (var content = new ByteArrayContent(byteData))
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-                    using (var response = await client.PostAsync("https://mvpapi.azure-api.net/mvp/api/contributions", content))
+                    
+                    using (var response = await client.PostAsync("https://mvpapi.azure-api.net/mvp/api/contributions?", content))
                     {
                         var json = await response.Content.ReadAsStringAsync();
                         return JsonConvert.DeserializeObject<ContributionsModel>(json);
@@ -243,6 +244,11 @@ namespace MvpApi.Common.Services
             }
         }
 
+        /// <summary>
+        /// Deleted s contribution
+        /// </summary>
+        /// <param name="contribution">Item to delete</param>
+        /// <returns>Success or failure</returns>
         public async Task<bool?> DeleteContributionAsync(ContributionsModel contribution)
         {
             if (contribution == null)
@@ -277,6 +283,10 @@ namespace MvpApi.Common.Services
             }
         }
 
+        /// <summary>
+        /// This gets a list if the different contributions types
+        /// </summary>
+        /// <returns>List of contributions types</returns>
         public async Task<IReadOnlyList<ContributionTypeModel>> GetContributionTypesAsync()
         {
             try
@@ -310,17 +320,17 @@ namespace MvpApi.Common.Services
         }
 
         /// <summary>
-        /// Gets a list of the ContibutionTechnologies (aka Contribution Areas)
+        /// Gets a list of the Contibution Technologies (aka Contribution Areas)
         /// </summary>
         /// <returns>A list of available contribution areas</returns>
-        public async Task<IReadOnlyList<ContributionTechnologyModel>> GetContributionTechnologiesAsync()
+        public async Task<IReadOnlyList<ContributionAreasRootItem>> GetContributionAreasAsync()
         {
             try
             {
                 using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/contributionareas"))
                 {
                     var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<IReadOnlyList<ContributionTechnologyModel>>(json);
+                    return JsonConvert.DeserializeObject<IReadOnlyList<ContributionAreasRootItem>>(json);
                 }
             }
             catch (HttpRequestException e)

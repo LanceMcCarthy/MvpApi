@@ -104,15 +104,15 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\AddContributionViewModel.cs" />
+    <Compile Include="ViewModels\BulkUploadViewModel.cs" />
     <Compile Include="ViewModels\ContributionDetailViewModel.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
     <Compile Include="ViewModels\LoginPageViewModel.cs" />
     <Compile Include="ViewModels\PageViewModelBase.cs" />
     <Compile Include="ViewModels\ProfilePageViewModel.cs" />
     <Compile Include="ViewModels\ShellPageViewModel.cs" />
-    <Compile Include="Views\AddContributionPage.xaml.cs">
-      <DependentUpon>AddContributionPage.xaml</DependentUpon>
+    <Compile Include="Views\BulkUploadPage.xaml.cs">
+      <DependentUpon>BulkUploadPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ContributionDetailPage.xaml.cs">
       <DependentUpon>ContributionDetailPage.xaml</DependentUpon>
@@ -156,7 +156,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\AddContributionPage.xaml">
+    <Page Include="Views\BulkUploadPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

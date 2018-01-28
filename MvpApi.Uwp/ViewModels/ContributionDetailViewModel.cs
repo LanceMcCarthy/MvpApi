@@ -15,24 +15,48 @@ namespace MvpApi.Uwp.ViewModels
 {
     public class ContributionDetailViewModel : PageViewModelBase
     {
-        private ContributionsModel contribution;
+        private ContributionsModel activeContribution;
         private bool isDirty;
+        private ContributionAreasRootItem selectedContributionAreaAwardCategory;
+        private ContributionAreaContributionModel selectedContributionAreaContributionModel;
+        private ContributionAreaModel selectedContributionAreaModel;
+        private bool isContributionTypeEditable = true;
 
         public ContributionDetailViewModel()
         {
             
         }
+        public ContributionsModel ActiveContribution
+        {
+            get => activeContribution;
+            set => Set(ref activeContribution, value);
+        }
         
         public ObservableCollection<ContributionTypeModel> ContributionTypes { get; set; } = new ObservableCollection<ContributionTypeModel>();
 
-        public ObservableCollection<ContributionTechnologyModel> ContributionTechnologies { get; set; } = new ObservableCollection<ContributionTechnologyModel>();
-
         public ObservableCollection<VisibilityViewModel> ContributionVisibilies { get; set; } = new ObservableCollection<VisibilityViewModel>();
 
-        public ContributionsModel Contribution
+        // Cascading
+        public ObservableCollection<ContributionAreasRootItem> ContributionAreaAwardCategories { get; set; } = new ObservableCollection<ContributionAreasRootItem>();
+
+        public ContributionAreasRootItem SelectedContributionAreaAwardCategory
         {
-            get => contribution;
-            set => Set(ref contribution, value);
+            get => selectedContributionAreaAwardCategory;
+            set => Set(ref selectedContributionAreaAwardCategory, value);
+        }
+
+        public ObservableCollection<ContributionAreaContributionModel> ContributionAreaContributions { get; set; } = new ObservableCollection<ContributionAreaContributionModel>();
+
+        public ContributionAreaContributionModel SelectedContributionAreaContributionModel
+        {
+            get => selectedContributionAreaContributionModel;
+            set => Set(ref selectedContributionAreaContributionModel, value);
+        }
+
+        public ContributionAreaModel SelectedContributionAreaModel
+        {
+            get => selectedContributionAreaModel;
+            set => Set(ref selectedContributionAreaModel, value);
         }
 
         public bool IsDirty
@@ -41,33 +65,27 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref isDirty, value);
         }
 
+        public bool IsContributionTypeEditable
+        {
+            get => isContributionTypeEditable;
+            set => Set(ref isContributionTypeEditable, value);
+        }
+
         #region Event handlers
 
         public void TextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             CheckIfDirty();
         }
-
+        
         public void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CheckIfDirty();
-
-            if (e.AddedItems.Count <= 0)
-                return;
-
-            var item = e.AddedItems.FirstOrDefault();
-
-            if (item is ContributionTypeModel type)
-            {
-                Contribution.ContributionTypeName = type.Name;
-            }
         }
 
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
             CheckIfDirty();
-            //Debug.WriteLine($"StartDate Changed: {e.NewDate.DateTime}");
-            //Contribution.StartDate = e.NewDate.DateTime;
         }
 
         public void RadNumericBox_OnValueChanged(object sender, EventArgs e)
@@ -85,7 +103,16 @@ namespace MvpApi.Uwp.ViewModels
 
             md.Commands.Add(new UICommand("save", async (args) =>
             {
-                result = await App.ApiService.SubmitContributionAsync(Contribution);
+                // TODO see if changing int type in the model will work, they have the same properties, so it *should* work fine
+                ActiveContribution.ContributionTechnology = new ContributionTechnologyModel()
+                {
+                    Id = SelectedContributionAreaModel.Id,
+                    AwardCategory = SelectedContributionAreaModel.AwardCategory,
+                    AwardName = SelectedContributionAreaModel.AwardName,
+                    Name = SelectedContributionAreaModel.Name
+                };
+                
+                result = await App.ApiService.SubmitContributionAsync(ActiveContribution);
             }));
 
             md.Commands.Add(new UICommand("cancel"));
@@ -100,62 +127,19 @@ namespace MvpApi.Uwp.ViewModels
 
             var successDialog = new MessageDialog("Would you like to start a new contribution?", "Success!");
 
-            successDialog.Commands.Add(new UICommand("yes", async (args) =>
+            successDialog.Commands.Add(new UICommand("yes", args =>
             {
-                Contribution = new ContributionsModel();
+                ActiveContribution = new ContributionsModel();
             }));
 
-            successDialog.Commands.Add(new UICommand("no", async (args) =>
+            successDialog.Commands.Add(new UICommand("no", args =>
             {
-                Contribution = result;
+                ActiveContribution = result;
             }));
 
             await successDialog.ShowAsync();
-
         }
-
-        private async Task LoadDataAsync()
-        {
-            try
-            {
-                IsBusy = true;
-
-                IsBusyMessage = "getting types...";
-
-                foreach (var type in await App.ApiService.GetContributionTypesAsync())
-                {
-                    ContributionTypes.Add(type);
-                }
-
-
-                IsBusyMessage = "getting technologies...";
-                
-                foreach (var tech in await App.ApiService.GetContributionTechnologiesAsync())
-                {
-                    ContributionTechnologies.Add(tech);
-                }
-                
-
-                IsBusyMessage = "getting sharing preferences...";
-
-                foreach (var visibility in await App.ApiService.GetVisibilitiesAsync())
-                {
-                    ContributionVisibilies.Add(visibility);
-                }
-
-                Debug.WriteLine($"{ContributionVisibilies.Count} ContributionVisibilies loaded!");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"LoadDataAsync Exception {ex}");
-            }
-            finally
-            {
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
-        }
-
+        
         private void CheckIfDirty()
         {
 
@@ -167,28 +151,77 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
             {
-                await LoadDataAsync();
-
-                if (parameter is ContributionsModel selectedContribution)
+                try
                 {
-                    Contribution = selectedContribution;
+                    IsBusy = true;
+                    // ** Get the associated lists from the API **
+
+                    IsBusyMessage = "getting types...";
+
+                    foreach (var type in await App.ApiService.GetContributionTypesAsync())
+                    {
+                        ContributionTypes.Add(type);
+                    }
+                    
+
+                    IsBusyMessage = "getting technologies...";
+
+                    var areaResult = await App.ApiService.GetContributionAreasAsync();
+
+                    foreach (var area in areaResult)
+                    {
+                        ContributionAreaAwardCategories.Add(area);
+                    }
+
+                    
+                    IsBusyMessage = "getting sharing preferences...";
+
+                    foreach (var visibility in await App.ApiService.GetVisibilitiesAsync())
+                    {
+                        ContributionVisibilies.Add(visibility);
+                    }
+
+
+                    // ** Determine if we're editing an existing contribution or creating a new one **
+
+                    if (parameter is ContributionsModel param)
+                    {
+                        ActiveContribution = param;
+                        IsContributionTypeEditable = false;
+                    }
+                    else
+                    {
+                        ActiveContribution = new ContributionsModel();
+
+                        // -- TESTING ONLY -- 
+                        ActiveContribution.Title = "Test Upload";
+                        ActiveContribution.Description = "This is a test contribution upload from the UWP application I'm building for the MVP community to help them submit their 2018 contributions.";
+                        ActiveContribution.StartDate = DateTime.Now;
+                        ActiveContribution.ReferenceUrl = "lancemccarthy.com";
+                        
+                        ActiveContribution.Visibility = ContributionVisibilies.FirstOrDefault();
+
+                        // Should only be available for setting when 
+                        ActiveContribution.ContributionType = ContributionTypes.FirstOrDefault();
+
+                        // This is for when in edit mode (you cant change ContributionType after its been submiteed
+                        ActiveContribution.ContributionTypeName = ActiveContribution?.ContributionType?.Name;
+
+                        ActiveContribution.AnnualQuantity = 0;
+                        ActiveContribution.SecondAnnualQuantity = 0;
+                        ActiveContribution.AnnualReach = 0;
+                        
+                        IsDirty = true;
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Contribution = new ContributionsModel();
-                    Contribution.AnnualQuantity = 0;
-                    Contribution.SecondAnnualQuantity = 0;
-                    Contribution.AnnualReach = 0;
-
-                    Contribution.Title = "Test Upload";
-                    Contribution.Description = "This is a test contribution upload from the UWP application I'm building for the MVP community to help them submit their 2018 contributions.";
-                    Contribution.StartDate = DateTime.Now;
-                    Contribution.ContributionTechnology = ContributionTechnologies.FirstOrDefault();
-                    Contribution.ContributionType = ContributionTypes.FirstOrDefault();
-                    Contribution.ContributionTypeName = Contribution?.ContributionType?.Name;
-                    Contribution.ReferenceUrl = "lancemccarthy.com";
-
-                    IsDirty = true;
+                    Debug.WriteLine($"LoadDataAsync Exception {ex}");
+                }
+                finally
+                {
+                    IsBusyMessage = "";
+                    IsBusy = false;
                 }
             }
             else

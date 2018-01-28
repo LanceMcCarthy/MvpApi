@@ -16,14 +16,14 @@ using MvpApi.Uwp.Views;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class AddContributionViewModel : PageViewModelBase
+    public class BulkUploadViewModel : PageViewModelBase
     {
         private StorageFile selectedFile;
         private bool isReadEnabled;
         private bool isLoadFileEnabled;
         private bool isUploadEnabled;
 
-        public AddContributionViewModel()
+        public BulkUploadViewModel()
         {
         }
 
