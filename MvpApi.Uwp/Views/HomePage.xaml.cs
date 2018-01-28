@@ -6,7 +6,7 @@ namespace MvpApi.Uwp.Views
     {
         public HomePage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
     }
 }

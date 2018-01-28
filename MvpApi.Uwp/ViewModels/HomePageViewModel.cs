@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Views;
 using Telerik.Core.Data;
+using Telerik.UI.Xaml.Controls.Grid;
 using Template10.Mvvm;
 
 namespace MvpApi.Uwp.ViewModels
@@ -54,15 +56,25 @@ namespace MvpApi.Uwp.ViewModels
         
 
         #endregion
-
-
+        
         #region Event Handlers
 
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            await NavigationService.NavigateAsync(typeof(AddContributionPage));
+            await NavigationService.NavigateAsync(typeof(ContributionDetailPage));
         }
         
+        public async void RadDataGrid_OnSelectionChanged(object sender, DataGridSelectionChangedEventArgs e)
+        {
+            if (e.AddedItems?.Count() > 0)
+            {
+                if (e.AddedItems.FirstOrDefault() is ContributionsModel contribution)
+                {
+                    await NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution);
+                }
+            }
+        }
+
         #endregion
 
         #region Navigation
@@ -85,6 +97,5 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #endregion
-
     }
 }

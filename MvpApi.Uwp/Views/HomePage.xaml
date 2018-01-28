@@ -36,6 +36,7 @@
                           IsBusyIndicatorEnabled="{Binding IsBusy}" 
                           IncrementalLoadingMode="Auto"
                           AutoGenerateColumns="False"
+                          SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
                           Grid.Row="1">
             <grid:RadDataGrid.Columns>
                 <grid:DataGridDateColumn PropertyName="StartDate"
