@@ -12,6 +12,7 @@
         <converters:NullToVisibilityConverter x:Key="InvertedNullToVisibilityConverter" IsInverted="True"/>
         <converters:PathToBitmapImageConverter x:Key="BitmapImageConverter"/>
         <converters1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:DateTimeToDateTimeOffsetConverter x:Key="DateTimeOffsetConverter"/>
     </common:BootStrapper.Resources>
 
 </common:BootStrapper>

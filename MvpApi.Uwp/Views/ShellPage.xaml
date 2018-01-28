@@ -17,7 +17,7 @@
         <controls:HamburgerMenu x:Name="Menu" 
                                 VisualStateNarrowMinWidth="0"
                                 VisualStateNormalMinWidth="641"
-                                VisualStateWideMinWidth="1000"
+                                VisualStateWideMinWidth="1600"
                                 NavButtonForeground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                                 NavButtonCheckedForeground="{ThemeResource ApplicationForegroundThemeBrush}"
                                 NavButtonHoverBackground="{ThemeResource ListBoxItemPointerOverBackgroundThemeBrush}"
@@ -34,6 +34,30 @@
                                     Width="48"
                                     Height="48" />
                         <TextBlock Text="Home"
+                                   Margin="12, 0, 0, 0"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </controls:HamburgerButtonInfo>
+                <controls:HamburgerButtonInfo PageType="local:ContributionDetailPage"
+                                              ClearHistory="True">
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <SymbolIcon Symbol="Add"
+                                    Width="48"
+                                    Height="48" />
+                        <TextBlock Text="Add New"
+                                   Margin="12, 0, 0, 0"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </controls:HamburgerButtonInfo>
+                <controls:HamburgerButtonInfo PageType="local:AddContributionPage"
+                                              ClearHistory="True">
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <SymbolIcon Symbol="PostUpdate"
+                                    Width="48"
+                                    Height="48" />
+                        <TextBlock Text="Bulk Upload"
                                    Margin="12, 0, 0, 0"
                                    VerticalAlignment="Center" />
                     </StackPanel>

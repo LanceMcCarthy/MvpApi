@@ -16,14 +16,14 @@ using MvpApi.Uwp.Views;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class AddSubmissionViewModel : PageViewModelBase
+    public class AddContributionViewModel : PageViewModelBase
     {
         private StorageFile selectedFile;
         private bool isReadEnabled;
         private bool isLoadFileEnabled;
         private bool isUploadEnabled;
 
-        public AddSubmissionViewModel()
+        public AddContributionViewModel()
         {
         }
 
@@ -77,8 +77,21 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void UploadContributionsButton_Click(object sender, RoutedEventArgs e)
         {
-            
-            await UploadContributionsAsync();
+            var success = await UploadContributionsAsync();
+
+            if (success)
+            {
+                SelectedFile = null;
+                IsLoadFileEnabled = true;
+                IsReadEnabled = false;
+                IsUploadEnabled = false;
+
+                Contributions.Clear();
+            }
+            else
+            {
+                // show error dialog
+            }
         }
 
         #endregion
@@ -183,40 +196,26 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        private async Task UploadContributionsAsync()
+        private async Task<bool> UploadContributionsAsync()
         {
             try
             {
                 IsBusy = true;
                 IsBusyMessage = "uploading...";
-
-                // TODO add upload method to MvpApiService.cs
-                var success = await Task.Run(async () =>
+                
+                foreach (var contribution in Contributions)
                 {
-                    // TODO add upload method to MvpApiService.cs
-                    await Task.Delay(2000);
-
-                    // task would return true or false depending on if the upload was successful
-                    return true;
-                });
-
-                if (success)
-                {
-                    SelectedFile = null;
-                    IsLoadFileEnabled = true;
-                    IsReadEnabled = false;
-                    IsUploadEnabled = false;
-
-                    Contributions.Clear();
+                    await App.ApiService.SubmitContributionAsync(contribution);
                 }
-                else
-                {
-                    // show error dialog
-                }
+
+                return true;
+
+                
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"UploadContributionsAsync Exception: {ex}");
+                return false;
             }
             finally
             {

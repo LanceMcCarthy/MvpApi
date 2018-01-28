@@ -158,10 +158,10 @@ namespace MvpApi.Common.Services
 
             try
             {
-                // Request body
                 var serializedContribution = JsonConvert.SerializeObject(contribution);
                 byte[] byteData = Encoding.UTF8.GetBytes(serializedContribution);
 
+                // BUG Getting 500 response, need to investigate body construction further
                 using (var content = new ByteArrayContent(byteData))
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -341,6 +341,42 @@ namespace MvpApi.Common.Services
             catch (Exception e)
             {
                 Debug.WriteLine($"GetContributionTechnologiesAsync Exception: {e}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of contribution visibility options (aka Sharing Preferences). The traditional results are "Microsoft Only", "MVP Community" and "Everyone"
+        /// </summary>
+        /// <returns>A list of available visibilities</returns>
+        public async Task<IReadOnlyList<VisibilityViewModel>> GetVisibilitiesAsync()
+        {
+            try
+            {
+                using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/sharingpreferences"))
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    return JsonConvert.DeserializeObject<IReadOnlyList<VisibilityViewModel>>(json);
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.Message.Contains("401"))
+                {
+                    //TODO Try refresh token, access token is only valid for 60 minutes
+                }
+
+                if (e.Message.Contains("500"))
+                {
+
+                }
+
+                Debug.WriteLine($"GetVisibilitiesAsync HttpRequestException: {e}");
+                return null;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"GetVisibilitiesAsync Exception: {e}");
                 return null;
             }
         }

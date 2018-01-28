@@ -1,5 +1,6 @@
 ﻿namespace MvpApi.Uwp.Common
 {
+    // IMPORTANT Get your own key here https://mvpapi.portal.azure-api.net/ these keys will be disabled as soon as testing is complete
     public static class Constants
     {
         public static string Scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
