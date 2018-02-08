@@ -13,6 +13,8 @@
         <converters:PathToBitmapImageConverter x:Key="BitmapImageConverter"/>
         <converters1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:DateTimeToDateTimeOffsetConverter x:Key="DateTimeOffsetConverter"/>
+        <converters:RequiredFieldToBrushConverter x:Key="RequiredFieldToBrushConverter"/>
+        <converters:DoubleToIntConverter x:Key="DoubleToIntConverter"/>
     </common:BootStrapper.Resources>
 
 </common:BootStrapper>

@@ -3,7 +3,7 @@ using Windows.UI.Xaml.Data;
 
 namespace MvpApi.Uwp.Converters
 {
-    public class DateTimeToDateTimeOffsetConverter : IValueConverter
+    internal class DateTimeToDateTimeOffsetConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

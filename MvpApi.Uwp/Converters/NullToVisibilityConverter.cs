@@ -7,18 +7,18 @@ namespace MvpApi.Uwp.Converters
     /// <summary>
     /// Value Converter that can be used for empty strings as well as objects
     /// </summary>
-    class NullToVisibilityConverter : IValueConverter
+    internal class NullToVisibilityConverter : IValueConverter
     {
         public bool IsInverted { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is string)
+            if (value is string s)
             {
                 if(IsInverted)
-                    return string.IsNullOrEmpty((string)value) ? Visibility.Visible : Visibility.Collapsed;
+                    return string.IsNullOrEmpty(s) ? Visibility.Visible : Visibility.Collapsed;
 
-                return string.IsNullOrEmpty((string)value) ? Visibility.Collapsed : Visibility.Visible;
+                return string.IsNullOrEmpty(s) ? Visibility.Collapsed : Visibility.Visible;
             }
             else
             {
