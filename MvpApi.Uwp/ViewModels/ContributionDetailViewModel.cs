@@ -503,6 +503,18 @@ namespace MvpApi.Uwp.ViewModels
                     foreach (var area in areaResult)
                     {
                         ContributionAreaAwardCategories.Add(area);
+
+                        Debug.WriteLine($"Top Level Category: {area.AwardCategory}");
+
+                        foreach (var area2 in area.Contributions)
+                        {
+                            Debug.WriteLine($"Award Name: {area2.AwardName}");
+
+                            foreach (var area3 in area2.ContributionAreas)
+                            {
+                                Debug.WriteLine($"{area3.Name}");
+                            }
+                        }
                     }
 
 
