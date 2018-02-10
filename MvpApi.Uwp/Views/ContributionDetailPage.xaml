@@ -160,7 +160,7 @@
                                          HorizontalAlignment="Left"
                                          MinWidth="300"
                                          Margin="10"
-                                         ValueChanged="{x:Bind ViewModel.RadNumericBox_OnValueChanged}">
+                                         ValueChanged="{x:Bind ViewModel.AnnualQuantityBox_OnValueChanged}">
                         <input:RadNumericBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding AnnualQuantityHeader}" 
@@ -184,7 +184,7 @@
                                          HorizontalAlignment="Left"
                                          MinWidth="300"
                                          Margin="10"
-                                         ValueChanged="{x:Bind ViewModel.RadNumericBox_OnValueChanged}">
+                                         ValueChanged="{x:Bind ViewModel.SecondAnnualQuantityBox_OnValueChanged}">
                         <input:RadNumericBox.Header>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding SecondAnnualQuantityHeader}" 
@@ -207,8 +207,7 @@
                                          LargeChange="5"
                                          HorizontalAlignment="Left"
                                          MinWidth="300"
-                                         Margin="10"
-                                         ValueChanged="{x:Bind ViewModel.RadNumericBox_OnValueChanged}">
+                                         Margin="10">
                         <input:RadNumericBox.Header>
                             <TextBlock Text="{Binding AnnualReachHeader}"
                                        Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />

@@ -139,28 +139,86 @@ namespace MvpApi.Uwp.ViewModels
             // TODO check and mark IsDirty if applicable
         }
 
-        public void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        public void UrlBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             // TODO check and mark IsDirty if applicable
+        }
+
+        public void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // TODO check and validate
         }
 
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
             // If we're not editing an existing
-            if(originalContribution == null)
-                return;
-
-            IsDirty = activeContribution.StartDate?.Date != originalContribution.StartDate?.Date;
+            if (originalContribution == null)
+            {
+                // TODO consider adding support for future activities if the API allows it
+                IsDirty = e.NewDate.DateTime < DateTime.Now;
+            }
+            else
+            {
+                IsDirty = activeContribution.StartDate?.Date != originalContribution.StartDate?.Date;
+            }
         }
 
-        public void RadNumericBox_OnValueChanged(object sender, EventArgs e)
+        public void AnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
         {
-            // TODO check and mark IsDirty if applicable
+            if (IsAnnualQuantityRequired)
+            {
+                if (originalContribution == null)
+                {
+
+                }
+            }
+        }
+
+        public void SecondAnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
+        {
+            IsDirty = !ValidateEntries();
         }
 
         public void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateHeaders(ActiveContribution.ContributionType);
+
+            ActiveContribution.ContributionTypeName = ActiveContribution.ContributionType.EnglishName;
+        }
+
+        private bool ValidateEntries()
+        {
+            // These are all required, no matter the activity type
+            if (string.IsNullOrEmpty(activeContribution.Title) ||
+                string.IsNullOrEmpty(activeContribution.ContributionTypeName) ||
+                activeContribution.ContributionType == null ||
+                activeContribution.Visibility == null ||
+                activeContribution.ContributionTechnology == null)
+            {
+                return false;
+            }
+
+            if (originalContribution == null)
+            {
+                if (activeContribution.StartDate?.Date > DateTime.Now)
+                    return false;
+
+                if (IsAnnualQuantityRequired && activeContribution.AnnualQuantity == null)
+                    return false;
+
+                if (IsSecondAnnualQuantityRequired && activeContribution.SecondAnnualQuantity == null)
+                    return false;
+
+                if (IsUrlRequired && string.IsNullOrEmpty(activeContribution.ReferenceUrl))
+                {
+                    return false;
+                }
+
+                
+            }
+
+
+            return true;
         }
 
         #endregion
