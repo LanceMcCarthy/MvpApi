@@ -136,6 +136,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="MvpApi.Uwp_TemporaryKey.pfx" />
+    <None Include="ViewModels\readme.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\iSeeSharpPeople.jpg" />
