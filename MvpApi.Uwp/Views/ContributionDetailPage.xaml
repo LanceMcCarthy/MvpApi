@@ -41,10 +41,15 @@
         <Grid Grid.Row="1">
             <ScrollViewer>
                 <StackPanel>
+                    <TextBlock Text="{Binding ActiveContribution.ContributionTypeName}"
+                               Style="{ThemeResource TitleTextBlockStyle}"
+                               Visibility="{Binding IsContributionTypeEditable, Converter={StaticResource InvertedBoolToVisibilityConverter}}"/>
+
                     <ComboBox ItemsSource="{Binding ContributionTypes}"
                               SelectedItem="{Binding ActiveContribution.ContributionType, Mode=TwoWay}"
                               SelectionChanged="{x:Bind ViewModel.ActivityType_SelectionChanged}"
                               IsEnabled="{Binding IsContributionTypeEditable}"
+                              Visibility="{Binding IsContributionTypeEditable, Converter={StaticResource BoolToVisibilityConverter}}"
                               DisplayMemberPath="Name"
                               HorizontalAlignment="Left"
                               MinWidth="300"
@@ -57,7 +62,6 @@
                                 <TextBlock Text="(required)"
                                            Margin="5,0"
                                            FontStyle="Italic"
-                                           Visibility="{Binding IsContributionTypeEditable, Converter={StaticResource BoolToVisibilityConverter}}"
                                            Foreground="Red" />
                             </StackPanel>
                         </ComboBox.Header>
@@ -240,9 +244,12 @@
 
         <CommandBar Grid.Row="2">
             <AppBarButton Label="save"
-                          Icon="save"
-                          IsEnabled="{Binding IsDirty}"
-                          Click="{x:Bind ViewModel.UploadContributionsButton_Click}" />
+                          Icon="Save"
+                          IsEnabled="{Binding CanSave}"
+                          Click="{x:Bind ViewModel.UploadContributionButton_Click}" />
+            <AppBarButton Label="delete"
+                          Icon="Delete"
+                          Click="{x:Bind ViewModel.DeleteContributionButton_Click}" />
         </CommandBar>
 
         <Grid x:Name="BusyOverlay"

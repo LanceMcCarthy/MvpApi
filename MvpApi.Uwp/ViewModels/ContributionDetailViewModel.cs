@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -34,6 +33,8 @@ namespace MvpApi.Uwp.ViewModels
         private bool isUrlRequired;
         private bool isAnnualQuantityRequired;
         private bool isSecondAnnualQuantityRequired;
+        private bool canSave;
+        private bool evaluationInProgress;
 
         #endregion
 
@@ -129,54 +130,45 @@ namespace MvpApi.Uwp.ViewModels
             get => isSecondAnnualQuantityRequired;
             set => Set(ref isSecondAnnualQuantityRequired, value);
         }
-        
+
+        public bool CanSave
+        {
+            get => canSave;
+            set => Set(ref canSave, value);
+        }
+
         #endregion
 
         #region Event handlers
 
         public void TextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            // TODO check and mark IsDirty if applicable
+            EvaluateCanSave();
         }
 
         public void UrlBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            // TODO check and mark IsDirty if applicable
+            EvaluateCanSave();
         }
 
         public void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // TODO check and validate
+            EvaluateCanSave();
         }
 
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            // If we're not editing an existing
-            if (originalContribution == null)
-            {
-                // TODO consider adding support for future activities if the API allows it
-                IsDirty = e.NewDate.DateTime < DateTime.Now;
-            }
-            else
-            {
-                IsDirty = activeContribution.StartDate?.Date != originalContribution.StartDate?.Date;
-            }
+            EvaluateCanSave();
         }
 
         public void AnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
         {
-            if (IsAnnualQuantityRequired)
-            {
-                if (originalContribution == null)
-                {
-
-                }
-            }
+            EvaluateCanSave();
         }
 
         public void SecondAnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
         {
-            IsDirty = !ValidateEntries();
+            EvaluateCanSave();
         }
 
         public void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -184,113 +176,190 @@ namespace MvpApi.Uwp.ViewModels
             UpdateHeaders(ActiveContribution.ContributionType);
 
             ActiveContribution.ContributionTypeName = ActiveContribution.ContributionType.EnglishName;
+
+            EvaluateCanSave();
         }
 
-        private bool ValidateEntries()
+        private void EvaluateCanSave()
         {
+            if (evaluationInProgress)
+                return;
+
+            evaluationInProgress = true;
+
             // These are all required, no matter the activity type
-            if (string.IsNullOrEmpty(activeContribution.Title) ||
-                string.IsNullOrEmpty(activeContribution.ContributionTypeName) ||
-                activeContribution.ContributionType == null ||
-                activeContribution.Visibility == null ||
-                activeContribution.ContributionTechnology == null)
+            if (string.IsNullOrEmpty(ActiveContribution?.Title) ||
+                string.IsNullOrEmpty(ActiveContribution?.ContributionTypeName) ||
+                ActiveContribution?.ContributionType == null ||
+                ActiveContribution?.Visibility == null ||
+                ActiveContribution?.ContributionTechnology == null)
             {
-                return false;
+                CanSave = false;
+            }
+            else if (ActiveContribution?.StartDate?.Date > DateTime.Now)
+            {
+                CanSave = false;
+            }
+            else if (IsAnnualQuantityRequired && ActiveContribution?.AnnualQuantity == null)
+            {
+                CanSave = false;
+            }
+            else if (IsSecondAnnualQuantityRequired && ActiveContribution?.SecondAnnualQuantity == null)
+            {
+                CanSave = false;
+            }
+            else if (IsUrlRequired && string.IsNullOrEmpty(ActiveContribution?.ReferenceUrl))
+            {
+                CanSave = false;
+            }
+            else
+            {
+                CanSave = true;
             }
 
-            if (originalContribution == null)
+            evaluationInProgress = false;
+        }
+
+        public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Validate all required fields
+            var isValidated = await ValidateRequiredFields();
+
+            if (!isValidated)
             {
-                if (activeContribution.StartDate?.Date > DateTime.Now)
-                    return false;
+                await new MessageDialog("You need to fill in every field marked as 'Required'").ShowAsync();
+                return;
+            }
 
-                if (IsAnnualQuantityRequired && activeContribution.AnnualQuantity == null)
-                    return false;
+            var md = new MessageDialog("Upload and save this contribution?");
+            md.Commands.Add(new UICommand("save"));
+            md.Commands.Add(new UICommand("cancel"));
 
-                if (IsSecondAnnualQuantityRequired && activeContribution.SecondAnnualQuantity == null)
-                    return false;
+            var dialogResult = await md.ShowAsync();
 
-                if (IsUrlRequired && string.IsNullOrEmpty(activeContribution.ReferenceUrl))
+            if (dialogResult.Label == "cancel")
+                return;
+
+            ActiveContribution.ContributionTechnology = new ContributionTechnologyModel
+            {
+                Id = SelectedContributionAreaModel.Id,
+                AwardCategory = SelectedContributionAreaModel.AwardCategory,
+                AwardName = SelectedContributionAreaModel.AwardName,
+                Name = SelectedContributionAreaModel.Name
+            };
+
+            var success = await SaveContributionAsync();
+
+            if (success) await SetupNextEntryAsync();
+        }
+
+        public async void DeleteContributionButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var md = new MessageDialog("Are you sure you want to delete this contribution?", "Delete Contribution?");
+                md.Commands.Add(new UICommand("DELETE"));
+                md.Commands.Add(new UICommand("cancel"));
+
+                var dialogResult = await md.ShowAsync();
+
+                if (dialogResult.Label != "DELETE")
+                    return;
+
+                var result = await App.ApiService.DeleteContributionAsync(ActiveContribution);
+
+                if (result == true)
                 {
-                    return false;
+                    if(NavigationService.CanGoBack)
+                        NavigationService.GoBack();
                 }
-
-                
             }
-
-
-            return true;
+            catch (Exception ex)
+            {
+                await new MessageDialog($"Something went wrong saving the item, please try again. Error: {ex.Message}").ShowAsync();
+            }
         }
 
         #endregion
 
         #region Methods
         
-        public async void UploadContributionsButton_Click(object sender, RoutedEventArgs e)
+        public async Task<bool> SaveContributionAsync()
         {
-            // Validate all required fields
-
-            var isValidated = await ValidateRequiredFields();
-
-            if (!isValidated)
+            try
             {
-                return;
+                var submissionResult = await App.ApiService.SubmitContributionAsync(ActiveContribution);
+
+                ActiveContribution.ContributionId = submissionResult.ContributionId;
+
+                return true;
             }
-
-            // Confirm with the user they want to save
-
-            var md = new MessageDialog("Upload and save this contribution?");
-
-            ContributionsModel submissionResult = null;
-
-            md.Commands.Add(new UICommand("save", async (args) =>
+            catch (Exception ex)
             {
-                // TODO see if changing int type in the model will work, they have the same properties, so it *should* work fine
-                ActiveContribution.ContributionTechnology = new ContributionTechnologyModel
+                await new MessageDialog($"Something went wrong saving the item, please try again. Error: {ex.Message}").ShowAsync();
+                return false;
+            }
+        }
+
+        private async Task SetupNextEntryAsync()
+        {
+            var continueDialog = new MessageDialog("You can prefill the same award category selections as the last one, or start over fresh", "Uploaded! Enter another contribution?");
+            continueDialog.Commands.Add(new UICommand("Yes (head start)"));
+            continueDialog.Commands.Add(new UICommand("Yes (start over)"));
+            continueDialog.Commands.Add(new UICommand("I'm done!"));
+            var continueDialogResult = await continueDialog.ShowAsync();
+
+            // if user wants to enter a new contribution, give them a headstart by re-using the dropdown selections from the last submission
+
+            if (continueDialogResult.Label == "Yes (head start)")
+            {
+                var nextContribution = new ContributionsModel
                 {
-                    Id = SelectedContributionAreaModel.Id,
-                    AwardCategory = SelectedContributionAreaModel.AwardCategory,
-                    AwardName = SelectedContributionAreaModel.AwardName,
-                    Name = SelectedContributionAreaModel.Name
+                    StartDate = DateTime.Now,
+                    Visibility = ActiveContribution?.Visibility,
+                    ContributionType = ActiveContribution?.ContributionType,
+                    ContributionTypeName = ActiveContribution?.ContributionType?.Name,
+                    ContributionTechnology = ActiveContribution?.ContributionTechnology
                 };
 
-                submissionResult = await App.ApiService.SubmitContributionAsync(ActiveContribution);
-            }));
-
-            md.Commands.Add(new UICommand("cancel"));
-
-            await md.ShowAsync();
-
-            if (submissionResult == null)
-            {
-                await new MessageDialog("Something went wrong saving the item, please try again").ShowAsync();
-                return;
+                ActiveContribution = nextContribution;
             }
-
-            // Ask they want to start a new entry, if yes, clear the fields
-
-            var successDialog = new MessageDialog("Would you like to start a new contribution?", "Success!");
-
-            successDialog.Commands.Add(new UICommand("yes", args =>
+            else if (continueDialogResult.Label == "Yes (start over)")
             {
+                // default
                 ActiveContribution = new ContributionsModel
                 {
                     StartDate = DateTime.Now,
                     Visibility = ContributionVisibilies.FirstOrDefault(),
-                    ContributionType = ContributionTypes.FirstOrDefault(), // Note this field is READONLY when it's an existing contribution
-                    ContributionTypeName = ActiveContribution?.ContributionType?.Name
+                    ContributionType = ContributionTypes.FirstOrDefault(),
                 };
-            }));
-
-            successDialog.Commands.Add(new UICommand("no", args =>
+            }
+            else
             {
-                ActiveContribution = submissionResult;
-            }));
-
-            await successDialog.ShowAsync();
+                
+            }
         }
         
         private async Task<bool> ValidateRequiredFields()
         {
+            if (ActiveContribution.ContributionType == null)
+            {
+                await new MessageDialog($"The Contribution Type is a required field").ShowAsync();
+                return false;
+            }
+
+            if (ActiveContribution.Visibility == null)
+            {
+                await new MessageDialog($"The Visibility is a required field").ShowAsync();
+                return false;
+            }
+
+            if (ActiveContribution.ContributionTechnology == null)
+            {
+                await new MessageDialog($"The Category Technology is a required field").ShowAsync();
+                return false;
+            }
+
             if (IsUrlRequired && string.IsNullOrEmpty(ActiveContribution.ReferenceUrl))
             {
                 await new MessageDialog($"The {UrlHeader} field is required when entering a {ActiveContribution.ContributionType.EnglishName} Activity Type", 
@@ -544,6 +613,7 @@ namespace MvpApi.Uwp.ViewModels
                 try
                 {
                     IsBusy = true;
+
                     // ** Get the associated lists from the API **
 
                     IsBusyMessage = "getting types...";
@@ -552,8 +622,7 @@ namespace MvpApi.Uwp.ViewModels
                     {
                         ContributionTypes.Add(type);
                     }
-
-
+                    
                     IsBusyMessage = "getting technologies...";
 
                     var areaResult = await App.ApiService.GetContributionAreasAsync();
@@ -561,21 +630,8 @@ namespace MvpApi.Uwp.ViewModels
                     foreach (var area in areaResult)
                     {
                         ContributionAreaAwardCategories.Add(area);
-
-                        Debug.WriteLine($"Top Level Category: {area.AwardCategory}");
-
-                        foreach (var area2 in area.Contributions)
-                        {
-                            Debug.WriteLine($"Award Name: {area2.AwardName}");
-
-                            foreach (var area3 in area2.ContributionAreas)
-                            {
-                                Debug.WriteLine($"{area3.Name}");
-                            }
-                        }
                     }
-
-
+                    
                     IsBusyMessage = "getting visibility options...";
 
                     foreach (var visibility in await App.ApiService.GetVisibilitiesAsync())
@@ -589,9 +645,12 @@ namespace MvpApi.Uwp.ViewModels
                     if (parameter is ContributionsModel param)
                     {
                         ActiveContribution = param;
+
+                        ActivityType_SelectionChanged(null, null);
+
                         IsContributionTypeEditable = false;
 
-                        // Deep Cloning to serve as a comparison when editing
+                        // Deep cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
                         var json = JsonConvert.SerializeObject(param);
                         originalContribution = JsonConvert.DeserializeObject<ContributionsModel>(json);
                     }

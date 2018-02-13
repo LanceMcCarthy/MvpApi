@@ -4,17 +4,25 @@
                      xmlns:local="using:MvpApi.Uwp"
                      xmlns:common="using:Template10.Common"
                      xmlns:converters="using:MvpApi.Uwp.Converters"
-                     xmlns:converters1="using:Microsoft.Toolkit.Uwp.UI.Converters"
+                     xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Converters"
                      RequestedTheme="Light">
 
     <common:BootStrapper.Resources>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <converters:NullToVisibilityConverter x:Key="InvertedNullToVisibilityConverter" IsInverted="True"/>
         <converters:PathToBitmapImageConverter x:Key="BitmapImageConverter"/>
-        <converters1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <converters:DateTimeToDateTimeOffsetConverter x:Key="DateTimeOffsetConverter"/>
-        <converters:RequiredFieldToBrushConverter x:Key="RequiredFieldToBrushConverter"/>
         <converters:DoubleToIntConverter x:Key="DoubleToIntConverter"/>
+        
+        <toolkit:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <toolkit:BoolToVisibilityConverter x:Key="InvertedBoolToVisibilityConverter">
+            <toolkit:BoolToVisibilityConverter.TrueValue>
+                <Visibility>Collapsed</Visibility>
+            </toolkit:BoolToVisibilityConverter.TrueValue>
+            <toolkit:BoolToVisibilityConverter.FalseValue>
+                <Visibility>Visible</Visibility>
+            </toolkit:BoolToVisibilityConverter.FalseValue>
+        </toolkit:BoolToVisibilityConverter>
     </common:BootStrapper.Resources>
 
 </common:BootStrapper>

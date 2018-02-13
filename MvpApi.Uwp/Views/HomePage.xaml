@@ -8,7 +8,7 @@
       mc:Ignorable="d">
 
     <Page.DataContext>
-        <viewModels:HomePageViewModel x:Name="ViewModel"/>
+        <viewModels:HomePageViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -25,41 +25,44 @@
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
-            
+
             <TextBlock Text="{Binding DisplayTotal}"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Right"
-                       Margin="0,0,10,0"/>
+                       Margin="0,0,10,0" />
         </Grid>
 
-        <grid:RadDataGrid ItemsSource="{Binding Activities}" 
-                          IsBusyIndicatorEnabled="{Binding IsBusy}" 
+        <grid:RadDataGrid ItemsSource="{Binding Activities}"
+                          IsBusyIndicatorEnabled="{Binding IsBusy}"
                           IncrementalLoadingMode="Auto"
                           AutoGenerateColumns="False"
                           SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
                           Grid.Row="1">
             <grid:RadDataGrid.Columns>
                 <grid:DataGridDateColumn PropertyName="StartDate"
-                                         Header="Start Date"/>
-                <grid:DataGridTextColumn PropertyName="Title" 
-                                         Header="Title"/>
-                <grid:DataGridTextColumn PropertyName="ContributionTypeName" 
-                                         Header="Contribution Type"/>
-                <grid:DataGridTextColumn PropertyName="Description" 
-                                         Width="200"
+                                         CellContentFormat="{}{0:d}"
+                                         Header="Start Date" />
+                <grid:DataGridTextColumn PropertyName="Title"
+                                         Header="Title" />
+                <grid:DataGridTextColumn PropertyName="ContributionTypeName"
+                                         Header="Contribution Type" />
+                <grid:DataGridTextColumn PropertyName="Description"
+                                         Width="100"
                                          Header="Description">
                     <grid:DataGridTextColumn.CellContentStyle>
                         <Style TargetType="TextBlock">
-                            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                            <Setter Property="TextTrimming"
+                                    Value="CharacterEllipsis" />
                         </Style>
                     </grid:DataGridTextColumn.CellContentStyle>
                 </grid:DataGridTextColumn>
-                <grid:DataGridTextColumn PropertyName="ReferenceUrl" 
-                                         Header="Url"/>
+                <grid:DataGridTextColumn PropertyName="ReferenceUrl"
+                                         Width="100"
+                                         Header="Url" />
                 <grid:DataGridNumericalColumn PropertyName="AnnualQuantity"
-                                              Header="Annual Quantity"/>
+                                              Header="Annual Quantity" />
                 <grid:DataGridNumericalColumn PropertyName="AnnualReach"
-                                              Header="Annual Reach"/>
+                                              Header="Annual Reach" />
             </grid:RadDataGrid.Columns>
         </grid:RadDataGrid>
 

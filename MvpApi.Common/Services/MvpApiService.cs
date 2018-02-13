@@ -170,7 +170,14 @@ namespace MvpApi.Common.Services
                     using (var response = await client.PostAsync("https://mvpapi.azure-api.net/mvp/api/contributions?", content))
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<ContributionsModel>(json);
+
+                        Debug.WriteLine($"Submission Save JSON: {json}");
+
+                        var result = JsonConvert.DeserializeObject<ContributionsModel>(json);
+
+                        Debug.WriteLine($"Submission Save Result: ID {result.ContributionId}");
+
+                        return result;
                     }
                 }
             }
