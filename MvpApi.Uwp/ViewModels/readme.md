@@ -1,7 +1,7 @@
 ﻿# Important Data Structures
 
-- Award Categories and related award technologies
-- Contribution Types, field titles and required values
+- [Award Categories and related award technologies](https://github.com/LanceMcCarthy/MvpApi/tree/master/MvpApi.Uwp/ViewModels#award-categories-and-related-award-technologies)
+- [Contribution Types, field titles and required values](https://github.com/LanceMcCarthy/MvpApi/tree/master/MvpApi.Uwp/ViewModels#contribution-types-field-titles-and-required-values)
 
 ## Award categories and related award technologies
 
