@@ -38,6 +38,8 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
+                <!-- TODO Add thie Bulk Upload page after a proper Detail page is added back in. right now everything is done on the same page
+                
                 <controls:HamburgerButtonInfo PageType="local:BulkUploadPage"
                                               ClearHistory="True">
                     <StackPanel Orientation="Horizontal"
@@ -49,7 +51,7 @@
                                    Margin="12, 0, 0, 0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
-                </controls:HamburgerButtonInfo>
+                </controls:HamburgerButtonInfo>-->
             </controls:HamburgerMenu.PrimaryButtons>
 
             <controls:HamburgerMenu.SecondaryButtons>

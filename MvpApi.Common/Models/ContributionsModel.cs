@@ -3,7 +3,6 @@
 // regenerated.
 
 using System;
-using System.ComponentModel;
 using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
@@ -22,6 +21,7 @@ namespace MvpApi.Common.Models
         private int? annualReach;
         private string description;
         private int? contributionId;
+        private UploadStatus uploadStatus;
 
         /// <summary>
         /// Initializes a new instance of the ContributionsModel class.
@@ -165,6 +165,17 @@ namespace MvpApi.Common.Models
         {
             get => description;
             set => SetProperty(ref description, value);
+        }
+
+
+        /// <summary>
+        /// NOT PART OF THE MVP API Schema. This determines the upload status of a contribution contribution's upload success or failure. 
+        /// </summary>
+        [JsonIgnore]
+        public UploadStatus UploadStatus
+        {
+            get => uploadStatus;
+            set => SetProperty(ref uploadStatus, value);
         }
     }
 }

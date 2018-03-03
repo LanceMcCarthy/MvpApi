@@ -97,6 +97,8 @@
     <Compile Include="Converters\DateTimeToDateTimeOffsetConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\PathToBitmapImageConverter.cs" />
+    <Compile Include="Converters\UploadStatusBackgroundConverter.cs" />
+    <Compile Include="Converters\UploadStatusToBoolConverter.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="Helpers\DesignTimeHelpers.cs" />
     <Compile Include="Helpers\StorageHelpers.cs" />

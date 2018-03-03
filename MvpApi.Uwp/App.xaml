@@ -13,6 +13,8 @@
         <converters:PathToBitmapImageConverter x:Key="BitmapImageConverter"/>
         <converters:DateTimeToDateTimeOffsetConverter x:Key="DateTimeOffsetConverter"/>
         <converters:DoubleToIntConverter x:Key="DoubleToIntConverter"/>
+        <converters:UploadStatusBackgroundConverter x:Key="UploadStatusBackgroundConverter"/>
+        <converters:UploadStatusToBoolConverter x:Key="UploadStatusToBoolConverter"/>
         
         <toolkit:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <toolkit:BoolToVisibilityConverter x:Key="InvertedBoolToVisibilityConverter">

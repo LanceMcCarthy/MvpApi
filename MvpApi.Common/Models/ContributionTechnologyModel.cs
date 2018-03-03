@@ -13,16 +13,18 @@ namespace MvpApi.Common.Models
         private string awardCategory;
         private string awardName;
         private string name;
+        private int? statuscode;
+        private bool? active;
 
         /// <summary>
-        /// Initializes a new instance of the ContributionTechnologyModel
-        /// class.
+        /// Initializes a new instance of the ContributionTechnologyModel class.
         /// </summary>
         public ContributionTechnologyModel() { }
 
         /// <summary>
-        /// Initializes a new instance of the ContributionTechnologyModel
-        /// class.
+        /// Initializes a new instance of the ContributionTechnologyModel class.
+        /// 
+        /// If this model is instantiated from MvpApiService.GetContributionsAsync, it will use this CTOR
         /// </summary>
         public ContributionTechnologyModel(Guid? id = default(Guid?), string name = default(string), string awardName = default(string), string awardCategory = default(string))
         {
@@ -30,6 +32,21 @@ namespace MvpApi.Common.Models
             Name = name;
             AwardName = awardName;
             AwardCategory = awardCategory;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ContributionTechnologyModel class.
+        /// 
+        /// If this model is instantiated from MvpApiService.GetContributionAreasAsync(), it will use this CTOR
+        /// </summary>
+        public ContributionTechnologyModel(Guid? id = default(Guid?), string name = default(string), string awardName = default(string), string awardCategory = default(string), int statusCode = default(int), bool active = default(bool))
+        {
+            Id = id;
+            Name = name;
+            AwardName = awardName;
+            AwardCategory = awardCategory;
+            Statuscode = statuscode;
+            Active = active;
         }
 
         /// <summary>
@@ -69,6 +86,20 @@ namespace MvpApi.Common.Models
         {
             get => awardCategory;
             set => SetProperty(ref awardCategory, value);
+        }
+
+        [JsonProperty(PropertyName = "Statuscode")]
+        public int? Statuscode
+        {
+            get => statuscode;
+            set => SetProperty(ref statuscode, value);
+        }
+
+        [JsonProperty(PropertyName = "Active")]
+        public bool? Active
+        {
+            get => active;
+            set => SetProperty(ref active, value);
         }
     }
 }
