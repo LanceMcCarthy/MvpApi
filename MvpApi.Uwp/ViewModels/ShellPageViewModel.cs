@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml.Navigation;
@@ -13,6 +14,7 @@ namespace MvpApi.Uwp.ViewModels
     {
         #region Fields
 
+        
         private ProfileViewModel mvp;
         private string profileImagePath;
         private bool isLoggedIn;
@@ -49,10 +51,27 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref mvp, value);
         }
 
+        public DateTime LoginTimeStamp { get; set; }
+
         public bool IsLoggedIn
         {
-            get => isLoggedIn;
-            set => Set(ref isLoggedIn, value);
+            get
+            {
+                // API has a valid session time of 60 minutes, force sign-in by returning false
+                if (DateTime.Now - LoginTimeStamp > TimeSpan.FromMinutes(60))
+                {
+                    isLoggedIn = false;
+                }
+
+                return isLoggedIn;
+            }
+            set
+            {
+                Set(ref isLoggedIn, value);
+
+                if(value)
+                    LoginTimeStamp = DateTime.Now;
+            }
         }
 
         #endregion
