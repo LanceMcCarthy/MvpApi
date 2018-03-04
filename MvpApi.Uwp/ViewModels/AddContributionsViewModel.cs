@@ -1,30 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
-using Newtonsoft.Json;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class ContributionDetailViewModel : PageViewModelBase
+    public class AddContributionsViewModel : PageViewModelBase
     {
         #region Fields
-
-        private ContributionsModel originalContribution;
+        
         private ContributionsModel selectedContribution;
         private bool isSelectedContributionDirty;
-        private bool isContributionTypeEditable = true;
         private string urlHeader = "Url";
         private string annualQuantityHeader = "Annual Quantity";
         private string secondAnnualQuantityHeader = "Second Annual Quantity";
@@ -39,52 +42,47 @@ namespace MvpApi.Uwp.ViewModels
 
         #endregion
 
-        public ContributionDetailViewModel()
+        public AddContributionsViewModel()
         {
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
-                {
-                    Types = DesignTimeHelpers.GenerateContributionTypes();
-                    //CategoryAreas = DesignTimeHelpers.GenerateTechnologyAreas(); //Causing designer layout error
-                    Visibilies = DesignTimeHelpers.GenerateVisibilities();
+                UploadQueue = DesignTimeHelpers.GenerateContributions();
+                Types = DesignTimeHelpers.GenerateContributionTypes();
+                //CategoryAreas = DesignTimeHelpers.GenerateTechnologyAreas(); //Causing designer layout error
+                Visibilies = DesignTimeHelpers.GenerateVisibilities();
 
-                    SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
-                }
+                SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
             }
-                
+
+            UploadQueue.CollectionChanged += UploadQueue_CollectionChanged;
         }
         
         #region Properties
-        
-        public ContributionsModel SelectedContribution
-        {
-            get => selectedContribution;
-            set => Set(ref selectedContribution, value);
-        }
+
+        public ObservableCollection<ContributionsModel> UploadQueue { get; set; } = new ObservableCollection<ContributionsModel>();
 
         public ObservableCollection<ContributionTypeModel> Types { get; set; } = new ObservableCollection<ContributionTypeModel>();
+
+        public ObservableCollection<VisibilityViewModel> Visibilies { get; set; } = new ObservableCollection<VisibilityViewModel>();
         
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas
         {
             get => categoryAreas;
             set => Set(ref categoryAreas, value);
         }
-        
-        public ObservableCollection<VisibilityViewModel> Visibilies { get; set; } = new ObservableCollection<VisibilityViewModel>();
-        
+
+        public ContributionsModel SelectedContribution
+        {
+            get => selectedContribution;
+            set => Set(ref selectedContribution, value);
+        }
+
         public bool IsSelectedContributionDirty
         {
             get => isSelectedContributionDirty;
             set => Set(ref isSelectedContributionDirty, value);
         }
-
-        public bool IsContributionTypeEditable
-        {
-            get => isContributionTypeEditable;
-            set => Set(ref isContributionTypeEditable, value);
-        }
-
+        
         public string AnnualQuantityHeader
         {
             get => annualQuantityHeader;
@@ -148,6 +146,11 @@ namespace MvpApi.Uwp.ViewModels
         #endregion
 
         #region Event handlers
+        
+        private void UploadQueue_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            CanUpload = UploadQueue.Any();
+        }
 
         public async void TextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
@@ -187,58 +190,46 @@ namespace MvpApi.Uwp.ViewModels
         public async void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateHeaders(SelectedContribution.ContributionType);
-            
+
             // Also set the type name
             SelectedContribution.ContributionTypeName = SelectedContribution.ContributionType.EnglishName;
-            
+
             CanSave = await SelectedContribution.Validate();
         }
-        
-        public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
+
+        public async void AddToQueueButton_Click(object sender, RoutedEventArgs e)
         {
             var isValid = await SelectedContribution.Validate(true);
 
-            if(!isValid)
+            if (!isValid)
                 return;
-            
-            SelectedContribution.UploadStatus = UploadStatus.InProgress;
 
-            var success = await UploadContributionAsync(SelectedContribution);
+            // Validate all required fields
+            var isValidated = await ValidateRequiredFields();
 
-            // Mark success or failure
-            SelectedContribution.UploadStatus = success ? UploadStatus.Success : UploadStatus.Failed;
-
-            if (SelectedContribution.UploadStatus == UploadStatus.Success)
+            if (!isValidated)
             {
-
+                await new MessageDialog("You need to fill in every field marked as 'Required' before starting a new contribution.").ShowAsync();
+                return;
             }
+
+            SetupNextEntry();
         }
 
-        public async void DeleteContributionButton_Click(object sender, RoutedEventArgs e)
+        public async void RemoveContributionButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var md = new MessageDialog("Are you sure you want to delete this contribution? Deleting a contribution from the MVP database cannot be undone.", "Delete Contribution?");
-                md.Commands.Add(new UICommand("DELETE"));
+                var md = new MessageDialog("Are you sure you want to remove this contribution from the queue?", "Remove Contribution?");
+                md.Commands.Add(new UICommand("yes"));
                 md.Commands.Add(new UICommand("cancel"));
 
                 var dialogResult = await md.ShowAsync();
 
-                if (dialogResult.Label != "DELETE")
-                    return;
-
-                var result = await App.ApiService.DeleteContributionAsync(SelectedContribution);
-
-                if (result == true)
+                if (dialogResult.Label == "yes")
                 {
-                    await new MessageDialog("Successfully deleted.").ShowAsync();
-
-                    if (NavigationService.CanGoBack)
-                        NavigationService.GoBack();
-                }
-                else
-                {
-                    await new MessageDialog("The contribution was not deleted, check your internet connection and try again.").ShowAsync();
+                    UploadQueue.Remove(SelectedContribution);
+                    SelectedContribution = UploadQueue.LastOrDefault();
                 }
             }
             catch (Exception ex)
@@ -246,11 +237,98 @@ namespace MvpApi.Uwp.ViewModels
                 await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
             }
         }
-        
+
+        public async void ClearQueueButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var md = new MessageDialog("You are about to clear all of the contributions in the upload queue, are you sure?", "CLEAR");
+                md.Commands.Add(new UICommand("YES"));
+                md.Commands.Add(new UICommand("whoa, no!"));
+
+                var dialogResult = await md.ShowAsync();
+
+                if (dialogResult.Label != "YES")
+                    return;
+
+                UploadQueue.Clear();
+
+                SetupNextEntry();
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog($"Something went wrong clearing the queue, please try again. Error: {ex.Message}").ShowAsync();
+            }
+        }
+
+        public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var contribution in UploadQueue)
+            {
+                contribution.UploadStatus = UploadStatus.InProgress;
+
+                var success = await UploadContributionAsync(contribution);
+
+                // Mark success or failure
+                contribution.UploadStatus = success ? UploadStatus.Success : UploadStatus.Failed;
+            }
+
+            var successes = UploadQueue.Where(c => c.UploadStatus == UploadStatus.Success);
+
+            foreach (var successfulUpload in successes)
+            {
+                UploadQueue.Remove(successfulUpload);
+            }
+
+            if (UploadQueue.Any())
+            {
+                // If any uploads failed, stay on the page and select the latest contribution in the queue
+                SelectedContribution = UploadQueue.LastOrDefault();
+            }
+            else
+            {
+                if (NavigationService.CanGoBack)
+                    NavigationService.GoBack();
+            }
+        }
+
+
         #endregion
 
         #region Methods
-        
+
+        //// TODO Temporarily disabled - need to fix a few things before full validation is working
+        //private void EvaluateCanSave()
+        //{
+        //    return;
+
+        //    // These are all required, no matter the activity type
+        //    if (string.IsNullOrEmpty(SelectedContribution?.Title) ||
+        //        string.IsNullOrEmpty(SelectedContribution?.ContributionTypeName) ||
+        //        SelectedContribution?.ContributionType == null ||
+        //        SelectedContribution?.Visibility == null ||
+        //        SelectedContribution?.ContributionTechnology == null)
+        //    {
+        //        CanSave = false;
+        //    }
+        //    else if (IsAnnualQuantityRequired && SelectedContribution?.AnnualQuantity == null)
+        //    {
+        //        CanSave = false;
+        //    }
+        //    else if (IsSecondAnnualQuantityRequired && SelectedContribution?.SecondAnnualQuantity == null)
+        //    {
+        //        CanSave = false;
+        //    }
+        //    else if (IsUrlRequired && string.IsNullOrEmpty(SelectedContribution?.ReferenceUrl))
+        //    {
+        //        CanSave = false;
+        //    }
+        //    else
+        //    {
+        //        CanSave = true;
+        //    }
+        //}
+
         public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
         {
             try
@@ -259,7 +337,7 @@ namespace MvpApi.Uwp.ViewModels
 
                 // copying back the ID which was created on the server once the item was added to the database
                 contribution.ContributionId = submissionResult.ContributionId;
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -268,7 +346,85 @@ namespace MvpApi.Uwp.ViewModels
                 return false;
             }
         }
-        
+
+        private void SetupNextEntry()
+        {
+            ContributionsModel nextItem;
+
+            if (UseFastMode)
+            {
+                nextItem = new ContributionsModel
+                {
+                    StartDate = DateTime.Now,
+                    Visibility = SelectedContribution?.Visibility,
+                    ContributionType = SelectedContribution?.ContributionType,
+                    ContributionTypeName = SelectedContribution?.ContributionType?.Name,
+                    ContributionTechnology = SelectedContribution?.ContributionTechnology
+                };
+            }
+            else
+            {
+                nextItem = new ContributionsModel
+                {
+                    StartDate = DateTime.Now,
+                    Visibility = Visibilies.FirstOrDefault(),
+                    ContributionType = Types.FirstOrDefault(),
+                    ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas?.FirstOrDefault()
+                };
+            }
+
+            UploadQueue.Add(nextItem);
+
+            SelectedContribution = UploadQueue.LastOrDefault();
+        }
+
+        private async Task<bool> ValidateRequiredFields()
+        {
+            if (SelectedContribution.ContributionType == null)
+            {
+                await new MessageDialog($"The Contribution Type is a required field").ShowAsync();
+                return false;
+            }
+
+            if (SelectedContribution.Visibility == null)
+            {
+                await new MessageDialog($"The Visibility is a required field").ShowAsync();
+                return false;
+            }
+
+            if (SelectedContribution.ContributionTechnology == null)
+            {
+                await new MessageDialog($"The Category Technology is a required field").ShowAsync();
+                return false;
+            }
+
+            if (IsUrlRequired && string.IsNullOrEmpty(SelectedContribution.ReferenceUrl))
+            {
+                await new MessageDialog($"The {UrlHeader} field is required when entering a {SelectedContribution.ContributionType.EnglishName} Activity Type",
+                    $"Missing {UrlHeader}!").ShowAsync();
+
+                return false;
+            }
+
+            if (IsAnnualQuantityRequired && SelectedContribution.AnnualQuantity == null)
+            {
+                await new MessageDialog($"The {AnnualQuantityHeader} field is required when entering a {SelectedContribution.ContributionType.EnglishName} Activity Type",
+                    $"Missing {AnnualQuantityHeader}!").ShowAsync();
+
+                return false;
+            }
+
+            if (IsSecondAnnualQuantityRequired && SelectedContribution.SecondAnnualQuantity == null)
+            {
+                await new MessageDialog($"The {SecondAnnualQuantityHeader} field is required when entering a {SelectedContribution.ContributionType.EnglishName} Activity Type",
+                    $"Missing {SecondAnnualQuantityHeader}!").ShowAsync();
+
+                return false;
+            }
+
+            return true;
+        }
+
         private void UpdateHeaders(ContributionTypeModel contributionType)
         {
             switch (contributionType.EnglishName)
@@ -483,16 +639,16 @@ namespace MvpApi.Uwp.ViewModels
                     break;
             }
         }
-        
-        #endregion
 
         private async Task LoadSupportingDataAsync()
         {
             IsBusyMessage = "getting types...";
 
-            foreach (var type in await App.ApiService.GetContributionTypesAsync())
+            var contributionTypes = await App.ApiService.GetContributionTypesAsync();
+
+            foreach (var contributionType in contributionTypes)
             {
-                Types.Add(type);
+                Types.Add(contributionType);
             }
 
             IsBusyMessage = "getting technologies...";
@@ -509,10 +665,12 @@ namespace MvpApi.Uwp.ViewModels
                 Visibilies.Add(visibility);
             }
         }
-        
+
+        #endregion
+
 
         #region Navigation
-        
+
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
@@ -525,23 +683,28 @@ namespace MvpApi.Uwp.ViewModels
 
                     await LoadSupportingDataAsync();
                     
-                    // Read the passed contribution parameter //
 
-                    if (parameter is ContributionsModel param)
+                    // Set up first contribution
+                    var cont = new ContributionsModel
                     {
-                        SelectedContribution = param;
-                        
-                        // Deep cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-                        var json = JsonConvert.SerializeObject(param);
-                        originalContribution = JsonConvert.DeserializeObject<ContributionsModel>(json);
-                    }
-                    else
-                    {
-                        await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
+                        StartDate = DateTime.Now,
+                        Visibility = Visibilies.FirstOrDefault(),
+                        ContributionType = Types.FirstOrDefault(), 
+                        ContributionTypeName = SelectedContribution?.ContributionType?.Name
+                    };
 
-                        if(NavigationService.CanGoBack)
-                            NavigationService.GoBack();
-                    }
+                    UploadQueue.Add(cont);
+                    SelectedContribution = UploadQueue.FirstOrDefault();
+
+                    // -- TESTING ONLY -- 
+                    //SelectedContribution.Title = "Test Upload";
+                    //SelectedContribution.Description = "This is a test contribution upload from the UWP application I'm building for the MVP community to help them submit their 2018 contributions.";
+                    //SelectedContribution.ReferenceUrl = "lancemccarthy.com";
+                    //SelectedContribution.AnnualQuantity = 0;
+                    //SelectedContribution.SecondAnnualQuantity = 0;
+                    //SelectedContribution.AnnualReach = 0;
+
+                    //IsSelectedContributionDirty = true;
                 }
                 catch (Exception ex)
                 {
@@ -562,6 +725,120 @@ namespace MvpApi.Uwp.ViewModels
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
         {
             return base.OnNavigatedFromAsync(pageState, suspending);
+        }
+
+        #endregion
+
+        // Not done yet
+        #region Excel document logic (to be added)
+
+        public async void LoadFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            var fop = new FileOpenPicker();
+            fop.FileTypeFilter.Add(".xlsx");
+            fop.FileTypeFilter.Add(".xls");
+
+            var selectedFile = await fop.PickSingleFileAsync();
+
+            await ReadDocumentAsync(selectedFile);
+        }
+
+        private async Task ReadDocumentAsync(StorageFile file)
+        {
+            try
+            {
+                IsBusy = true;
+                IsBusyMessage = "reading file...";
+
+                using (var fileStream = await file.OpenReadAsync())
+                using (var doc = SpreadsheetDocument.Open(fileStream.AsStream(), false))
+                {
+                    var workbookPart = doc.WorkbookPart;
+                    var worksheetPart = workbookPart.WorksheetParts.First();
+                    var sheet = worksheetPart.Worksheet;
+
+                    var rows = sheet.Descendants<Row>();
+
+                    Debug.WriteLine("Row count = {0}", rows.LongCount());
+
+                    foreach (Row row in rows)
+                    {
+                        // TODO Investigate if I can build a datatable instead
+                        string[] columnValues = new string[4];
+
+                        foreach (Cell cell in row.Elements<Cell>())
+                        {
+                            string cellValue = string.Empty;
+
+                            // Skip if null or header cell
+                            if (cell.DataType == null ||
+                                cell.CellReference == "A1" ||
+                                cell.CellReference == "B1" ||
+                                cell.CellReference == "C1")
+                                continue;
+
+                            if (cell.DataType == CellValues.SharedString || cell.DataType == CellValues.Date || cell.DataType == CellValues.Number)
+                            {
+                                if (int.TryParse(cell.InnerText, out var id))
+                                {
+                                    var item = workbookPart.SharedStringTablePart.SharedStringTable.Elements<SharedStringItem>().ElementAt(id);
+
+                                    if (item.Text != null)
+                                    {
+                                        cellValue = item.Text.Text;
+                                    }
+                                    else if (item.InnerText != null)
+                                    {
+                                        cellValue = item.InnerText;
+                                    }
+                                    else if (item.InnerXml != null)
+                                    {
+                                        cellValue = item.InnerXml;
+                                    }
+                                }
+
+                                IsBusyMessage = $"reading file, parsed cell {cell.CellReference}";
+
+                                Debug.WriteLine($"Cell {cell.CellReference}, Value = {cellValue}");
+
+
+                                int columnIndex = 0;
+
+                                var cr = cell.CellReference.ToString().ToUpper();
+
+                                for (int i = 0; i < cr.Length && cr[i] >= 'A'; i++)
+                                    columnIndex = columnIndex * 26 + (cr[i] - 64);
+
+                                // Finally, add the cell value to the array
+                                columnValues[columnIndex - 1] = cellValue;
+                            }
+                        }
+
+                        // TODO need a safer way to do this
+                        var contribution = new ContributionsModel();
+
+                        contribution.Title = columnValues[0];
+
+                        if (DateTime.TryParse(columnValues[1], out DateTime date))
+                        {
+                            contribution.StartDate = date;
+                        }
+
+                        contribution.ReferenceUrl = columnValues[2];
+
+                        UploadQueue.Add(contribution);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"ReadDocumentAsync Exception: {ex}");
+            }
+            finally
+            {
+                IsBusyMessage = "";
+                IsBusy = false;
+            }
         }
 
         #endregion

@@ -61,7 +61,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            await NavigationService.NavigateAsync(typeof(ContributionDetailPage));
+            await NavigationService.NavigateAsync(typeof(AddContributionsPage));
         }
         
         public async void RadDataGrid_OnSelectionChanged(object sender, DataGridSelectionChangedEventArgs e)
