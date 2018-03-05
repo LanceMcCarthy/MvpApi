@@ -47,11 +47,18 @@
                        FontWeight="Bold"
                        Visibility="{Binding IsSelectedContributionDirty, Converter={StaticResource BoolToVisibilityConverter}}"
                        Margin="10,0,0,0" />
+            
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <TextBlock Text="Upload Status:"
+                           Style="{StaticResource SubtitleTextBlockStyle}"
+                           Margin="0,0,5,0"/>
+                <TextBlock Text="{Binding SelectedContribution.UploadStatus}"
+                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+            </StackPanel>
 
-            <TextBlock Text="Contribution Form"
-                       Style="{StaticResource SubtitleTextBlockStyle}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
+            
         </Grid>
 
         <ScrollViewer Grid.Row="2">
@@ -61,14 +68,16 @@
                            Margin="10,0" />
 
                 <ComboBox ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                          SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay}"
+                          SelectedItem="{Binding SelectedCategoryAreaTechnology, Mode=TwoWay}"
+                          SelectionChanged="{x:Bind ViewModel.TechnologyComboBox_OnSelectionChanged}"
                           HorizontalAlignment="Left"
                           Margin="10,10,10,0">
                     <ComboBox.GroupStyle>
                         <GroupStyle x:Name="GroupStyle" HidesIfEmpty="True">
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
-                                    <Grid Background="{ThemeResource SystemControlForegroundAccentBrush}">
+                                    <Grid Background="{ThemeResource SystemControlForegroundAccentBrush}" 
+                                          HorizontalAlignment="Stretch">
                                         <TextBlock Text="{Binding AwardName}"
                                                    Margin="5"
                                                    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
@@ -79,7 +88,7 @@
                     </ComboBox.GroupStyle>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel>
+                            <StackPanel MaxWidth="300">
                                 <TextBlock Text="{Binding Name}" />
                             </StackPanel>
                         </DataTemplate>
@@ -96,6 +105,8 @@
                     </ComboBox.Header>
                     <ComboBox.Style>
                         <Style TargetType="ComboBox">
+                            <Setter Property="HorizontalContentAlignment" 
+                                    Value="Left"/>
                             <Setter Property="ItemContainerTransitions">
                                 <Setter.Value>
                                     <TransitionCollection/>
@@ -105,11 +116,9 @@
                     </ComboBox.Style>
                     <ComboBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <VirtualizingStackPanel VirtualizationMode="Recycling">
-                                <VirtualizingStackPanel.ChildrenTransitions>
-                                    <TransitionCollection/>
-                                </VirtualizingStackPanel.ChildrenTransitions>
-                            </VirtualizingStackPanel>
+                            <!-- Using a VirtualizingStackpanel has initial render height problems, 
+                            sticking to non-virtualized pane because there really arent that many items -->
+                            <StackPanel MaxWidth="600"/>
                         </ItemsPanelTemplate>
                     </ComboBox.ItemsPanel>
                 </ComboBox>
@@ -136,7 +145,7 @@
                          HorizontalAlignment="Left"
                          MinWidth="300"
                          Margin="10"
-                         TextChanged="{x:Bind ViewModel.TextBox_OnTextChanged}">
+                         TextChanged="{x:Bind ViewModel.TitleTextBox_OnTextChanged}">
                     <TextBox.Header>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Title"
@@ -155,13 +164,13 @@
                          MinWidth="300"
                          HorizontalAlignment="Left"
                          Margin="10"
-                         TextChanged="{x:Bind ViewModel.TextBox_OnTextChanged}" />
+                         TextChanged="{x:Bind ViewModel.DescriptionTextBox_OnTextChanged}" />
 
                 <TextBox Text="{Binding SelectedContribution.ReferenceUrl, Mode=TwoWay}"
                          HorizontalAlignment="Left"
                          MinWidth="300"
                          Margin="10"
-                         TextChanged="{x:Bind ViewModel.TextBox_OnTextChanged}">
+                         TextChanged="{x:Bind ViewModel.UrlTextBox_OnTextChanged}">
                     <TextBox.Header>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{Binding UrlHeader}"
@@ -240,13 +249,13 @@
                 </input:RadNumericBox>
 
                 <ComboBox ItemsSource="{x:Bind ViewModel.Visibilies}"
-                          SelectedItem="{Binding SelectedContribution.Visibility, Mode=TwoWay}"
+                          SelectedItem="{Binding SelectedVisibility, Mode=TwoWay}"
                           IsTextSearchEnabled="True"
                           DisplayMemberPath="Description"
                           HorizontalAlignment="Left"
                           MinWidth="300"
                           Margin="10"
-                          SelectionChanged="{x:Bind ViewModel.Selector_OnSelectionChanged}">
+                          SelectionChanged="{x:Bind ViewModel.VisibilityComboBox_OnSelectionChanged}">
                     <ComboBox.Header>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Contribution Visibility"

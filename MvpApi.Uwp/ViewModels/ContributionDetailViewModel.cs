@@ -14,6 +14,7 @@ using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Newtonsoft.Json;
+using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -24,7 +25,6 @@ namespace MvpApi.Uwp.ViewModels
         private ContributionsModel originalContribution;
         private ContributionsModel selectedContribution;
         private bool isSelectedContributionDirty;
-        private bool isContributionTypeEditable = true;
         private string urlHeader = "Url";
         private string annualQuantityHeader = "Annual Quantity";
         private string secondAnnualQuantityHeader = "Second Annual Quantity";
@@ -33,9 +33,8 @@ namespace MvpApi.Uwp.ViewModels
         private bool isAnnualQuantityRequired;
         private bool isSecondAnnualQuantityRequired;
         private bool canSave;
-        private bool canUpload = true;
-        private bool useFastMode = true;
-        private ObservableCollection<ContributionAreaContributionModel> categoryAreas;
+        private ContributionTechnologyModel selectedCategoryAreaTechnology;
+        private VisibilityViewModel selectedVisibility;
 
         #endregion
 
@@ -45,44 +44,53 @@ namespace MvpApi.Uwp.ViewModels
             {
                 if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
                 {
-                    Types = DesignTimeHelpers.GenerateContributionTypes();
                     //CategoryAreas = DesignTimeHelpers.GenerateTechnologyAreas(); //Causing designer layout error
                     Visibilies = DesignTimeHelpers.GenerateVisibilities();
-
                     SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
+                    SelectedCategoryAreaTechnology = DesignTimeHelpers.GenerateAreaTechnologies().FirstOrDefault();
+                    SelectedVisibility = DesignTimeHelpers.GenerateVisibilities().FirstOrDefault();
                 }
             }
-                
         }
-        
+
         #region Properties
-        
+
         public ContributionsModel SelectedContribution
         {
             get => selectedContribution;
             set => Set(ref selectedContribution, value);
         }
 
-        public ObservableCollection<ContributionTypeModel> Types { get; set; } = new ObservableCollection<ContributionTypeModel>();
-        
-        public ObservableCollection<ContributionAreaContributionModel> CategoryAreas
+        //public ObservableCollection<ContributionTypeModel> Types { get; } = new ObservableCollection<ContributionTypeModel>();
+
+        public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
+
+        public ObservableCollection<VisibilityViewModel> Visibilies { get; } = new ObservableCollection<VisibilityViewModel>();
+
+        public ContributionTechnologyModel SelectedCategoryAreaTechnology
         {
-            get => categoryAreas;
-            set => Set(ref categoryAreas, value);
+            get => selectedCategoryAreaTechnology;
+            set => Set(ref selectedCategoryAreaTechnology, value);
         }
-        
-        public ObservableCollection<VisibilityViewModel> Visibilies { get; set; } = new ObservableCollection<VisibilityViewModel>();
-        
+
+        public VisibilityViewModel SelectedVisibility
+        {
+            get => selectedVisibility;
+            set => Set(ref selectedVisibility, value);
+        }
+
         public bool IsSelectedContributionDirty
         {
             get => isSelectedContributionDirty;
-            set => Set(ref isSelectedContributionDirty, value);
-        }
+            set
+            {
+                Set(ref isSelectedContributionDirty, value);
 
-        public bool IsContributionTypeEditable
-        {
-            get => isContributionTypeEditable;
-            set => Set(ref isContributionTypeEditable, value);
+                // if the object has changes, update the status to pending
+                SelectedContribution.UploadStatus = value 
+                    ? UploadStatus.Pending 
+                    : UploadStatus.None;
+            }
         }
 
         public string AnnualQuantityHeader
@@ -132,35 +140,48 @@ namespace MvpApi.Uwp.ViewModels
             get => canSave;
             set => Set(ref canSave, value);
         }
-
-        public bool CanUpload
-        {
-            get => canUpload;
-            set => Set(ref canUpload, value);
-        }
-
-        public bool UseFastMode
-        {
-            get => useFastMode;
-            set => Set(ref useFastMode, value);
-        }
-
+        
         #endregion
 
         #region Event handlers
 
-        public async void TextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        public async void TitleTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
+            if (originalContribution != null)
+                IsSelectedContributionDirty = SelectedContribution.Title == originalContribution.Title;
+
             CanSave = await SelectedContribution.Validate();
         }
 
-        public async void UrlBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        public async void DescriptionTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
+            if (originalContribution != null)
+                IsSelectedContributionDirty = SelectedContribution.Description == originalContribution.Description;
+
             CanSave = await SelectedContribution.Validate();
         }
 
-        public async void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        public async void UrlTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
+            if (originalContribution != null)
+                IsSelectedContributionDirty = SelectedContribution.ReferenceUrl == originalContribution.ReferenceUrl;
+
+            CanSave = await SelectedContribution.Validate();
+        }
+
+        public async void TechnologyComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (originalContribution != null)
+                IsSelectedContributionDirty = SelectedContribution.ContributionTechnology.Id == originalContribution.ContributionTechnology.Id;
+
+            CanSave = await SelectedContribution.Validate();
+        }
+
+        public async void VisibilityComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (originalContribution != null)
+                IsSelectedContributionDirty = SelectedContribution.Visibility.Id == originalContribution.Visibility.Id;
+
             CanSave = await SelectedContribution.Validate();
         }
 
@@ -169,38 +190,42 @@ namespace MvpApi.Uwp.ViewModels
             if (e.NewDate < new DateTime(2016, 10, 1) || e.NewDate > new DateTime(2018, 3, 31))
             {
                 await new MessageDialog("The contribution date must be after the start of your current award period and before March 31, 2018 in order for it to count towards your evaluation", "Notice: Out of range").ShowAsync();
+
+                if (originalContribution != null)
+                    SelectedContribution.StartDate = originalContribution.StartDate;
             }
+
+            if(originalContribution != null)
+                IsSelectedContributionDirty = SelectedContribution.StartDate == originalContribution.StartDate;
 
             CanSave = await SelectedContribution.Validate();
         }
 
         public async void AnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
         {
+            if (originalContribution != null)
+                IsSelectedContributionDirty = SelectedContribution.AnnualQuantity == originalContribution.AnnualQuantity;
             CanSave = await SelectedContribution.Validate();
         }
 
         public async void SecondAnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
         {
+            if (originalContribution != null)
+                IsSelectedContributionDirty = SelectedContribution.SecondAnnualQuantity == originalContribution.SecondAnnualQuantity;
+
             CanSave = await SelectedContribution.Validate();
         }
 
-        public async void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            UpdateHeaders(SelectedContribution.ContributionType);
-            
-            // Also set the type name
-            SelectedContribution.ContributionTypeName = SelectedContribution.ContributionType.EnglishName;
-            
-            CanSave = await SelectedContribution.Validate();
-        }
-        
         public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
         {
+            SelectedContribution.Visibility = SelectedVisibility;
+            SelectedContribution.ContributionTechnology = SelectedCategoryAreaTechnology;
+
             var isValid = await SelectedContribution.Validate(true);
 
-            if(!isValid)
+            if (!isValid)
                 return;
-            
+
             SelectedContribution.UploadStatus = UploadStatus.InProgress;
 
             var success = await UploadContributionAsync(SelectedContribution);
@@ -210,7 +235,8 @@ namespace MvpApi.Uwp.ViewModels
 
             if (SelectedContribution.UploadStatus == UploadStatus.Success)
             {
-
+                if(NavigationService.CanGoBack)
+                    NavigationService.GoBack();
             }
         }
 
@@ -246,11 +272,11 @@ namespace MvpApi.Uwp.ViewModels
                 await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
             }
         }
-        
+
         #endregion
 
         #region Methods
-        
+
         public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
         {
             try
@@ -259,7 +285,7 @@ namespace MvpApi.Uwp.ViewModels
 
                 // copying back the ID which was created on the server once the item was added to the database
                 contribution.ContributionId = submissionResult.ContributionId;
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -268,7 +294,7 @@ namespace MvpApi.Uwp.ViewModels
                 return false;
             }
         }
-        
+
         private void UpdateHeaders(ContributionTypeModel contributionType)
         {
             switch (contributionType.EnglishName)
@@ -483,36 +509,37 @@ namespace MvpApi.Uwp.ViewModels
                     break;
             }
         }
-        
+
         #endregion
 
         private async Task LoadSupportingDataAsync()
         {
-            IsBusyMessage = "getting types...";
-
-            foreach (var type in await App.ApiService.GetContributionTypesAsync())
-            {
-                Types.Add(type);
-            }
-
-            IsBusyMessage = "getting technologies...";
+            IsBusyMessage = "loading category area technologies...";
 
             var areaRoots = await App.ApiService.GetContributionAreasAsync();
 
             // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-            CategoryAreas = new ObservableCollection<ContributionAreaContributionModel>(areaRoots.SelectMany(areaRoot => areaRoot.Contributions));
+            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
 
-            IsBusyMessage = "getting visibility options...";
+            areas.ForEach(area =>
+            {
+                CategoryAreas.Add(area);
+            });
 
-            foreach (var visibility in await App.ApiService.GetVisibilitiesAsync())
+
+            IsBusyMessage = "loading visibility options...";
+
+            var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+            visibilities.ForEach(visibility =>
             {
                 Visibilies.Add(visibility);
-            }
+            });
         }
-        
+
 
         #region Navigation
-        
+
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
@@ -521,25 +548,32 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     IsBusy = true;
 
-                    // ** Get the associated lists from the API **
+                    // Get the associated lists from the API
 
                     await LoadSupportingDataAsync();
-                    
-                    // Read the passed contribution parameter //
+
+                    // Read the passed contribution parameter
 
                     if (parameter is ContributionsModel param)
                     {
                         SelectedContribution = param;
-                        
-                        // Deep cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-                        var json = JsonConvert.SerializeObject(param);
-                        originalContribution = JsonConvert.DeserializeObject<ContributionsModel>(json);
+
+                        SelectedVisibility = SelectedContribution.Visibility;
+                        SelectedCategoryAreaTechnology = SelectedContribution.ContributionTechnology;
+
+                        SelectedContribution.UploadStatus = UploadStatus.None;
+
+                        UpdateHeaders(SelectedContribution.ContributionType);
+
+                        // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
+
+                        originalContribution = SelectedContribution.Clone();
                     }
                     else
                     {
                         await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
 
-                        if(NavigationService.CanGoBack)
+                        if (NavigationService.CanGoBack)
                             NavigationService.GoBack();
                     }
                 }

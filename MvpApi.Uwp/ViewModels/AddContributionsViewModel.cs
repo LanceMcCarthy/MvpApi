@@ -19,6 +19,7 @@ using MvpApi.Common.Models;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
+using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -38,7 +39,6 @@ namespace MvpApi.Uwp.ViewModels
         private bool canSave;
         private bool canUpload = true;
         private bool useFastMode = true;
-        private ObservableCollection<ContributionAreaContributionModel> categoryAreas;
 
         #endregion
 
@@ -59,17 +59,13 @@ namespace MvpApi.Uwp.ViewModels
         
         #region Properties
 
-        public ObservableCollection<ContributionsModel> UploadQueue { get; set; } = new ObservableCollection<ContributionsModel>();
+        public ObservableCollection<ContributionsModel> UploadQueue { get; } = new ObservableCollection<ContributionsModel>();
 
-        public ObservableCollection<ContributionTypeModel> Types { get; set; } = new ObservableCollection<ContributionTypeModel>();
+        public ObservableCollection<ContributionTypeModel> Types { get; } = new ObservableCollection<ContributionTypeModel>();
 
-        public ObservableCollection<VisibilityViewModel> Visibilies { get; set; } = new ObservableCollection<VisibilityViewModel>();
+        public ObservableCollection<VisibilityViewModel> Visibilies { get; } = new ObservableCollection<VisibilityViewModel>();
         
-        public ObservableCollection<ContributionAreaContributionModel> CategoryAreas
-        {
-            get => categoryAreas;
-            set => Set(ref categoryAreas, value);
-        }
+        public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
 
         public ContributionsModel SelectedContribution
         {
@@ -642,28 +638,37 @@ namespace MvpApi.Uwp.ViewModels
 
         private async Task LoadSupportingDataAsync()
         {
-            IsBusyMessage = "getting types...";
+            IsBusyMessage = "loading types...";
 
-            var contributionTypes = await App.ApiService.GetContributionTypesAsync();
+            var types = await App.ApiService.GetContributionTypesAsync();
 
-            foreach (var contributionType in contributionTypes)
+            types.ForEach(type =>
             {
-                Types.Add(contributionType);
-            }
+                Types.Add(type);
+            });
 
-            IsBusyMessage = "getting technologies...";
+
+            IsBusyMessage = "loading technologies...";
 
             var areaRoots = await App.ApiService.GetContributionAreasAsync();
 
             // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-            CategoryAreas = new ObservableCollection<ContributionAreaContributionModel>(areaRoots.SelectMany(areaRoot => areaRoot.Contributions));
+            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
 
-            IsBusyMessage = "getting visibility options...";
+            areas.ForEach(area =>
+            {
+                CategoryAreas.Add(area);
+            });
 
-            foreach (var visibility in await App.ApiService.GetVisibilitiesAsync())
+
+            IsBusyMessage = "loading visibility options...";
+
+            var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+            visibilities.ForEach(visibility =>
             {
                 Visibilies.Add(visibility);
-            }
+            });
         }
 
         #endregion
@@ -683,7 +688,6 @@ namespace MvpApi.Uwp.ViewModels
 
                     await LoadSupportingDataAsync();
                     
-
                     // Set up first contribution
                     var cont = new ContributionsModel
                     {

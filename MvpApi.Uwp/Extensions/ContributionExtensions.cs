@@ -232,5 +232,25 @@ namespace MvpApi.Uwp.Extensions
 
             return new Tuple<bool, bool, bool>(isUrlRequired, isAnnualQuantityRequired, isSecondAnnualQuantityRequired);
         }
+
+        public static ContributionsModel Clone(this ContributionsModel contributionToClone)
+        {
+            var clone = new ContributionsModel();
+            clone.ReferenceUrl = contributionToClone.ReferenceUrl;
+            clone.AnnualQuantity = contributionToClone.AnnualQuantity;
+            clone.ContributionTechnology = contributionToClone.ContributionTechnology;
+            clone.Description = contributionToClone.Description;
+            clone.SecondAnnualQuantity = contributionToClone.SecondAnnualQuantity;
+            clone.StartDate = contributionToClone.StartDate;
+            clone.Title = contributionToClone.Title;
+            clone.UploadStatus = contributionToClone.UploadStatus;
+            clone.Visibility = contributionToClone.Visibility;
+            clone.AnnualReach = contributionToClone.AnnualReach;
+            clone.ContributionId = contributionToClone.ContributionId;
+            clone.ContributionType = contributionToClone.ContributionType;
+            clone.ContributionTypeName = contributionToClone.ContributionTypeName;
+
+            return clone;
+        }
     }
 }
