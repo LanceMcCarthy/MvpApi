@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 using MvpApi.Common.Models;
+using Newtonsoft.Json;
 
 namespace MvpApi.Uwp.Extensions
 {
@@ -86,7 +88,7 @@ namespace MvpApi.Uwp.Extensions
         }
 
         /// <summary>
-        /// Determines which fields are required for the 
+        /// Determines which fields are required for the ContributionType
         /// </summary>
         /// <param name="contributionType"></param>
         /// <returns></returns>
@@ -233,22 +235,18 @@ namespace MvpApi.Uwp.Extensions
             return new Tuple<bool, bool, bool>(isUrlRequired, isAnnualQuantityRequired, isSecondAnnualQuantityRequired);
         }
 
-        public static ContributionsModel Clone(this ContributionsModel contributionToClone)
+        /// <summary>
+        /// Deep clones the ContributionsModel (no reference to oringal
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static ContributionsModel Clone(this ContributionsModel source)
         {
-            var clone = new ContributionsModel();
-            clone.ReferenceUrl = contributionToClone.ReferenceUrl;
-            clone.AnnualQuantity = contributionToClone.AnnualQuantity;
-            clone.ContributionTechnology = contributionToClone.ContributionTechnology;
-            clone.Description = contributionToClone.Description;
-            clone.SecondAnnualQuantity = contributionToClone.SecondAnnualQuantity;
-            clone.StartDate = contributionToClone.StartDate;
-            clone.Title = contributionToClone.Title;
-            clone.UploadStatus = contributionToClone.UploadStatus;
-            clone.Visibility = contributionToClone.Visibility;
-            clone.AnnualReach = contributionToClone.AnnualReach;
-            clone.ContributionId = contributionToClone.ContributionId;
-            clone.ContributionType = contributionToClone.ContributionType;
-            clone.ContributionTypeName = contributionToClone.ContributionTypeName;
+            // Deep clone using json.net
+            var json = JsonConvert.SerializeObject(source);
+            var clone = JsonConvert.DeserializeObject<ContributionsModel>(json);
+            
+            Debug.WriteLine($"Clone complete. Contribution: {clone.Title}");
 
             return clone;
         }

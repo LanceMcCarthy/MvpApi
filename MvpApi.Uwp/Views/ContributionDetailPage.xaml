@@ -37,7 +37,6 @@
         </Grid>
 
         <Grid Background="{Binding SelectedContribution.UploadStatus, Converter={StaticResource UploadStatusBackgroundConverter}}"
-              Height="40"
               Grid.Row="1">
 
             <TextBlock Text="Unsaved Changes"
@@ -47,18 +46,15 @@
                        FontWeight="Bold"
                        Visibility="{Binding IsSelectedContributionDirty, Converter={StaticResource BoolToVisibilityConverter}}"
                        Margin="10,0,0,0" />
-            
+
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
+                        VerticalAlignment="Center"
+                        Margin="5">
                 <TextBlock Text="Upload Status:"
-                           Style="{StaticResource SubtitleTextBlockStyle}"
                            Margin="0,0,5,0"/>
-                <TextBlock Text="{Binding SelectedContribution.UploadStatus}"
-                           Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBlock Text="{Binding SelectedContribution.UploadStatus}" />
             </StackPanel>
-
-            
         </Grid>
 
         <ScrollViewer Grid.Row="2">
@@ -73,7 +69,7 @@
                           HorizontalAlignment="Left"
                           Margin="10,10,10,0">
                     <ComboBox.GroupStyle>
-                        <GroupStyle x:Name="GroupStyle" HidesIfEmpty="True">
+                        <GroupStyle HidesIfEmpty="True">
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
                                     <Grid Background="{ThemeResource SystemControlForegroundAccentBrush}" 
@@ -84,6 +80,11 @@
                                     </Grid>
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
+                            <GroupStyle.Panel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel MaxWidth="600"/>
+                                </ItemsPanelTemplate>
+                            </GroupStyle.Panel>
                         </GroupStyle>
                     </ComboBox.GroupStyle>
                     <ComboBox.ItemTemplate>
@@ -105,6 +106,8 @@
                     </ComboBox.Header>
                     <ComboBox.Style>
                         <Style TargetType="ComboBox">
+                            <Setter Property="HorizontalAlignment"
+                                    Value="Left"/>
                             <Setter Property="HorizontalContentAlignment" 
                                     Value="Left"/>
                             <Setter Property="ItemContainerTransitions">
@@ -278,7 +281,7 @@
 
             <AppBarButton Label="save changes"
                           Icon="save"
-                          IsEnabled="{Binding CanUpload}"
+                          IsEnabled="{Binding CanSave}"
                           Click="{x:Bind ViewModel.UploadContributionButton_Click}" />
         </CommandBar>
 

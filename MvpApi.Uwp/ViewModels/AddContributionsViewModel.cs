@@ -19,6 +19,7 @@ using MvpApi.Common.Models;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
+using Template10.Mvvm;
 using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels
@@ -46,12 +47,14 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                UploadQueue = DesignTimeHelpers.GenerateContributions();
                 Types = DesignTimeHelpers.GenerateContributionTypes();
                 //CategoryAreas = DesignTimeHelpers.GenerateTechnologyAreas(); //Causing designer layout error
                 Visibilies = DesignTimeHelpers.GenerateVisibilities();
 
-                SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
+                UploadQueue = DesignTimeHelpers.GenerateContributions();
+                SelectedContribution = UploadQueue.FirstOrDefault();
+
+                return;
             }
 
             UploadQueue.CollectionChanged += UploadQueue_CollectionChanged;
@@ -140,13 +143,16 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #endregion
-
-        #region Event handlers
         
+        #region Event handlers
+
         private void UploadQueue_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             CanUpload = UploadQueue.Any();
         }
+
+
+        // Data form editors
 
         public async void TextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
@@ -193,6 +199,9 @@ namespace MvpApi.Uwp.ViewModels
             CanSave = await SelectedContribution.Validate();
         }
 
+
+        // Buttons
+
         public async void AddToQueueButton_Click(object sender, RoutedEventArgs e)
         {
             var isValid = await SelectedContribution.Validate(true);
@@ -203,16 +212,26 @@ namespace MvpApi.Uwp.ViewModels
             // Validate all required fields
             var isValidated = await ValidateRequiredFields();
 
-            if (!isValidated)
+            if (isValidated)
+            {
+                UploadQueue.Add(SelectedContribution);
+                SelectedContribution = CreateNewContribution();
+            }
+            else
             {
                 await new MessageDialog("You need to fill in every field marked as 'Required' before starting a new contribution.").ShowAsync();
-                return;
             }
-
-            SetupNextEntry();
         }
 
-        public async void RemoveContributionButton_Click(object sender, RoutedEventArgs e)
+        public void EditContribution_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is ContributionsModel contribution)
+            {
+                SelectedContribution = contribution;
+            }
+        }
+
+        public async void RemoveContribution_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -222,10 +241,14 @@ namespace MvpApi.Uwp.ViewModels
 
                 var dialogResult = await md.ShowAsync();
 
-                if (dialogResult.Label == "yes")
+                if (dialogResult.Label == "yes" && 
+                    sender is Button button && 
+                    button.DataContext is ContributionsModel contribution)
                 {
-                    UploadQueue.Remove(SelectedContribution);
-                    SelectedContribution = UploadQueue.LastOrDefault();
+                    UploadQueue.Remove(contribution);
+
+                    if(SelectedContribution == contribution)
+                        SelectedContribution = UploadQueue.LastOrDefault();
                 }
             }
             catch (Exception ex)
@@ -234,6 +257,25 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
+        public async void SaveContribution_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is Button button) || !(button.DataContext is ContributionsModel contribution))
+                return;
+
+            contribution.UploadStatus = UploadStatus.InProgress;
+
+            var success = await UploadContributionAsync(contribution);
+                
+            contribution.UploadStatus = success 
+                ? UploadStatus.Success 
+                : UploadStatus.Failed;
+
+            if (contribution.UploadStatus == UploadStatus.Success)
+            {
+                await new MessageDialog("Successfully saved, the contribution will be removed from queue.").ShowAsync();
+            }
+        }
+        
         public async void ClearQueueButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -249,31 +291,29 @@ namespace MvpApi.Uwp.ViewModels
 
                 UploadQueue.Clear();
 
-                SetupNextEntry();
+                SelectedContribution = CreateNewContribution();
             }
             catch (Exception ex)
             {
                 await new MessageDialog($"Something went wrong clearing the queue, please try again. Error: {ex.Message}").ShowAsync();
             }
         }
-
-        public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
+        
+        public async void SaveAllContributions_Click(object sender, RoutedEventArgs e)
         {
-            foreach (var contribution in UploadQueue)
+            for (int i = 0; i < UploadQueue.Count - 1; i++)
             {
-                contribution.UploadStatus = UploadStatus.InProgress;
+                UploadQueue[i].UploadStatus = UploadStatus.InProgress;
 
-                var success = await UploadContributionAsync(contribution);
+                var success = await UploadContributionAsync(UploadQueue[i]);
+                
+                UploadQueue[i].UploadStatus = success 
+                    ? UploadStatus.Success 
+                    : UploadStatus.Failed;
 
-                // Mark success or failure
-                contribution.UploadStatus = success ? UploadStatus.Success : UploadStatus.Failed;
-            }
+                if(UploadQueue[i].UploadStatus == UploadStatus.Success)
+                    UploadQueue.Remove(UploadQueue[i]);
 
-            var successes = UploadQueue.Where(c => c.UploadStatus == UploadStatus.Success);
-
-            foreach (var successfulUpload in successes)
-            {
-                UploadQueue.Remove(successfulUpload);
             }
 
             if (UploadQueue.Any())
@@ -283,48 +323,17 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
+                await new MessageDialog("All contributions have been saved!").ShowAsync();
+
                 if (NavigationService.CanGoBack)
                     NavigationService.GoBack();
             }
         }
 
-
         #endregion
 
         #region Methods
-
-        //// TODO Temporarily disabled - need to fix a few things before full validation is working
-        //private void EvaluateCanSave()
-        //{
-        //    return;
-
-        //    // These are all required, no matter the activity type
-        //    if (string.IsNullOrEmpty(SelectedContribution?.Title) ||
-        //        string.IsNullOrEmpty(SelectedContribution?.ContributionTypeName) ||
-        //        SelectedContribution?.ContributionType == null ||
-        //        SelectedContribution?.Visibility == null ||
-        //        SelectedContribution?.ContributionTechnology == null)
-        //    {
-        //        CanSave = false;
-        //    }
-        //    else if (IsAnnualQuantityRequired && SelectedContribution?.AnnualQuantity == null)
-        //    {
-        //        CanSave = false;
-        //    }
-        //    else if (IsSecondAnnualQuantityRequired && SelectedContribution?.SecondAnnualQuantity == null)
-        //    {
-        //        CanSave = false;
-        //    }
-        //    else if (IsUrlRequired && string.IsNullOrEmpty(SelectedContribution?.ReferenceUrl))
-        //    {
-        //        CanSave = false;
-        //    }
-        //    else
-        //    {
-        //        CanSave = true;
-        //    }
-        //}
-
+        
         public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
         {
             try
@@ -343,13 +352,11 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        private void SetupNextEntry()
+        private ContributionsModel CreateNewContribution()
         {
-            ContributionsModel nextItem;
-
             if (UseFastMode)
             {
-                nextItem = new ContributionsModel
+                return new ContributionsModel
                 {
                     StartDate = DateTime.Now,
                     Visibility = SelectedContribution?.Visibility,
@@ -360,7 +367,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
-                nextItem = new ContributionsModel
+                return new ContributionsModel
                 {
                     StartDate = DateTime.Now,
                     Visibility = Visibilies.FirstOrDefault(),
@@ -368,29 +375,25 @@ namespace MvpApi.Uwp.ViewModels
                     ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas?.FirstOrDefault()
                 };
             }
-
-            UploadQueue.Add(nextItem);
-
-            SelectedContribution = UploadQueue.LastOrDefault();
         }
 
         private async Task<bool> ValidateRequiredFields()
         {
             if (SelectedContribution.ContributionType == null)
             {
-                await new MessageDialog($"The Contribution Type is a required field").ShowAsync();
+                await new MessageDialog("The Contribution Type is a required field").ShowAsync();
                 return false;
             }
 
             if (SelectedContribution.Visibility == null)
             {
-                await new MessageDialog($"The Visibility is a required field").ShowAsync();
+                await new MessageDialog("The Visibility is a required field").ShowAsync();
                 return false;
             }
 
             if (SelectedContribution.ContributionTechnology == null)
             {
-                await new MessageDialog($"The Category Technology is a required field").ShowAsync();
+                await new MessageDialog("The Category Technology is a required field").ShowAsync();
                 return false;
             }
 
@@ -672,8 +675,7 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #endregion
-
-
+        
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
@@ -689,26 +691,14 @@ namespace MvpApi.Uwp.ViewModels
                     await LoadSupportingDataAsync();
                     
                     // Set up first contribution
-                    var cont = new ContributionsModel
+                    SelectedContribution = new ContributionsModel
                     {
                         StartDate = DateTime.Now,
                         Visibility = Visibilies.FirstOrDefault(),
-                        ContributionType = Types.FirstOrDefault(), 
+                        ContributionType = Types.FirstOrDefault(),
                         ContributionTypeName = SelectedContribution?.ContributionType?.Name
                     };
-
-                    UploadQueue.Add(cont);
-                    SelectedContribution = UploadQueue.FirstOrDefault();
-
-                    // -- TESTING ONLY -- 
-                    //SelectedContribution.Title = "Test Upload";
-                    //SelectedContribution.Description = "This is a test contribution upload from the UWP application I'm building for the MVP community to help them submit their 2018 contributions.";
-                    //SelectedContribution.ReferenceUrl = "lancemccarthy.com";
-                    //SelectedContribution.AnnualQuantity = 0;
-                    //SelectedContribution.SecondAnnualQuantity = 0;
-                    //SelectedContribution.AnnualReach = 0;
-
-                    //IsSelectedContributionDirty = true;
+                    
                 }
                 catch (Exception ex)
                 {

@@ -14,6 +14,7 @@ using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Newtonsoft.Json;
+using Template10.Mvvm;
 using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels
@@ -60,9 +61,7 @@ namespace MvpApi.Uwp.ViewModels
             get => selectedContribution;
             set => Set(ref selectedContribution, value);
         }
-
-        //public ObservableCollection<ContributionTypeModel> Types { get; } = new ObservableCollection<ContributionTypeModel>();
-
+        
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
 
         public ObservableCollection<VisibilityViewModel> Visibilies { get; } = new ObservableCollection<VisibilityViewModel>();
@@ -140,10 +139,17 @@ namespace MvpApi.Uwp.ViewModels
             get => canSave;
             set => Set(ref canSave, value);
         }
-        
-        #endregion
 
+        #endregion
+        
         #region Event handlers
+
+        // Data form event handlers
+
+        public void EditContributionButton_OnClick(object sender, RoutedEventArgs e)
+        {
+
+        }
 
         public async void TitleTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
@@ -216,6 +222,8 @@ namespace MvpApi.Uwp.ViewModels
             CanSave = await SelectedContribution.Validate();
         }
 
+        // CommandBar event handlers
+
         public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
         {
             SelectedContribution.Visibility = SelectedVisibility;
@@ -235,7 +243,7 @@ namespace MvpApi.Uwp.ViewModels
 
             if (SelectedContribution.UploadStatus == UploadStatus.Success)
             {
-                if(NavigationService.CanGoBack)
+                if (NavigationService.CanGoBack)
                     NavigationService.GoBack();
             }
         }
@@ -276,6 +284,31 @@ namespace MvpApi.Uwp.ViewModels
         #endregion
 
         #region Methods
+        
+        private async Task LoadSupportingDataAsync()
+        {
+            IsBusyMessage = "loading category area technologies...";
+
+            var areaRoots = await App.ApiService.GetContributionAreasAsync();
+
+            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
+            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+
+            areas.ForEach(area =>
+            {
+                CategoryAreas.Add(area);
+            });
+
+
+            IsBusyMessage = "loading visibility options...";
+
+            var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+            visibilities.ForEach(visibility =>
+            {
+                Visibilies.Add(visibility);
+            });
+        }
 
         public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
         {
@@ -511,33 +544,7 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #endregion
-
-        private async Task LoadSupportingDataAsync()
-        {
-            IsBusyMessage = "loading category area technologies...";
-
-            var areaRoots = await App.ApiService.GetContributionAreasAsync();
-
-            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-
-            areas.ForEach(area =>
-            {
-                CategoryAreas.Add(area);
-            });
-
-
-            IsBusyMessage = "loading visibility options...";
-
-            var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-            visibilities.ForEach(visibility =>
-            {
-                Visibilies.Add(visibility);
-            });
-        }
-
-
+        
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
