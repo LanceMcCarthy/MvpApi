@@ -400,6 +400,27 @@
                                 Value="Horizontal" />
                     </VisualState.Setters>
                 </VisualState>
+                <VisualState x:Name="IntermediateState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="641" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TitleTextBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="DescriptionTextBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="UrlTextBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="SecondAnnualQuantityNumericBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="AnnualReachNumericBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="NumericInputStackPanel.Orientation"
+                                Value="Vertical" />
+                    </VisualState.Setters>
+                </VisualState>
                 <VisualState x:Name="NarrowState">
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="0" />
