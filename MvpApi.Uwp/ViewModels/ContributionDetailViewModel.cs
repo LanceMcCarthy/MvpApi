@@ -327,8 +327,8 @@ namespace MvpApi.Uwp.ViewModels
                 return false;
             }
         }
-
-        private void UpdateHeaders(ContributionTypeModel contributionType)
+        
+        public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
         {
             switch (contributionType.EnglishName)
             {
@@ -544,7 +544,7 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #endregion
-        
+
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
@@ -556,11 +556,9 @@ namespace MvpApi.Uwp.ViewModels
                     IsBusy = true;
 
                     // Get the associated lists from the API
-
                     await LoadSupportingDataAsync();
 
                     // Read the passed contribution parameter
-
                     if (parameter is ContributionsModel param)
                     {
                         SelectedContribution = param;
@@ -570,10 +568,10 @@ namespace MvpApi.Uwp.ViewModels
 
                         SelectedContribution.UploadStatus = UploadStatus.None;
 
-                        UpdateHeaders(SelectedContribution.ContributionType);
+                        // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
+                        DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
 
                         // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-
                         originalContribution = SelectedContribution.Clone();
                     }
                     else
@@ -606,5 +604,6 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #endregion
+
     }
 }

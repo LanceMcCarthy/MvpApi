@@ -5,18 +5,20 @@
                      xmlns:common="using:Template10.Common"
                      xmlns:converters="using:MvpApi.Uwp.Converters"
                      xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Converters"
+                     xmlns:selectors="using:MvpApi.Uwp.Selectors"
                      RequestedTheme="Light">
 
     <common:BootStrapper.Resources>
-        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-        <converters:NullToVisibilityConverter x:Key="InvertedNullToVisibilityConverter" IsInverted="True"/>
-        <converters:PathToBitmapImageConverter x:Key="BitmapImageConverter"/>
-        <converters:DateTimeToDateTimeOffsetConverter x:Key="DateTimeOffsetConverter"/>
-        <converters:DoubleToIntConverter x:Key="DoubleToIntConverter"/>
-        <converters:UploadStatusBackgroundConverter x:Key="UploadStatusBackgroundConverter"/>
-        <converters:UploadStatusToBoolConverter x:Key="UploadStatusToBoolConverter"/>
-        
-        <toolkit:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <converters:NullToVisibilityConverter x:Key="InvertedNullToVisibilityConverter"
+                                              IsInverted="True" />
+        <converters:PathToBitmapImageConverter x:Key="BitmapImageConverter" />
+        <converters:DateTimeToDateTimeOffsetConverter x:Key="DateTimeOffsetConverter" />
+        <converters:DoubleToIntConverter x:Key="DoubleToIntConverter" />
+        <converters:UploadStatusBackgroundConverter x:Key="UploadStatusBackgroundConverter" />
+        <converters:UploadStatusToBoolConverter x:Key="UploadStatusToBoolConverter" />
+
+        <toolkit:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
         <toolkit:BoolToVisibilityConverter x:Key="InvertedBoolToVisibilityConverter">
             <toolkit:BoolToVisibilityConverter.TrueValue>
                 <Visibility>Collapsed</Visibility>
@@ -25,6 +27,92 @@
                 <Visibility>Visible</Visibility>
             </toolkit:BoolToVisibilityConverter.FalseValue>
         </toolkit:BoolToVisibilityConverter>
+
+        <Style x:Name="SmallCellContentStyle" 
+               TargetType="TextBlock">
+            <Setter Property="MaxWidth"
+                    Value="100" />
+            <Setter Property="TextTrimming"
+                    Value="CharacterEllipsis" />
+            <Setter Property="Margin"
+                    Value="5"/>
+        </Style>
+
+        <Style x:Name="MediumCellContentStyle"
+               TargetType="TextBlock">
+            <Setter Property="MaxWidth"
+                    Value="300" />
+            <Setter Property="TextTrimming"
+                    Value="CharacterEllipsis" />
+            <Setter Property="Margin"
+                    Value="5" />
+        </Style>
+
+        <Style x:Key="TechnologyAreaComboBoxStyle"
+               TargetType="ComboBox">
+            <Setter Property="HorizontalAlignment"
+                    Value="Left" />
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Left" />
+            <Setter Property="ItemContainerTransitions">
+                <Setter.Value>
+                    <TransitionCollection />
+                </Setter.Value>
+            </Setter>
+            <Setter Property="GroupStyleSelector">
+                <Setter.Value>
+                    <selectors:TechAreaGroupStyleSelector>
+                        <selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
+                            <GroupStyle HidesIfEmpty="True">
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <Grid Background="{ThemeResource SystemControlForegroundAccentBrush}"
+                                              HorizontalAlignment="Stretch">
+                                            <TextBlock Text="{Binding AwardName}"
+                                                       Margin="5"
+                                                       Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                                <GroupStyle.Panel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel MaxWidth="600" />
+                                    </ItemsPanelTemplate>
+                                </GroupStyle.Panel>
+                            </GroupStyle>
+                        </selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
+                    </selectors:TechAreaGroupStyleSelector>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <StackPanel MaxWidth="300">
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel MaxWidth="600" />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Header">
+                <Setter.Value>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Contribution Technology Area"
+                                   Margin="0,0,5,0" />
+                        <TextBlock Text="(required)"
+                                   Margin="5,0"
+                                   FontStyle="Italic"
+                                   Foreground="Red" />
+                    </StackPanel>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </common:BootStrapper.Resources>
 
 </common:BootStrapper>

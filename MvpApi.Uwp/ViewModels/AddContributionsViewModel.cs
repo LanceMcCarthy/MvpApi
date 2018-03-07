@@ -29,7 +29,6 @@ namespace MvpApi.Uwp.ViewModels
         #region Fields
         
         private ContributionsModel selectedContribution;
-        private bool isSelectedContributionDirty;
         private string urlHeader = "Url";
         private string annualQuantityHeader = "Annual Quantity";
         private string secondAnnualQuantityHeader = "Second Annual Quantity";
@@ -37,9 +36,7 @@ namespace MvpApi.Uwp.ViewModels
         private bool isUrlRequired;
         private bool isAnnualQuantityRequired;
         private bool isSecondAnnualQuantityRequired;
-        private bool canSave;
         private bool canUpload = true;
-        private bool useFastMode = true;
 
         #endregion
 
@@ -57,10 +54,15 @@ namespace MvpApi.Uwp.ViewModels
                 return;
             }
 
+            EditCommand = new DelegateCommand<ContributionsModel>(async cont => await EditContribution(cont));
+            RemoveCommand = new DelegateCommand<ContributionsModel>(async cont => await RemoveContribution(cont));
+
             UploadQueue.CollectionChanged += UploadQueue_CollectionChanged;
         }
         
-        #region Properties
+        // *** Properties *** //
+
+        // Collections and SelectedItems
 
         public ObservableCollection<ContributionsModel> UploadQueue { get; } = new ObservableCollection<ContributionsModel>();
 
@@ -75,12 +77,8 @@ namespace MvpApi.Uwp.ViewModels
             get => selectedContribution;
             set => Set(ref selectedContribution, value);
         }
-
-        public bool IsSelectedContributionDirty
-        {
-            get => isSelectedContributionDirty;
-            set => Set(ref isSelectedContributionDirty, value);
-        }
+        
+        // Form Headers
         
         public string AnnualQuantityHeader
         {
@@ -106,6 +104,8 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref urlHeader, value);
         }
 
+        // Validation properties
+
         public bool IsUrlRequired
         {
             get => isUrlRequired;
@@ -123,86 +123,51 @@ namespace MvpApi.Uwp.ViewModels
             get => isSecondAnnualQuantityRequired;
             set => Set(ref isSecondAnnualQuantityRequired, value);
         }
-
-        public bool CanSave
-        {
-            get => canSave;
-            set => Set(ref canSave, value);
-        }
-
+        
         public bool CanUpload
         {
             get => canUpload;
             set => Set(ref canUpload, value);
         }
+        
+        // Commands
 
-        public bool UseFastMode
-        {
-            get => useFastMode;
-            set => Set(ref useFastMode, value);
-        }
+        public DelegateCommand<ContributionsModel> EditCommand { get; set; }
 
-        #endregion
+        public DelegateCommand<ContributionsModel> RemoveCommand { get; set; }
         
         #region Event handlers
+
+        // Collection and Selection Changed handlers
 
         private void UploadQueue_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             CanUpload = UploadQueue.Any();
         }
-
-
-        // Data form editors
-
-        public async void TextBox_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            CanSave = await SelectedContribution.Validate();
-        }
-
-        public async void UrlBox_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            CanSave = await SelectedContribution.Validate();
-        }
-
-        public async void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            CanSave = await SelectedContribution.Validate();
-        }
-
+        
         public async void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
             if (e.NewDate < new DateTime(2016, 10, 1) || e.NewDate > new DateTime(2018, 3, 31))
             {
                 await new MessageDialog("The contribution date must be after the start of your current award period and before March 31, 2018 in order for it to count towards your evaluation", "Notice: Out of range").ShowAsync();
             }
-
-            CanSave = await SelectedContribution.Validate();
         }
-
-        public async void AnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
+        
+        public void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            CanSave = await SelectedContribution.Validate();
+            if (e.AddedItems.FirstOrDefault() is ContributionTypeModel type)
+            {
+                // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
+                DetermineContributionTypeRequirements(type);
+
+                // Also need set the type name
+                SelectedContribution.ContributionTypeName = type.EnglishName;
+            }
         }
+        
+        // Button click handlers
 
-        public async void SecondAnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
-        {
-            CanSave = await SelectedContribution.Validate();
-        }
-
-        public async void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            UpdateHeaders(SelectedContribution.ContributionType);
-
-            // Also set the type name
-            SelectedContribution.ContributionTypeName = SelectedContribution.ContributionType.EnglishName;
-
-            CanSave = await SelectedContribution.Validate();
-        }
-
-
-        // Buttons
-
-        public async void AddToQueueButton_Click(object sender, RoutedEventArgs e)
+        public async void AddCurrentItemButton_Click(object sender, RoutedEventArgs e)
         {
             var isValid = await SelectedContribution.Validate(true);
 
@@ -214,8 +179,12 @@ namespace MvpApi.Uwp.ViewModels
 
             if (isValidated)
             {
-                UploadQueue.Add(SelectedContribution);
-                SelectedContribution = CreateNewContribution();
+                SelectedContribution.ContributionId = null;
+
+                if(!UploadQueue.Contains(SelectedContribution))
+                    UploadQueue.Add(SelectedContribution);
+
+                SetupNextEntry();
             }
             else
             {
@@ -223,59 +192,11 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        public void EditContribution_Click(object sender, RoutedEventArgs e)
+        public void ClearCurrentItemButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is ContributionsModel contribution)
-            {
-                SelectedContribution = contribution;
-            }
+            SetupNextEntry();
         }
 
-        public async void RemoveContribution_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var md = new MessageDialog("Are you sure you want to remove this contribution from the queue?", "Remove Contribution?");
-                md.Commands.Add(new UICommand("yes"));
-                md.Commands.Add(new UICommand("cancel"));
-
-                var dialogResult = await md.ShowAsync();
-
-                if (dialogResult.Label == "yes" && 
-                    sender is Button button && 
-                    button.DataContext is ContributionsModel contribution)
-                {
-                    UploadQueue.Remove(contribution);
-
-                    if(SelectedContribution == contribution)
-                        SelectedContribution = UploadQueue.LastOrDefault();
-                }
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
-            }
-        }
-
-        public async void SaveContribution_Click(object sender, RoutedEventArgs e)
-        {
-            if (!(sender is Button button) || !(button.DataContext is ContributionsModel contribution))
-                return;
-
-            contribution.UploadStatus = UploadStatus.InProgress;
-
-            var success = await UploadContributionAsync(contribution);
-                
-            contribution.UploadStatus = success 
-                ? UploadStatus.Success 
-                : UploadStatus.Failed;
-
-            if (contribution.UploadStatus == UploadStatus.Success)
-            {
-                await new MessageDialog("Successfully saved, the contribution will be removed from queue.").ShowAsync();
-            }
-        }
-        
         public async void ClearQueueButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -291,34 +212,33 @@ namespace MvpApi.Uwp.ViewModels
 
                 UploadQueue.Clear();
 
-                SelectedContribution = CreateNewContribution();
+                SetupNextEntry();
             }
             catch (Exception ex)
             {
                 await new MessageDialog($"Something went wrong clearing the queue, please try again. Error: {ex.Message}").ShowAsync();
             }
         }
-        
-        public async void SaveAllContributions_Click(object sender, RoutedEventArgs e)
+
+        public async void UploadQueue_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < UploadQueue.Count - 1; i++)
+            foreach (var contribution in UploadQueue)
             {
-                UploadQueue[i].UploadStatus = UploadStatus.InProgress;
+                contribution.UploadStatus = UploadStatus.InProgress;
 
-                var success = await UploadContributionAsync(UploadQueue[i]);
-                
-                UploadQueue[i].UploadStatus = success 
-                    ? UploadStatus.Success 
+                var success = await UploadContributionAsync(contribution);
+            
+                contribution.UploadStatus = success
+                    ? UploadStatus.Success
                     : UploadStatus.Failed;
-
-                if(UploadQueue[i].UploadStatus == UploadStatus.Success)
-                    UploadQueue.Remove(UploadQueue[i]);
-
             }
 
+            UploadQueue.Remove(c => c.UploadStatus == UploadStatus.Success);
+            
             if (UploadQueue.Any())
             {
-                // If any uploads failed, stay on the page and select the latest contribution in the queue
+                await new MessageDialog("Not all contributions were saved, view the queue for remaining items and try again", "Incomplete Upload").ShowAsync();
+
                 SelectedContribution = UploadQueue.LastOrDefault();
             }
             else
@@ -329,10 +249,74 @@ namespace MvpApi.Uwp.ViewModels
                     NavigationService.GoBack();
             }
         }
-
+        
         #endregion
 
         #region Methods
+
+        private void SetupNextEntry()
+        {
+            // Set up first contribution, ID is 0 so that we dont accidentally overwrite the data in the form if another contribution is selected for editing
+            // this ContributionId will be nulled out before uploading
+            SelectedContribution = new ContributionsModel
+            {
+                ContributionId = 0,
+                StartDate = DateTime.Now,
+                Visibility = Visibilies.FirstOrDefault(),
+                ContributionType = Types.FirstOrDefault(),
+                ContributionTypeName = SelectedContribution?.ContributionType?.Name,
+                ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas.FirstOrDefault()
+            };
+        }
+
+        public async Task EditContribution(ContributionsModel contribution)
+        {
+            if (contribution == null)
+                return;
+            
+            if (contribution.ContributionId == 0)
+            {
+                var md = new MessageDialog("Editing this contribution will replace the unsaved information you have in the form. If you do not want to lose that information, click 'cancel' and add it to the queue before editing this one.", "Warning");
+                md.Commands.Add(new UICommand("edit"));
+                md.Commands.Add(new UICommand("cancel"));
+
+                var dialogResult = await md.ShowAsync();
+
+                if (dialogResult.Label == "cancel")
+                    return;
+            }
+
+            SelectedContribution = contribution;
+        }
+
+        public async Task RemoveContribution(ContributionsModel contribution)
+        {
+            if (contribution == null)
+                return;
+
+            try
+            {
+                var md = new MessageDialog("Are you sure you want to remove this contribution from the queue?", "Remove Contribution?");
+                md.Commands.Add(new UICommand("yes"));
+                md.Commands.Add(new UICommand("cancel"));
+
+                var dialogResult = await md.ShowAsync();
+
+                if (dialogResult.Label == "yes")
+                {
+                    if (SelectedContribution == contribution)
+                    {
+                        SelectedContribution = null;
+                    }
+
+                    UploadQueue.Remove(contribution);
+                }
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
+            }
+        }
         
         public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
         {
@@ -351,32 +335,7 @@ namespace MvpApi.Uwp.ViewModels
                 return false;
             }
         }
-
-        private ContributionsModel CreateNewContribution()
-        {
-            if (UseFastMode)
-            {
-                return new ContributionsModel
-                {
-                    StartDate = DateTime.Now,
-                    Visibility = SelectedContribution?.Visibility,
-                    ContributionType = SelectedContribution?.ContributionType,
-                    ContributionTypeName = SelectedContribution?.ContributionType?.Name,
-                    ContributionTechnology = SelectedContribution?.ContributionTechnology
-                };
-            }
-            else
-            {
-                return new ContributionsModel
-                {
-                    StartDate = DateTime.Now,
-                    Visibility = Visibilies.FirstOrDefault(),
-                    ContributionType = Types.FirstOrDefault(),
-                    ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas?.FirstOrDefault()
-                };
-            }
-        }
-
+        
         private async Task<bool> ValidateRequiredFields()
         {
             if (SelectedContribution.ContributionType == null)
@@ -423,8 +382,85 @@ namespace MvpApi.Uwp.ViewModels
 
             return true;
         }
+        
+        private async Task LoadSupportingDataAsync()
+        {
+            IsBusyMessage = "loading types...";
 
-        private void UpdateHeaders(ContributionTypeModel contributionType)
+            var types = await App.ApiService.GetContributionTypesAsync();
+
+            types.ForEach(type =>
+            {
+                Types.Add(type);
+            });
+
+
+            IsBusyMessage = "loading technologies...";
+
+            var areaRoots = await App.ApiService.GetContributionAreasAsync();
+
+            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
+            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+
+            areas.ForEach(area =>
+            {
+                CategoryAreas.Add(area);
+            });
+
+
+            IsBusyMessage = "loading visibility options...";
+
+            var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+            visibilities.ForEach(visibility =>
+            {
+                Visibilies.Add(visibility);
+            });
+        }
+
+        #endregion
+        
+        #region Navigation
+
+        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        {
+            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
+            {
+                try
+                {
+                    IsBusy = true;
+
+                    // ** Get the neccessary associated data from the API **
+
+                    await LoadSupportingDataAsync();
+                    
+                    SetupNextEntry();
+                    
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"LoadDataAsync Exception {ex}");
+                }
+                finally
+                {
+                    IsBusyMessage = "";
+                    IsBusy = false;
+                }
+            }
+            else
+            {
+                await NavigationService.NavigateAsync(typeof(LoginPage));
+            }
+        }
+
+        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+        {
+            return base.OnNavigatedFromAsync(pageState, suspending);
+        }
+
+        #endregion
+
+        public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
         {
             switch (contributionType.EnglishName)
             {
@@ -638,90 +674,6 @@ namespace MvpApi.Uwp.ViewModels
                     break;
             }
         }
-
-        private async Task LoadSupportingDataAsync()
-        {
-            IsBusyMessage = "loading types...";
-
-            var types = await App.ApiService.GetContributionTypesAsync();
-
-            types.ForEach(type =>
-            {
-                Types.Add(type);
-            });
-
-
-            IsBusyMessage = "loading technologies...";
-
-            var areaRoots = await App.ApiService.GetContributionAreasAsync();
-
-            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-
-            areas.ForEach(area =>
-            {
-                CategoryAreas.Add(area);
-            });
-
-
-            IsBusyMessage = "loading visibility options...";
-
-            var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-            visibilities.ForEach(visibility =>
-            {
-                Visibilies.Add(visibility);
-            });
-        }
-
-        #endregion
-        
-        #region Navigation
-
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
-        {
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
-            {
-                try
-                {
-                    IsBusy = true;
-
-                    // ** Get the associated lists from the API **
-
-                    await LoadSupportingDataAsync();
-                    
-                    // Set up first contribution
-                    SelectedContribution = new ContributionsModel
-                    {
-                        StartDate = DateTime.Now,
-                        Visibility = Visibilies.FirstOrDefault(),
-                        ContributionType = Types.FirstOrDefault(),
-                        ContributionTypeName = SelectedContribution?.ContributionType?.Name
-                    };
-                    
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"LoadDataAsync Exception {ex}");
-                }
-                finally
-                {
-                    IsBusyMessage = "";
-                    IsBusy = false;
-                }
-            }
-            else
-            {
-                await NavigationService.NavigateAsync(typeof(LoginPage));
-            }
-        }
-
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            return base.OnNavigatedFromAsync(pageState, suspending);
-        }
-
-        #endregion
 
         // Not done yet
         #region Excel document logic (to be added)

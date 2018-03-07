@@ -7,6 +7,9 @@ namespace MvpApi.Uwp.Views
         public HomePage()
         {
             InitializeComponent();
+
+            // Note: The is a workaround because there's no OneWayToSource binding option for UWP
+            ViewModel.SelectedContributions = ContributionsGrid.SelectedItems;
         }
     }
 }

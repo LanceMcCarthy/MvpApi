@@ -21,19 +21,27 @@
         <Grid x:Name="HeaderGrid"
               Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
+
+            <ProgressBar IsIndeterminate="{Binding IsLoadingMoreItems}"
+                         Background="Transparent"
+                         VerticalAlignment="Bottom"/>
+
             <TextBlock Text="Home Page"
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
 
-            <TextBlock Text="{Binding DisplayTotal}"
-                       VerticalAlignment="Center"
+            <TextBlock x:Name="DisplayTotalTextBlock"
                        HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Text="{Binding DisplayTotal}"
                        Margin="0,0,10,0" />
         </Grid>
 
-        <grid:RadDataGrid ItemsSource="{Binding Activities}"
+        <grid:RadDataGrid x:Name="ContributionsGrid"
+                          ItemsSource="{Binding Activities}"
                           IsBusyIndicatorEnabled="{Binding IsBusy}"
+                          SelectionMode="{Binding GridSelectionMode}"
                           IncrementalLoadingMode="Auto"
                           AutoGenerateColumns="False"
                           SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
@@ -43,33 +51,59 @@
                                          CellContentFormat="{}{0:d}"
                                          Header="Start Date" />
                 <grid:DataGridTextColumn PropertyName="Title"
-                                         Header="Title" />
+                                         Header="Title"
+                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />
                 <grid:DataGridTextColumn PropertyName="ContributionTypeName"
-                                         Header="Contribution Type" />
+                                         Header="Contribution Type"
+                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />
                 <grid:DataGridTextColumn PropertyName="Description"
-                                         Width="100"
-                                         Header="Description">
-                    <grid:DataGridTextColumn.CellContentStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="TextTrimming"
-                                    Value="CharacterEllipsis" />
-                        </Style>
-                    </grid:DataGridTextColumn.CellContentStyle>
-                </grid:DataGridTextColumn>
-                <grid:DataGridTextColumn PropertyName="ReferenceUrl"
-                                         Width="100"
-                                         Header="Url" />
+                                         Header="Description"
+                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />
                 <grid:DataGridNumericalColumn PropertyName="AnnualQuantity"
                                               Header="Annual Quantity" />
                 <grid:DataGridNumericalColumn PropertyName="AnnualReach"
                                               Header="Annual Reach" />
+                <grid:DataGridTextColumn PropertyName="ReferenceUrl"
+                                         Width="100"
+                                         Header="Url"
+                                         CellContentStyle="{StaticResource SmallCellContentStyle}" />
             </grid:RadDataGrid.Columns>
         </grid:RadDataGrid>
 
         <CommandBar Grid.Row="2">
+            <AppBarButton Label="clear selection"
+                          Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                          IsEnabled="{Binding AreAppbarButtonsEnabled}"
+                          Click="{x:Bind ViewModel.ClearSelectionButton_Click}"
+                          Icon="ClearSelection" />
+            <AppBarButton Label="delete"
+                          Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                          IsEnabled="{Binding AreAppbarButtonsEnabled}"
+                          Click="{x:Bind ViewModel.DeleteSelectionButton_Click}"
+                          Icon="Delete" />
+            <AppBarToggleButton Label="multiple selection"
+                                IsChecked="{Binding IsMultipleSelectionEnabled, Mode=TwoWay}"
+                                Icon="Bullets" />
             <AppBarButton Label="add activity"
                           Click="{x:Bind ViewModel.AddActivityButton_Click}"
                           Icon="Add" />
         </CommandBar>
+
+        <Grid x:Name="BusyOverlay"
+              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
+              Background="{ThemeResource SystemControlForegroundAltMediumHighBrush}"
+              Grid.Row="1"
+              Grid.RowSpan="2"
+              Grid.Column="0">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <ProgressRing IsActive="{Binding IsBusy}"
+                              Width="80"
+                              Height="80"
+                              Margin="20" />
+                <TextBlock Text="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

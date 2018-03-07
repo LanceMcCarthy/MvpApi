@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 using MvpApi.Common.Models;
@@ -249,6 +251,25 @@ namespace MvpApi.Uwp.Extensions
             Debug.WriteLine($"Clone complete. Contribution: {clone.Title}");
 
             return clone;
+        }
+
+        /// <summary>
+        /// Helper to remove items from a colleciton without collection modification issues
+        /// </summary>
+        /// <typeparam name="TContributionsModel"></typeparam>
+        /// <param name="coll">Collection of Contributions</param>
+        /// <param name="condition">Predicate</param>
+        /// <returns></returns>
+        public static int Remove<TContributionsModel>(this ObservableCollection<TContributionsModel> coll, Func<TContributionsModel, bool> condition)
+        {
+            var itemsToRemove = coll.Where(condition).ToList();
+
+            foreach (var itemToRemove in itemsToRemove)
+            {
+                coll.Remove(itemToRemove);
+            }
+
+            return itemsToRemove.Count;
         }
     }
 }

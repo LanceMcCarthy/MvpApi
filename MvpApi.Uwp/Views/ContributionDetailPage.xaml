@@ -66,9 +66,9 @@
                 <ComboBox ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
                           SelectedItem="{Binding SelectedCategoryAreaTechnology, Mode=TwoWay}"
                           SelectionChanged="{x:Bind ViewModel.TechnologyComboBox_OnSelectionChanged}"
-                          HorizontalAlignment="Left"
+                          Style="{StaticResource TechnologyAreaComboBoxStyle}"
                           Margin="10,10,10,0">
-                    <ComboBox.GroupStyle>
+                    <!--<ComboBox.GroupStyle>
                         <GroupStyle HidesIfEmpty="True">
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
@@ -119,11 +119,9 @@
                     </ComboBox.Style>
                     <ComboBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <!-- Using a VirtualizingStackpanel has initial render height problems, 
-                            sticking to non-virtualized pane because there really arent that many items -->
                             <StackPanel MaxWidth="600"/>
                         </ItemsPanelTemplate>
-                    </ComboBox.ItemsPanel>
+                    </ComboBox.ItemsPanel>-->
                 </ComboBox>
 
                 <DatePicker Date="{Binding SelectedContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}}"
