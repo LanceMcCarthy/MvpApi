@@ -67,62 +67,7 @@
                           SelectedItem="{Binding SelectedCategoryAreaTechnology, Mode=TwoWay}"
                           SelectionChanged="{x:Bind ViewModel.TechnologyComboBox_OnSelectionChanged}"
                           Style="{StaticResource TechnologyAreaComboBoxStyle}"
-                          Margin="10,10,10,0">
-                    <!--<ComboBox.GroupStyle>
-                        <GroupStyle HidesIfEmpty="True">
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <Grid Background="{ThemeResource SystemControlForegroundAccentBrush}" 
-                                          HorizontalAlignment="Stretch">
-                                        <TextBlock Text="{Binding AwardName}"
-                                                   Margin="5"
-                                                   Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                            <GroupStyle.Panel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel MaxWidth="600"/>
-                                </ItemsPanelTemplate>
-                            </GroupStyle.Panel>
-                        </GroupStyle>
-                    </ComboBox.GroupStyle>
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel MaxWidth="300">
-                                <TextBlock Text="{Binding Name}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                    <ComboBox.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Contribution Technology Area"
-                                       Margin="0,0,5,0" />
-                            <TextBlock Text="(required)"
-                                       Margin="5,0"
-                                       FontStyle="Italic"
-                                       Foreground="Red" />
-                        </StackPanel>
-                    </ComboBox.Header>
-                    <ComboBox.Style>
-                        <Style TargetType="ComboBox">
-                            <Setter Property="HorizontalAlignment"
-                                    Value="Left"/>
-                            <Setter Property="HorizontalContentAlignment" 
-                                    Value="Left"/>
-                            <Setter Property="ItemContainerTransitions">
-                                <Setter.Value>
-                                    <TransitionCollection/>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ComboBox.Style>
-                    <ComboBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel MaxWidth="600"/>
-                        </ItemsPanelTemplate>
-                    </ComboBox.ItemsPanel>-->
-                </ComboBox>
+                          Margin="10,10,10,0"/>
 
                 <DatePicker Date="{Binding SelectedContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}}"
                             HorizontalAlignment="Left"

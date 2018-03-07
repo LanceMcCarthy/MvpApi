@@ -19,6 +19,7 @@ using MvpApi.Common.Models;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
+using Template10.Common;
 using Template10.Mvvm;
 using Template10.Utils;
 
@@ -245,8 +246,8 @@ namespace MvpApi.Uwp.ViewModels
             {
                 await new MessageDialog("All contributions have been saved!").ShowAsync();
 
-                if (NavigationService.CanGoBack)
-                    NavigationService.GoBack();
+                if (BootStrapper.Current.NavigationService.CanGoBack)
+                    BootStrapper.Current.NavigationService.GoBack();
             }
         }
         
@@ -393,8 +394,7 @@ namespace MvpApi.Uwp.ViewModels
             {
                 Types.Add(type);
             });
-
-
+            
             IsBusyMessage = "loading technologies...";
 
             var areaRoots = await App.ApiService.GetContributionAreasAsync();
@@ -449,7 +449,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
-                await NavigationService.NavigateAsync(typeof(LoginPage));
+                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
             }
         }
 

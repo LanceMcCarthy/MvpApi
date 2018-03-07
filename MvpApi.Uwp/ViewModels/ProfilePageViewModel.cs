@@ -52,7 +52,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
-                await NavigationService.NavigateAsync(typeof(LoginPage));
+                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
             }
         }
 

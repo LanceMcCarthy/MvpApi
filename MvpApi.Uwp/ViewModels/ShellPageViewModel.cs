@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml.Navigation;
@@ -13,7 +14,6 @@ namespace MvpApi.Uwp.ViewModels
     public class ShellPageViewModel : PageViewModelBase
     {
         #region Fields
-
         
         private ProfileViewModel mvp;
         private string profileImagePath;
@@ -34,6 +34,9 @@ namespace MvpApi.Uwp.ViewModels
 
         #region Properties
 
+        /// <summary>
+        /// File path to locally saved MVP profile image
+        /// </summary>
         public string ProfileImagePath
         {
             get => profileImagePath;
@@ -45,14 +48,23 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
+        /// <summary>
+        /// Currently signed in MVP profile
+        /// </summary>
         public ProfileViewModel Mvp
         {
             get => mvp;
             set => Set(ref mvp, value);
         }
-
+        
+        /// <summary>
+        /// Timestamp of last login. There is a 60 minute session limit for the access token returned after a login.
+        /// </summary>
         public DateTime LoginTimeStamp { get; set; }
 
+        /// <summary>
+        /// Denotes whether the user is currently loigged in and able to make successful requests to the API
+        /// </summary>
         public bool IsLoggedIn
         {
             get

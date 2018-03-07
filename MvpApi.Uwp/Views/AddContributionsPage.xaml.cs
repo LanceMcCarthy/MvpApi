@@ -6,7 +6,7 @@ namespace MvpApi.Uwp.Views
     {
         public AddContributionsPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
     }
 }

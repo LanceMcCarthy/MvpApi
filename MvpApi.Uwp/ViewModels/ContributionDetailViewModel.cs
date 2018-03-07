@@ -14,6 +14,7 @@ using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Newtonsoft.Json;
+using Template10.Common;
 using Template10.Mvvm;
 using Template10.Utils;
 
@@ -243,8 +244,8 @@ namespace MvpApi.Uwp.ViewModels
 
             if (SelectedContribution.UploadStatus == UploadStatus.Success)
             {
-                if (NavigationService.CanGoBack)
-                    NavigationService.GoBack();
+                if (BootStrapper.Current.NavigationService.CanGoBack)
+                    BootStrapper.Current.NavigationService.GoBack();
             }
         }
 
@@ -267,8 +268,8 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     await new MessageDialog("Successfully deleted.").ShowAsync();
 
-                    if (NavigationService.CanGoBack)
-                        NavigationService.GoBack();
+                    if (BootStrapper.Current.NavigationService.CanGoBack)
+                        BootStrapper.Current.NavigationService.GoBack();
                 }
                 else
                 {
@@ -578,8 +579,8 @@ namespace MvpApi.Uwp.ViewModels
                     {
                         await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
 
-                        if (NavigationService.CanGoBack)
-                            NavigationService.GoBack();
+                        if (BootStrapper.Current.NavigationService.CanGoBack)
+                            BootStrapper.Current.NavigationService.GoBack();
                     }
                 }
                 catch (Exception ex)
@@ -594,7 +595,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
-                await NavigationService.NavigateAsync(typeof(LoginPage));
+                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
             }
         }
 

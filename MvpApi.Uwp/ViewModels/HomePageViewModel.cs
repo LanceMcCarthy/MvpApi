@@ -12,6 +12,7 @@ using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Telerik.Core.Data;
 using Telerik.UI.Xaml.Controls.Grid;
+using Template10.Common;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -128,7 +129,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            await NavigationService.NavigateAsync(typeof(AddContributionsPage));
+            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage));
         }
 
         public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
@@ -185,7 +186,7 @@ namespace MvpApi.Uwp.ViewModels
             // when in single selectin mode, go to the selected item's details page
             if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
             {
-                await NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution);
+                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution);
             }
         }
 
@@ -201,7 +202,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
-                await NavigationService.NavigateAsync(typeof(LoginPage));
+                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
             }
         }
 

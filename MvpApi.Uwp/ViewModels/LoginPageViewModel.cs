@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Services;
@@ -143,8 +142,7 @@ namespace MvpApi.Uwp.ViewModels
             {
                 IsBusy = true;
 
-                var shellVm = App.ShellPage.DataContext as ShellPageViewModel;
-                if (shellVm != null)
+                if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
                 {
                     shellVm.IsLoggedIn = true;
                     IsBusyMessage = "downloading profile info...";
