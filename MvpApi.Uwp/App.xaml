@@ -28,14 +28,14 @@
             </toolkit:BoolToVisibilityConverter.FalseValue>
         </toolkit:BoolToVisibilityConverter>
 
-        <Style x:Name="SmallCellContentStyle" 
+        <Style x:Name="SmallCellContentStyle"
                TargetType="TextBlock">
             <Setter Property="MaxWidth"
                     Value="100" />
             <Setter Property="TextTrimming"
                     Value="CharacterEllipsis" />
             <Setter Property="Margin"
-                    Value="5"/>
+                    Value="5" />
         </Style>
 
         <Style x:Name="MediumCellContentStyle"
@@ -76,7 +76,11 @@
                                 </GroupStyle.HeaderTemplate>
                                 <GroupStyle.Panel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel MaxWidth="600" />
+                                        <StackPanel MaxWidth="600">
+                                            <StackPanel.ChildrenTransitions>
+                                                <TransitionCollection />
+                                            </StackPanel.ChildrenTransitions>
+                                        </StackPanel>
                                     </ItemsPanelTemplate>
                                 </GroupStyle.Panel>
                             </GroupStyle>
@@ -96,7 +100,11 @@
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>
-                        <StackPanel MaxWidth="600" />
+                        <StackPanel MaxWidth="600">
+                            <StackPanel.ChildrenTransitions>
+                                <TransitionCollection />
+                            </StackPanel.ChildrenTransitions>
+                        </StackPanel>
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>

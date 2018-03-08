@@ -44,14 +44,11 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
-                {
-                    //CategoryAreas = DesignTimeHelpers.GenerateTechnologyAreas(); //Causing designer layout error
-                    Visibilies = DesignTimeHelpers.GenerateVisibilities();
-                    SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
-                    SelectedCategoryAreaTechnology = DesignTimeHelpers.GenerateAreaTechnologies().FirstOrDefault();
-                    SelectedVisibility = DesignTimeHelpers.GenerateVisibilities().FirstOrDefault();
-                }
+                //CategoryAreas = DesignTimeHelpers.GenerateTechnologyAreas(); //Causing designer layout error
+                Visibilies = DesignTimeHelpers.GenerateVisibilities();
+                SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
+                SelectedCategoryAreaTechnology = DesignTimeHelpers.GenerateAreaTechnologies().FirstOrDefault();
+                SelectedVisibility = DesignTimeHelpers.GenerateVisibilities().FirstOrDefault();
             }
         }
 
@@ -70,13 +67,21 @@ namespace MvpApi.Uwp.ViewModels
         public ContributionTechnologyModel SelectedCategoryAreaTechnology
         {
             get => selectedCategoryAreaTechnology;
-            set => Set(ref selectedCategoryAreaTechnology, value);
+            set
+            {
+                Set(ref selectedCategoryAreaTechnology, value);
+                Debug.WriteLine($"***SelectedCategoryTechnology Setter*** Id: {value?.Id}");
+            }
         }
 
         public VisibilityViewModel SelectedVisibility
         {
             get => selectedVisibility;
-            set => Set(ref selectedVisibility, value);
+            set
+            {
+                Set(ref selectedVisibility, value);
+                Debug.WriteLine($"***SelectedVisibility Setter*** Id: {value?.Id}");
+            }
         }
 
         public bool IsSelectedContributionDirty
@@ -146,50 +151,35 @@ namespace MvpApi.Uwp.ViewModels
         #region Event handlers
 
         // Data form event handlers
-
-        public void EditContributionButton_OnClick(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        public async void TitleTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        
+        public void TitleTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.Title == originalContribution.Title;
-
-            CanSave = await SelectedContribution.Validate();
         }
 
-        public async void DescriptionTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        public void DescriptionTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.Description == originalContribution.Description;
-
-            CanSave = await SelectedContribution.Validate();
         }
 
-        public async void UrlTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        public void UrlTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.ReferenceUrl == originalContribution.ReferenceUrl;
-
-            CanSave = await SelectedContribution.Validate();
         }
 
-        public async void TechnologyComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        public void TechnologyComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.ContributionTechnology.Id == originalContribution.ContributionTechnology.Id;
-
-            CanSave = await SelectedContribution.Validate();
         }
 
-        public async void VisibilityComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        public void VisibilityComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.Visibility.Id == originalContribution.Visibility.Id;
-
-            CanSave = await SelectedContribution.Validate();
         }
 
         public async void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
@@ -204,23 +194,18 @@ namespace MvpApi.Uwp.ViewModels
 
             if(originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.StartDate == originalContribution.StartDate;
-
-            CanSave = await SelectedContribution.Validate();
         }
 
-        public async void AnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
+        public void AnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
         {
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.AnnualQuantity == originalContribution.AnnualQuantity;
-            CanSave = await SelectedContribution.Validate();
         }
 
-        public async void SecondAnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
+        public void SecondAnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
         {
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.SecondAnnualQuantity == originalContribution.SecondAnnualQuantity;
-
-            CanSave = await SelectedContribution.Validate();
         }
 
         // CommandBar event handlers
@@ -329,7 +314,7 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
         
-        public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
+        public void DetermineCategoryTechnologyRequirements(ContributionTypeModel contributionType)
         {
             switch (contributionType.EnglishName)
             {
@@ -565,13 +550,19 @@ namespace MvpApi.Uwp.ViewModels
                         SelectedContribution = param;
 
                         SelectedVisibility = SelectedContribution.Visibility;
-                        SelectedCategoryAreaTechnology = SelectedContribution.ContributionTechnology;
+                        
+                        var techs = CategoryAreas.SelectMany(c => c.ContributionAreas).Where(a => a.Id == SelectedContribution.ContributionTechnology.Id);
+                        var tech = techs.FirstOrDefault();
+
+                        Debug.WriteLine($"***LOADED*** Technology Area: ID {tech.Id}, Award Category{tech.AwardCategory}, Award Name{tech.AwardName}, Tech Name {tech.Name}");
+
+                        SelectedCategoryAreaTechnology = tech;
 
                         SelectedContribution.UploadStatus = UploadStatus.None;
 
                         // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
-                        DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
-
+                        DetermineCategoryTechnologyRequirements(SelectedContribution.ContributionType);
+                        
                         // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
                         originalContribution = SelectedContribution.Clone();
                     }

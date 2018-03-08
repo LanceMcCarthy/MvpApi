@@ -6,6 +6,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
+      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -357,25 +358,14 @@
                    Grid.RowSpan="3"
                    Grid.Column="1" />
 
-        <Grid x:Name="BusyOverlay"
-              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
-              Background="{ThemeResource SystemControlForegroundAltMediumHighBrush}"
-              Grid.Row="1"
-              Grid.RowSpan="2"
-              Grid.ColumnSpan="3"
-              Grid.Column="0">
-            <StackPanel HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                <ProgressRing x:Name="BusyIndicator"
-                              IsActive="{Binding IsBusy}"
-                              Width="80"
-                              Height="80"
-                              Margin="20" />
-                <TextBlock Text="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                           HorizontalAlignment="Center" />
-            </StackPanel>
-        </Grid>
-
+        <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                                     IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                     AnimationStyle="AnimationStyle4"
+                                     Background="{ThemeResource SystemControlForegroundAltMediumHighBrush}"
+                                     Grid.Row="1"
+                                     Grid.RowSpan="2"
+                                     Grid.ColumnSpan="3"
+                                     Grid.Column="0" />
 
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="WindowStates">

@@ -246,11 +246,7 @@ namespace MvpApi.Uwp.Extensions
         {
             // Deep clone using json.net
             var json = JsonConvert.SerializeObject(source);
-            var clone = JsonConvert.DeserializeObject<ContributionsModel>(json);
-            
-            Debug.WriteLine($"Clone complete. Contribution: {clone.Title}");
-
-            return clone;
+            return JsonConvert.DeserializeObject<ContributionsModel>(json);
         }
 
         /// <summary>

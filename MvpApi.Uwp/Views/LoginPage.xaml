@@ -8,6 +8,7 @@
     xmlns:models="using:MvpApi.Models"
     xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:uwpToolkitUi="using:Microsoft.Toolkit.Uwp.UI"
+      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       mc:Ignorable="d">
     
     <Page.DataContext>
@@ -29,25 +30,13 @@
                        VerticalAlignment="Center" />
         </Grid>
 
-        <WebView Grid.Row="1"
-                 uwpToolkitUi:WebViewExtensions.ContentUri="{Binding BrowserUri}"
-                 LoadCompleted="{x:Bind ViewModel.BrowserWindow_LoadCompleted}"/>
+        <WebView uwpToolkitUi:WebViewExtensions.ContentUri="{Binding BrowserUri}"
+                 LoadCompleted="{x:Bind ViewModel.BrowserWindow_LoadCompleted}"
+                 Grid.Row="1" />
 
-        <Grid x:Name="BusyOverlay"
-              Grid.Row="1"
-              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
-              Background="{ThemeResource SystemControlForegroundAltMediumHighBrush}">
-            <StackPanel HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                <ProgressRing x:Name="BusyIndicator"
-                              IsActive="{Binding IsBusy}"
-                              Width="80"
-                              Height="80"
-                              Margin="20"/>
-                <TextBlock Text="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                           HorizontalAlignment="Center" />
-            </StackPanel>
-        </Grid>
-
+        <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                                     IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                     AnimationStyle="AnimationStyle4"
+                                     Grid.Row="1" />
     </Grid>
 </Page>

@@ -5,6 +5,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
+      xmlns:models="using:MvpApi.Common.Models"
+      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -64,7 +66,7 @@
                            Margin="10,0" />
 
                 <ComboBox ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                          SelectedItem="{Binding SelectedCategoryAreaTechnology, Mode=TwoWay}"
+                          SelectedItem="{x:Bind ViewModel.SelectedCategoryAreaTechnology, Mode=TwoWay}"
                           SelectionChanged="{x:Bind ViewModel.TechnologyComboBox_OnSelectionChanged}"
                           Style="{StaticResource TechnologyAreaComboBoxStyle}"
                           Margin="10,10,10,0"/>
@@ -87,7 +89,8 @@
                     </DatePicker.Header>
                 </DatePicker>
 
-                <TextBox Text="{Binding SelectedContribution.Title, Mode=TwoWay}"
+                <TextBox x:Name="TitleTextBox"
+                         Text="{Binding SelectedContribution.Title, Mode=TwoWay}"
                          HorizontalAlignment="Left"
                          MinWidth="300"
                          Margin="10"
@@ -104,7 +107,8 @@
                     </TextBox.Header>
                 </TextBox>
 
-                <TextBox Text="{Binding SelectedContribution.Description, Mode=TwoWay}"
+                <TextBox x:Name="DescriptionTextBox"
+                         Text="{Binding SelectedContribution.Description, Mode=TwoWay}"
                          AcceptsReturn="True"
                          Header="Description"
                          MinWidth="300"
@@ -112,7 +116,8 @@
                          Margin="10"
                          TextChanged="{x:Bind ViewModel.DescriptionTextBox_OnTextChanged}" />
 
-                <TextBox Text="{Binding SelectedContribution.ReferenceUrl, Mode=TwoWay}"
+                <TextBox x:Name="UrlTextBox"
+                         Text="{Binding SelectedContribution.ReferenceUrl, Mode=TwoWay}"
                          HorizontalAlignment="Left"
                          MinWidth="300"
                          Margin="10"
@@ -131,71 +136,78 @@
                     </TextBox.Header>
                 </TextBox>
 
-                <input:RadNumericBox Value="{Binding SelectedContribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
-                                     Visibility="{Binding AnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
-                                     AcceptsDecimalSeparator="False"
-                                     ValueFormat="{}{0:N0}"
-                                     SmallChange="1"
-                                     LargeChange="5"
-                                     HorizontalAlignment="Left"
-                                     MinWidth="300"
-                                     Margin="10"
-                                     ValueChanged="{x:Bind ViewModel.AnnualQuantityBox_OnValueChanged}">
-                    <input:RadNumericBox.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding AnnualQuantityHeader}"
-                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                       Margin="0,0,5,0" />
-                            <TextBlock Text="(required)"
-                                       Margin="5,0"
-                                       FontStyle="Italic"
-                                       Foreground="Red"
-                                       Visibility="{Binding IsAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
-                        </StackPanel>
-                    </input:RadNumericBox.Header>
-                </input:RadNumericBox>
+                <StackPanel x:Name="NumericInputStackPanel"
+                            Orientation="Horizontal">
+                    <input:RadNumericBox x:Name="AnnualQuantityNumericBox"
+                                         Value="{Binding SelectedContribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
+                                         Visibility="{Binding AnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
+                                         AcceptsDecimalSeparator="False"
+                                         ValueFormat="{}{0:N0}"
+                                         SmallChange="1"
+                                         LargeChange="5"
+                                         HorizontalAlignment="Left"
+                                         MinWidth="300"
+                                         Margin="10"
+                                         ValueChanged="{x:Bind ViewModel.AnnualQuantityBox_OnValueChanged}">
+                        <input:RadNumericBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding AnnualQuantityHeader}"
+                                           Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                           Margin="0,0,5,0" />
+                                <TextBlock Text="(required)"
+                                           Margin="5,0"
+                                           FontStyle="Italic"
+                                           Foreground="Red"
+                                           Visibility="{Binding IsAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </StackPanel>
+                        </input:RadNumericBox.Header>
+                    </input:RadNumericBox>
 
-                <input:RadNumericBox Value="{Binding SelectedContribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
-                                     Visibility="{Binding SecondAnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
-                                     AcceptsDecimalSeparator="False"
-                                     ValueFormat="{}{0:N0}"
-                                     SmallChange="1"
-                                     LargeChange="5"
-                                     HorizontalAlignment="Left"
-                                     MinWidth="300"
-                                     Margin="10"
-                                     ValueChanged="{x:Bind ViewModel.SecondAnnualQuantityBox_OnValueChanged}">
-                    <input:RadNumericBox.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding SecondAnnualQuantityHeader}"
-                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                       Margin="0,0,5,0" />
-                            <TextBlock Text="required"
-                                       Margin="5,0"
-                                       Foreground="Red"
-                                       FontStyle="Italic"
-                                       Visibility="{Binding IsSecondAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
-                        </StackPanel>
-                    </input:RadNumericBox.Header>
-                </input:RadNumericBox>
+                    <input:RadNumericBox x:Name="SecondAnnualQuantityNumericBox"
+                                         Value="{Binding SelectedContribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
+                                         Visibility="{Binding SecondAnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
+                                         AcceptsDecimalSeparator="False"
+                                         ValueFormat="{}{0:N0}"
+                                         SmallChange="1"
+                                         LargeChange="5"
+                                         HorizontalAlignment="Left"
+                                         MinWidth="300"
+                                         Margin="10"
+                                         ValueChanged="{x:Bind ViewModel.SecondAnnualQuantityBox_OnValueChanged}">
+                        <input:RadNumericBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding SecondAnnualQuantityHeader}"
+                                           Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                           Margin="0,0,5,0" />
+                                <TextBlock Text="required"
+                                           Margin="5,0"
+                                           Foreground="Red"
+                                           FontStyle="Italic"
+                                           Visibility="{Binding IsSecondAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </StackPanel>
+                        </input:RadNumericBox.Header>
+                    </input:RadNumericBox>
 
-                <input:RadNumericBox Value="{Binding SelectedContribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
-                                     Visibility="{Binding AnnualReachHeader, Converter={StaticResource NullToVisibilityConverter}}"
-                                     AcceptsDecimalSeparator="False"
-                                     ValueFormat="{}{0:N0}"
-                                     SmallChange="1"
-                                     LargeChange="5"
-                                     HorizontalAlignment="Left"
-                                     MinWidth="300"
-                                     Margin="10">
-                    <input:RadNumericBox.Header>
-                        <TextBlock Text="{Binding AnnualReachHeader}"
-                                   Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
-                    </input:RadNumericBox.Header>
-                </input:RadNumericBox>
+                    <input:RadNumericBox x:Name="AnnualReachNumericBox"
+                                         Value="{Binding SelectedContribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
+                                         Visibility="{Binding AnnualReachHeader, Converter={StaticResource NullToVisibilityConverter}}"
+                                         AcceptsDecimalSeparator="False"
+                                         ValueFormat="{}{0:N0}"
+                                         SmallChange="1"
+                                         LargeChange="5"
+                                         HorizontalAlignment="Left"
+                                         MinWidth="300"
+                                         Margin="10">
+                        <input:RadNumericBox.Header>
+                            <TextBlock Text="{Binding AnnualReachHeader}"
+                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
+                        </input:RadNumericBox.Header>
+                    </input:RadNumericBox>
+
+                </StackPanel>
 
                 <ComboBox ItemsSource="{x:Bind ViewModel.Visibilies}"
-                          SelectedItem="{Binding SelectedVisibility, Mode=TwoWay}"
+                          SelectedItem="{x:Bind ViewModel.SelectedVisibility, Mode=TwoWay}"
                           IsTextSearchEnabled="True"
                           DisplayMemberPath="Description"
                           HorizontalAlignment="Left"
@@ -213,6 +225,11 @@
                                        Foreground="Red" />
                         </StackPanel>
                     </ComboBox.Header>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:VisibilityViewModel">
+                            <TextBlock Text="{x:Bind Description}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
                 </ComboBox>
             </StackPanel>
         </ScrollViewer>
@@ -228,21 +245,79 @@
                           Click="{x:Bind ViewModel.UploadContributionButton_Click}" />
         </CommandBar>
 
-        <Grid x:Name="BusyOverlay"
-              Grid.Row="1"
-              Grid.RowSpan="2"
-              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
-              Background="{ThemeResource SystemControlForegroundAltMediumHighBrush}">
-            <StackPanel HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                <ProgressRing x:Name="BusyIndicator"
-                              IsActive="{Binding IsBusy}"
-                              Width="80"
-                              Height="80"
-                              Margin="20" />
-                <TextBlock Text="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                           HorizontalAlignment="Center" />
-            </StackPanel>
-        </Grid>
+        <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                                     IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                     AnimationStyle="AnimationStyle4"
+                                     Background="{ThemeResource SystemControlForegroundAltMediumHighBrush}"
+                                     Grid.Row="1"
+                                     Grid.RowSpan="2" />
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="WindowStates">
+                <VisualState x:Name="WideState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="940" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TitleTextBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="DescriptionTextBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="UrlTextBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="SecondAnnualQuantityNumericBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="AnnualReachNumericBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="NumericInputStackPanel.Orientation"
+                                Value="Horizontal" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="IntermediateState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="641" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TitleTextBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="DescriptionTextBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="UrlTextBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="SecondAnnualQuantityNumericBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="AnnualReachNumericBox.HorizontalAlignment"
+                                Value="Left" />
+                        <Setter Target="NumericInputStackPanel.Orientation"
+                                Value="Vertical" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="NarrowState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TitleTextBox.HorizontalAlignment"
+                                Value="Stretch" />
+                        <Setter Target="DescriptionTextBox.HorizontalAlignment"
+                                Value="Stretch" />
+                        <Setter Target="UrlTextBox.HorizontalAlignment"
+                                Value="Stretch" />
+                        <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
+                                Value="Stretch" />
+                        <Setter Target="SecondAnnualQuantityNumericBox.HorizontalAlignment"
+                                Value="Stretch" />
+                        <Setter Target="AnnualReachNumericBox.HorizontalAlignment"
+                                Value="Stretch" />
+                        <Setter Target="NumericInputStackPanel.Orientation"
+                                Value="Vertical" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
     </Grid>
 </Page>
