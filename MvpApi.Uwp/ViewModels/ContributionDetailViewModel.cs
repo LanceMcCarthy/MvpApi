@@ -35,8 +35,8 @@ namespace MvpApi.Uwp.ViewModels
         private bool isAnnualQuantityRequired;
         private bool isSecondAnnualQuantityRequired;
         private bool canSave;
-        private ContributionTechnologyModel selectedCategoryAreaTechnology;
-        private VisibilityViewModel selectedVisibility;
+        private string selectedTechName;
+        private string selectedVisibilityDescription;
 
         #endregion
 
@@ -47,8 +47,6 @@ namespace MvpApi.Uwp.ViewModels
                 //CategoryAreas = DesignTimeHelpers.GenerateTechnologyAreas(); //Causing designer layout error
                 Visibilies = DesignTimeHelpers.GenerateVisibilities();
                 SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
-                SelectedCategoryAreaTechnology = DesignTimeHelpers.GenerateAreaTechnologies().FirstOrDefault();
-                SelectedVisibility = DesignTimeHelpers.GenerateVisibilities().FirstOrDefault();
             }
         }
 
@@ -64,26 +62,18 @@ namespace MvpApi.Uwp.ViewModels
 
         public ObservableCollection<VisibilityViewModel> Visibilies { get; } = new ObservableCollection<VisibilityViewModel>();
 
-        public ContributionTechnologyModel SelectedCategoryAreaTechnology
+        public string SelectedTechName
         {
-            get => selectedCategoryAreaTechnology;
-            set
-            {
-                Set(ref selectedCategoryAreaTechnology, value);
-                Debug.WriteLine($"***SelectedCategoryTechnology Setter*** Id: {value?.Id}");
-            }
+            get => selectedTechName;
+            set => Set(ref selectedTechName, value);
         }
 
-        public VisibilityViewModel SelectedVisibility
+        public string SelectedVisibilityDescription
         {
-            get => selectedVisibility;
-            set
-            {
-                Set(ref selectedVisibility, value);
-                Debug.WriteLine($"***SelectedVisibility Setter*** Id: {value?.Id}");
-            }
+            get => selectedVisibilityDescription;
+            set => Set(ref selectedVisibilityDescription, value);
         }
-
+        
         public bool IsSelectedContributionDirty
         {
             get => isSelectedContributionDirty;
@@ -172,8 +162,25 @@ namespace MvpApi.Uwp.ViewModels
 
         public void TechnologyComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Debug.WriteLine($"TechComboBox_OnSelectionChanged: {(e.AddedItems.FirstOrDefault() as ContributionTechnologyModel)?.Name}");
+
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.ContributionTechnology.Id == originalContribution.ContributionTechnology.Id;
+        }
+
+        public void TechComboBox_OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
+        {
+            var cb = sender as ComboBox;
+            var techName = (cb?.SelectedItem as ContributionTechnologyModel)?.Name;
+
+            if (techName != null)
+            {
+                cb.UpdateLayout();
+            }
+                
+
+
+            Debug.WriteLine($"TechComboBox_OnDataContextChanged: Tech Name = {techName}");
         }
 
         public void VisibilityComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -212,9 +219,6 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
         {
-            SelectedContribution.Visibility = SelectedVisibility;
-            SelectedContribution.ContributionTechnology = SelectedCategoryAreaTechnology;
-
             var isValid = await SelectedContribution.Validate(true);
 
             if (!isValid)
@@ -548,15 +552,12 @@ namespace MvpApi.Uwp.ViewModels
                     if (parameter is ContributionsModel param)
                     {
                         SelectedContribution = param;
-
-                        SelectedVisibility = SelectedContribution.Visibility;
                         
-                        var techs = CategoryAreas.SelectMany(c => c.ContributionAreas).Where(a => a.Id == SelectedContribution.ContributionTechnology.Id);
-                        var tech = techs.FirstOrDefault();
-
-                        Debug.WriteLine($"***LOADED*** Technology Area: ID {tech.Id}, Award Category{tech.AwardCategory}, Award Name{tech.AwardName}, Tech Name {tech.Name}");
-
-                        SelectedCategoryAreaTechnology = tech;
+                        SelectedVisibilityDescription = SelectedContribution?.Visibility?.Description;
+                        
+                        SelectedTechName = SelectedContribution?.ContributionTechnology?.Name;
+                        
+                        Debug.WriteLine($"***LOADED*** Technology Area: Tech Name {SelectedContribution?.ContributionTechnology?.Name}");
 
                         SelectedContribution.UploadStatus = UploadStatus.None;
 
@@ -596,6 +597,5 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #endregion
-
     }
 }
