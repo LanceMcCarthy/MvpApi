@@ -37,7 +37,6 @@ namespace MvpApi.Uwp.ViewModels
         private bool isAnnualQuantityRequired;
         private bool isSecondAnnualQuantityRequired;
         private bool canSave;
-        private string selectedTechName;
         private string selectedVisibilityDescription;
 
         #endregion
@@ -63,13 +62,7 @@ namespace MvpApi.Uwp.ViewModels
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
 
         public ObservableCollection<VisibilityViewModel> Visibilies { get; } = new ObservableCollection<VisibilityViewModel>();
-
-        public string SelectedTechName
-        {
-            get => selectedTechName;
-            set => Set(ref selectedTechName, value);
-        }
-
+        
         public string SelectedVisibilityDescription
         {
             get => selectedVisibilityDescription;
@@ -179,8 +172,6 @@ namespace MvpApi.Uwp.ViewModels
             {
                 cb.UpdateLayout();
             }
-                
-
 
             Debug.WriteLine($"TechComboBox_OnDataContextChanged: Tech Name = {techName}");
         }
@@ -217,6 +208,7 @@ namespace MvpApi.Uwp.ViewModels
                 IsSelectedContributionDirty = SelectedContribution.SecondAnnualQuantity == originalContribution.SecondAnnualQuantity;
         }
 
+
         // CommandBar event handlers
 
         public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
@@ -227,6 +219,13 @@ namespace MvpApi.Uwp.ViewModels
                 return;
 
             SelectedContribution.UploadStatus = UploadStatus.InProgress;
+
+            // ComboBox workaround to ensure the right item is selected
+            if (SelectedContribution.Visibility.Description != SelectedVisibilityDescription)
+            {
+                var selectedVisibility = Visibilies.FirstOrDefault(v => v.Description == SelectedVisibilityDescription);
+                if(selectedVisibility != null) SelectedContribution.Visibility = selectedVisibility;
+            }
 
             var success = await UploadContributionAsync(SelectedContribution);
 
@@ -557,10 +556,6 @@ namespace MvpApi.Uwp.ViewModels
                         
                         SelectedVisibilityDescription = SelectedContribution?.Visibility?.Description;
                         
-                        SelectedTechName = SelectedContribution?.ContributionTechnology?.Name;
-                        
-                        Debug.WriteLine($"***LOADED*** Technology Area: Tech Name {SelectedContribution?.ContributionTechnology?.Name}");
-
                         SelectedContribution.UploadStatus = UploadStatus.None;
 
                         // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
