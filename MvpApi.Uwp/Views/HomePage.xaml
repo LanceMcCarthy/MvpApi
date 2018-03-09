@@ -5,6 +5,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
+      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -22,9 +23,15 @@
               Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
 
-            <ProgressBar IsIndeterminate="{Binding IsLoadingMoreItems}"
-                         Background="Transparent"
-                         VerticalAlignment="Bottom"/>
+            <primitives:RadBusyIndicator IsActive="{Binding IsLoadingMoreItems}"
+                                         HorizontalAlignment="Left"
+                                         VerticalAlignment="Center"
+                                         AnimationStyle="AnimationStyle7"
+                                         ContentPosition="Right"
+                                         Content="  loading items..."
+                                         VerticalContentAlignment="Top"
+                                         Foreground="White"
+                                         Margin="8,0,0,0" />
 
             <TextBlock Text="Home Page"
                        Style="{StaticResource TitleTextBlockStyle}"
