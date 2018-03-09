@@ -29,27 +29,20 @@
                        VerticalAlignment="Center" />
 
             <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
+                        HorizontalAlignment="Right">
 
                 <primitives:RadBusyIndicator IsActive="{Binding IsLoadingMoreItems}"
-                                             HorizontalAlignment="Right"
                                              VerticalAlignment="Center"
                                              AnimationStyle="AnimationStyle7"
                                              Content=""
-                                             VerticalContentAlignment="Top"
                                              Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                             Margin="0,0,10,0" />
+                                             Margin="0,4,10,0" />
 
                 <TextBlock x:Name="DisplayTotalTextBlock"
-                           HorizontalAlignment="Right"
                            VerticalAlignment="Center"
                            Text="{Binding DisplayTotal}"
                            Margin="0,0,10,0" />
-
             </StackPanel>
-
-            
         </Grid>
 
         <grid:RadDataGrid x:Name="ContributionsGrid"
@@ -103,21 +96,11 @@
                           Icon="Add" />
         </CommandBar>
 
-        <Grid x:Name="BusyOverlay"
-              Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
-              Background="{ThemeResource SystemControlForegroundAltMediumHighBrush}"
-              Grid.Row="1"
-              Grid.RowSpan="2"
-              Grid.Column="0">
-            <StackPanel HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                <ProgressRing IsActive="{Binding IsBusy}"
-                              Width="80"
-                              Height="80"
-                              Margin="20" />
-                <TextBlock Text="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                           HorizontalAlignment="Center" />
-            </StackPanel>
-        </Grid>
+        <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                                     IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                     Style="{StaticResource PageBusyIndicatorStyle}"
+                                     Grid.Row="1"
+                                     Grid.RowSpan="2"
+                                     Grid.Column="0" />
     </Grid>
 </Page>

@@ -6,6 +6,7 @@
                      xmlns:converters="using:MvpApi.Uwp.Converters"
                      xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Converters"
                      xmlns:selectors="using:MvpApi.Uwp.Selectors"
+                     xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
                      RequestedTheme="Light">
 
     <common:BootStrapper.Resources>
@@ -27,6 +28,14 @@
                 <Visibility>Visible</Visibility>
             </toolkit:BoolToVisibilityConverter.FalseValue>
         </toolkit:BoolToVisibilityConverter>
+        
+        <Style x:Key="PageBusyIndicatorStyle"
+               TargetType="primitives:RadBusyIndicator">
+            <Setter Property="AnimationStyle"
+                    Value="AnimationStyle4"/>
+            <Setter Property="Background"
+                    Value="{ThemeResource SystemControlForegroundAltMediumHighBrush}" />
+        </Style>
 
         <Style x:Name="SmallCellContentStyle"
                TargetType="TextBlock">
