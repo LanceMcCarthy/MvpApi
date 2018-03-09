@@ -41,13 +41,13 @@
         <Grid Background="{Binding SelectedContribution.UploadStatus, Converter={StaticResource UploadStatusBackgroundConverter}}"
               Grid.Row="1">
 
-            <TextBlock Text="Unsaved Changes"
+            <!--<TextBlock Text="Unsaved Changes"
                        Foreground="White"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Center"
                        FontWeight="Bold"
                        Visibility="{Binding IsSelectedContributionDirty, Converter={StaticResource BoolToVisibilityConverter}}"
-                       Margin="10,0,0,0" />
+                       Margin="10,0,0,0" />-->
 
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"

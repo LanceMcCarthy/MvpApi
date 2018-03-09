@@ -5,11 +5,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
@@ -566,6 +568,22 @@ namespace MvpApi.Uwp.ViewModels
                         
                         // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
                         originalContribution = SelectedContribution.Clone();
+
+                        if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                        {
+                            var td = new TutorialDialog
+                            {
+                                SettingsKey = "ContributionDetailPageTutorialShown",
+                                MessageTitle = "Contribution Details",
+                                Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
+                                          "- Click 'Save' button to save changes.\r\n" +
+                                          "- Click 'Delete' button to permanently delete the contribution.\r\n" +
+                                          "- Click the back button to leave and cancel any changes.\r\n\n" +
+                                          "Note: Pay attention to how the 'required' fields change depending on the technology selection."
+                            };
+
+                            await td.ShowAsync();
+                        }
                     }
                     else
                     {

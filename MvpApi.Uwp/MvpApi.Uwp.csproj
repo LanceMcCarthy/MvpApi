@@ -100,6 +100,9 @@
     <Compile Include="Converters\PathToBitmapImageConverter.cs" />
     <Compile Include="Converters\UploadStatusBackgroundConverter.cs" />
     <Compile Include="Converters\UploadStatusToBoolConverter.cs" />
+    <Compile Include="Dialogs\TutorialDialog.xaml.cs">
+      <DependentUpon>TutorialDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Extensions\ContributionExtensions.cs" />
     <Compile Include="Helpers\TaskUtilities.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
@@ -200,6 +203,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Dialogs\TutorialDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

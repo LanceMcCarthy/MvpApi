@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Navigation;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
@@ -435,7 +436,24 @@ namespace MvpApi.Uwp.ViewModels
                     await LoadSupportingDataAsync();
                     
                     SetupNextEntry();
-                    
+
+                    if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                    {
+                        var td = new TutorialDialog
+                        {
+                            SettingsKey = "AddContributionPageTutorialShown",
+                            MessageTitle = "Add Contribution Page",
+                            Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
+                                      "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
+                                      "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
+                                      "- Click 'Upload' to save the queue to your profile.\r\n" +
+                                      "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
+                                      "Note: Watch the queue items color change as the items are uploaded and save is confirmed."
+                        };
+
+                        await td.ShowAsync();
+                    }
+
                 }
                 catch (Exception ex)
                 {
