@@ -78,7 +78,6 @@
                               SelectionChanged="{x:Bind ViewModel.TechnologyComboBox_OnSelectionChanged}"
                               PlaceholderText="{Binding SelectedContribution.ContributionTechnology.Name}"
                               Style="{StaticResource TechnologyAreaComboBoxStyle}"
-                              DataContextChanged="{x:Bind ViewModel.TechComboBox_OnDataContextChanged}"
                               Margin="10,10,10,0">
                     </ComboBox>
                 </StackPanel>
@@ -217,17 +216,16 @@
                     </input:RadNumericBox>
 
                 </StackPanel>
-
+                
                 <ComboBox ItemsSource="{Binding Visibilies}"
                           SelectedItem="{Binding SelectedContribution.Visibility, Mode=TwoWay}"
                           IsTextSearchEnabled="True"
                           DisplayMemberPath="Description"
                           SelectedValuePath="Description"
-                          SelectedValue="{Binding SelectedVisibilityDescription, Mode=TwoWay}"
+                          PlaceholderText="{Binding SelectedContribution.Visibility.Description}"
                           HorizontalAlignment="Left"
                           MinWidth="300"
-                          Margin="10"
-                          SelectionChanged="{x:Bind ViewModel.VisibilityComboBox_OnSelectionChanged}">
+                          Margin="10">
                     <ComboBox.Header>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Contribution Visibility"

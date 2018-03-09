@@ -37,7 +37,6 @@ namespace MvpApi.Uwp.ViewModels
         private bool isAnnualQuantityRequired;
         private bool isSecondAnnualQuantityRequired;
         private bool canSave;
-        private string selectedVisibilityDescription;
 
         #endregion
 
@@ -45,7 +44,6 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                //CategoryAreas = DesignTimeHelpers.GenerateTechnologyAreas(); //Causing designer layout error
                 Visibilies = DesignTimeHelpers.GenerateVisibilities();
                 SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
             }
@@ -62,12 +60,6 @@ namespace MvpApi.Uwp.ViewModels
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
 
         public ObservableCollection<VisibilityViewModel> Visibilies { get; } = new ObservableCollection<VisibilityViewModel>();
-        
-        public string SelectedVisibilityDescription
-        {
-            get => selectedVisibilityDescription;
-            set => Set(ref selectedVisibilityDescription, value);
-        }
         
         public bool IsSelectedContributionDirty
         {
@@ -157,29 +149,14 @@ namespace MvpApi.Uwp.ViewModels
 
         public void TechnologyComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Debug.WriteLine($"TechComboBox_OnSelectionChanged: {(e.AddedItems.FirstOrDefault() as ContributionTechnologyModel)?.Name}");
-
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.ContributionTechnology.Id == originalContribution.ContributionTechnology.Id;
-        }
-
-        public void TechComboBox_OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
-        {
-            var cb = sender as ComboBox;
-            var techName = (cb?.SelectedItem as ContributionTechnologyModel)?.Name;
-
-            if (techName != null)
-            {
-                cb.UpdateLayout();
-            }
-
-            Debug.WriteLine($"TechComboBox_OnDataContextChanged: Tech Name = {techName}");
         }
 
         public void VisibilityComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (originalContribution != null)
-                IsSelectedContributionDirty = SelectedContribution.Visibility.Id == originalContribution.Visibility.Id;
+                IsSelectedContributionDirty = SelectedContribution.Visibility.Description == originalContribution.Visibility.Description;
         }
 
         public async void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
@@ -207,8 +184,7 @@ namespace MvpApi.Uwp.ViewModels
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.SecondAnnualQuantity == originalContribution.SecondAnnualQuantity;
         }
-
-
+        
         // CommandBar event handlers
 
         public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
@@ -219,14 +195,7 @@ namespace MvpApi.Uwp.ViewModels
                 return;
 
             SelectedContribution.UploadStatus = UploadStatus.InProgress;
-
-            // ComboBox workaround to ensure the right item is selected
-            if (SelectedContribution.Visibility.Description != SelectedVisibilityDescription)
-            {
-                var selectedVisibility = Visibilies.FirstOrDefault(v => v.Description == SelectedVisibilityDescription);
-                if(selectedVisibility != null) SelectedContribution.Visibility = selectedVisibility;
-            }
-
+            
             var success = await UploadContributionAsync(SelectedContribution);
 
             // Mark success or failure
@@ -553,8 +522,6 @@ namespace MvpApi.Uwp.ViewModels
                     if (parameter is ContributionsModel param)
                     {
                         SelectedContribution = param;
-                        
-                        SelectedVisibilityDescription = SelectedContribution?.Visibility?.Description;
                         
                         SelectedContribution.UploadStatus = UploadStatus.None;
 
