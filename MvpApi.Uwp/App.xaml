@@ -41,7 +41,17 @@
         <Style x:Name="MediumCellContentStyle"
                TargetType="TextBlock">
             <Setter Property="MaxWidth"
-                    Value="300" />
+                    Value="250" />
+            <Setter Property="TextTrimming"
+                    Value="CharacterEllipsis" />
+            <Setter Property="Margin"
+                    Value="5" />
+        </Style>
+
+        <Style x:Name="WideCellContentStyle"
+               TargetType="TextBlock">
+            <Setter Property="MaxWidth"
+                    Value="400" />
             <Setter Property="TextTrimming"
                     Value="CharacterEllipsis" />
             <Setter Property="Margin"

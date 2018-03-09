@@ -23,26 +23,33 @@
               Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
 
-            <primitives:RadBusyIndicator IsActive="{Binding IsLoadingMoreItems}"
-                                         HorizontalAlignment="Left"
-                                         VerticalAlignment="Center"
-                                         AnimationStyle="AnimationStyle7"
-                                         ContentPosition="Right"
-                                         Content="  loading items..."
-                                         VerticalContentAlignment="Top"
-                                         Foreground="White"
-                                         Margin="8,0,0,0" />
-
             <TextBlock Text="Home Page"
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
 
-            <TextBlock x:Name="DisplayTotalTextBlock"
-                       HorizontalAlignment="Right"
-                       VerticalAlignment="Center"
-                       Text="{Binding DisplayTotal}"
-                       Margin="0,0,10,0" />
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+
+                <primitives:RadBusyIndicator IsActive="{Binding IsLoadingMoreItems}"
+                                             HorizontalAlignment="Right"
+                                             VerticalAlignment="Center"
+                                             AnimationStyle="AnimationStyle7"
+                                             Content=""
+                                             VerticalContentAlignment="Top"
+                                             Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                             Margin="0,0,10,0" />
+
+                <TextBlock x:Name="DisplayTotalTextBlock"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Text="{Binding DisplayTotal}"
+                           Margin="0,0,10,0" />
+
+            </StackPanel>
+
+            
         </Grid>
 
         <grid:RadDataGrid x:Name="ContributionsGrid"
@@ -59,10 +66,10 @@
                                          Header="Start Date" />
                 <grid:DataGridTextColumn PropertyName="Title"
                                          Header="Title"
-                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />
+                                         CellContentStyle="{StaticResource WideCellContentStyle}" />
                 <grid:DataGridTextColumn PropertyName="ContributionTypeName"
                                          Header="Contribution Type"
-                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />
+                                         CellContentStyle="{StaticResource WideCellContentStyle}" />
                 <grid:DataGridTextColumn PropertyName="Description"
                                          Header="Description"
                                          CellContentStyle="{StaticResource MediumCellContentStyle}" />
@@ -73,7 +80,7 @@
                 <grid:DataGridTextColumn PropertyName="ReferenceUrl"
                                          Width="100"
                                          Header="Url"
-                                         CellContentStyle="{StaticResource SmallCellContentStyle}" />
+                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />
             </grid:RadDataGrid.Columns>
         </grid:RadDataGrid>
 
