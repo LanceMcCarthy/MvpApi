@@ -62,11 +62,12 @@
         <ScrollViewer Grid.Row="2">
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Contribution Type:"
+                    <TextBlock Text="Type:"
                                Style="{ThemeResource TitleTextBlockStyle}"
                                Margin="10,0" />
                     <TextBlock Text="{Binding SelectedContribution.ContributionTypeName}"
                                Style="{ThemeResource TitleTextBlockStyle}"
+                               FontWeight="SemiBold"
                                Margin="0,0" />
                 </StackPanel>
 
@@ -75,23 +76,10 @@
                               ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
                               SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay}"
                               SelectionChanged="{x:Bind ViewModel.TechnologyComboBox_OnSelectionChanged}"
-                              SelectedValuePath="Name"
+                              PlaceholderText="{Binding SelectedContribution.ContributionTechnology.Name}"
                               Style="{StaticResource TechnologyAreaComboBoxStyle}"
                               DataContextChanged="{x:Bind ViewModel.TechComboBox_OnDataContextChanged}"
                               Margin="10,10,10,0">
-                        <ComboBox.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Contribution Technology"
-                                           Margin="0,0,8,0" />
-                                <TextBlock Text="(current selection: "
-                                           Margin="0,0,8,0" />
-                                <TextBlock Text="{Binding SelectedContribution.ContributionTechnology.Name}"
-                                           FontWeight="SemiBold"
-                                           Margin="0,0,0,0" />
-                                <TextBlock Text=")"
-                                           Margin="2,0,10,0" />
-                            </StackPanel>
-                        </ComboBox.Header>
                     </ComboBox>
                 </StackPanel>
 
