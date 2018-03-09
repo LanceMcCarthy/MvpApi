@@ -6,7 +6,7 @@ namespace MvpApi.Uwp.Views
     {
         public ProfilePage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
     }
 }

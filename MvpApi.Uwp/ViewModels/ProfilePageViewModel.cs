@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 
@@ -16,14 +18,17 @@ namespace MvpApi.Uwp.ViewModels
 
         public ProfilePageViewModel()
         {
-            
+            if (DesignMode.DesignModeEnabled)
+            {
+                Mvp = DesignTimeHelpers.GenerateSampleMvp();
+            }
         }
 
         #region Properties
 
-        public ProfileViewModel Mvp => (App.ShellPage.DataContext as ShellPageViewModel)?.Mvp;
+        public ProfileViewModel Mvp { get; set; } = (App.ShellPage.DataContext as ShellPageViewModel)?.Mvp;
 
-        public string ProfileImagePath => (App.ShellPage.DataContext as ShellPageViewModel)?.ProfileImagePath;
+        public string ProfileImagePath { get; set; } = (App.ShellPage.DataContext as ShellPageViewModel)?.ProfileImagePath;
 
         #endregion
 

@@ -14,6 +14,7 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -26,11 +27,8 @@
                        VerticalAlignment="Center" />
         </Grid>
 
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+        <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}"
+              Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
@@ -39,45 +37,56 @@
             <Ellipse x:Name="ProfileImageEllipse"
                      Stroke="{ThemeResource ApplicationForegroundThemeBrush}"
                      Margin="20"
-                     Width="150"
-                     Height="150">
+                     Width="220"
+                     Height="220">
                 <Ellipse.Fill>
                     <ImageBrush x:Name="ProfileImageBrush"
                                 ImageSource="{Binding ProfileImagePath}" />
                 </Ellipse.Fill>
             </Ellipse>
-            
+
             <StackPanel Margin="20"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        VerticalAlignment="Top">
+                <TextBlock Text="{Binding Mvp.FullName, FallbackValue=LanceMcCarthy}"
+                           Style="{ThemeResource HeaderTextBlockStyle}"
+                           TextWrapping="Wrap" />
+                <TextBlock Text="{Binding Mvp.Headline, FallbackValue=Headline}"
+                           Style="{StaticResource TitleTextBlockStyle}" />
+            </StackPanel>
+
+            <StackPanel Margin="20" Grid.Row="0"
+                        VerticalAlignment="Bottom"
                         Grid.Column="1">
-                <TextBlock Text="{Binding Mvp.FullName}"
-                           Style="{StaticResource TitleTextBlockStyle}" 
-                           TextWrapping="Wrap"/>
-                <TextBlock Text="{Binding Mvp.Headline}"
-                           Style="{StaticResource SubtitleTextBlockStyle}" />
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="First MVP award in:"
+                               Style="{ThemeResource SubtitleTextBlockStyle}"
                                Margin="0,0,10,0" />
-                    <TextBlock Text="{Binding Mvp.FirstAwardYear}" 
+                    <TextBlock Text="{Binding Mvp.FirstAwardYear, FallbackValue=2014}"
+                               Style="{ThemeResource SubtitleTextBlockStyle}"
                                FontWeight="SemiBold"
-                               TextWrapping="Wrap"/>
+                               TextWrapping="Wrap" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Years as MVP:"
+                               Style="{ThemeResource SubtitleTextBlockStyle}"
                                Margin="0,0,10,0" />
-                    <TextBlock Text="{Binding Mvp.YearsAsMvp}" 
+                    <TextBlock Text="{Binding Mvp.YearsAsMvp, FallbackValue=5}"
+                               Style="{ThemeResource SubtitleTextBlockStyle}"
                                FontWeight="SemiBold"
-                               TextWrapping="Wrap"/>
+                               TextWrapping="Wrap" />
                 </StackPanel>
             </StackPanel>
-            
-            <TextBlock Text="{Binding Mvp.Biography}" 
-                       TextWrapping="Wrap" 
-                       Margin="20"
-                       Grid.Row="1"/>
-            
         </Grid>
-        
-        <CommandBar Grid.Row="2">
+
+        <ScrollViewer Grid.Row="2">
+            <TextBlock Text="{Binding Mvp.Biography, FallbackValue=BiographyGoesHere}"
+                       TextWrapping="Wrap"
+                       Margin="20,20,20,0"/>
+        </ScrollViewer>
+
+        <CommandBar Grid.Row="3">
             <AppBarButton x:Name="EditProfileButton"
                           Label="log in"
                           Icon="Edit"
