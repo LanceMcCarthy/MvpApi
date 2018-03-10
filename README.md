@@ -14,7 +14,7 @@ A client application to allow for faster contribution browsing, editing and uplo
 
 **Bulk Upload**
 
-![image](https://content.screencast.com/users/lance.mccarthy/folders/Snagit/media/0dde5a7e-293e-4059-8c7e-6615ab948f93/03.03.2018-00.45.GIF)
+![image](https://content.screencast.com/users/lance.mccarthy/folders/Snagit/media/054a5bfe-3d1f-4aec-b4df-1473d662e789/03.09.2018-18.36.GIF)
 
 **Contributions Browsing**
 
