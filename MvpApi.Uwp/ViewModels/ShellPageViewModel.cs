@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.UI.Popups;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
@@ -90,12 +91,18 @@ namespace MvpApi.Uwp.ViewModels
 
         #region Navigation
 
-        public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            if(!IsLoggedIn)
-                BootStrapper.Current.NavigationService.Navigate(typeof(LoginPage));
+            if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+            {
+                await new MessageDialog("This application requires an internet connection. Please check your connection and launch the app again.", "No Internet").ShowAsync();
+                
+                return;
+            }
 
-            return base.OnNavigatedToAsync(parameter, mode, state);
+            if (!IsLoggedIn)
+                BootStrapper.Current.NavigationService.Navigate(typeof(LoginPage));
+            
         }
 
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)

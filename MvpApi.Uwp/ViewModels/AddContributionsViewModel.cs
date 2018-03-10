@@ -11,6 +11,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
@@ -411,6 +412,12 @@ namespace MvpApi.Uwp.ViewModels
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
+            if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+            {
+                if (BootStrapper.Current.NavigationService.CanGoBack)
+                    BootStrapper.Current.NavigationService.GoBack();
+            }
+
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
             {
                 try

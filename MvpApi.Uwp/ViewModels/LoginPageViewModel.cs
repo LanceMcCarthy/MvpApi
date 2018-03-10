@@ -141,7 +141,7 @@ namespace MvpApi.Uwp.ViewModels
             try
             {
                 IsBusy = true;
-
+                
                 if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
                 {
                     shellVm.IsLoggedIn = true;

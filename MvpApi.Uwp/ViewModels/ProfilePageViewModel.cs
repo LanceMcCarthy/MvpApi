@@ -12,10 +12,6 @@ namespace MvpApi.Uwp.ViewModels
 {
     public class ProfilePageViewModel : PageViewModelBase
     {
-        #region Fields
-        
-        #endregion
-
         public ProfilePageViewModel()
         {
             if (DesignMode.DesignModeEnabled)
@@ -23,17 +19,11 @@ namespace MvpApi.Uwp.ViewModels
                 Mvp = DesignTimeHelpers.GenerateSampleMvp();
             }
         }
-
-        #region Properties
-
+        
         public ProfileViewModel Mvp { get; set; } = (App.ShellPage.DataContext as ShellPageViewModel)?.Mvp;
 
         public string ProfileImagePath { get; set; } = (App.ShellPage.DataContext as ShellPageViewModel)?.ProfileImagePath;
-
-        #endregion
-
-        #region Event Handlers
-
+        
         public void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             BootStrapper.Current.NavigationService.Navigate(typeof(LoginPage));
@@ -44,8 +34,6 @@ namespace MvpApi.Uwp.ViewModels
             // Passing a bool true parameter performs logout
             BootStrapper.Current.NavigationService.Navigate(typeof(LoginPage), true);
         }
-
-        #endregion
         
         #region Navigation
 

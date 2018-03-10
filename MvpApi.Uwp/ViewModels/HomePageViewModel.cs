@@ -6,8 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Helpers;
@@ -15,6 +17,7 @@ using MvpApi.Uwp.Views;
 using Telerik.Core.Data;
 using Telerik.UI.Xaml.Controls.Grid;
 using Template10.Common;
+using Template10.Mvvm;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -29,6 +32,7 @@ namespace MvpApi.Uwp.ViewModels
         private bool isLoadingMoreItems = false;
         private IncrementalLoadingCollection<ContributionsModel> activities;
         private bool areAppbarButtonsEnabled = false;
+        private bool isInternetDisabled;
 
         #endregion
 
@@ -45,6 +49,20 @@ namespace MvpApi.Uwp.ViewModels
                     Activities.Add(contribution);
                 }
             }
+
+            RefreshAfterDisconnectCommand = new DelegateCommand(async () =>
+            {
+                IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
+
+                if (IsInternetDisabled)
+                {
+                    await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
+                }
+                else
+                {
+                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                }
+            });
         }
 
         private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
@@ -87,7 +105,9 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         public ObservableCollection<object> SelectedContributions { get; set; }
-        
+
+        public DelegateCommand RefreshAfterDisconnectCommand { get; }
+
         public string DisplayTotal
         {
             get => displayTotal;
@@ -125,8 +145,14 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref isLoadingMoreItems, value);
         }
 
+        public bool IsInternetDisabled
+        {
+            get => isInternetDisabled;
+            set => Set(ref isInternetDisabled, value);
+        }
+
         #endregion
-        
+
         #region Event Handlers
 
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
@@ -198,6 +224,14 @@ namespace MvpApi.Uwp.ViewModels
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
+            IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
+
+            if (IsInternetDisabled)
+            {
+                await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+                return;
+            }
+
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
             {
                 if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)

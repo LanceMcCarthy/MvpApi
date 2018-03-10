@@ -76,6 +76,13 @@
                                          CellContentStyle="{StaticResource MediumCellContentStyle}" />
             </grid:RadDataGrid.Columns>
         </grid:RadDataGrid>
+        
+        <Button Content="Refresh Data (after internet connection is established)"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Command="{Binding RefreshAfterDisconnectCommand}"
+                Visibility="{Binding IsInternetDisabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                Grid.Row="1"/>
 
         <CommandBar Grid.Row="2">
             <AppBarButton Label="clear selection"
