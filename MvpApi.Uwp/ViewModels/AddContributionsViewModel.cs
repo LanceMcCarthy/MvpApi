@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
-using Windows.Storage.Pickers;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
@@ -47,9 +43,7 @@ namespace MvpApi.Uwp.ViewModels
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
                 Types = DesignTimeHelpers.GenerateContributionTypes();
-                //CategoryAreas = DesignTimeHelpers.GenerateTechnologyAreas(); //Causing designer layout error
                 Visibilies = DesignTimeHelpers.GenerateVisibilities();
-
                 UploadQueue = DesignTimeHelpers.GenerateContributions();
                 SelectedContribution = UploadQueue.FirstOrDefault();
 
@@ -62,8 +56,6 @@ namespace MvpApi.Uwp.ViewModels
             UploadQueue.CollectionChanged += UploadQueue_CollectionChanged;
         }
         
-        // *** Properties *** //
-
         // Collections and SelectedItems
 
         public ObservableCollection<ContributionsModel> UploadQueue { get; } = new ObservableCollection<ContributionsModel>();
@@ -138,8 +130,6 @@ namespace MvpApi.Uwp.ViewModels
 
         public DelegateCommand<ContributionsModel> RemoveCommand { get; set; }
         
-        #region Event handlers
-
         // Collection and Selection Changed handlers
 
         private void UploadQueue_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -252,9 +242,7 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
         
-        #endregion
-
-        #region Methods
+        // Methods
 
         private void SetupNextEntry()
         {
@@ -418,8 +406,6 @@ namespace MvpApi.Uwp.ViewModels
                 Visibilies.Add(visibility);
             });
         }
-
-        #endregion
         
         #region Navigation
 
@@ -692,119 +678,5 @@ namespace MvpApi.Uwp.ViewModels
                     break;
             }
         }
-
-        // Not done yet
-        #region Excel document logic (to be added)
-
-        public async void LoadFileButton_Click(object sender, RoutedEventArgs e)
-        {
-            var fop = new FileOpenPicker();
-            fop.FileTypeFilter.Add(".xlsx");
-            fop.FileTypeFilter.Add(".xls");
-
-            var selectedFile = await fop.PickSingleFileAsync();
-
-            await ReadDocumentAsync(selectedFile);
-        }
-
-        private async Task ReadDocumentAsync(StorageFile file)
-        {
-            try
-            {
-                IsBusy = true;
-                IsBusyMessage = "reading file...";
-
-                using (var fileStream = await file.OpenReadAsync())
-                using (var doc = SpreadsheetDocument.Open(fileStream.AsStream(), false))
-                {
-                    var workbookPart = doc.WorkbookPart;
-                    var worksheetPart = workbookPart.WorksheetParts.First();
-                    var sheet = worksheetPart.Worksheet;
-
-                    var rows = sheet.Descendants<Row>();
-
-                    Debug.WriteLine("Row count = {0}", rows.LongCount());
-
-                    foreach (Row row in rows)
-                    {
-                        // TODO Investigate if I can build a datatable instead
-                        string[] columnValues = new string[4];
-
-                        foreach (Cell cell in row.Elements<Cell>())
-                        {
-                            string cellValue = string.Empty;
-
-                            // Skip if null or header cell
-                            if (cell.DataType == null ||
-                                cell.CellReference == "A1" ||
-                                cell.CellReference == "B1" ||
-                                cell.CellReference == "C1")
-                                continue;
-
-                            if (cell.DataType == CellValues.SharedString || cell.DataType == CellValues.Date || cell.DataType == CellValues.Number)
-                            {
-                                if (int.TryParse(cell.InnerText, out var id))
-                                {
-                                    var item = workbookPart.SharedStringTablePart.SharedStringTable.Elements<SharedStringItem>().ElementAt(id);
-
-                                    if (item.Text != null)
-                                    {
-                                        cellValue = item.Text.Text;
-                                    }
-                                    else if (item.InnerText != null)
-                                    {
-                                        cellValue = item.InnerText;
-                                    }
-                                    else if (item.InnerXml != null)
-                                    {
-                                        cellValue = item.InnerXml;
-                                    }
-                                }
-
-                                IsBusyMessage = $"reading file, parsed cell {cell.CellReference}";
-
-                                Debug.WriteLine($"Cell {cell.CellReference}, Value = {cellValue}");
-
-
-                                int columnIndex = 0;
-
-                                var cr = cell.CellReference.ToString().ToUpper();
-
-                                for (int i = 0; i < cr.Length && cr[i] >= 'A'; i++)
-                                    columnIndex = columnIndex * 26 + (cr[i] - 64);
-
-                                // Finally, add the cell value to the array
-                                columnValues[columnIndex - 1] = cellValue;
-                            }
-                        }
-
-                        // TODO need a safer way to do this
-                        var contribution = new ContributionsModel();
-
-                        contribution.Title = columnValues[0];
-
-                        if (DateTime.TryParse(columnValues[1], out DateTime date))
-                        {
-                            contribution.StartDate = date;
-                        }
-
-                        contribution.ReferenceUrl = columnValues[2];
-
-                        UploadQueue.Add(contribution);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"ReadDocumentAsync Exception: {ex}");
-            }
-            finally
-            {
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
-        }
-
-        #endregion
     }
 }

@@ -30,8 +30,7 @@
 
         <Grid x:Name="HeaderGrid"
               Height="48"
-              Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}"
-              Grid.ColumnSpan="3">
+              Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
             <TextBlock Text="Contribution Detail"
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"

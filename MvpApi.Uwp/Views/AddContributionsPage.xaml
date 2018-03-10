@@ -336,11 +336,6 @@
         <CommandBar Grid.Row="3"
                     Grid.Column="2">
 
-            <!--To be added
-            <AppBarButton Label="excel file"
-                          Icon="OpenFile"
-                          Click="{x:Bind ViewModel.LoadFileButton_Click}" />-->
-
             <AppBarButton Label="clear queue"
                           Icon="Clear"
                           Click="{x:Bind ViewModel.ClearQueueButton_Click}" />

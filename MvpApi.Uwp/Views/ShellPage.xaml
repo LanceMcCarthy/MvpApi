@@ -41,6 +41,17 @@
             </controls:HamburgerMenu.PrimaryButtons>
 
             <controls:HamburgerMenu.SecondaryButtons>
+                <controls:HamburgerButtonInfo PageType="local:AboutPage">
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <SymbolIcon Symbol="Message"
+                                    Width="48"
+                                    Height="48" />
+                        <TextBlock Text="About"
+                                   Margin="12, 0, 0, 0"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </controls:HamburgerButtonInfo>
                 <controls:HamburgerButtonInfo PageType="local:ProfilePage">
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
