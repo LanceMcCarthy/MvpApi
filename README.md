@@ -2,16 +2,14 @@
 
 A client application to allow for faster contribution browsing, editing and upload to help renewing MVPs get up to date for renewal. 
 
-Downloads
+### Instalation Options
 - [Microsoft Store (Windows 10)](https://www.microsoft.com/store/apps/9NRXNX3WLH77) 
+- Clone this repo, then build and deploy locally
 
 ### Major Features:
 - Fast contribution entry with bulk uploading (enter all of your contributions at once!)
 - Group and sort contributions list in an easy to navigate DataGrid
 - Easily edit existing entries
-
-### Windows Store URL
-- [To be added when app passes certification]
 
 ### Animated GIFs and screenshots
 
