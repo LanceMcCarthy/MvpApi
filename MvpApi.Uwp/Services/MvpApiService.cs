@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Popups;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
 using Newtonsoft.Json;
@@ -66,7 +67,9 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                e.LogException();
+                await e.LogExceptionWithUserMessage(
+                    "Sorry, there was a problem retrieving your profile. If you'd like to send a techincal summary to the app development team, click Yes.",
+                    "Get Profile Error");
 
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
                 return null;
@@ -108,7 +111,9 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                e.LogException();
+                await e.LogExceptionWithUserMessage(
+                    "Sorry, there was a problem retrieving your profile image. If you'd like to send a techincal summary to the app development team, click Yes.",
+                    "Get Profile Image Error");
 
                 Debug.WriteLine($"GetProfileImageAsync Exception: {e}");
                 return null;
@@ -153,7 +158,9 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                e.LogException();
+                await e.LogExceptionWithUserMessage(
+                    "Sorry, there was a problem retrieving your contributions. If you'd like to send a techincal summary to the app development team, click Yes.",
+                    "Get Contributions Error");
 
                 Debug.WriteLine($"GetContributionsAsync Exception: {e}");
                 return null;
@@ -212,7 +219,9 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                e.LogException();
+                await e.LogExceptionWithUserMessage(
+                    $"Sorry, there was a problem uploading the contribution '{contribution.Title}'. If you'd like to send a techincal summary to the app development team, click Yes.",
+                    "Submit Contribution Error");
 
                 Debug.WriteLine($"SubmitContributionAsync Exception: {e}");
                 return null;
@@ -264,7 +273,9 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                e.LogException();
+                await e.LogExceptionWithUserMessage(
+                    $"Sorry, there was a problem updating the contribution '{contribution.Title}'. If you'd like to send a techincal summary to the app development team, click Yes.",
+                    "Update Contribution Error");
 
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
                 return null;
@@ -307,7 +318,9 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                e.LogException();
+                await e.LogExceptionWithUserMessage(
+                    $"Sorry, there was a problem deleting the contribution '{contribution.Title}'. If you'd like to send a techincal summary to the app development team, click Yes.",
+                    "Delete Contribution Error");
 
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
                 return null;
@@ -347,7 +360,9 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                e.LogException();
+                await e.LogExceptionWithUserMessage(
+                    "Sorry, there was a problem getting contributions types list. If you'd like to send a techincal summary to the app development team, click Yes.",
+                    "Get Contribution Types Error");
 
                 Debug.WriteLine($"GetContributionTypesAsync Exception: {e}");
                 return null;
@@ -387,7 +402,9 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                e.LogException();
+                await e.LogExceptionWithUserMessage(
+                    "Sorry, there was a problem getting contributions areas list. If you'd like to send a techincal summary to the app development team, click Yes.",
+                    "Get Contribution Areas Error");
 
                 Debug.WriteLine($"GetContributionTechnologiesAsync Exception: {e}");
                 return null;
@@ -427,13 +444,15 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                e.LogException();
+                await e.LogExceptionWithUserMessage(
+                    "Sorry, there was a problem getting contribution visibilities list. If you'd like to send a techincal summary to the app development team, click Yes.",
+                    "Get Visibilities Error");
 
                 Debug.WriteLine($"GetVisibilitiesAsync Exception: {e}");
                 return null;
             }
         }
-
+        
         public void Dispose()
         {
             client?.Dispose();

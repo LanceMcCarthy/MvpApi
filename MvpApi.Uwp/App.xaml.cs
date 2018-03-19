@@ -61,47 +61,13 @@ namespace MvpApi.Uwp
             return Task.CompletedTask;
         }
 
-        #region Error Handling
-        
-        private static async Task<bool> ReportErrorMessage(string detailedErrorMessage)
-        {
-            var uri = new Uri(string.Format("mailto:awesome.apps@outlook.com?subject=MVP_Companion&body={0}", detailedErrorMessage), UriKind.Absolute);
-
-            var options = new Windows.System.LauncherOptions
-            {
-                DesiredRemainingView = ViewSizePreference.UseHalf, DisplayApplicationPicker = true, PreferredApplicationPackageFamilyName = "microsoft.windowscommunicationsapps_8wekyb3d8bbwe", PreferredApplicationDisplayName = "Mail"
-            };
-
-            return await Windows.System.Launcher.LaunchUriAsync(uri, options);
-        }
-
         private async void OnUnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
         {
             e.Handled = true;
 
-            ExceptionLogger.LogException(e.Exception);
-            
-            var message = "Sorry, there has been an unexpected error. If you'd like to send a techincal summary to the app development team, click Yes.";
-
-            var md = new MessageDialog(message, "Unexpected Error");
-
-            md.Commands.Add(new UICommand("yes"));
-
-            var result = await md.ShowAsync();
-
-            if (result.Label == "yes")
-            {
-#if DEBUG
-                var text = await DiagnosticsHelper.DumpAsync(e.Exception, true);
-#else
-
-                var text = await DiagnosticsHelper.DumpAsync(e.Exception);
-#endif
-
-                await ReportErrorMessage(text);
-            }
+            await e.Exception.LogExceptionWithUserMessage(
+                "Sorry, there has been an unexpected error. If you'd like to send a techincal summary to the app development team, click Yes.",
+                "Unexpected Error");
         }
-
-        #endregion
     }
 }

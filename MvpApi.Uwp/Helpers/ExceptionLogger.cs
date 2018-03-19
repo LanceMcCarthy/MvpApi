@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.UI.Popups;
+using Windows.UI.ViewManagement;
 
 namespace MvpApi.Uwp.Helpers
 {
@@ -15,6 +18,45 @@ namespace MvpApi.Uwp.Helpers
             PurgeLogFiles();
 
             LogFileWrite(exceptionMessage);
+        }
+
+        public static async Task LogExceptionWithUserMessage(this Exception exception, string dialogTitle, string dialogMessage)
+        {
+            var exceptionMessage = CreateErrorMessage(exception);
+
+            PurgeLogFiles();
+
+            LogFileWrite(exceptionMessage);
+            
+            var md = new MessageDialog(dialogMessage, dialogTitle);
+
+            md.Commands.Add(new UICommand("yes"));
+
+            var result = await md.ShowAsync();
+
+            if (result.Label == "yes")
+            {
+#if DEBUG
+                var text = await DiagnosticsHelper.DumpAsync(exception, true);
+#else
+
+                var text = await DiagnosticsHelper.DumpAsync(e.Exception);
+#endif
+
+                await ReportErrorMessage(text);
+            }
+        }
+
+        private static async Task<bool> ReportErrorMessage(string detailedErrorMessage)
+        {
+            var uri = new Uri(string.Format("mailto:awesome.apps@outlook.com?subject=MVP_Companion&body={0}", detailedErrorMessage), UriKind.Absolute);
+
+            var options = new Windows.System.LauncherOptions
+            {
+                DesiredRemainingView = ViewSizePreference.UseHalf, DisplayApplicationPicker = true, PreferredApplicationPackageFamilyName = "microsoft.windowscommunicationsapps_8wekyb3d8bbwe", PreferredApplicationDisplayName = "Mail"
+            };
+
+            return await Windows.System.Launcher.LaunchUriAsync(uri, options);
         }
         
         private static string CreateErrorMessage(Exception currentException)
@@ -98,6 +140,5 @@ namespace MvpApi.Uwp.Helpers
                 Debugger.Break();
             }
         }
-
     }
 }
