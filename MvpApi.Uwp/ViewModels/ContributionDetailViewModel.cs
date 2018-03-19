@@ -16,9 +16,7 @@ using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
-using Newtonsoft.Json;
 using Template10.Common;
-using Template10.Mvvm;
 using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels

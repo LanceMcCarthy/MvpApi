@@ -18,7 +18,7 @@ namespace MvpApi.Uwp.Views
 
         public ShellPage(INavigationService navigationService) : this()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             Menu.NavigationService = navigationService;
         }
     }
