@@ -6,15 +6,14 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using MvpApi.Common.Services;
 using MvpApi.Uwp.Common;
+using MvpApi.Uwp.Services;
 using Newtonsoft.Json;
 
 namespace MvpApi.Uwp

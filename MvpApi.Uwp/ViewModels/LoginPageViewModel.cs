@@ -5,10 +5,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Xaml.Navigation;
-using MvpApi.Common.Services;
 using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
+using MvpApi.Uwp.Services;
 using Newtonsoft.Json;
 using Template10.Common;
 
