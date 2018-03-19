@@ -7,6 +7,7 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+      xmlns:converters="using:MvpApi.Uwp.Converters"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -325,11 +326,21 @@
 
         <CommandBar Grid.Row="3"
                     Grid.Column="0">
+            <CommandBar.Resources>
+                <converters:BoolToIconConverter x:Key="BoolToIconConverter">
+                    <converters:BoolToIconConverter.FalseIcon>
+                        <SymbolIcon Symbol="Add"/>
+                    </converters:BoolToIconConverter.FalseIcon>
+                    <converters:BoolToIconConverter.TrueIcon>
+                        <SymbolIcon Symbol="Save"/>
+                    </converters:BoolToIconConverter.TrueIcon>
+                </converters:BoolToIconConverter>
+            </CommandBar.Resources>
             <AppBarButton Label="clear form"
                           Icon="Clear"
                           Click="{x:Bind ViewModel.ClearCurrentItemButton_Click}" />
             <AppBarButton Label="add to queue"
-                          Icon="Add"
+                          Icon="{Binding IsEditingQueuedItem, Converter={StaticResource BoolToIconConverter}}"
                           Click="{x:Bind ViewModel.AddCurrentItemButton_Click}" />
         </CommandBar>
 

@@ -36,6 +36,7 @@ namespace MvpApi.Uwp.ViewModels
         private bool isAnnualQuantityRequired;
         private bool isSecondAnnualQuantityRequired;
         private bool canUpload = true;
+        private bool isEditingQueuedItem;
 
         #endregion
 
@@ -124,6 +125,12 @@ namespace MvpApi.Uwp.ViewModels
             get => canUpload;
             set => Set(ref canUpload, value);
         }
+
+        public bool IsEditingQueuedItem
+        {
+            get => isEditingQueuedItem;
+            set => Set(ref isEditingQueuedItem, value);
+        }
         
         // Commands
 
@@ -162,27 +169,32 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void AddCurrentItemButton_Click(object sender, RoutedEventArgs e)
         {
-            var isValid = await SelectedContribution.Validate(true);
-
-            if (!isValid)
+            // This will check all required fields and show error message if invalid
+            if (!await SelectedContribution.Validate(true))
                 return;
 
             // Validate all required fields
-            var isValidated = await ValidateRequiredFields();
+            //var isValidated = await ValidateRequiredFields();
 
-            if (isValidated)
+            //if (!isValidated)
+            //{
+            //    await new MessageDialog("You need to fill in every field marked as 'Required' before starting a new contribution.").ShowAsync();
+            //    return;
+            //}
+
+            if (IsEditingQueuedItem)
             {
-                SelectedContribution.ContributionId = null;
-
-                if(!UploadQueue.Contains(SelectedContribution))
-                    UploadQueue.Add(SelectedContribution);
-
-                SetupNextEntry();
+                IsEditingQueuedItem = false;
             }
             else
             {
-                await new MessageDialog("You need to fill in every field marked as 'Required' before starting a new contribution.").ShowAsync();
+                if(!UploadQueue.Contains(SelectedContribution))
+                    UploadQueue.Add(SelectedContribution);
             }
+            
+            
+
+            SetupNextEntry();
         }
 
         public void ClearCurrentItemButton_Click(object sender, RoutedEventArgs e)
@@ -278,6 +290,7 @@ namespace MvpApi.Uwp.ViewModels
             }
 
             SelectedContribution = contribution;
+            IsEditingQueuedItem = true;
         }
 
         public async Task RemoveContribution(ContributionsModel contribution)
@@ -327,53 +340,6 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
         
-        private async Task<bool> ValidateRequiredFields()
-        {
-            if (SelectedContribution.ContributionType == null)
-            {
-                await new MessageDialog("The Contribution Type is a required field").ShowAsync();
-                return false;
-            }
-
-            if (SelectedContribution.Visibility == null)
-            {
-                await new MessageDialog("The Visibility is a required field").ShowAsync();
-                return false;
-            }
-
-            if (SelectedContribution.ContributionTechnology == null)
-            {
-                await new MessageDialog("The Category Technology is a required field").ShowAsync();
-                return false;
-            }
-
-            if (IsUrlRequired && string.IsNullOrEmpty(SelectedContribution.ReferenceUrl))
-            {
-                await new MessageDialog($"The {UrlHeader} field is required when entering a {SelectedContribution.ContributionType.EnglishName} Activity Type",
-                    $"Missing {UrlHeader}!").ShowAsync();
-
-                return false;
-            }
-
-            if (IsAnnualQuantityRequired && SelectedContribution.AnnualQuantity == null)
-            {
-                await new MessageDialog($"The {AnnualQuantityHeader} field is required when entering a {SelectedContribution.ContributionType.EnglishName} Activity Type",
-                    $"Missing {AnnualQuantityHeader}!").ShowAsync();
-
-                return false;
-            }
-
-            if (IsSecondAnnualQuantityRequired && SelectedContribution.SecondAnnualQuantity == null)
-            {
-                await new MessageDialog($"The {SecondAnnualQuantityHeader} field is required when entering a {SelectedContribution.ContributionType.EnglishName} Activity Type",
-                    $"Missing {SecondAnnualQuantityHeader}!").ShowAsync();
-
-                return false;
-            }
-
-            return true;
-        }
-        
         private async Task LoadSupportingDataAsync()
         {
             IsBusyMessage = "loading types...";
@@ -407,69 +373,6 @@ namespace MvpApi.Uwp.ViewModels
                 Visibilies.Add(visibility);
             });
         }
-        
-        #region Navigation
-
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
-        {
-            if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-            {
-                if (BootStrapper.Current.NavigationService.CanGoBack)
-                    BootStrapper.Current.NavigationService.GoBack();
-            }
-
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
-            {
-                try
-                {
-                    IsBusy = true;
-
-                    // ** Get the neccessary associated data from the API **
-
-                    await LoadSupportingDataAsync();
-                    
-                    SetupNextEntry();
-
-                    if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                    {
-                        var td = new TutorialDialog
-                        {
-                            SettingsKey = "AddContributionPageTutorialShown",
-                            MessageTitle = "Add Contribution Page",
-                            Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
-                                      "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
-                                      "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
-                                      "- Click 'Upload' to save the queue to your profile.\r\n" +
-                                      "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
-                                      "Note: Watch the queue items color change as the items are uploaded and save is confirmed."
-                        };
-
-                        await td.ShowAsync();
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"LoadDataAsync Exception {ex}");
-                }
-                finally
-                {
-                    IsBusyMessage = "";
-                    IsBusy = false;
-                }
-            }
-            else
-            {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
-            }
-        }
-
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            return base.OnNavigatedFromAsync(pageState, suspending);
-        }
-
-        #endregion
 
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
         {
@@ -685,5 +588,68 @@ namespace MvpApi.Uwp.ViewModels
                     break;
             }
         }
+        
+        #region Navigation
+
+        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        {
+            if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+            {
+                if (BootStrapper.Current.NavigationService.CanGoBack)
+                    BootStrapper.Current.NavigationService.GoBack();
+            }
+
+            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
+            {
+                try
+                {
+                    IsBusy = true;
+
+                    // ** Get the neccessary associated data from the API **
+
+                    await LoadSupportingDataAsync();
+                    
+                    SetupNextEntry();
+
+                    if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                    {
+                        var td = new TutorialDialog
+                        {
+                            SettingsKey = "AddContributionPageTutorialShown",
+                            MessageTitle = "Add Contribution Page",
+                            Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
+                                      "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
+                                      "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
+                                      "- Click 'Upload' to save the queue to your profile.\r\n" +
+                                      "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
+                                      "Note: Watch the queue items color change as the items are uploaded and save is confirmed."
+                        };
+
+                        await td.ShowAsync();
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"LoadDataAsync Exception {ex}");
+                }
+                finally
+                {
+                    IsBusyMessage = "";
+                    IsBusy = false;
+                }
+            }
+            else
+            {
+                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+            }
+        }
+
+        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+        {
+            return base.OnNavigatedFromAsync(pageState, suspending);
+        }
+
+        #endregion
     }
 }
