@@ -274,7 +274,7 @@
                                                FontWeight="SemiBold"
                                                Style="{ThemeResource BodyTextBlockStyle}"
                                                VerticalAlignment="Center"
-                                               HorizontalTextAlignment="Center" />
+                                               HorizontalAlignment="Center" />
                                 </StackPanel>
                             </StackPanel>
 
