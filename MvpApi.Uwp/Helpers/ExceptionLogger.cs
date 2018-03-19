@@ -8,7 +8,7 @@ namespace MvpApi.Uwp.Helpers
 {
     public static class ExceptionLogger
     {
-        public static void LogException(Exception currentException)
+        public static void LogException(this Exception currentException)
         {
             var exceptionMessage = CreateErrorMessage(currentException);
 

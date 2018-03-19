@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Helpers;
 using Newtonsoft.Json;
 
 namespace MvpApi.Uwp.Services
@@ -30,8 +31,6 @@ namespace MvpApi.Uwp.Services
             client = new HttpClient(handler);
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
             client.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
-
-            //client.DefaultRequestHeaders.Add("ContentType", "application/json");
         }
 
         /// <summary>
@@ -50,6 +49,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
+                e.LogException();
+
                 if (e.Message.Contains("401"))
                 {
                     //TODO Try refresh token, access token is only valid for 60 minutes
@@ -65,6 +66,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
+                e.LogException();
+
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
                 return null;
             }
@@ -88,6 +91,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
+                e.LogException();
+
                 if (e.Message.Contains("401"))
                 {
                     //TODO Try refresh token, access token is only valid for 60 minutes
@@ -103,6 +108,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
+                e.LogException();
+
                 Debug.WriteLine($"GetProfileImageAsync Exception: {e}");
                 return null;
             }
@@ -129,6 +136,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
+                e.LogException();
+
                 if (e.Message.Contains("401"))
                 {
                     //TODO Try refresh token, access token is only valid for 60 minutes
@@ -144,6 +153,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
+                e.LogException();
+
                 Debug.WriteLine($"GetContributionsAsync Exception: {e}");
                 return null;
             }
@@ -184,6 +195,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
+                e.LogException();
+
                 if (e.Message.Contains("401"))
                 {
                     //TODO Try refresh token, access token is only valid for 60 minutes
@@ -199,6 +212,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
+                e.LogException();
+
                 Debug.WriteLine($"SubmitContributionAsync Exception: {e}");
                 return null;
             }
@@ -232,6 +247,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
+                e.LogException();
+
                 if (e.Message.Contains("401"))
                 {
                     //TODO Try refresh token, access token is only valid for 60 minutes
@@ -247,6 +264,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
+                e.LogException();
+
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
                 return null;
             }
@@ -271,6 +290,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
+                e.LogException();
+
                 if (e.Message.Contains("401"))
                 {
                     //TODO Try refresh token, access token is only valid for 60 minutes
@@ -286,6 +307,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
+                e.LogException();
+
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
                 return null;
             }
@@ -307,6 +330,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
+                e.LogException();
+
                 if (e.Message.Contains("401"))
                 {
                     //TODO Try refresh token, access token is only valid for 60 minutes
@@ -322,6 +347,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
+                e.LogException();
+
                 Debug.WriteLine($"GetContributionTypesAsync Exception: {e}");
                 return null;
             }
@@ -343,6 +370,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
+                e.LogException();
+
                 if (e.Message.Contains("401"))
                 {
                     //TODO Try refresh token, access token is only valid for 60 minutes
@@ -358,6 +387,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
+                e.LogException();
+
                 Debug.WriteLine($"GetContributionTechnologiesAsync Exception: {e}");
                 return null;
             }
@@ -379,6 +410,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
+                e.LogException();
+
                 if (e.Message.Contains("401"))
                 {
                     //TODO Try refresh token, access token is only valid for 60 minutes
@@ -394,6 +427,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
+                e.LogException();
+
                 Debug.WriteLine($"GetVisibilitiesAsync Exception: {e}");
                 return null;
             }
