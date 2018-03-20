@@ -31,7 +31,7 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         public DelegateCommand EmailCommand { get; }
-
+        
         private async Task CreateEmailAsync()
         {
             try

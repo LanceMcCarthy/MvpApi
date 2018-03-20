@@ -33,12 +33,13 @@ namespace MvpApi.Uwp.ViewModels
         private IncrementalLoadingCollection<ContributionsModel> activities;
         private bool areAppbarButtonsEnabled = false;
         private bool isInternetDisabled;
+        private uint batchSize = 50;
 
         #endregion
 
         public HomePageViewModel()
         {
-            Activities = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
+            Activities = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = SelectedBatchSize };
 
             if (DesignMode.DesignModeEnabled)
             {
@@ -154,6 +155,31 @@ namespace MvpApi.Uwp.ViewModels
             get => isInternetDisabled;
             set => Set(ref isInternetDisabled, value);
         }
+        
+        public uint SelectedBatchSize
+        {
+            get
+            {
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue("BatchSize", out object rawValue))
+                {
+                    batchSize = Convert.ToUInt32(rawValue);
+                }
+                else
+                {
+                    ApplicationData.Current.LocalSettings.Values["BatchSize"] = batchSize;
+                }
+
+                return batchSize;
+            }
+            set
+            {
+                Set(ref batchSize, value);
+                
+                ApplicationData.Current.LocalSettings.Values["BatchSize"] = value;
+
+                ResetData();
+            }
+        }
 
         #endregion
 
@@ -167,6 +193,11 @@ namespace MvpApi.Uwp.ViewModels
         public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
         {
             SelectedContributions.Clear();
+        }
+
+        public void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            ResetData();
         }
 
         public async void DeleteSelectionButton_Click(object sender, RoutedEventArgs e)
@@ -223,6 +254,19 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #endregion
+
+        private void ResetData()
+        {
+            if (SelectedContributions.Any())
+            {
+                SelectedContributions.Clear();
+                GridSelectionMode = DataGridSelectionMode.Single;
+            }
+
+            currentOffset = 0;
+
+            Activities = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = SelectedBatchSize };
+        }
 
         #region Navigation
 

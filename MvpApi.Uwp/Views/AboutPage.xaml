@@ -6,6 +6,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
+      xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -89,10 +90,10 @@
                       VerticalAlignment="Center"
                       Background="{Binding TextBackground,
                                    ElementName=Control}">
-                    <controls:DropShadowPanel BlurRadius="3.0"
+                    <controls:DropShadowPanel BlurRadius="4.0"
                                               ShadowOpacity="0.90"
-                                              OffsetX="1.0"
-                                              OffsetY="1.5"
+                                              OffsetX="0"
+                                              OffsetY="2"
                                               Color="Black">
                         <TextBlock FontFamily="Century Gothic"
                                    FontSize="32"
@@ -103,9 +104,7 @@
                                    Text="Lancelot Software"
                                    TextWrapping="Wrap" />
                     </controls:DropShadowPanel>
-
                 </Grid>
-
             </Grid>
         </Grid>
 
@@ -129,7 +128,6 @@
             <HyperlinkButton Content="Privacy Policy"
                              NavigateUri="http://w8privacy.azurewebsites.net/privacy?dev=Lancelot%20Software&amp;app=MVP%20Companion&amp;mail=bGFuY2Vsb3Quc29mdHdhcmVAb3V0bG9vay5jb20=&amp;lng=En" />
 
-
         </StackPanel>
 
         <CommandBar Grid.Row="3">
@@ -138,6 +136,5 @@
                           Command="{Binding EmailCommand}" />
 
         </CommandBar>
-
     </Grid>
 </Page>

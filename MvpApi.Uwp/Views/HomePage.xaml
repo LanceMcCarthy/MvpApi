@@ -6,6 +6,7 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+      xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -76,31 +77,52 @@
                                          CellContentStyle="{StaticResource MediumCellContentStyle}" />
             </grid:RadDataGrid.Columns>
         </grid:RadDataGrid>
-        
+
         <Button Content="Refresh Data (after internet connection is established)"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Command="{Binding RefreshAfterDisconnectCommand}"
                 Visibility="{Binding IsInternetDisabled, Converter={StaticResource BoolToVisibilityConverter}}"
-                Grid.Row="1"/>
+                Grid.Row="1" />
 
-        <CommandBar Grid.Row="2">
+        <CommandBar Grid.Row="2"
+                    VerticalContentAlignment="Top">
+            <AppBarButton Label="Batch Size"
+                          Icon="Setting">
+                <AppBarButton.Flyout>
+                    <Flyout>
+                        <Grid>
+                            <input:RadNumericBox Header="Fetch Batch Size"
+                                                 Minimum="0"
+                                                 AcceptsDecimalSeparator="False"
+                                                 Maximum="100"
+                                                 SmallChange="25"
+                                                 Value="{Binding SelectedBatchSize, Mode=TwoWay}" />
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarSeparator />
             <AppBarButton Label="clear selection"
+                          Icon="ClearSelection"
                           Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
                           IsEnabled="{Binding AreAppbarButtonsEnabled}"
-                          Click="{x:Bind ViewModel.ClearSelectionButton_Click}"
-                          Icon="ClearSelection" />
+                          Click="{x:Bind ViewModel.ClearSelectionButton_Click}" />
             <AppBarButton Label="delete"
+                          Icon="Delete"
                           Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
                           IsEnabled="{Binding AreAppbarButtonsEnabled}"
-                          Click="{x:Bind ViewModel.DeleteSelectionButton_Click}"
-                          Icon="Delete" />
+                          Click="{x:Bind ViewModel.DeleteSelectionButton_Click}" />
             <AppBarToggleButton Label="multiple selection"
-                                IsChecked="{Binding IsMultipleSelectionEnabled, Mode=TwoWay}"
-                                Icon="Bullets" />
+                                Icon="Bullets"
+                                IsChecked="{Binding IsMultipleSelectionEnabled, Mode=TwoWay}" />
+            <AppBarSeparator />
+            <AppBarButton Icon="Refresh"
+                          Label="refresh"
+                          Click="{x:Bind ViewModel.RefreshButton_Click}" />
             <AppBarButton Label="add activity"
-                          Click="{x:Bind ViewModel.AddActivityButton_Click}"
-                          Icon="Add" />
+                          Icon="Add"
+                          Click="{x:Bind ViewModel.AddActivityButton_Click}" />
         </CommandBar>
 
         <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
