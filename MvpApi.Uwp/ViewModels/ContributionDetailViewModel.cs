@@ -17,6 +17,7 @@ using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
+using Template10.Services.NavigationService;
 using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels
@@ -66,7 +67,7 @@ namespace MvpApi.Uwp.ViewModels
             set
             {
                 Set(ref isSelectedContributionDirty, value);
-
+                
                 // if the object has changes, update the status to pending
                 SelectedContribution.UploadStatus = value 
                     ? UploadStatus.Pending 
@@ -202,6 +203,8 @@ namespace MvpApi.Uwp.ViewModels
 
             if (SelectedContribution.UploadStatus == UploadStatus.Success)
             {
+                IsSelectedContributionDirty = false;
+
                 if (BootStrapper.Current.NavigationService.CanGoBack)
                     BootStrapper.Current.NavigationService.GoBack();
             }
@@ -559,6 +562,9 @@ namespace MvpApi.Uwp.ViewModels
                         if (BootStrapper.Current.NavigationService.CanGoBack)
                             BootStrapper.Current.NavigationService.GoBack();
                     }
+
+                    // To prevent accidental back navigation
+                    NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
                 }
                 catch (Exception ex)
                 {
@@ -579,6 +585,38 @@ namespace MvpApi.Uwp.ViewModels
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
         {
             return base.OnNavigatedFromAsync(pageState, suspending);
+        }
+
+        public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
+        {
+            NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
+
+            return base.OnNavigatingFromAsync(args);
+        }
+
+        // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
+        private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
+        {
+            e.Handled = IsSelectedContributionDirty;
+
+            if (IsSelectedContributionDirty)
+            {
+                var md = new MessageDialog("Navigating away now will lose your changes, continue?", "Warning: Unsaved Changes");
+                md.Commands.Add(new UICommand("yes"));
+                md.Commands.Add(new UICommand("no"));
+                md.CancelCommandIndex = 1;
+                md.DefaultCommandIndex = 1;
+
+                var result = await md.ShowAsync();
+
+                if (result.Label == "yes")
+                {
+                    if (NavigationService.CanGoBack)
+                    {
+                        NavigationService.GoBack();
+                    }
+                }
+            }
         }
 
         #endregion

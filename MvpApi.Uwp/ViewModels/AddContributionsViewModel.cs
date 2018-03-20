@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
+using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -20,6 +21,7 @@ using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Mvvm;
+using Template10.Services.NavigationService;
 using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels
@@ -148,7 +150,7 @@ namespace MvpApi.Uwp.ViewModels
         
         public async void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            if (e.NewDate < new DateTime(2016, 10, 1) || e.NewDate > new DateTime(2018, 3, 31))
+            if (e.NewDate < new DateTime(2016, 10, 1))
             {
                 await new MessageDialog("The contribution date must be after the start of your current award period and before March 31, 2018 in order for it to count towards your evaluation", "Notice: Out of range").ShowAsync();
             }
@@ -170,19 +172,9 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void AddCurrentItemButton_Click(object sender, RoutedEventArgs e)
         {
-            // This will check all required fields and show error message if invalid
             if (!await SelectedContribution.Validate(true))
                 return;
-
-            // Validate all required fields
-            //var isValidated = await ValidateRequiredFields();
-
-            //if (!isValidated)
-            //{
-            //    await new MessageDialog("You need to fill in every field marked as 'Required' before starting a new contribution.").ShowAsync();
-            //    return;
-            //}
-
+            
             if (IsEditingQueuedItem)
             {
                 IsEditingQueuedItem = false;
@@ -193,8 +185,6 @@ namespace MvpApi.Uwp.ViewModels
                     UploadQueue.Add(SelectedContribution);
             }
             
-            
-
             SetupNextEntry();
         }
 
@@ -250,6 +240,9 @@ namespace MvpApi.Uwp.ViewModels
             else
             {
                 await new MessageDialog("All contributions have been saved!").ShowAsync();
+
+
+                CanUpload = false;
 
                 if (BootStrapper.Current.NavigationService.CanGoBack)
                     BootStrapper.Current.NavigationService.GoBack();
@@ -629,6 +622,8 @@ namespace MvpApi.Uwp.ViewModels
                         await td.ShowAsync();
                     }
 
+                    // To prevent accidental back navigation
+                    NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
                 }
                 catch (Exception ex)
                 {
@@ -645,10 +640,42 @@ namespace MvpApi.Uwp.ViewModels
                 await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
             }
         }
+        
 
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
         {
             return base.OnNavigatedFromAsync(pageState, suspending);
+        }
+        
+        public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
+        {
+            NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
+            return base.OnNavigatingFromAsync(args);
+        }
+
+        // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
+        private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
+        {
+            e.Handled = CanUpload;
+
+            if (CanUpload)
+            {
+                var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
+                md.Commands.Add(new UICommand("yes"));
+                md.Commands.Add(new UICommand("no"));
+                md.CancelCommandIndex = 1;
+                md.DefaultCommandIndex = 1;
+
+                var result = await md.ShowAsync();
+
+                if (result.Label == "yes")
+                {
+                    if (NavigationService.CanGoBack)
+                    {
+                        NavigationService.GoBack();
+                    }
+                }
+            }
         }
 
         #endregion

@@ -70,10 +70,13 @@ namespace MvpApi.Uwp.ViewModels
             try
             {
                 // Here we use a different flag when the view model is busy loading items because we dont want to cover the UI
-                // The IsBusy flag is used for when deleteing items, when we want to block the UI
+                // The IsBusy flag is used for when deleting items, when we want to block the UI
                 IsLoadingMoreItems = true;
                 
                 var result = await App.ApiService.GetContributionsAsync(currentOffset, (int) count);
+
+                if (result == null)
+                    return null;
 
                 currentOffset = result.PagingIndex;
                 
@@ -87,6 +90,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
+                ex.LogException();
                 Debug.WriteLine($"LoadMoreItems Exception: {ex}");
                 return null;
             }

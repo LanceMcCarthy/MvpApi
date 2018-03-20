@@ -15,7 +15,7 @@ namespace MvpApi.Uwp
         public static ShellPage ShellPage { get; private set; }
         
         public static MvpApiService ApiService { get; set; }
-
+        
         public App()
         {
             this.InitializeComponent();
@@ -54,7 +54,7 @@ namespace MvpApi.Uwp
             {
                 NavigationService.Navigate(typeof(HomePage));
             }
-
+            
             return Task.CompletedTask;
         }
 

@@ -116,11 +116,11 @@ namespace MvpApi.Uwp.Helpers
             {
                 var daysToKeepLog = 5;
                 var todaysDate = DateTime.Now.Date;
-
-                logFolder = await logFolder.GetFolderAsync("Logs");
+                
                 IReadOnlyList<StorageFile> files = await logFolder.GetFilesAsync();
 
-                if (files.Count < 1) return;
+                if (files.Count < 1) 
+                    return;
 
                 foreach (var file in files)
                 {
