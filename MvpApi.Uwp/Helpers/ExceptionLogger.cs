@@ -40,7 +40,7 @@ namespace MvpApi.Uwp.Helpers
                 var text = await DiagnosticsHelper.DumpAsync(exception, true);
 #else
 
-                var text = await DiagnosticsHelper.DumpAsync(e.Exception);
+                var text = await DiagnosticsHelper.DumpAsync(exception);
 #endif
 
                 await ReportErrorMessage(text);
