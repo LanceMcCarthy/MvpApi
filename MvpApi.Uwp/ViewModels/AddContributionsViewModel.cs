@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -292,7 +293,7 @@ namespace MvpApi.Uwp.ViewModels
             SelectedContribution = contribution;
             IsEditingQueuedItem = true;
         }
-
+        
         public async Task RemoveContribution(ContributionsModel contribution)
         {
             if (contribution == null)
