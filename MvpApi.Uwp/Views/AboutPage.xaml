@@ -112,29 +112,26 @@
                     Margin="20,10">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="MVP Companion v."
-                           Style="{ThemeResource SubheaderTextBlockStyle}" />
+                           Style="{ThemeResource TitleTextBlockStyle}" />
                 <TextBlock Text="{Binding AppVersion}"
-                           Style="{ThemeResource SubheaderTextBlockStyle}" />
+                           Style="{ThemeResource TitleTextBlockStyle}" />
             </StackPanel>
             
             <TextBlock Text="Copyright 2018, Lancelot Software, LLC "/>
-
             <HyperlinkButton Content="Open source on GitHub"
                              NavigateUri="https://lancemccarthy.github.io/MvpApi/"/>
-
-            <HyperlinkButton Content="Report Issues or submit Feature Request here"
-                             NavigateUri="https://github.com/LanceMcCarthy/MvpApi/issues" />
-
             <HyperlinkButton Content="Privacy Policy"
                              NavigateUri="http://w8privacy.azurewebsites.net/privacy?dev=Lancelot%20Software&amp;app=MVP%20Companion&amp;mail=bGFuY2Vsb3Quc29mdHdhcmVAb3V0bG9vay5jb20=&amp;lng=En" />
-
-        </StackPanel>
-
-        <CommandBar Grid.Row="3">
-            <AppBarButton Icon="Mail"
-                          Label="Email"
-                          Command="{Binding EmailCommand}" />
-
-        </CommandBar>
+        
+            <TextBlock Text="Problems? Feature Request? Choose an option:"
+                       Margin="0,20,0,0"/>
+            <HyperlinkButton Content="Open a GitHub issue"
+                             NavigateUri="https://github.com/LanceMcCarthy/MvpApi/issues" />
+            <HyperlinkButton Content="Open Feedback Hub"
+                             Visibility="{Binding FeedbackHubButtonVisibility}"
+                             Click="{x:Bind ViewModel.FeedbackButton_Click}"/>
+            <HyperlinkButton Content="Send an Email"
+                             Click="{x:Bind ViewModel.EmailButton_Click}" />
+            </StackPanel>
     </Grid>
 </Page>

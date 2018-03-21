@@ -40,12 +40,30 @@
             </controls:HamburgerMenu.PrimaryButtons>
 
             <controls:HamburgerMenu.SecondaryButtons>
+                <controls:HamburgerButtonInfo PageType="local:KudosPage">
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <Grid>
+                            <FontIcon FontFamily="Segoe MDL2 Assets"
+                                      Glyph="&#xE00B;"
+                                      Foreground="DarkRed"
+                                      Width="48"
+                                      Height="48" />
+                            <FontIcon FontFamily="Segoe MDL2 Assets"
+                                      Glyph="&#xE006;"
+                                      Foreground="White"
+                                      Width="48"
+                                      Height="48" />
+                        </Grid>
+                        
+                        <TextBlock Text="Kudos"
+                                   Margin="12, 0, 0, 0"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </controls:HamburgerButtonInfo>
                 <controls:HamburgerButtonInfo PageType="local:AboutPage">
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
-                        <!--<SymbolIcon Symbol="Info"
-                                    Width="48"
-                                    Height="48" />-->
                         <FontIcon FontFamily="Segoe MDL2 Assets"
                                   Glyph="&#xE946;"
                                   Width="48"

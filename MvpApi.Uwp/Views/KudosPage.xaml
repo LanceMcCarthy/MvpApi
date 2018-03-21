@@ -1,0 +1,91 @@
+﻿<Page x:Class="MvpApi.Uwp.Views.KudosPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:MvpApi.Uwp.Views"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
+      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+      mc:Ignorable="d">
+
+    <Page.DataContext>
+        <viewModels:KudosViewModel x:Name="ViewModel" />
+    </Page.DataContext>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="HeaderGrid"
+              Height="48"
+              Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
+            <TextBlock Text="Kudos"
+                       Style="{StaticResource TitleTextBlockStyle}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+        </Grid>
+
+        <StackPanel Grid.Row="1"
+              Margin="20,10">
+            <TextBlock Text="What are 'Kudos'?"
+                       Style="{ThemeResource TitleTextBlockStyle}"/>
+            <TextBlock TextWrapping="Wrap">
+                <Run Text="This app is free and will remain free. The developer, Lance McCarthy, is grateful to the MVP program and its members (you!) and built this app to give back. You can still show your support by giving Kudos."/>
+                <LineBreak/>
+                <LineBreak/>
+                <Run Text="Choose one of the items that best suits you from the list below."/>
+            </TextBlock>
+        </StackPanel>
+        
+        <GridView ItemsSource="{Binding KudosCollection}"
+                  SelectionMode="None"
+                  IsItemClickEnabled="True"
+                  ItemClick="{x:Bind ViewModel.KudosGridView_OnItemClick}"
+                  VerticalAlignment="Top"
+                  Margin="20,10"
+                  Grid.Row="2">
+            <GridView.Header>
+                <TextBlock Text="Available Kudos"
+                           Style="{ThemeResource TitleTextBlockStyle}"
+                           Margin="0,0,0,5"/>
+            </GridView.Header>
+            <GridView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <StackPanel Background="DimGray">
+                            <Grid Background="{ThemeResource SystemControlHighlightAccentBrush}" Width="150" 
+                                  Height="150">
+                                <Image Source="{Binding ImageUrl}" />
+                            </Grid>
+                            
+                            <TextBlock Text="{Binding Title}"
+                                       Style="{ThemeResource TitleTextBlockStyle}"
+                                       Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                                       Margin="10,5"/>
+                            <TextBlock Text="{Binding Price}"
+                                       
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                                       Margin="10,5"/>
+                        </StackPanel>
+                        
+                        <primitives:RadBusyIndicator IsActive="{Binding IsBusy}" 
+                                                     Content="loading..."
+                                                     AnimationStyle="AnimationStyle5"
+                                                     Background="#CC000000" />
+                    </Grid>
+                    
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+        
+        <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                                     IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                     Style="{StaticResource PageBusyIndicatorStyle}"
+                                     Grid.Row="1" 
+                                     Grid.RowSpan="2"/>
+    </Grid>
+</Page>

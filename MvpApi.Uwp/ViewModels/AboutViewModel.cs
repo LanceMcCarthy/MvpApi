@@ -4,18 +4,21 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Email;
 using Windows.UI.Popups;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Services.Store.Engagement;
 using MvpApi.Uwp.Views;
 using Template10.Common;
-using Template10.Mvvm;
 
 namespace MvpApi.Uwp.ViewModels
 {
     public class AboutViewModel : PageViewModelBase
     {
+        private Visibility feedbackHubButtonVisibility;
+
         public AboutViewModel()
         {
-            EmailCommand = new DelegateCommand(async () => await CreateEmailAsync());
+
         }
 
         public string AppVersion
@@ -30,8 +33,23 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        public DelegateCommand EmailCommand { get; }
-        
+        public Visibility FeedbackHubButtonVisibility
+        {
+            get => feedbackHubButtonVisibility;
+            set => Set(ref feedbackHubButtonVisibility, value);
+        }
+
+        public async void EmailButton_Click(object sender, RoutedEventArgs e)
+        {
+            await CreateEmailAsync();
+        }
+
+        public async void FeedbackButton_Click(object sender, RoutedEventArgs e)
+        {
+            var launcher = StoreServicesFeedbackLauncher.GetDefault();
+            await launcher.LaunchAsync();
+        }
+
         private async Task CreateEmailAsync()
         {
             try
@@ -64,7 +82,9 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
             {
-                
+                FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
+                    ? Visibility.Visible 
+                    : Visibility.Collapsed;
             }
             else
             {

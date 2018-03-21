@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
@@ -7,6 +8,7 @@ using MvpApi.Uwp.Services;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Controls;
+using Microsoft.Services.Store.Engagement;
 
 namespace MvpApi.Uwp
 {
@@ -35,27 +37,32 @@ namespace MvpApi.Uwp
             };
         }
 
-        public override Task OnStartAsync(StartKind startKind, IActivatedEventArgs args)
+        public override async Task OnStartAsync(StartKind startKind, IActivatedEventArgs args)
         {
-            // If the app was launched from a reminder, it will have the appointment ID in the args
+            var engagementManager = StoreServicesEngagementManager.GetDefault();
+
+            await engagementManager.RegisterNotificationChannelAsync();
+            
             if (args.Kind == ActivationKind.ToastNotification)
             {
                 var toastArgs = args as ToastNotificationActivatedEventArgs;
-                var argument = toastArgs?.Argument;
+                
+                var originalArgs = engagementManager.ParseArgumentsAndTrackAppLaunch(toastArgs?.Argument);
 
-                if (argument != null && argument.Contains("id"))
+                if (originalArgs != null && originalArgs.Contains("id"))
                 {
-                    Debug.WriteLine($"OnActivated ToastNotification argument: {argument}");
-
-                    NavigationService.Navigate(typeof(HomePage), argument);
+                    Debug.WriteLine($"OnActivated ToastNotification argument: {originalArgs}");
+                    NavigationService.Navigate(typeof(HomePage), originalArgs);
+                }
+                else
+                {
+                    NavigationService.Navigate(typeof(HomePage));
                 }
             }
             else
             {
                 NavigationService.Navigate(typeof(HomePage));
             }
-            
-            return Task.CompletedTask;
         }
 
         private async void OnUnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
