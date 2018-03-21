@@ -70,7 +70,7 @@ namespace MvpApi.Uwp
             e.Handled = true;
 
             await e.Exception.LogExceptionWithUserMessage(
-                "Sorry, there has been an unexpected error. If you'd like to send a techincal summary to the app development team, click Yes.",
+                "Sorry, there has been an unexpected error. If you'd like to send a technical summary to the app development team, click Yes.",
                 "Unexpected Error");
         }
     }
