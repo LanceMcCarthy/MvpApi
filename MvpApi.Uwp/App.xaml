@@ -45,6 +45,8 @@
                     Value="CharacterEllipsis" />
             <Setter Property="Margin"
                     Value="5" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center"/>
         </Style>
 
         <Style x:Name="MediumCellContentStyle"
@@ -55,6 +57,8 @@
                     Value="CharacterEllipsis" />
             <Setter Property="Margin"
                     Value="5" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center"/>
         </Style>
 
         <Style x:Name="WideCellContentStyle"
@@ -65,6 +69,8 @@
                     Value="CharacterEllipsis" />
             <Setter Property="Margin"
                     Value="5" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center"/>
         </Style>
 
         <Style x:Key="TechnologyAreaComboBoxStyle"
