@@ -10,6 +10,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Dialogs;
@@ -201,6 +202,9 @@ namespace MvpApi.Uwp.ViewModels
             // Mark success or failure
             SelectedContribution.UploadStatus = success ? UploadStatus.Success : UploadStatus.Failed;
 
+            // Quality assurance, only logs a successful or failed upload.
+            StoreServicesCustomEventLogger.GetDefault().Log($"EditContribution{SelectedContribution.UploadStatus}");
+
             if (SelectedContribution.UploadStatus == UploadStatus.Success)
             {
                 IsSelectedContributionDirty = false;
@@ -227,6 +231,9 @@ namespace MvpApi.Uwp.ViewModels
 
                 if (result == true)
                 {
+                    // Quality assurance, only logs a successful delete.
+                    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionSuccess");
+
                     await new MessageDialog("Successfully deleted.").ShowAsync();
 
                     if (BootStrapper.Current.NavigationService.CanGoBack)
@@ -234,11 +241,17 @@ namespace MvpApi.Uwp.ViewModels
                 }
                 else
                 {
+                    // Quality assurance, only logs a failed delete.
+                    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
+
                     await new MessageDialog("The contribution was not deleted, check your internet connection and try again.").ShowAsync();
                 }
             }
             catch (Exception ex)
             {
+                // Quality assurance, only logs a failed delete.
+                StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
+
                 await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
             }
         }

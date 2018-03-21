@@ -9,6 +9,7 @@ using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Dialogs;
@@ -211,7 +212,10 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     IsBusyMessage = $"deleting {contribution.Title}...";
 
-                    await App.ApiService.DeleteContributionAsync(contribution);
+                    var success = await App.ApiService.DeleteContributionAsync(contribution);
+
+                    // Quality assurance, only logs a successful or failed delete.
+                    StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
                 }
 
                 SelectedContributions.Clear();

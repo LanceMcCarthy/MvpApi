@@ -13,6 +13,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Dialogs;
@@ -325,11 +326,17 @@ namespace MvpApi.Uwp.ViewModels
                 // copying back the ID which was created on the server once the item was added to the database
                 contribution.ContributionId = submissionResult.ContributionId;
 
+                // Quality assurance, only logs a successful upload.
+                StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
+
                 return true;
             }
             catch (Exception ex)
             {
-                await new MessageDialog($"Something went wrong saving the item, please try again. Error: {ex.Message}").ShowAsync();
+                // Quality assurance, only logs a failed upload.
+                StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
+
+                await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
                 return false;
             }
         }
