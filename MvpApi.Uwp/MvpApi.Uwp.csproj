@@ -277,9 +277,6 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>10.0.3</Version>
     </PackageReference>
-    <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
-      <Version>1.0.0.9</Version>
-    </PackageReference>
     <PackageReference Include="Template10">
       <Version>1.1.12</Version>
     </PackageReference>
@@ -300,6 +297,28 @@
     <SDKReference Include="Microsoft.VCLibs, Version=14.0">
       <Name>Visual C++ 2015 Runtime for Universal Windows Platform Apps</Name>
     </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Telerik.Core, Version=2018.1.115.45, Culture=neutral, PublicKeyToken=54096b0481e00341, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for UWP R1 2018\Binaries\Telerik.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Data, Version=2018.1.115.45, Culture=neutral, PublicKeyToken=54096b0481e00341, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for UWP R1 2018\Binaries\Telerik.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.UI.Xaml.Grid.UWP, Version=2018.1.115.45, Culture=neutral, PublicKeyToken=54096b0481e00341, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for UWP R1 2018\Binaries\Telerik.UI.Xaml.Grid.UWP.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.UI.Xaml.Input.UWP, Version=2018.1.115.45, Culture=neutral, PublicKeyToken=54096b0481e00341, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for UWP R1 2018\Binaries\Telerik.UI.Xaml.Input.UWP.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.UI.Xaml.Primitives.UWP, Version=2018.1.115.45, Culture=neutral, PublicKeyToken=54096b0481e00341, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for UWP R1 2018\Binaries\Telerik.UI.Xaml.Primitives.UWP.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>

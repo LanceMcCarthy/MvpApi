@@ -20,8 +20,66 @@ namespace MvpApi.Uwp.Helpers
             LogFileWrite(exceptionMessage);
         }
 
+        /// <summary>
+        /// Easy to use Exception logger that shows the user an error message with the following MessageDialog
+        /// Title: Unexpected Error
+        /// Message: Sorry, there has been an unexpected error. If you'd like to send a technical summary to the app development team, click Yes.
+        /// </summary>
+        /// <param name="exception"></param>
+        /// <returns></returns>
+        public static async Task LogExceptionWithUserMessage(this Exception exception)
+        {
+            if(exception == null)
+                throw new ArgumentNullException(nameof(exception));
+
+            var exceptionMessage = CreateErrorMessage(exception);
+
+            PurgeLogFiles();
+
+            LogFileWrite(exceptionMessage);
+            
+            var md = new MessageDialog(
+                "Sorry, there has been an unexpected error. If you'd like to send a technical summary to the app development team, click Yes.", 
+                "Unexpected Error");
+
+            md.Commands.Add(new UICommand("yes"));
+
+            var result = await md.ShowAsync();
+
+            if (result.Label == "yes")
+            {
+#if DEBUG
+                var text = await DiagnosticsHelper.DumpAsync(exception, true);
+#else
+
+                var text = await DiagnosticsHelper.DumpAsync(exception);
+#endif
+
+                await ReportErrorMessage(text);
+            }
+        }
+
+        /// <summary>
+        /// Easy to use Exception logger that shows the user a custom error message
+        /// </summary>
+        /// <param name="exception">Exception that occurs</param>
+        /// <param name="dialogTitle">MessageDialog's title</param>
+        /// <param name="dialogMessage">MessageDialog's message</param>
+        /// <returns>Task</returns>
         public static async Task LogExceptionWithUserMessage(this Exception exception, string dialogTitle, string dialogMessage)
         {
+            if(exception == null)
+                throw new ArgumentNullException(nameof(exception));
+
+            if (string.IsNullOrEmpty(dialogTitle))
+                throw new ArgumentNullException(nameof(dialogTitle));
+
+            if (string.IsNullOrEmpty(dialogMessage))
+                throw new ArgumentNullException(nameof(dialogMessage));
+
+            if (string.IsNullOrEmpty(dialogMessage))
+                dialogMessage = "Sorry, there has been an unexpected error. If you'd like to send a technical summary to the app development team, click Yes.";
+
             var exceptionMessage = CreateErrorMessage(exception);
 
             PurgeLogFiles();
@@ -108,7 +166,7 @@ namespace MvpApi.Uwp.Helpers
             }
         }
         
-        public static async void PurgeLogFiles()
+        private static async void PurgeLogFiles()
         {
             var logFolder = ApplicationData.Current.LocalFolder;
 

@@ -32,12 +32,8 @@
               Margin="20,10">
             <TextBlock Text="What are 'Kudos'?"
                        Style="{ThemeResource TitleTextBlockStyle}"/>
-            <TextBlock TextWrapping="Wrap">
-                <Run Text="This app is free and will remain free. The developer, Lance McCarthy, is grateful to the MVP program and its members (you!) and built this app to give back. You can still show your support by giving Kudos."/>
-                <LineBreak/>
-                <LineBreak/>
-                <Run Text="Choose one of the items that best suits you from the list below."/>
-            </TextBlock>
+            <TextBlock Text="This app is free and will remain free. The developer, Lance McCarthy, is grateful to the MVP program and its members (you!) and built this to give back to the community."
+                       TextWrapping="Wrap"/>
         </StackPanel>
         
         <GridView ItemsSource="{Binding KudosCollection}"
@@ -48,9 +44,13 @@
                   Margin="20,10"
                   Grid.Row="2">
             <GridView.Header>
-                <TextBlock Text="Available Kudos"
-                           Style="{ThemeResource TitleTextBlockStyle}"
-                           Margin="0,0,0,5"/>
+                <StackPanel>
+                    <TextBlock Text="Available Kudos"
+                               Style="{ThemeResource TitleTextBlockStyle}"/>
+                    <TextBlock Text="You can show your support by choosing a Kudos from the list below."
+                               Margin="0,0,0,10"/>
+                </StackPanel>
+                
             </GridView.Header>
             <GridView.ItemTemplate>
                 <DataTemplate>
@@ -73,11 +73,10 @@
                         </StackPanel>
                         
                         <primitives:RadBusyIndicator IsActive="{Binding IsBusy}" 
-                                                     Content="loading..."
+                                                     Content="loading ad..."
                                                      AnimationStyle="AnimationStyle5"
                                                      Background="#CC000000" />
                     </Grid>
-                    
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>

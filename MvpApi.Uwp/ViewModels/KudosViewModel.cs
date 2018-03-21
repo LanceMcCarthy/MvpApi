@@ -10,8 +10,10 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Advertising.WinRT.UI;
 using Microsoft.Services.Store.Engagement;
+using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Models;
 using MvpApi.Uwp.Views;
+using Newtonsoft.Json.Linq;
 using Template10.Common;
 
 namespace MvpApi.Uwp.ViewModels
@@ -24,11 +26,6 @@ namespace MvpApi.Uwp.ViewModels
 
         public KudosViewModel()
         {
-            KudosCollection.Add(new Kudos { Title = "Video Ad", Price = "Free", ImageUrl = "/Images/VideoAd.png" });
-            KudosCollection.Add(new Kudos { Title = "Store Rating", Price = "Free", ImageUrl = "/Images/4starStar.png" });
-            KudosCollection.Add(new Kudos { Title = "Small Coffee", ProductId = "MvpCompanion_SmallCoffee", Price = "$1.49", ImageUrl = "/Images/CoffeeKudo.png" });
-            KudosCollection.Add(new Kudos { Title = "Lunch", ProductId = "MvpCompanion_Lunch", Price = "$4.89", ImageUrl = "/Images/LunchKudo.png" });
-            KudosCollection.Add(new Kudos { Title = "Dinner", ProductId = "MvpCompanion_Dinner", Price = "$9.49", ImageUrl = "/Images/DinnerKudo.png" });
         }
 
         public ObservableCollection<Kudos> KudosCollection { get; set; } = new ObservableCollection<Kudos>();
@@ -37,11 +34,6 @@ namespace MvpApi.Uwp.ViewModels
         {
             get => feedbackHubButtonVisibility;
             set => Set(ref feedbackHubButtonVisibility, value);
-        }
-
-        public async void FeedbackButton_Click(object sender, RoutedEventArgs e)
-        {
-            await StoreServicesFeedbackLauncher.GetDefault().LaunchAsync();
         }
 
         public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
@@ -57,18 +49,19 @@ namespace MvpApi.Uwp.ViewModels
 
             if (kudo.Title == "Store Rating")
             {
-                await StoreRequestHelper.SendRequestAsync(StoreContext.GetDefault(), 16, string.Empty);
+                await ShowRatingReviewDialog();
             }
 
             if (kudo.Title == "Video Ad")
             {
-                // Ad isnt ready yet
+                // Wait for ad to be ready
                 if (kudo.IsBusy)
                 {
                     await new MessageDialog("Ad is being fetched right now, wait for busy indicator disappear and try again.").ShowAsync();
                     return;
                 }
 
+                // double check the ad is ready using the State value
                 if (myInterstitialAd.State == InterstitialAdState.Ready)
                 {
                     myInterstitialAd.Show();
@@ -76,51 +69,88 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
+        public async Task ShowRatingReviewDialog()
+        {
+            try
+            {
+                IsBusy = true;
+                IsBusyMessage = "opening Store rating window";
+
+                var result = await StoreRequestHelper.SendRequestAsync(StoreContext.GetDefault(), 16, "");
+
+                if (result.ExtendedError != null) 
+                    return;
+
+                var jsonObject = JObject.Parse(result.Response);
+                
+                if (jsonObject.SelectToken("status").ToString() == "success")
+                {
+                    await new MessageDialog("Thank you for taking the time to leave a rating!").ShowAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                await ex.LogExceptionWithUserMessage();
+            }
+            finally
+            {
+                IsBusy = false;
+                IsBusyMessage = "";
+            }
+        }
+
         public async Task PurchaseKudosAsync(string storeId)
         {
-            if (context == null)
+            try
             {
-                context = StoreContext.GetDefault();
+                IsBusy = true;
+                IsBusyMessage = "app rating in progress (you should see a separate window)...";
+
+                if (context == null)
+                    context = StoreContext.GetDefault();
+                
+                var result = await context.RequestPurchaseAsync(storeId);
+                
+                var extendedError = "";
+
+                if (result.ExtendedError != null)
+                    extendedError = result.ExtendedError.Message;
+
+                var resultMessage = "";
+
+                switch (result.Status)
+                {
+                    case StorePurchaseStatus.AlreadyPurchased:
+                        resultMessage = "You have already purchased this kudos, thank you!";
+                        break;
+                    case StorePurchaseStatus.Succeeded:
+                        resultMessage = "Kudos provided! Thank you for your support and help in keeping this app free.";
+                        break;
+                    case StorePurchaseStatus.NotPurchased:
+                        resultMessage = "Kudos was not provided, don't worry you were not charged for peeking at the item :D";
+                        break;
+                    case StorePurchaseStatus.NetworkError:
+                        resultMessage = "The purchase was unsuccessful due to a network error.\r\n\nError:\r\n" + extendedError;
+                        break;
+                    case StorePurchaseStatus.ServerError:
+                        resultMessage = "The purchase was unsuccessful due to a server error.\r\n\nError:\r\n" + extendedError;
+                        break;
+                    default:
+                        resultMessage = "The purchase was unsuccessful due to an unknown error.\r\n\nError:\r\n" + extendedError;
+                        break;
+                }
+
+                await new MessageDialog(resultMessage).ShowAsync();
             }
-            
-            IsBusy = true;
-
-            var result = await context.RequestPurchaseAsync(storeId);
-
-            IsBusy = false;
-            
-            var extendedError = "";
-
-            if (result.ExtendedError != null)
+            catch (Exception ex)
             {
-                extendedError = result.ExtendedError.Message;
+                await ex.LogExceptionWithUserMessage();
             }
-
-            var resultMessage = "";
-
-            switch (result.Status)
+            finally
             {
-                case StorePurchaseStatus.AlreadyPurchased:
-                    resultMessage = "You have already purchased this kudos, thank you!";
-                    break;
-                case StorePurchaseStatus.Succeeded:
-                    resultMessage = "Kudos provided! Thank you for your support and help in keeping this app free.";
-                    break;
-                case StorePurchaseStatus.NotPurchased:
-                    resultMessage = "Kudos was not provided, don't worry you were not charged for peeking at the item :D";
-                    break;
-                case StorePurchaseStatus.NetworkError:
-                    resultMessage = "The purchase was unsuccessful due to a network error.\r\n\nError:\r\n" + extendedError;
-                    break;
-                case StorePurchaseStatus.ServerError:
-                    resultMessage = "The purchase was unsuccessful due to a server error.\r\n\nError:\r\n" + extendedError;
-                    break;
-                default:
-                    resultMessage = "The purchase was unsuccessful due to an unknown error.\r\n\nError:\r\n" + extendedError;
-                    break;
+                IsBusy = false;
+                IsBusyMessage = "";
             }
-
-            await new MessageDialog(resultMessage).ShowAsync();
         }
         
         private void MyInterstitialAd_AdReady(object sender, object e)
@@ -141,7 +171,7 @@ namespace MvpApi.Uwp.ViewModels
             RefreshAd();
         }
 
-        void MyInterstitialAd_Cancelled(object sender, object e)
+        private void MyInterstitialAd_Cancelled(object sender, object e)
         {
             RefreshAd();
         }
@@ -161,6 +191,12 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
             {
+                KudosCollection.Add(new Kudos { Title = "Video Ad", Price = "Free", ImageUrl = "/Images/VideoAd.png" });
+                KudosCollection.Add(new Kudos { Title = "Store Rating", Price = "Free", ImageUrl = "/Images/4starStar.png" });
+                KudosCollection.Add(new Kudos { Title = "Small Coffee", ProductId = "MvpCompanion_SmallCoffee", Price = "$1.49", ImageUrl = "/Images/CoffeeKudo.png" });
+                KudosCollection.Add(new Kudos { Title = "Lunch", ProductId = "MvpCompanion_Lunch", Price = "$4.89", ImageUrl = "/Images/LunchKudo.png" });
+                KudosCollection.Add(new Kudos { Title = "Dinner", ProductId = "MvpCompanion_Dinner", Price = "$9.49", ImageUrl = "/Images/DinnerKudo.png" });
+
                 FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
                     ? Visibility.Visible 
                     : Visibility.Collapsed;

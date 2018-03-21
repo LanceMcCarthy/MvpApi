@@ -65,13 +65,11 @@ namespace MvpApi.Uwp
             }
         }
 
-        private async void OnUnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+        private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             e.Handled = true;
 
-            await e.Exception.LogExceptionWithUserMessage(
-                "Sorry, there has been an unexpected error. If you'd like to send a technical summary to the app development team, click Yes.",
-                "Unexpected Error");
+            await e.Exception.LogExceptionWithUserMessage();
         }
     }
 }
