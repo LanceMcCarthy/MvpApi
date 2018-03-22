@@ -40,9 +40,9 @@ namespace MvpApi.Uwp.ViewModels
 
             StoreServicesCustomEventLogger.GetDefault().Log($"{kudo.Title} Kudos Item Selected");
 
-            if (!string.IsNullOrEmpty(kudo.ProductId))
+            if (!string.IsNullOrEmpty(kudo.StoreId))
             {
-                await PurchaseKudosAsync(kudo.ProductId);
+                await PurchaseKudosAsync(kudo.StoreId);
             }
 
             if (kudo.Title == "Store Rating")
@@ -125,7 +125,7 @@ namespace MvpApi.Uwp.ViewModels
                         resultMessage = "Kudos provided! Thank you for your support and help in keeping this app free.";
                         break;
                     case StorePurchaseStatus.NotPurchased:
-                        resultMessage = "Kudos was not provided, don't worry you were not charged for peeking at the item :D";
+                        resultMessage = "Kudos were not purchased. Don't worry, you were not charged for peeking ;)";
                         break;
                     case StorePurchaseStatus.NetworkError:
                         resultMessage = "The purchase was unsuccessful due to a network error.\r\n\nError:\r\n" + extendedError;
@@ -189,9 +189,9 @@ namespace MvpApi.Uwp.ViewModels
         {
             KudosCollection.Add(new Kudos { Title = "Video Ad", Price = "Free", ImageUrl = "/Images/VideoAd.png" });
             KudosCollection.Add(new Kudos { Title = "Store Rating", Price = "Free", ImageUrl = "/Images/4starStar.png" });
-            KudosCollection.Add(new Kudos { Title = "Small Coffee", ProductId = "MvpCompanion_SmallCoffee", Price = "$1.49", ImageUrl = "/Images/CoffeeKudo.png" });
-            KudosCollection.Add(new Kudos { Title = "Lunch", ProductId = "MvpCompanion_Lunch", Price = "$4.89", ImageUrl = "/Images/LunchKudo.png" });
-            KudosCollection.Add(new Kudos { Title = "Dinner", ProductId = "MvpCompanion_Dinner", Price = "$9.49", ImageUrl = "/Images/DinnerKudo.png" });
+            KudosCollection.Add(new Kudos { Title = "Small Coffee", ProductId = "MvpCompanion_SmallCoffee", StoreId = "9NJ9NKHQF7C4", Price = "$1.49", ImageUrl = "/Images/CoffeeKudo.png" });
+            KudosCollection.Add(new Kudos { Title = "Lunch", ProductId = "MvpCompanion_Lunch", StoreId = "9N999Z3H3GPK", Price = "$4.89", ImageUrl = "/Images/LunchKudo.png" });
+            KudosCollection.Add(new Kudos { Title = "Dinner", ProductId = "MvpCompanion_Dinner", StoreId = "9NB8SR731DM6", Price = "$9.49", ImageUrl = "/Images/DinnerKudo.png" });
 
             FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
                 ? Visibility.Visible
