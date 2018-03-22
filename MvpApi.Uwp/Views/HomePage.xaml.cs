@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml.Controls;
+﻿using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace MvpApi.Uwp.Views
 {
@@ -10,6 +11,7 @@ namespace MvpApi.Uwp.Views
 
             // Note: The is a workaround because there's no OneWayToSource binding option for UWP
             ViewModel.SelectedContributions = ContributionsGrid.SelectedItems;
+            ViewModel.GroupDescriptors = ContributionsGrid.GroupDescriptors;
         }
     }
 }

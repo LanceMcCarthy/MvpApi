@@ -8,14 +8,17 @@ using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Telerik.Core.Data;
+using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
 using Template10.Common;
 using Template10.Mvvm;
@@ -25,14 +28,14 @@ namespace MvpApi.Uwp.ViewModels
     public class HomePageViewModel : PageViewModelBase
     {
         #region Fields
-        
+
         private int? currentOffset = 0;
         private string displayTotal;
         private DataGridSelectionMode gridSelectionMode = DataGridSelectionMode.Single;
-        private bool isMultipleSelectionEnabled = false;
-        private bool isLoadingMoreItems = false;
+        private bool isMultipleSelectionEnabled;
+        private bool isLoadingMoreItems;
         private IncrementalLoadingCollection<ContributionsModel> activities;
-        private bool areAppbarButtonsEnabled = false;
+        private bool areAppbarButtonsEnabled;
         private bool isInternetDisabled;
         private uint batchSize = 50;
 
@@ -74,14 +77,14 @@ namespace MvpApi.Uwp.ViewModels
                 // Here we use a different flag when the view model is busy loading items because we dont want to cover the UI
                 // The IsBusy flag is used for when deleting items, when we want to block the UI
                 IsLoadingMoreItems = true;
-                
-                var result = await App.ApiService.GetContributionsAsync(currentOffset, (int) count);
+
+                var result = await App.ApiService.GetContributionsAsync(currentOffset, (int)count);
 
                 if (result == null)
                     return null;
 
                 currentOffset = result.PagingIndex;
-                
+
                 DisplayTotal = $"{currentOffset} of {result.TotalContributions}";
 
                 // If we've recieved all the contributions, return null to stop automatic loading
@@ -112,6 +115,8 @@ namespace MvpApi.Uwp.ViewModels
 
         public ObservableCollection<object> SelectedContributions { get; set; }
 
+        public GroupDescriptorCollection GroupDescriptors { get; set; }
+        
         public DelegateCommand RefreshAfterDisconnectCommand { get; }
 
         public string DisplayTotal
@@ -127,8 +132,8 @@ namespace MvpApi.Uwp.ViewModels
             {
                 Set(ref isMultipleSelectionEnabled, value);
 
-                GridSelectionMode = value 
-                    ? DataGridSelectionMode.Multiple 
+                GridSelectionMode = value
+                    ? DataGridSelectionMode.Multiple
                     : DataGridSelectionMode.Single;
             }
         }
@@ -156,7 +161,7 @@ namespace MvpApi.Uwp.ViewModels
             get => isInternetDisabled;
             set => Set(ref isInternetDisabled, value);
         }
-        
+
         public uint SelectedBatchSize
         {
             get
@@ -175,7 +180,7 @@ namespace MvpApi.Uwp.ViewModels
             set
             {
                 Set(ref batchSize, value);
-                
+
                 ApplicationData.Current.LocalSettings.Values["BatchSize"] = value;
 
                 ResetData();
@@ -185,7 +190,7 @@ namespace MvpApi.Uwp.ViewModels
         #endregion
 
         #region Event Handlers
-
+        
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
             await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage));
@@ -207,7 +212,7 @@ namespace MvpApi.Uwp.ViewModels
             {
                 IsBusy = true;
                 IsBusyMessage = "preparing to delete contributions...";
-                
+
                 foreach (ContributionsModel contribution in SelectedContributions)
                 {
                     IsBusyMessage = $"deleting {contribution.Title}...";
@@ -249,7 +254,7 @@ namespace MvpApi.Uwp.ViewModels
                 AreAppbarButtonsEnabled = e?.AddedItems.Any() == true;
                 return;
             }
-            
+
             // when in single selectin mode, go to the selected item's details page
             if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
             {
@@ -257,8 +262,37 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
+        public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is RadioButton rb) || rb.Content == null) return;
+
+            var groupName = rb.Content.ToString();
+
+            GroupDescriptors.Clear();
+                
+            switch (groupName)
+            {
+                case "None":
+                    // do nothing because we've already cleared the GroupDescriptors
+                    break;
+                case "Date":
+                    // Custom group descriptor to group by DateTime.Date  
+                    GroupDescriptors.Add(new DelegateGroupDescriptor { DisplayContent = "Start Date", KeyLookup = new DateTimeMonthKeyLookup() });
+                    break;
+                case "Award Area":
+                    // Need a custom descriptor to group by ContributionTechnology.Name
+                    GroupDescriptors.Add(new DelegateGroupDescriptor { DisplayContent = "Award Name", KeyLookup = new TechnologyKeyLookup() });
+                    break;
+                case "Contribution Type":
+                    GroupDescriptors.Add(new PropertyGroupDescriptor { DisplayContent = "Contribution Type", PropertyName = nameof(ContributionsModel.ContributionTypeName) });
+                    break;
+            }
+        }
+
         #endregion
 
+        #region Methods
+        
         private void ResetData()
         {
             if (SelectedContributions.Any())
@@ -271,6 +305,8 @@ namespace MvpApi.Uwp.ViewModels
 
             Activities = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = SelectedBatchSize };
         }
+        
+        #endregion
 
         #region Navigation
 

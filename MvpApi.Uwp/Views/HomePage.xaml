@@ -7,6 +7,8 @@
       xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
+      xmlns:core="using:Telerik.Data.Core"
+      xmlns:common="using:MvpApi.Uwp.Common"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -52,6 +54,8 @@
                           SelectionMode="{Binding GridSelectionMode}"
                           IncrementalLoadingMode="Auto"
                           AutoGenerateColumns="False"
+                          CanUserChooseColumns="False"
+                          UserGroupMode="Disabled"
                           SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
                           Grid.Row="1">
             <grid:RadDataGrid.Columns>
@@ -87,17 +91,45 @@
 
         <CommandBar Grid.Row="2"
                     VerticalContentAlignment="Top">
-            <AppBarButton Label="Batch Size"
-                          Icon="Setting">
+            <!--<AppBarButton Icon="ShowBcc"
+                          Label="Grouping">
+                <AppBarButton.Flyout>
+                    <ListPickerFlyout ItemsSource="{x:Bind ViewModel.GroupNames}"
+                                      SelectionMode="Single"
+                                      SelectedIndex="{x:Bind ViewModel.SelectedGroupNameIndex, Mode=TwoWay}" />
+                </AppBarButton.Flyout>
+            </AppBarButton>-->
+            <AppBarButton Label="Grid Options"
+                          Icon="Repair">
                 <AppBarButton.Flyout>
                     <Flyout>
                         <Grid>
-                            <input:RadNumericBox Header="Fetch Batch Size"
-                                                 Minimum="0"
-                                                 AcceptsDecimalSeparator="False"
-                                                 Maximum="100"
-                                                 SmallChange="25"
-                                                 Value="{Binding SelectedBatchSize, Mode=TwoWay}" />
+                            <StackPanel>
+                                <StackPanel Margin="10,10,10,5">
+                                    <TextBlock Text="Grouping" />
+                                    <RadioButton Content="None"
+                                                 IsChecked="True"
+                                                 GroupName="DataGridGroup"
+                                                 Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                                    <RadioButton Content="Date"
+                                                 GroupName="DataGridGroup"
+                                                 Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                                    <RadioButton Content="Contribution Type"
+                                                 GroupName="DataGridGroup"
+                                                 Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                                    <RadioButton Content="Award Area"
+                                                 GroupName="DataGridGroup"
+                                                 Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                                </StackPanel>
+
+                                <input:RadNumericBox Header="Fetch Batch Size"
+                                                     Minimum="0"
+                                                     AcceptsDecimalSeparator="False"
+                                                     Maximum="100"
+                                                     SmallChange="25"
+                                                     Value="{Binding SelectedBatchSize, Mode=TwoWay}"
+                                                     Margin="10,10,5,10" />
+                            </StackPanel>
                         </Grid>
                     </Flyout>
                 </AppBarButton.Flyout>
@@ -133,3 +165,6 @@
                                      Grid.Column="0" />
     </Grid>
 </Page>
+
+
+
