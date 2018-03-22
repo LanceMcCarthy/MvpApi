@@ -11,8 +11,8 @@ namespace MvpApi.UwpBackgroundTasks
             var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
 
             var txtNodes = toastDescriptor.GetElementsByTagName("text");
-            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode("Updated!"));
-            txtNodes[1].AppendChild(toastDescriptor.CreateTextNode("MVP Companion has been successfully updated with lots of improvements and fixes. Tap this notification to check it out."));
+            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode("MVP Companion Updated!"));
+            txtNodes[1].AppendChild(toastDescriptor.CreateTextNode("New features and bug fixes available, click this notification to check it out."));
 
             var toast = new ToastNotification(toastDescriptor);
 

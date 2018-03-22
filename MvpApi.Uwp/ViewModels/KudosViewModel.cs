@@ -12,9 +12,7 @@ using Microsoft.Advertising.WinRT.UI;
 using Microsoft.Services.Store.Engagement;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Models;
-using MvpApi.Uwp.Views;
 using Newtonsoft.Json.Linq;
-using Template10.Common;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -184,35 +182,30 @@ namespace MvpApi.Uwp.ViewModels
             var kudo = KudosCollection.FirstOrDefault(a => a.Title == "Video Ad");
             if (kudo != null) kudo.IsBusy = true;
         }
-        
+
         #region Navigation
 
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
-            {
-                KudosCollection.Add(new Kudos { Title = "Video Ad", Price = "Free", ImageUrl = "/Images/VideoAd.png" });
-                KudosCollection.Add(new Kudos { Title = "Store Rating", Price = "Free", ImageUrl = "/Images/4starStar.png" });
-                KudosCollection.Add(new Kudos { Title = "Small Coffee", ProductId = "MvpCompanion_SmallCoffee", Price = "$1.49", ImageUrl = "/Images/CoffeeKudo.png" });
-                KudosCollection.Add(new Kudos { Title = "Lunch", ProductId = "MvpCompanion_Lunch", Price = "$4.89", ImageUrl = "/Images/LunchKudo.png" });
-                KudosCollection.Add(new Kudos { Title = "Dinner", ProductId = "MvpCompanion_Dinner", Price = "$9.49", ImageUrl = "/Images/DinnerKudo.png" });
+            KudosCollection.Add(new Kudos { Title = "Video Ad", Price = "Free", ImageUrl = "/Images/VideoAd.png" });
+            KudosCollection.Add(new Kudos { Title = "Store Rating", Price = "Free", ImageUrl = "/Images/4starStar.png" });
+            KudosCollection.Add(new Kudos { Title = "Small Coffee", ProductId = "MvpCompanion_SmallCoffee", Price = "$1.49", ImageUrl = "/Images/CoffeeKudo.png" });
+            KudosCollection.Add(new Kudos { Title = "Lunch", ProductId = "MvpCompanion_Lunch", Price = "$4.89", ImageUrl = "/Images/LunchKudo.png" });
+            KudosCollection.Add(new Kudos { Title = "Dinner", ProductId = "MvpCompanion_Dinner", Price = "$9.49", ImageUrl = "/Images/DinnerKudo.png" });
 
-                FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
-                    ? Visibility.Visible 
-                    : Visibility.Collapsed;
+            FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
+                ? Visibility.Visible
+                : Visibility.Collapsed;
 
-                myInterstitialAd = new InterstitialAd();
-                myInterstitialAd.AdReady += MyInterstitialAd_AdReady;
-                myInterstitialAd.ErrorOccurred += MyInterstitialAd_ErrorOccurred;
-                myInterstitialAd.Completed += MyInterstitialAd_Completed;
-                myInterstitialAd.Cancelled += MyInterstitialAd_Cancelled;
+            myInterstitialAd = new InterstitialAd();
+            myInterstitialAd.AdReady += MyInterstitialAd_AdReady;
+            myInterstitialAd.ErrorOccurred += MyInterstitialAd_ErrorOccurred;
+            myInterstitialAd.Completed += MyInterstitialAd_Completed;
+            myInterstitialAd.Cancelled += MyInterstitialAd_Cancelled;
 
-                RefreshAd();
-            }
-            else
-            {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
-            }
+            RefreshAd();
+
+            return base.OnNavigatedToAsync(parameter, mode, state);
         }
 
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)

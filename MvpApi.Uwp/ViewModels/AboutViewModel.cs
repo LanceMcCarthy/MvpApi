@@ -78,18 +78,13 @@ namespace MvpApi.Uwp.ViewModels
 
         #region Navigation
 
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
-            {
-                FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
-                    ? Visibility.Visible 
-                    : Visibility.Collapsed;
-            }
-            else
-            {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
-            }
+            FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
+                ? Visibility.Visible 
+                : Visibility.Collapsed;
+
+            return base.OnNavigatedToAsync(parameter, mode, state);
         }
 
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)

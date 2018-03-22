@@ -264,11 +264,11 @@ namespace MvpApi.Uwp.ViewModels
 
         public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
-            if (!(sender is RadioButton rb) || rb.Content == null) return;
-
-            var groupName = rb.Content.ToString();
-
+            if (!(sender is RadioButton rb) || rb.Content == null || GroupDescriptors == null) return;
+            
             GroupDescriptors.Clear();
+            
+            var groupName = rb.Content.ToString();
                 
             switch (groupName)
             {
