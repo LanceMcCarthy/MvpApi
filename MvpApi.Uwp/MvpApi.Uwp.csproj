@@ -286,6 +286,10 @@
       <Project>{3159ae84-b479-420c-ba42-e328d4159144}</Project>
       <Name>MvpApi.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MvpApi.UwpBackgroundTasks\MvpApi.UwpBackgroundTasks.csproj">
+      <Project>{9d7ff5ea-20d9-40e3-9704-e3e7b5e2dc25}</Project>
+      <Name>MvpApi.UwpBackgroundTasks</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0">

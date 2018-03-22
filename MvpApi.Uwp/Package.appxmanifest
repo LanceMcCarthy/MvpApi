@@ -24,6 +24,9 @@
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#0054A6" />
       </uap:VisualElements>
+      <Extensions>
+        <Extension Category="windows.updateTask" EntryPoint="MvpApi.UwpBackgroundTasks.UpdateTask" />
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>
