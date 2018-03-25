@@ -30,7 +30,7 @@
                        VerticalAlignment="Center" />
         </Grid>
 
-        <Grid x:Name="LogoHeader"
+        <Grid x:Name="GearsAndLogoGrid"
               Background="{ThemeResource AppBarBackgroundThemeBrush}"
               Grid.Row="1">
             <Grid.Resources>
@@ -108,30 +108,57 @@
             </Grid>
         </Grid>
 
-        <StackPanel Grid.Row="2"
-                    Margin="20,10">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="MVP Companion v."
-                           Style="{ThemeResource TitleTextBlockStyle}" />
-                <TextBlock Text="{Binding AppVersion}"
-                           Style="{ThemeResource TitleTextBlockStyle}" />
+        <ScrollViewer x:Name="InfoViewer"
+                      Grid.Row="2"
+                      Margin="20,10,20,0">
+            <StackPanel x:Name="AboutInfoPanel">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="MVP Companion v."
+                               Style="{ThemeResource TitleTextBlockStyle}" />
+                    <TextBlock Text="{Binding AppVersion}"
+                               Style="{ThemeResource TitleTextBlockStyle}" />
+                </StackPanel>
+
+                <TextBlock Text="Copyright 2018, Lancelot Software, LLC " />
+                <HyperlinkButton Content="Open source on GitHub"
+                                 NavigateUri="https://lancemccarthy.github.io/MvpApi/" />
+                <HyperlinkButton Content="Privacy Policy"
+                                 NavigateUri="http://w8privacy.azurewebsites.net/privacy?dev=Lancelot%20Software&amp;app=MVP%20Companion&amp;mail=bGFuY2Vsb3Quc29mdHdhcmVAb3V0bG9vay5jb20=&amp;lng=En" />
+
+                <TextBlock Text="Problems? Feature Request? Choose an option:"
+                           Margin="0,20,0,0" />
+                <HyperlinkButton Content="Open a GitHub issue"
+                                 NavigateUri="https://github.com/LanceMcCarthy/MvpApi/issues" />
+                <HyperlinkButton Content="Open Feedback Hub"
+                                 Visibility="{Binding FeedbackHubButtonVisibility}"
+                                 Click="{x:Bind ViewModel.FeedbackButton_Click}" />
+                <HyperlinkButton Content="Send an Email"
+                                 Click="{x:Bind ViewModel.EmailButton_Click}" />
             </StackPanel>
-            
-            <TextBlock Text="Copyright 2018, Lancelot Software, LLC "/>
-            <HyperlinkButton Content="Open source on GitHub"
-                             NavigateUri="https://lancemccarthy.github.io/MvpApi/"/>
-            <HyperlinkButton Content="Privacy Policy"
-                             NavigateUri="http://w8privacy.azurewebsites.net/privacy?dev=Lancelot%20Software&amp;app=MVP%20Companion&amp;mail=bGFuY2Vsb3Quc29mdHdhcmVAb3V0bG9vay5jb20=&amp;lng=En" />
-        
-            <TextBlock Text="Problems? Feature Request? Choose an option:"
-                       Margin="0,20,0,0"/>
-            <HyperlinkButton Content="Open a GitHub issue"
-                             NavigateUri="https://github.com/LanceMcCarthy/MvpApi/issues" />
-            <HyperlinkButton Content="Open Feedback Hub"
-                             Visibility="{Binding FeedbackHubButtonVisibility}"
-                             Click="{x:Bind ViewModel.FeedbackButton_Click}"/>
-            <HyperlinkButton Content="Send an Email"
-                             Click="{x:Bind ViewModel.EmailButton_Click}" />
-            </StackPanel>
+        </ScrollViewer>
+
+        <CommandBar Grid.Row="3">
+            <AppBarButton x:Name="SettingsButton"
+                          Label="diagnostics"
+                          Icon="Setting">
+                <AppBarButton.Flyout>
+                    <Flyout>
+                        <StackPanel x:Name="SettingsPanel"
+                                    Background="{ThemeResource AppBarBackgroundThemeBrush}"
+                                    Padding="10">
+
+                            <TextBlock Text="Diagnostic Settings"
+                                       Style="{ThemeResource TitleTextBlockStyle}" />
+
+                            <input:RadNumericBox Header="Days to Keep Error Logs"
+                                                 Value="{Binding DaysToKeepErrorLogs, Mode=TwoWay}"
+                                                 Minimum="2"
+                                                 Maximum="10"
+                                                 Margin="10" />
+                        </StackPanel>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+        </CommandBar>
     </Grid>
 </Page>

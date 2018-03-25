@@ -95,7 +95,8 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                // TODO Figure out a way to skip the first exception, we dont want to log that one
+                //await ex.LogExceptionAsync();
                 Debug.WriteLine($"LoadMoreItems Exception: {ex}");
                 return null;
             }

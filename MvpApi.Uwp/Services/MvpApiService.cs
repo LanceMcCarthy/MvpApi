@@ -48,7 +48,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
-                e.LogException();
+                await e.LogExceptionAsync();
 
                 if (e.Message.Contains("401"))
                 {
@@ -92,7 +92,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
-                e.LogException();
+                await e.LogExceptionAsync();
 
                 if (e.Message.Contains("401"))
                 {
@@ -139,7 +139,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
-                e.LogException();
+                await e.LogExceptionAsync();
 
                 if (e.Message.Contains("401"))
                 {
@@ -200,7 +200,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
-                e.LogException();
+                await e.LogExceptionAsync();
 
                 if (e.Message.Contains("401"))
                 {
@@ -217,11 +217,22 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                await e.LogExceptionWithUserMessage(
-                    $"Sorry, there was a problem uploading the contribution '{contribution.Title}'. If you'd like to send a technical summary to the app development team, click Yes.",
-                    "Submit Contribution Error");
-
+                if (e.Message.Contains("Error converting value"))
+                {
+                    await e.LogExceptionWithUserMessage(
+                        $"There was an invalid value for one of the submissions fields and the API rejected it. See the error message below for more details, make the adjustment and save it again:\r\n\n" +
+                        $"{e.Message}",
+                        "Submit Contribution Error");
+                }
+                else
+                {
+                    await e.LogExceptionWithUserMessage(
+                        $"Sorry, there was an unexpected problem uploading the contribution '{contribution.Title}'. If you'd like to send a technical summary to the app development team, click Yes.",
+                        "Submit Contribution Error");
+                }
+                
                 Debug.WriteLine($"SubmitContributionAsync Exception: {e}");
+
                 return null;
             }
         }
@@ -254,7 +265,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
-                e.LogException();
+                await e.LogExceptionAsync();
 
                 if (e.Message.Contains("401"))
                 {
@@ -299,7 +310,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
-                e.LogException();
+                await e.LogExceptionAsync();
 
                 if (e.Message.Contains("401"))
                 {
@@ -341,7 +352,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
-                e.LogException();
+                await e.LogExceptionAsync();
 
                 if (e.Message.Contains("401"))
                 {
@@ -383,7 +394,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
-                e.LogException();
+                await e.LogExceptionAsync();
 
                 if (e.Message.Contains("401"))
                 {
@@ -425,7 +436,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (HttpRequestException e)
             {
-                e.LogException();
+                await e.LogExceptionAsync();
 
                 if (e.Message.Contains("401"))
                 {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,13 +10,11 @@ namespace MvpApi.Uwp.Helpers
 {
     public static class ExceptionLogger
     {
-        public static void LogException(this Exception currentException)
+        public static async Task LogExceptionAsync(this Exception currentException)
         {
             var exceptionMessage = CreateErrorMessage(currentException);
 
-            PurgeLogFiles();
-
-            LogFileWrite(exceptionMessage);
+            await LogFileWriteAsync(exceptionMessage);
         }
 
         /// <summary>
@@ -34,28 +31,27 @@ namespace MvpApi.Uwp.Helpers
 
             var exceptionMessage = CreateErrorMessage(exception);
 
-            PurgeLogFiles();
+            await LogFileWriteAsync(exceptionMessage);
 
-            LogFileWrite(exceptionMessage);
-            
             var md = new MessageDialog(
                 "Sorry, there has been an unexpected error. If you'd like to send a technical summary to the app development team, click Yes.", 
                 "Unexpected Error");
 
-            md.Commands.Add(new UICommand("yes"));
+            md.Commands.Add(new UICommand("yes (summary)"));
+            md.Commands.Add(new UICommand("yes (full)"));
+            md.Commands.Add(new UICommand("no"));
 
             var result = await md.ShowAsync();
 
-            if (result.Label == "yes")
+            if (result.Label == "yes (summary)")
             {
-#if DEBUG
-                var text = await DiagnosticsHelper.DumpAsync(exception, true);
-#else
-
+                await ReportErrorMessage(exceptionMessage);
+            }
+            else if (result.Label == "yes (full)")
+            {
                 var text = await DiagnosticsHelper.DumpAsync(exception);
-#endif
 
-                await ReportErrorMessage(text);
+                await ReportErrorMessage(exceptionMessage + "\r\n\n" + text);
             }
         }
 
@@ -66,7 +62,7 @@ namespace MvpApi.Uwp.Helpers
         /// <param name="dialogTitle">MessageDialog's title</param>
         /// <param name="dialogMessage">MessageDialog's message</param>
         /// <returns>Task</returns>
-        public static async Task LogExceptionWithUserMessage(this Exception exception, string dialogTitle, string dialogMessage)
+        public static async Task LogExceptionWithUserMessage(this Exception exception, string dialogMessage, string dialogTitle)
         {
             if(exception == null)
                 throw new ArgumentNullException(nameof(exception));
@@ -81,27 +77,27 @@ namespace MvpApi.Uwp.Helpers
                 dialogMessage = "Sorry, there has been an unexpected error. If you'd like to send a technical summary to the app development team, click Yes.";
 
             var exceptionMessage = CreateErrorMessage(exception);
-
-            PurgeLogFiles();
-
-            LogFileWrite(exceptionMessage);
+            
+            // Manages and saves local log files
+            await LogFileWriteAsync(exceptionMessage);
             
             var md = new MessageDialog(dialogMessage, dialogTitle);
 
-            md.Commands.Add(new UICommand("yes"));
+            md.Commands.Add(new UICommand("yes (summary)"));
+            md.Commands.Add(new UICommand("yes (full)"));
+            md.Commands.Add(new UICommand("no"));
 
             var result = await md.ShowAsync();
 
-            if (result.Label == "yes")
+            if (result.Label == "yes (summary)")
             {
-#if DEBUG
-                var text = await DiagnosticsHelper.DumpAsync(exception, true);
-#else
-
+                await ReportErrorMessage(exceptionMessage);
+            }
+            else if (result.Label == "yes (full)")
+            {
                 var text = await DiagnosticsHelper.DumpAsync(exception);
-#endif
 
-                await ReportErrorMessage(text);
+                await ReportErrorMessage(exceptionMessage + "\r\n\n" + text);
             }
         }
 
@@ -111,7 +107,10 @@ namespace MvpApi.Uwp.Helpers
 
             var options = new Windows.System.LauncherOptions
             {
-                DesiredRemainingView = ViewSizePreference.UseHalf, DisplayApplicationPicker = true, PreferredApplicationPackageFamilyName = "microsoft.windowscommunicationsapps_8wekyb3d8bbwe", PreferredApplicationDisplayName = "Mail"
+                DesiredRemainingView = ViewSizePreference.UseHalf,
+                DisplayApplicationPicker = true,
+                PreferredApplicationPackageFamilyName = "microsoft.windowscommunicationsapps_8wekyb3d8bbwe",
+                PreferredApplicationDisplayName = "Mail"
             };
 
             return await Windows.System.Launcher.LaunchUriAsync(uri, options);
@@ -135,7 +134,7 @@ namespace MvpApi.Uwp.Helpers
                     messageBuilder.AppendLine("InnerException :: " + currentException.InnerException);
                 }
 
-                messageBuilder.AppendLine("");
+                messageBuilder.AppendLine(" ");
 
                 return messageBuilder.ToString();
             }
@@ -146,11 +145,13 @@ namespace MvpApi.Uwp.Helpers
             }
         }
         
-        private static async void LogFileWrite(string exceptionMessage)
+        private static async Task LogFileWriteAsync(string exceptionMessage)
         {
             try
             {
-                var fileName = "VideoDiaryError-Log" + "-" + DateTime.Today.ToString("yyyyMMdd") + "." + "log";
+                await PurgeLogFilesAsync();
+
+                var fileName = "MVPCompanion_ErrorLog" + "_" + DateTime.Today.ToString("yyyyMMdd") + "." + "log";
                 var localFolder = ApplicationData.Current.LocalFolder;
                 var logFolder = await localFolder.CreateFolderAsync("Logs", CreationCollisionOption.OpenIfExists);
                 var logFile = await logFolder.CreateFileAsync(fileName, CreationCollisionOption.OpenIfExists);
@@ -162,20 +163,33 @@ namespace MvpApi.Uwp.Helpers
             }
             catch(Exception ex)
             {
+#if DEBUG
                 Debugger.Break();
+#endif
             }
         }
         
-        private static async void PurgeLogFiles()
+        private static async Task PurgeLogFilesAsync()
         {
-            var logFolder = ApplicationData.Current.LocalFolder;
+            var localFolder = ApplicationData.Current.LocalFolder;
+            var settingsFolder = ApplicationData.Current.RoamingSettings;
 
             try
             {
                 var daysToKeepLog = 5;
+
+                if (settingsFolder.Values.TryGetValue("DaysToKeepErrorLogs", out object daysValue))
+                {
+                    daysToKeepLog = (int) daysValue;
+                }
+                else
+                {
+                    settingsFolder.Values["DaysToKeepErrorLogs"] = daysToKeepLog;
+                }
+
                 var todaysDate = DateTime.Now.Date;
                 
-                IReadOnlyList<StorageFile> files = await logFolder.GetFilesAsync();
+                var files = await localFolder.GetFilesAsync();
 
                 if (files.Count < 1) 
                     return;
@@ -195,7 +209,9 @@ namespace MvpApi.Uwp.Helpers
             }
             catch (Exception)
             {
+#if DEBUG
                 Debugger.Break();
+#endif
             }
         }
     }

@@ -151,7 +151,7 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (e.NewDate < new DateTime(2016, 10, 1))
             {
-                await new MessageDialog("The contribution date must be after the start of your current award period and before March 31, 2018 in order for it to count towards your evaluation", "Notice: Out of range").ShowAsync();
+                await new MessageDialog("The contribution date must be after the start of your current award period and before April 1st, 2018 in order for it to count towards your evaluation", "Notice: Out of range").ShowAsync();
             }
         }
         
@@ -168,7 +168,6 @@ namespace MvpApi.Uwp.ViewModels
         }
         
         // Button click handlers
-
         public async void AddCurrentItemButton_Click(object sender, RoutedEventArgs e)
         {
             if (!await SelectedContribution.Validate(true))
@@ -621,18 +620,19 @@ namespace MvpApi.Uwp.ViewModels
                                       "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
                                       "- Click 'Upload' to save the queue to your profile.\r\n" +
                                       "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
-                                      "Note: Watch the queue items color change as the items are uploaded and save is confirmed."
+                                      "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
                         };
 
                         await td.ShowAsync();
                     }
 
                     // To prevent accidental back navigation
-                    NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
+                    if(BootStrapper.Current.NavigationService.FrameFacade != null)
+                        BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"LoadDataAsync Exception {ex}");
+                    Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
                 }
                 finally
                 {
@@ -645,41 +645,44 @@ namespace MvpApi.Uwp.ViewModels
                 await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
             }
         }
-        
 
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            return base.OnNavigatedFromAsync(pageState, suspending);
-        }
-        
         public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
         {
-            NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
+            if (BootStrapper.Current.NavigationService.FrameFacade != null)
+                BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
+
             return base.OnNavigatingFromAsync(args);
         }
 
         // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
         private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
         {
-            e.Handled = CanUpload;
-
-            if (CanUpload)
+            try
             {
-                var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
-                md.Commands.Add(new UICommand("yes"));
-                md.Commands.Add(new UICommand("no"));
-                md.CancelCommandIndex = 1;
-                md.DefaultCommandIndex = 1;
+                e.Handled = CanUpload;
 
-                var result = await md.ShowAsync();
-
-                if (result.Label == "yes")
+                if (CanUpload)
                 {
-                    if (NavigationService.CanGoBack)
+                    var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
+                    md.Commands.Add(new UICommand("yes"));
+                    md.Commands.Add(new UICommand("no"));
+                    md.CancelCommandIndex = 1;
+                    md.DefaultCommandIndex = 1;
+
+                    var result = await md.ShowAsync();
+
+                    if (result.Label == "yes")
                     {
-                        NavigationService.GoBack();
+                        if (NavigationService.CanGoBack)
+                        {
+                            NavigationService.GoBack();
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+
             }
         }
 

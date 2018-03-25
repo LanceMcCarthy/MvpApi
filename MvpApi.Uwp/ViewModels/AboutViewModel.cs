@@ -1,24 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Email;
+using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
-using MvpApi.Uwp.Views;
-using Template10.Common;
 
 namespace MvpApi.Uwp.ViewModels
 {
     public class AboutViewModel : PageViewModelBase
     {
+        private readonly ApplicationDataContainer roamingSettings;
+
         private Visibility feedbackHubButtonVisibility;
+        private int daysToKeepErrorLogs = 5;
 
         public AboutViewModel()
         {
-
+            roamingSettings = ApplicationData.Current.RoamingSettings;
         }
 
         public string AppVersion
@@ -33,6 +37,29 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
+        public int DaysToKeepErrorLogs
+        {
+            get
+            {
+                if (roamingSettings.Values.TryGetValue("DaysToKeepErrorLogs", out object rawValue))
+                {
+                    daysToKeepErrorLogs = Convert.ToInt32(rawValue);
+                }
+                else
+                {
+                    roamingSettings.Values["DaysToKeepErrorLogs"] = daysToKeepErrorLogs;
+                }
+
+                return daysToKeepErrorLogs;
+            }
+            set
+            {
+                Set(ref daysToKeepErrorLogs, value);
+
+                roamingSettings.Values["DaysToKeepErrorLogs"] = value;
+            }
+        }
+        
         public Visibility FeedbackHubButtonVisibility
         {
             get => feedbackHubButtonVisibility;
@@ -46,10 +73,9 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void FeedbackButton_Click(object sender, RoutedEventArgs e)
         {
-            var launcher = StoreServicesFeedbackLauncher.GetDefault();
-            await launcher.LaunchAsync();
+            await StoreServicesFeedbackLauncher.GetDefault().LaunchAsync();
         }
-
+        
         private async Task CreateEmailAsync()
         {
             try
@@ -75,7 +101,7 @@ namespace MvpApi.Uwp.ViewModels
                 IsBusyMessage = "";
             }
         }
-
+        
         #region Navigation
 
         public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
@@ -83,7 +109,7 @@ namespace MvpApi.Uwp.ViewModels
             FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
                 ? Visibility.Visible 
                 : Visibility.Collapsed;
-
+            
             return base.OnNavigatedToAsync(parameter, mode, state);
         }
 
