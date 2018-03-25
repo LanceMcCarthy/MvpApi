@@ -26,7 +26,7 @@
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
-            <Button Content="View Guide"
+            <Button Content="Kudos Guide"
                     Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                     HorizontalAlignment="Right"
                     Margin="0,0,6,0">

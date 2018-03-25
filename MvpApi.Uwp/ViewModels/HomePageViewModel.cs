@@ -96,9 +96,13 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
-                // TODO Figure out a way to skip the first exception, we dont want to log that one
-                //await ex.LogExceptionAsync();
-                Debug.WriteLine($"LoadMoreItems Exception: {ex}");
+                // Only log this exception after the user is logged in
+                if (App.ShellPage?.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
+                {
+                    await ex.LogExceptionAsync();
+                    Debug.WriteLine($"LoadMoreItems Exception: {ex}");
+                }
+                    
                 return null;
             }
             finally
@@ -301,9 +305,9 @@ namespace MvpApi.Uwp.ViewModels
             if (SelectedContributions.Any())
             {
                 SelectedContributions.Clear();
-                GridSelectionMode = DataGridSelectionMode.Single;
             }
 
+            IsMultipleSelectionEnabled = false;
             currentOffset = 0;
 
             Activities = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = SelectedBatchSize };
