@@ -74,7 +74,7 @@
             <ScrollViewer Grid.Row="1">
                 <StackPanel x:Name="EntryFormStackPanel">
                     <ComboBox ItemsSource="{Binding Types}"
-                              SelectedItem="{Binding SelectedContribution.ContributionType, Mode=TwoWay}"
+                              SelectedItem="{Binding SelectedContribution.ContributionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               SelectionChanged="{x:Bind ViewModel.ActivityType_SelectionChanged}"
                               DisplayMemberPath="Name"
                               HorizontalAlignment="Left"
@@ -94,11 +94,11 @@
                     </ComboBox>
 
                     <ComboBox ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                              SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay}"
+                              SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               Style="{StaticResource TechnologyAreaComboBoxStyle}"
                               Margin="10,10,10,0" />
 
-                    <DatePicker Date="{Binding SelectedContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}}"
+                    <DatePicker Date="{Binding SelectedContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}, UpdateSourceTrigger=PropertyChanged}"
                                 HorizontalAlignment="Left"
                                 MinWidth="300"
                                 Margin="10"
@@ -117,7 +117,7 @@
                     </DatePicker>
 
                     <TextBox x:Name="TitleTextBox"
-                             Text="{Binding SelectedContribution.Title, Mode=TwoWay}"
+                             Text="{Binding SelectedContribution.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              HorizontalAlignment="Left"
                              MinWidth="300"
                              Margin="10">
@@ -134,7 +134,7 @@
                     </TextBox>
 
                     <TextBox x:Name="DescriptionTextBox"
-                             Text="{Binding SelectedContribution.Description, Mode=TwoWay}"
+                             Text="{Binding SelectedContribution.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              AcceptsReturn="True"
                              Header="Description"
                              MinWidth="300"
@@ -142,7 +142,7 @@
                              Margin="10" />
 
                     <TextBox x:Name="UrlTextBox"
-                             Text="{Binding SelectedContribution.ReferenceUrl, Mode=TwoWay}"
+                             Text="{Binding SelectedContribution.ReferenceUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              HorizontalAlignment="Left"
                              MinWidth="300"
                              Margin="10">
@@ -163,7 +163,7 @@
                     <StackPanel x:Name="NumericInputStackPanel"
                                 Orientation="Horizontal">
                         <input:RadNumericBox x:Name="AnnualQuantityNumericBox"
-                                             Value="{Binding SelectedContribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
+                                             Value="{Binding SelectedContribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              Visibility="{Binding AnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                              AcceptsDecimalSeparator="False"
                                              Maximum="10000"
@@ -187,7 +187,7 @@
                         </input:RadNumericBox>
 
                         <input:RadNumericBox x:Name="SecondAnnualQuantityNumericBox"
-                                             Value="{Binding SelectedContribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
+                                             Value="{Binding SelectedContribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              Visibility="{Binding SecondAnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                              AcceptsDecimalSeparator="False"
                                              Maximum="10000"
@@ -211,7 +211,7 @@
                         </input:RadNumericBox>
 
                         <input:RadNumericBox x:Name="AnnualReachNumericBox"
-                                             Value="{Binding SelectedContribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
+                                             Value="{Binding SelectedContribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              Visibility="{Binding AnnualReachHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                              AcceptsDecimalSeparator="False"
                                              Maximum="10000"
@@ -228,7 +228,7 @@
                     </StackPanel>
 
                     <ComboBox ItemsSource="{x:Bind ViewModel.Visibilies}"
-                              SelectedItem="{Binding SelectedContribution.Visibility, Mode=TwoWay}"
+                              SelectedItem="{Binding SelectedContribution.Visibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               IsTextSearchEnabled="True"
                               DisplayMemberPath="Description"
                               HorizontalAlignment="Left"
@@ -330,14 +330,6 @@
                                                     Foreground="White" />
                                     </Button.Content>
                                 </Button>
-                                <!--<Button Command="{Binding ElementName=Page, Path=DataContext.SaveCommand}"
-                                        CommandParameter="{Binding}"
-                                        Margin="5">
-                                    <Button.Content>
-                                        <SymbolIcon Symbol="Upload"
-                                                    Foreground="White" />
-                                    </Button.Content>
-                                </Button>-->
                             </StackPanel>
                         </Grid>
                     </DataTemplate>
