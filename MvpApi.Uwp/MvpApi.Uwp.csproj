@@ -112,6 +112,7 @@
     <Compile Include="Extensions\ContributionExtensions.cs" />
     <Compile Include="Helpers\DiagnosticsHelper.cs" />
     <Compile Include="Helpers\ExceptionLogger.cs" />
+    <Compile Include="Helpers\FeedbackHelpers.cs" />
     <Compile Include="Helpers\TaskUtilities.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="Helpers\DesignTimeHelpers.cs" />

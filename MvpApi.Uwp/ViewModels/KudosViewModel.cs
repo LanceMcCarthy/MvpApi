@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Foundation.Metadata;
 using Windows.Services.Store;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -43,7 +44,8 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (!(e.ClickedItem is Kudos kudo)) return;
 
-            StoreServicesCustomEventLogger.GetDefault().Log($"{kudo.Title} Kudos Item Selected");
+            if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                StoreServicesCustomEventLogger.GetDefault().Log($"{kudo.Title} Kudos Item Selected");
 
             if (!string.IsNullOrEmpty(kudo.StoreId))
             {
@@ -77,18 +79,41 @@ namespace MvpApi.Uwp.ViewModels
             try
             {
                 IsBusy = true;
-                IsBusyMessage = "opening Store rating window";
+                IsBusyMessage = "rating and review in progress (you should see a separate window)...";
 
                 var result = await StoreRequestHelper.SendRequestAsync(StoreContext.GetDefault(), 16, "");
+
+                IsBusyMessage = "action complete, reviewing result...";
 
                 if (result.ExtendedError != null) 
                     return;
 
                 var jsonObject = JObject.Parse(result.Response);
-                
-                if (jsonObject.SelectToken("status").ToString() == "success")
+                var status = jsonObject.SelectToken("status").ToString();
+
+                IsBusyMessage = "action complete, showing result...";
+
+                if (status == "success")
                 {
-                    await new MessageDialog("Thank you for taking the time to leave a rating!").ShowAsync();
+                    await new MessageDialog("Thank you for taking the time to leave a rating! If you left 3 stars or lower, please let me know how I can improve the app (go to About page).", "Success").ShowAsync();
+                }
+                else if (status == "aborted")
+                {
+                    var md = new MessageDialog("If you prefer not to leave a bad rating but still want to provide feedback, click the email button below. I work hard to make sure you have a great app experience and would love to hear from you.", "Review Aborted");
+
+                    md.Commands.Add(new UICommand("send email"));
+                    md.Commands.Add(new UICommand("not now"));
+
+                    var mdResult = await md.ShowAsync();
+
+                    if (mdResult.Label == "send email")
+                    {
+                        await FeedbackHelpers.Current.EmailFeedbackMessageAsync();
+                    }
+                }
+                else
+                {
+                    await new MessageDialog($"The rating or review did not complete, here's what Windows had to say: {jsonObject.SelectToken("status")}.\r\n\nIf you meant to leave a review, try again. If this keeps happening, contact us and share the error code above.", "Rating or Review was not successful").ShowAsync();
                 }
             }
             catch (Exception ex)
@@ -107,13 +132,15 @@ namespace MvpApi.Uwp.ViewModels
             try
             {
                 IsBusy = true;
-                IsBusyMessage = "app rating in progress (you should see a separate window)...";
+                IsBusyMessage = "in-app purchase in progress (you should see a separate window)...";
 
                 if (context == null)
                     context = StoreContext.GetDefault();
                 
                 var result = await context.RequestPurchaseAsync(storeId);
-                
+
+                IsBusyMessage = "action complete, reviewing result...";
+
                 var extendedError = "";
 
                 if (result.ExtendedError != null)
@@ -142,6 +169,8 @@ namespace MvpApi.Uwp.ViewModels
                         resultMessage = "The purchase was unsuccessful due to an unknown error.\r\n\nError:\r\n" + extendedError;
                         break;
                 }
+
+                IsBusyMessage = "action complete, showing result...";
 
                 await new MessageDialog(resultMessage).ShowAsync();
             }

@@ -5,7 +5,6 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
-      xmlns:models="using:MvpApi.Common.Models"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       mc:Ignorable="d">
 

@@ -45,13 +45,12 @@ namespace MvpApi.Uwp.Helpers
 
             if (result.Label == "yes (summary)")
             {
-                await ReportErrorMessage(exceptionMessage);
+                await FeedbackHelpers.Current.EmailErrorMessageAsync(exceptionMessage);
             }
             else if (result.Label == "yes (full)")
             {
                 var text = await DiagnosticsHelper.DumpAsync(exception);
-
-                await ReportErrorMessage(exceptionMessage + "\r\n\n" + text);
+                await FeedbackHelpers.Current.EmailErrorMessageAsync(exceptionMessage + "\r\n\n" + text);
             }
         }
 
@@ -91,29 +90,13 @@ namespace MvpApi.Uwp.Helpers
 
             if (result.Label == "yes (summary)")
             {
-                await ReportErrorMessage(exceptionMessage);
+                await FeedbackHelpers.Current.EmailErrorMessageAsync(exceptionMessage);
             }
             else if (result.Label == "yes (full)")
             {
                 var text = await DiagnosticsHelper.DumpAsync(exception);
-
-                await ReportErrorMessage(exceptionMessage + "\r\n\n" + text);
+                await FeedbackHelpers.Current.EmailErrorMessageAsync(exceptionMessage + "\r\n\n" + text);
             }
-        }
-
-        private static async Task<bool> ReportErrorMessage(string detailedErrorMessage)
-        {
-            var uri = new Uri(string.Format("mailto:awesome.apps@outlook.com?subject=MVP_Companion&body={0}", detailedErrorMessage), UriKind.Absolute);
-
-            var options = new Windows.System.LauncherOptions
-            {
-                DesiredRemainingView = ViewSizePreference.UseHalf,
-                DisplayApplicationPicker = true,
-                PreferredApplicationPackageFamilyName = "microsoft.windowscommunicationsapps_8wekyb3d8bbwe",
-                PreferredApplicationDisplayName = "Mail"
-            };
-
-            return await Windows.System.Launcher.LaunchUriAsync(uri, options);
         }
         
         private static string CreateErrorMessage(Exception currentException)

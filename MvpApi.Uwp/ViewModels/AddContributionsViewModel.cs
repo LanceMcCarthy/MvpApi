@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -324,14 +325,17 @@ namespace MvpApi.Uwp.ViewModels
                 contribution.ContributionId = submissionResult.ContributionId;
 
                 // Quality assurance, only logs a successful upload.
-                StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
-
+                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
+                
                 return true;
             }
             catch (Exception ex)
             {
+
                 // Quality assurance, only logs a failed upload.
-                StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
+                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
 
                 await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
                 return false;
