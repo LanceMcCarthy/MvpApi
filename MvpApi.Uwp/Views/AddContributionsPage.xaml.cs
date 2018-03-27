@@ -11,6 +11,13 @@ namespace MvpApi.Uwp.Views
 
             // Workaround to VisualStates not working properly
             SizeChanged += AddContributionsPage_SizeChanged;
+
+            AnnualReachNumericBox.Minimum = 0;
+            SecondAnnualQuantityNumericBox.Minimum = 0;
+            AnnualReachNumericBox.Minimum = 0;
+            AnnualQuantityNumericBox.Maximum = int.MaxValue;
+            SecondAnnualQuantityNumericBox.Maximum = int.MaxValue;
+            AnnualReachNumericBox.Maximum = int.MaxValue;
         }
 
         private void AddContributionsPage_SizeChanged(object sender, Windows.UI.Xaml.SizeChangedEventArgs e)

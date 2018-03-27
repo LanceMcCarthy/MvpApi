@@ -15,6 +15,7 @@
     </Page.DataContext>
 
     <Page.Resources>
+        
         <converters:BoolToIconConverter x:Key="BoolToIconConverter">
             <converters:BoolToIconConverter.FalseIcon>
                 <SymbolIcon Symbol="Add" />
@@ -166,7 +167,6 @@
                                              Value="{Binding SelectedContribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              Visibility="{Binding AnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                              AcceptsDecimalSeparator="False"
-                                             Maximum="10000"
                                              ValueFormat="{}{0:N0}"
                                              SmallChange="1"
                                              LargeChange="5"
@@ -190,7 +190,6 @@
                                              Value="{Binding SelectedContribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              Visibility="{Binding SecondAnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                              AcceptsDecimalSeparator="False"
-                                             Maximum="10000"
                                              ValueFormat="{}{0:N0}"
                                              SmallChange="1"
                                              LargeChange="5"
@@ -214,7 +213,6 @@
                                              Value="{Binding SelectedContribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              Visibility="{Binding AnnualReachHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                              AcceptsDecimalSeparator="False"
-                                             Maximum="10000"
                                              ValueFormat="{}{0:N0}"
                                              SmallChange="1"
                                              LargeChange="5"
