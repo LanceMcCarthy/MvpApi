@@ -85,9 +85,29 @@ namespace MvpApi.Uwp.Services
                 // the result is Detected mime type: image/jpeg; charset=binary
                 using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
                 {
-                    var imageAsBase64 = await response.Content.ReadAsStringAsync();
-                    imageAsBase64 = imageAsBase64.TrimStart('"').TrimEnd('"'); // need to trim the quotes before decoding
-                    return Convert.FromBase64String(imageAsBase64);
+                    var base64 = await response.Content.ReadAsStringAsync();
+
+                    if (string.IsNullOrEmpty(base64))
+                    {
+                        return null;
+                    }
+
+                    // If there are quotes around the base64, need to trim them before decoding
+                    if (base64[0] == '"')
+                    {
+                        base64 = base64.TrimStart('"');
+                    }
+
+                    if (base64[base64.Length - 1] == '"')
+                    {
+                        base64 = base64.TrimEnd('"');
+                    }
+                    
+                    var imgBytes = Convert.FromBase64String(base64);
+
+                    Debug.WriteLine($"Image Decoded: {imgBytes?.Length} bytes");
+
+                    return imgBytes;
                 }
             }
             catch (HttpRequestException e)
