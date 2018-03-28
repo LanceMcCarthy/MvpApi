@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
@@ -247,8 +248,8 @@ namespace MvpApi.Uwp.ViewModels
                     BootStrapper.Current.NavigationService.GoBack();
             }
         }
-        
-        // Methods
+
+        #region Methods
 
         private void SetupNextEntry()
         {
@@ -591,6 +592,8 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
         
+        #endregion
+        
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
@@ -629,10 +632,13 @@ namespace MvpApi.Uwp.ViewModels
 
                         await td.ShowAsync();
                     }
-
+                    
                     // To prevent accidental back navigation
                     if(BootStrapper.Current.NavigationService.FrameFacade != null)
                         BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
+
+                    // subscribe in case the user's session expires
+                    shellVm.IsLoggedInChanged += ShellVm_IsLoggedInChanged;
                 }
                 catch (Exception ex)
                 {
@@ -650,10 +656,29 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
+        private async void ShellVm_IsLoggedInChanged(object sender, LoginChangedEventArgs args)
+        {
+            // TODO Instead of navigating the user to the login page, create a model dialog that they can stay on the page and login again or use refresh token
+
+            await new MessageDialog("The API session times out after 60 minutes, we need to log you back in now.\r\n\nDon't worry, any pending uploads will be here when you come back.", "Session Expired").ShowAsync();
+            
+            if (UploadQueue.Any())
+            {
+                // TODO cache queued items
+            }
+            
+            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+        }
+
         public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
         {
             if (BootStrapper.Current.NavigationService.FrameFacade != null)
                 BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
+
+            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
+            {
+                shellVm.IsLoggedInChanged -= ShellVm_IsLoggedInChanged;
+            }
 
             return base.OnNavigatingFromAsync(args);
         }

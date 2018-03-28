@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Popups;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
@@ -14,26 +17,37 @@ namespace MvpApi.Uwp.ViewModels
 {
     public class ShellPageViewModel : PageViewModelBase
     {
-        #region Fields
-        
         private ProfileViewModel mvp;
         private string profileImagePath;
         private bool isLoggedIn;
-
-        #endregion
-
+        private readonly DispatcherTimer sessionTimer;
+        
         public ShellPageViewModel()
         {
             if (DesignMode.DesignModeEnabled)
             {
                 Mvp = DesignTimeHelpers.GenerateSampleMvp();
                 IsLoggedIn = true;
-                ProfileImagePath = "ms-appx:///Images/iSeeSharpPeople.jpg";
+                ProfileImagePath = "/Images/MvpIcon.png";
                 return;
             }
+
+            sessionTimer = new DispatcherTimer();
+            sessionTimer.Interval = TimeSpan.FromMinutes(5);
+
+            
         }
 
-        #region Properties
+        private void SessionTimer_Tick(object sender, object e)
+        {
+            Debug.WriteLine($"Session Timer - Tick");
+
+            if (DateTime.Now - LoginTimeStamp > TimeSpan.FromMinutes(60))
+            {
+                Debug.WriteLine($"Session Timer - Session Expired");
+                IsLoggedIn = false;
+            }
+        }
 
         /// <summary>
         /// File path to locally saved MVP profile image
@@ -76,21 +90,42 @@ namespace MvpApi.Uwp.ViewModels
                     isLoggedIn = false;
                 }
 
+                Debug.WriteLine($"IsLoggedIn (get): {isLoggedIn}");
+
                 return isLoggedIn;
             }
             set
             {
-                Set(ref isLoggedIn, value);
+                Debug.WriteLine($"IsLoggedIn (set): {value}");
 
-                if(value)
+                Set(ref isLoggedIn, value);
+                
+                if (value)
+                {
                     LoginTimeStamp = DateTime.Now;
+
+                    if(!sessionTimer.IsEnabled)
+                        sessionTimer.Start();
+                }
+                else
+                {
+                    if(sessionTimer.IsEnabled)
+                        sessionTimer.Stop();
+                }
+
+                // Fire off event to alert any subscribing view models that the user needs to log back in 
+                // and it should cache any incomplete forms
+                IsLoggedInChanged?.Invoke(this, new LoginChangedEventArgs(value));
             }
         }
+        
+        public delegate void LoggedInChanged(object sender, LoginChangedEventArgs args);
 
-        #endregion
-
-        #region Navigation
-
+        /// <summary>
+        /// Raised when the user is logged in, logs out or times out.
+        /// </summary>
+        public event LoggedInChanged IsLoggedInChanged;
+        
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
@@ -100,16 +135,17 @@ namespace MvpApi.Uwp.ViewModels
                 return;
             }
 
+            sessionTimer.Tick += SessionTimer_Tick;
+            
             if (!IsLoggedIn)
                 BootStrapper.Current.NavigationService.Navigate(typeof(LoginPage));
-            
         }
-
+        
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
         {
+            sessionTimer.Tick -= SessionTimer_Tick;
+
             return base.OnNavigatedFromAsync(pageState, suspending);
         }
-
-        #endregion
     }
 }

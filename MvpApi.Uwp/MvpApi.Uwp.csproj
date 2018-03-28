@@ -98,6 +98,7 @@
     </Compile>
     <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\DateTimeMonthKeyLookup.cs" />
+    <Compile Include="Common\LoginChangedEventArgs.cs" />
     <Compile Include="Common\TechnologyKeyLookup.cs" />
     <Compile Include="Converters\BoolToIconConverter.cs" />
     <Compile Include="Converters\DoubleToIntConverter.cs" />
@@ -207,6 +208,7 @@
     <Content Include="Images\4starStar.png" />
     <Content Include="Images\CoffeeKudo.png" />
     <Content Include="Images\DinnerKudo.png" />
+    <Content Include="Images\MvpIcon.png" />
     <Content Include="Images\LunchKudo.png" />
     <Content Include="Images\VideoAd.png" />
     <None Include="Package.xml" />

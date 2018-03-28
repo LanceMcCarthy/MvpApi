@@ -204,8 +204,7 @@ namespace MvpApi.Uwp.ViewModels
                 StorageHelpers.DeleteToken("refresh_token");
 
                 // Clean up Mvp info
-                var shellVm = App.ShellPage.DataContext as ShellPageViewModel;
-                if (shellVm != null)
+                if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
                 {
                     shellVm.IsLoggedIn = false;
                     shellVm.Mvp = null;
