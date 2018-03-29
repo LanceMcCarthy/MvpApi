@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.ViewManagement;
 using Microsoft.Toolkit.Extensions;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace MvpApi.Uwp.Helpers
 {
@@ -74,6 +75,14 @@ namespace MvpApi.Uwp.Helpers
             // TODO log success or failure of email compose
 
             return result;
+        }
+
+        public void CopyToClipboard(string textToCopy)
+        {
+            var dataPackage = new DataPackage();
+            dataPackage.SetText(textToCopy);
+
+            Clipboard.SetContent(dataPackage);
         }
     }
 }

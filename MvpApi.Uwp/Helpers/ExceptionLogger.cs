@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Popups;
-using Windows.UI.ViewManagement;
 
 namespace MvpApi.Uwp.Helpers
 {

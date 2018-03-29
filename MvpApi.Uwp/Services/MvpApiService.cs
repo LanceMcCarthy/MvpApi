@@ -5,7 +5,9 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.UI.Popups;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
 using Newtonsoft.Json;
@@ -86,28 +88,41 @@ namespace MvpApi.Uwp.Services
                 using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
                 {
                     var base64 = await response.Content.ReadAsStringAsync();
-
+                    
                     if (string.IsNullOrEmpty(base64))
                     {
                         return null;
                     }
-
-                    // If there are quotes around the base64, need to trim them before decoding
-                    if (base64[0] == '"')
-                    {
-                        base64 = base64.TrimStart('"');
-                    }
-
-                    if (base64[base64.Length - 1] == '"')
-                    {
-                        base64 = base64.TrimEnd('"');
-                    }
                     
-                    var imgBytes = Convert.FromBase64String(base64);
+                    // replacing quotes instead of trim
+                    base64 = base64.Replace("\"", string.Empty);
 
-                    Debug.WriteLine($"Image Decoded: {imgBytes?.Length} bytes");
+                    try
+                    {
+                        var imgBytes = Convert.FromBase64String(base64);
 
-                    return imgBytes;
+                        Debug.WriteLine($"Image Decoded: {imgBytes?.Length} bytes");
+
+                        return imgBytes;
+                    }
+                    catch
+                    {
+                        // Let the user copy the base64 string that wont decode
+                        if (string.IsNullOrEmpty(base64))
+                        {
+                            var md = new MessageDialog("There was a problem decoding your profile photo. Would you like to copy the Base64 to your clipboard?\r\n\nThis would let you test the image data directly using an online converter (base64converter.com) or email it to the developers.", "Image Decoding Failed");
+
+                            md.Commands.Add(new UICommand("copy", (args) =>
+                            {
+                                FeedbackHelpers.Current.CopyToClipboard(base64);
+                            }));
+
+                            md.Commands.Add(new UICommand("cancel"));
+                            await md.ShowAsync();
+                        }
+
+                        return null;
+                    }
                 }
             }
             catch (HttpRequestException e)
@@ -132,7 +147,7 @@ namespace MvpApi.Uwp.Services
                 await e.LogExceptionWithUserMessage(
                     "Sorry, there was a problem retrieving your profile image. If you'd like to send a technical summary to the app development team, click Yes.",
                     "Get Profile Image Error");
-
+                
                 Debug.WriteLine($"GetProfileImageAsync Exception: {e}");
                 return null;
             }
