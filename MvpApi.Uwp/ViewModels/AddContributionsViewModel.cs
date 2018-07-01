@@ -151,9 +151,9 @@ namespace MvpApi.Uwp.ViewModels
         
         public async void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            if (e.NewDate < new DateTime(2016, 10, 1))
+            if (e.NewDate < new DateTime(2016, 10, 1) || e.NewDate > new DateTime(2019, 4, 1))
             {
-                await new MessageDialog("The contribution date must be after the start of your current award period and before April 1st, 2018 in order for it to count towards your evaluation", "Notice: Out of range").ShowAsync();
+                await new MessageDialog("The contribution date must be after the start of your current award period and before April 1st, 2019 in order for it to count towards your evaluation", "Notice: Out of range").ShowAsync();
             }
         }
         
