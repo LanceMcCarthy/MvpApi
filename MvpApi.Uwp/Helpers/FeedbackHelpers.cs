@@ -83,6 +83,7 @@ namespace MvpApi.Uwp.Helpers
             dataPackage.SetText(textToCopy);
 
             Clipboard.SetContent(dataPackage);
+            Clipboard.Flush();
         }
     }
 }

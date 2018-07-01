@@ -40,9 +40,7 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #endregion
-
-        #region event handlers
-
+        
         public async void BrowserWindow_LoadCompleted(object sender, NavigationEventArgs e)
         {
             if (e.Uri.AbsoluteUri.Contains("code="))
@@ -58,10 +56,35 @@ namespace MvpApi.Uwp.ViewModels
                     return;
                 }
                 
-                // Auth is good, new up the ApiService
-                App.ApiService = new MvpApiService(Constants.SubscriptionKey, apiAuthorization);
+                try
+                {
+                    // Auth is good, new up the ApiService
+                    App.ApiService = new MvpApiService(Constants.SubscriptionKey, apiAuthorization);
 
-                await LoadProfileInfoAsync();
+                    IsBusy = true;
+
+                    if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
+                    {
+                        shellVm.IsLoggedIn = true;
+                        IsBusyMessage = "downloading profile info...";
+                        shellVm.Mvp = await App.ApiService.GetProfileAsync();
+
+                        IsBusyMessage = "downloading profile image...";
+                        shellVm.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage(ApplicationData.Current.LocalFolder);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Debug.WriteLine(exception);
+                }
+                finally
+                {
+                    IsBusyMessage = "";
+                    IsBusy = false;
+                }
+
+                if (BootStrapper.Current.NavigationService.CanGoBack)
+                    BootStrapper.Current.NavigationService.GoBack();
 
             }
             else if (e.Uri.AbsoluteUri.Contains("lc="))
@@ -69,10 +92,6 @@ namespace MvpApi.Uwp.ViewModels
                 BrowserUri = SignInUrl;
             }
         }
-        
-        #endregion
-
-        #region Methods
 
         private static async Task<string> RequestAuthorizationAsync(string requestUrl, string authCode)
         {
@@ -136,64 +155,14 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        private async Task LoadProfileInfoAsync()
-        {
-            try
-            {
-                IsBusy = true;
-                
-                if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
-                {
-                    shellVm.IsLoggedIn = true;
-                    IsBusyMessage = "downloading profile info...";
-                    shellVm.Mvp = await App.ApiService.GetProfileAsync();
-
-                    IsBusyMessage = "downloading profile image...";
-                    shellVm.ProfileImagePath = await LoadProfileImageAsync();
-                }
-
-                if (BootStrapper.Current.NavigationService.CanGoBack)
-                    BootStrapper.Current.NavigationService.GoBack();
-            }
-            catch (Exception exception)
-            {
-                Debug.WriteLine(exception);
-            }
-            finally
-            {
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
-        }
-
-        private static async Task<string> LoadProfileImageAsync()
-        {
-            try
-            {
-                // download the image
-                var imageBytes = await App.ApiService.GetProfileImageAsync();
-
-                var imageFile = await StorageHelpers.SaveImageFileAsync(imageBytes, "ProfilePicture.jpg");
-
-                return imageFile.Path;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-                return null;
-            }
-        }
-
-        #endregion
-        
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             bool loggingOut = false;
 
-            if (parameter is bool)
-                loggingOut = (bool)parameter;
+            if (parameter is bool b)
+                loggingOut = b;
 
             if (loggingOut)
             {
@@ -225,6 +194,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
+                // TODO Figure out how to use refresh token
                 // Login
                 BrowserUri = SignInUrl;
             }

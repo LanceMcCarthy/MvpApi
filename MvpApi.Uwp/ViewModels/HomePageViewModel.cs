@@ -35,7 +35,7 @@ namespace MvpApi.Uwp.ViewModels
         private DataGridSelectionMode gridSelectionMode = DataGridSelectionMode.Single;
         private bool isMultipleSelectionEnabled;
         private bool isLoadingMoreItems;
-        private IncrementalLoadingCollection<ContributionsModel> activities;
+        private IncrementalLoadingCollection<ContributionsModel> contributions;
         private bool areAppbarButtonsEnabled;
         private bool isInternetDisabled;
         private uint batchSize = 50;
@@ -44,15 +44,15 @@ namespace MvpApi.Uwp.ViewModels
 
         public HomePageViewModel()
         {
-            Activities = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = SelectedBatchSize };
-
+            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = SelectedBatchSize };
+            
             if (DesignMode.DesignModeEnabled)
             {
                 var designItems = DesignTimeHelpers.GenerateContributions();
 
                 foreach (var contribution in designItems)
                 {
-                    Activities.Add(contribution);
+                    Contributions.Add(contribution);
                 }
             }
 
@@ -113,12 +113,12 @@ namespace MvpApi.Uwp.ViewModels
 
         #region Properties
 
-        public IncrementalLoadingCollection<ContributionsModel> Activities
+        public IncrementalLoadingCollection<ContributionsModel> Contributions
         {
-            get => activities;
-            set => Set(ref activities, value);
+            get => contributions;
+            set => Set(ref contributions, value);
         }
-
+        
         public ObservableCollection<object> SelectedContributions { get; set; }
 
         public GroupDescriptorCollection GroupDescriptors { get; set; }
@@ -238,9 +238,9 @@ namespace MvpApi.Uwp.ViewModels
 
                 currentOffset = 0;
 
-                Activities = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
+                Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
 
-                await Activities.LoadMoreItemsAsync(50);
+                await Contributions.LoadMoreItemsAsync(50);
             }
             catch (Exception ex)
             {
@@ -310,7 +310,7 @@ namespace MvpApi.Uwp.ViewModels
             IsMultipleSelectionEnabled = false;
             currentOffset = 0;
 
-            Activities = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = SelectedBatchSize };
+            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = SelectedBatchSize };
         }
         
         #endregion

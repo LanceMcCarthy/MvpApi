@@ -7,8 +7,6 @@
       xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
-      xmlns:core="using:Telerik.Data.Core"
-      xmlns:common="using:MvpApi.Uwp.Common"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -49,7 +47,7 @@
         </Grid>
 
         <grid:RadDataGrid x:Name="ContributionsGrid"
-                          ItemsSource="{Binding Activities}"
+                          ItemsSource="{Binding Contributions}"
                           IsBusyIndicatorEnabled="{Binding IsBusy}"
                           SelectionMode="{Binding GridSelectionMode}"
                           IncrementalLoadingMode="Auto"
@@ -91,14 +89,6 @@
 
         <CommandBar Grid.Row="2"
                     VerticalContentAlignment="Top">
-            <!--<AppBarButton Icon="ShowBcc"
-                          Label="Grouping">
-                <AppBarButton.Flyout>
-                    <ListPickerFlyout ItemsSource="{x:Bind ViewModel.GroupNames}"
-                                      SelectionMode="Single"
-                                      SelectedIndex="{x:Bind ViewModel.SelectedGroupNameIndex, Mode=TwoWay}" />
-                </AppBarButton.Flyout>
-            </AppBarButton>-->
             <AppBarButton Label="Grid Options"
                           Icon="Repair">
                 <AppBarButton.Flyout>

@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
 using Windows.UI.Popups;
+using Windows.UI.Xaml.Media.Imaging;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
 using Newtonsoft.Json;
@@ -87,38 +91,41 @@ namespace MvpApi.Uwp.Services
                 // the result is Detected mime type: image/jpeg; charset=binary
                 using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
                 {
-                    var base64 = await response.Content.ReadAsStringAsync();
-                    
-                    if (string.IsNullOrEmpty(base64))
-                    {
-                        return null;
-                    }
-                    
-                    // replacing quotes instead of trim
-                    base64 = base64.Replace("\"", string.Empty);
+                    var base64String = await response.Content.ReadAsStringAsync();
 
                     try
                     {
-                        var imgBytes = Convert.FromBase64String(base64);
+                        if (string.IsNullOrEmpty(base64String))
+                        {
+                            return null;
+                        }
 
+                        base64String = base64String.TrimStart('"').TrimEnd('"');
+
+                        var imgBytes = Convert.FromBase64String(base64String);
+                        
                         Debug.WriteLine($"Image Decoded: {imgBytes?.Length} bytes");
 
                         return imgBytes;
                     }
-                    catch
+                    catch(Exception ex)
                     {
-                        // Let the user copy the base64 string that wont decode
-                        if (string.IsNullOrEmpty(base64))
+                        var md = new MessageDialog("You can email the error and copy base64 into your clipboard.\r\n\nThis would let you test the image data directly using a base64 converter (base64converter.com) or paste it into the email", "Image Decoding Failed");
+
+                        md.Commands.Add(new UICommand("send error only"));
+                        md.Commands.Add(new UICommand("send error and copy base64"));
+                        md.Commands.Add(new UICommand("cancel"));
+
+                        var result = await md.ShowAsync();
+
+                        if (result.Label == "send error only")
                         {
-                            var md = new MessageDialog("There was a problem decoding your profile photo. Would you like to copy the Base64 to your clipboard?\r\n\nThis would let you test the image data directly using an online converter (base64converter.com) or email it to the developers.", "Image Decoding Failed");
-
-                            md.Commands.Add(new UICommand("copy", (args) =>
-                            {
-                                FeedbackHelpers.Current.CopyToClipboard(base64);
-                            }));
-
-                            md.Commands.Add(new UICommand("cancel"));
-                            await md.ShowAsync();
+                            await FeedbackHelpers.Current.EmailErrorMessageAsync(ex.Message);
+                        }
+                        else if (result.Label == "send error and copy base64")
+                        {
+                            FeedbackHelpers.Current.CopyToClipboard(base64String);
+                            await FeedbackHelpers.Current.EmailErrorMessageAsync(ex.Message);
                         }
 
                         return null;
@@ -148,6 +155,111 @@ namespace MvpApi.Uwp.Services
                     "Sorry, there was a problem retrieving your profile image. If you'd like to send a technical summary to the app development team, click Yes.",
                     "Get Profile Image Error");
                 
+                Debug.WriteLine($"GetProfileImageAsync Exception: {e}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Downloads and saves the image file to LocalFolder
+        /// </summary>
+        /// <param name="folder">StorageFolder location</param>
+        /// <param name="fileNameWithoutExtension">filename for image, default is</param>
+        /// <returns>File path</returns>
+        public async Task<string> DownloadAndSaveProfileImage(StorageFolder folder, string fileNameWithoutExtension = "ProfilePicture")
+        {
+            try
+            {
+                // the result is Detected mime type: image/jpeg; charset=binary
+                using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
+                {
+                    var base64String = await response.Content.ReadAsStringAsync();
+
+                    try
+                    {
+                        if (string.IsNullOrEmpty(base64String))
+                        {
+                            return null;
+                        }
+
+                        base64String = base64String.TrimStart('"').TrimEnd('"');
+
+                        // determine file type
+                        var data = base64String.Substring(0, 5);
+
+                        var fileExtension = string.Empty;
+
+                        switch (data.ToUpper())
+                        {
+                            case "IVBOR":
+                                fileExtension = "png";
+                                break;
+                            case "/9J/4":
+                                fileExtension = "jpg";
+                                break;
+                        }
+                        
+                        var imgBytes = Convert.FromBase64String(base64String);
+
+                        var imageFile = await folder.CreateFileAsync($"{fileNameWithoutExtension}.{fileExtension}", CreationCollisionOption.ReplaceExisting);
+
+                        using (var ms = new MemoryStream(imgBytes, 0, imgBytes.Length))
+                        using (var fileStream = await imageFile.OpenStreamForWriteAsync())
+                        {
+                            ms.CopyTo(fileStream);
+                        }
+
+                        Debug.WriteLine($"Image Decoded: {imgBytes?.Length} bytes");
+
+                        return imageFile.Path;
+                    }
+                    catch (Exception ex)
+                    {
+                        var md = new MessageDialog("You can email the error and copy base64 into your clipboard.\r\n\nThis would let you test the image data directly using a base64 converter (base64converter.com) or paste it into the email", "Image Decoding Failed");
+
+                        md.Commands.Add(new UICommand("send error only"));
+                        md.Commands.Add(new UICommand("send error and copy base64"));
+                        md.Commands.Add(new UICommand("cancel"));
+                        
+                        var result = await md.ShowAsync();
+
+                        if (result.Label == "send error only")
+                        {
+                            await FeedbackHelpers.Current.EmailErrorMessageAsync(ex.Message);
+                        }
+                        else if (result.Label == "send error and copy base64")
+                        {
+                            FeedbackHelpers.Current.CopyToClipboard(base64String);
+                            await FeedbackHelpers.Current.EmailErrorMessageAsync(ex.Message);
+                        }
+
+                        return null;
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+
+                if (e.Message.Contains("401"))
+                {
+                    //TODO Try refresh token, access token is only valid for 60 minutes
+                }
+
+                if (e.Message.Contains("500"))
+                {
+
+                }
+
+                Debug.WriteLine($"GetProfileImageAsync HttpRequestException: {e}");
+                return null;
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionWithUserMessage(
+                    "Sorry, there was a problem retrieving your profile image. If you'd like to send a technical summary to the app development team, click Yes.",
+                    "Get Profile Image Error");
+
                 Debug.WriteLine($"GetProfileImageAsync Exception: {e}");
                 return null;
             }
