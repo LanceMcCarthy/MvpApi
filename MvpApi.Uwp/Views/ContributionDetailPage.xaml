@@ -34,6 +34,7 @@
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
+            
         </Grid>
 
         <Grid Background="{Binding SelectedContribution.UploadStatus, Converter={StaticResource UploadStatusBackgroundConverter}}"
@@ -46,7 +47,16 @@
                 <TextBlock Text="Upload Status:"
                            Margin="0,0,5,0"/>
                 <TextBlock Text="{Binding SelectedContribution.UploadStatus}" />
+
             </StackPanel>
+            
+            <Grid Background="Red" Visibility="{Binding WarningMessage, Converter={StaticResource NullToVisibilityConverter}}">
+                <TextBlock Text="{Binding WarningMessage}"
+                           Foreground="White"
+                           TextWrapping="WrapWholeWords"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"/>
+            </Grid>
         </Grid>
 
         <ScrollViewer Grid.Row="2">

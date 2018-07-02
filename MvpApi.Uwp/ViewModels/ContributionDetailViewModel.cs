@@ -39,6 +39,7 @@ namespace MvpApi.Uwp.ViewModels
         private bool isAnnualQuantityRequired;
         private bool isSecondAnnualQuantityRequired;
         private bool canSave;
+        private string warningMessage;
 
         #endregion
 
@@ -125,6 +126,12 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref canSave, value);
         }
 
+        public string WarningMessage
+        {
+            get => warningMessage;
+            set => Set(ref warningMessage, value);
+        }
+
         #endregion
         
         #region Event handlers
@@ -154,21 +161,16 @@ namespace MvpApi.Uwp.ViewModels
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.ContributionTechnology.Id == originalContribution.ContributionTechnology.Id;
         }
-
-        public void VisibilityComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (originalContribution != null)
-                IsSelectedContributionDirty = SelectedContribution.Visibility.Description == originalContribution.Visibility.Description;
-        }
-
-        public async void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
+        
+        public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
             if (e.NewDate < new DateTime(2016, 10, 1) || e.NewDate > new DateTime(2019, 4, 1))
             {
-                await new MessageDialog("The contribution date must be after the start of your current award period and before March 31, 2019 in order for it to count towards your evaluation", "Notice: Out of range").ShowAsync();
-
-                if (originalContribution != null)
-                    SelectedContribution.StartDate = originalContribution.StartDate;
+                WarningMessage = "The contribution date must be after the start of your current award period and before March 31, 2019 in order for it to count towards your evaluation";
+            }
+            else
+            {
+                WarningMessage = "";
             }
 
             if(originalContribution != null)
@@ -236,9 +238,7 @@ namespace MvpApi.Uwp.ViewModels
                     // Quality assurance, only logs a successful delete.
                     if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
                         StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionSuccess");
-
-                    await new MessageDialog("Successfully deleted.").ShowAsync();
-
+                    
                     if (BootStrapper.Current.NavigationService.CanGoBack)
                         BootStrapper.Current.NavigationService.GoBack();
                 }

@@ -41,6 +41,7 @@ namespace MvpApi.Uwp.ViewModels
         private bool isSecondAnnualQuantityRequired;
         private bool canUpload = true;
         private bool isEditingQueuedItem;
+        private string warningMessage;
 
         #endregion
 
@@ -135,7 +136,13 @@ namespace MvpApi.Uwp.ViewModels
             get => isEditingQueuedItem;
             set => Set(ref isEditingQueuedItem, value);
         }
-        
+
+        public string WarningMessage
+        {
+            get => warningMessage;
+            set => Set(ref warningMessage, value);
+        }
+
         // Commands
 
         public DelegateCommand<ContributionsModel> EditCommand { get; set; }
@@ -154,6 +161,14 @@ namespace MvpApi.Uwp.ViewModels
             if (e.NewDate < new DateTime(2016, 10, 1) || e.NewDate > new DateTime(2019, 4, 1))
             {
                 await new MessageDialog("The contribution date must be after the start of your current award period and before April 1st, 2019 in order for it to count towards your evaluation", "Notice: Out of range").ShowAsync();
+                WarningMessage = "The contribution date must be after the start of your current award period and before March 31, 2019 in order for it to count towards your evaluation";
+
+                CanUpload = false;
+            }
+            else
+            {
+                WarningMessage = "";
+                CanUpload = true;
             }
         }
         
@@ -239,11 +254,6 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
-                await new MessageDialog("All contributions have been saved!").ShowAsync();
-
-
-                CanUpload = false;
-
                 if (BootStrapper.Current.NavigationService.CanGoBack)
                     BootStrapper.Current.NavigationService.GoBack();
             }

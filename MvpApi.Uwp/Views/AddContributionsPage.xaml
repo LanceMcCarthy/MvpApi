@@ -15,7 +15,6 @@
     </Page.DataContext>
 
     <Page.Resources>
-        
         <converters:BoolToIconConverter x:Key="BoolToIconConverter">
             <converters:BoolToIconConverter.FalseIcon>
                 <SymbolIcon Symbol="Add" />
@@ -24,7 +23,6 @@
                 <SymbolIcon Symbol="Save" />
             </converters:BoolToIconConverter.TrueIcon>
         </converters:BoolToIconConverter>
-
         <CollectionViewSource x:Name="awardCategoriesCvs"
                               Source="{Binding CategoryAreas}"
                               ItemsPath="ContributionAreas"
@@ -70,6 +68,13 @@
                            Style="{StaticResource SubtitleTextBlockStyle}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
+                <Grid Background="Red" Visibility="{Binding WarningMessage, Converter={StaticResource NullToVisibilityConverter}}">
+                    <TextBlock Text="{Binding WarningMessage}"
+                               Foreground="White"
+                               TextWrapping="WrapWholeWords"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"/>
+                </Grid>
             </Grid>
 
             <ScrollViewer Grid.Row="1">
