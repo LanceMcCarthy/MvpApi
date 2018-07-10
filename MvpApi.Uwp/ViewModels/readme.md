@@ -3,7 +3,14 @@
 - [Award Categories and related award technologies](https://github.com/LanceMcCarthy/MvpApi/tree/master/MvpApi.Uwp/ViewModels#award-categories-and-related-award-technologies)
 - [Contribution Types, field titles and required values](https://github.com/LanceMcCarthy/MvpApi/tree/master/MvpApi.Uwp/ViewModels#contribution-types-field-titles-and-required-values)
 
-## Award categories and related award technologies
+## 2018-2019
+### New Areas and Categories
+
+After MVP Year 2017-2018 concluded, new structures will be used. This readme will be updated once the work is completed. As of now, the app can handle these changes as categories and areas are dynamically retrived and are always up-to-date.
+
+
+## 2017-2018 
+### Award categories and related award technologies
 
 Award Name: Windows Development
 - Windows App Development
@@ -143,7 +150,7 @@ Award Name: Windows and Devices for IT
 Award Name: Word
 - Word
 
-## Contribution Types, Field Titles and Required Values
+### Contribution Types, Field Titles and Required Values
 
  * Type, Areas, Title and Date all required *
  * If the Activity type is follow by [url R], a Url is required
