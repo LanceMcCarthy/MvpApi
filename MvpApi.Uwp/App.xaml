@@ -149,6 +149,76 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+
+            <Style x:Key="AdditionalTechnologyAreasListViewStyle"
+                   TargetType="ListView">
+                <Setter Property="HorizontalAlignment"
+                        Value="Left" />
+                <Setter Property="HorizontalContentAlignment"
+                        Value="Left" />
+                <Setter Property="ItemContainerTransitions">
+                    <Setter.Value>
+                        <TransitionCollection />
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="GroupStyleSelector">
+                    <Setter.Value>
+                        <selectors:TechAreaGroupStyleSelector>
+                            <selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
+                                <GroupStyle HidesIfEmpty="True">
+                                    <GroupStyle.HeaderTemplate>
+                                        <DataTemplate>
+                                            <Grid Background="{ThemeResource SystemControlForegroundAccentBrush}"
+                                                  HorizontalAlignment="Stretch">
+                                                <TextBlock Text="{Binding AwardName}"
+                                                           Margin="5"
+                                                           Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </GroupStyle.HeaderTemplate>
+                                    <GroupStyle.Panel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel MaxWidth="600">
+                                                <StackPanel.ChildrenTransitions>
+                                                    <TransitionCollection />
+                                                </StackPanel.ChildrenTransitions>
+                                            </StackPanel>
+                                        </ItemsPanelTemplate>
+                                    </GroupStyle.Panel>
+                                </GroupStyle>
+                            </selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
+                        </selectors:TechAreaGroupStyleSelector>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemTemplate">
+                    <Setter.Value>
+                        <DataTemplate>
+                            <StackPanel MaxWidth="300">
+                                <TextBlock Text="{Binding Name}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <StackPanel MaxWidth="600">
+                                <StackPanel.ChildrenTransitions>
+                                    <TransitionCollection />
+                                </StackPanel.ChildrenTransitions>
+                            </StackPanel>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Header">
+                    <Setter.Value>
+                        <Grid>
+                            <TextBlock Text="Select Additional Areas (multiple)"
+                                       Margin="0,0,5,0" />
+                        </Grid>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </common:BootStrapper.Resources>
 </common:BootStrapper>

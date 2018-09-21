@@ -6,6 +6,10 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+      xmlns:data="using:Telerik.UI.Xaml.Controls.Data"
+      xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+      xmlns:extensions="using:MvpApi.Uwp.Extensions"
+      xmlns:selectors="using:MvpApi.Uwp.Selectors"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -80,6 +84,35 @@
                               Style="{StaticResource TechnologyAreaComboBoxStyle}"
                               Margin="10,10,10,0">
                     </ComboBox>
+
+                    <Button x:Name="AddAdditionalTechnologyButton"
+                            VerticalAlignment="Bottom">
+                        <Button.Content>
+                            <StackPanel Orientation="Horizontal">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Additional Areas: " Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding SelectedContribution.AdditionalTechnologies.Count}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Button.Content>
+                        <Button.Flyout>
+                            <Flyout x:Name="AdditionalAreasFlyout">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <ListView SelectionMode="Multiple"
+                                              ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                                              Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
+                                              extensions:ListViewExtensions.SelectedValues="{Binding SelectedContribution.AdditionalTechnologies}">
+
+                                    </ListView>
+                                </Grid>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
                 </StackPanel>
 
                 <DatePicker Date="{Binding SelectedContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}, UpdateSourceTrigger=PropertyChanged}"

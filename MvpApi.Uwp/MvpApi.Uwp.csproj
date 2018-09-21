@@ -114,9 +114,11 @@
       <DependentUpon>TutorialDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Extensions\ContributionExtensions.cs" />
+    <Compile Include="Extensions\ListViewExtensions.cs" />
     <Compile Include="Helpers\DiagnosticsHelper.cs" />
     <Compile Include="Helpers\ExceptionLogger.cs" />
     <Compile Include="Helpers\FeedbackHelpers.cs" />
+    <Compile Include="Helpers\SelectedItemsBinder.cs" />
     <Compile Include="Helpers\TaskUtilities.cs" />
     <Compile Include="Extensions\UriExtensions.cs" />
     <Compile Include="Helpers\DesignTimeHelpers.cs" />
@@ -295,7 +297,7 @@
       <Version>2.0.180916002-prerelease</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>11.0.2</Version>
+      <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
       <Version>1.0.1.1</Version>
