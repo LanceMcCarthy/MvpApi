@@ -47,7 +47,7 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                Visibilies = DesignTimeHelpers.GenerateVisibilities();
+                Visibilities = DesignTimeHelpers.GenerateVisibilities();
                 SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
             }
         }
@@ -62,7 +62,7 @@ namespace MvpApi.Uwp.ViewModels
         
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
 
-        public ObservableCollection<VisibilityViewModel> Visibilies { get; } = new ObservableCollection<VisibilityViewModel>();
+        public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
         
         public bool IsSelectedContributionDirty
         {
@@ -286,7 +286,7 @@ namespace MvpApi.Uwp.ViewModels
 
             visibilities.ForEach(visibility =>
             {
-                Visibilies.Add(visibility);
+                Visibilities.Add(visibility);
             });
         }
 

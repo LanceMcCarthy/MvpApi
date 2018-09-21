@@ -217,7 +217,7 @@
 
                 </StackPanel>
                 
-                <ComboBox ItemsSource="{Binding Visibilies}"
+                <ComboBox ItemsSource="{Binding Visibilities}"
                           SelectedItem="{Binding SelectedContribution.Visibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           IsTextSearchEnabled="True"
                           DisplayMemberPath="Description"
