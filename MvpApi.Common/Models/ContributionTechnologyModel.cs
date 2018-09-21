@@ -3,11 +3,12 @@
 // regenerated.
 
 using System;
+using CommonHelpers.Common;
 using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class ContributionTechnologyModel : ObservableObject
+    public partial class ContributionTechnologyModel : BindableBase
     {
         private Guid? id;
         private string awardCategory;

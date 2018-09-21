@@ -3,11 +3,12 @@
 // regenerated.
 
 using System;
+using CommonHelpers.Common;
 using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class ContributionTypeModel : ObservableObject
+    public partial class ContributionTypeModel : BindableBase
     {
         private Guid? id;
         private string name;
