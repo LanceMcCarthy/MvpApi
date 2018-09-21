@@ -3,6 +3,8 @@
 // regenerated.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
@@ -86,6 +88,13 @@ namespace MvpApi.Common.Models
             get => contributionTechnology;
             set => SetProperty(ref contributionTechnology, value);
         }
+
+        /// <summary>
+        /// Gets or sets the newly added Additional Technologies feature.
+        /// Lance Note: Added to this property to the model manually after the feature was added in August 2018
+        /// </summary>
+        [JsonProperty(PropertyName = "AdditionalTechnologies")]
+        public ObservableCollection<ContributionTechnologyModel> AdditionalTechnologies { get; set; }
 
         /// <summary>
         /// Gets or sets the start date.
