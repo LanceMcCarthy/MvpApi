@@ -17,7 +17,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid x:Name="HeaderGrid"
@@ -27,21 +26,31 @@
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
+
+            <Button Content="why so many permissions?"
+                    Foreground="AntiqueWhite"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="0,0,5,0">
+                <Button.Flyout>
+                    <Flyout>
+                        <Grid Width="400">
+                            <StackPanel>
+                                <TextBlock Text="When you sign in, the app gets a token that is used to authenticate every call to the MVP portal API. This token is good for 60 minutes, you may need to re-approve upon app re-launch or token expiration."
+                                           TextWrapping="Wrap"
+                                           Margin="0,0,0,10" />
+                                <TextBlock Text="The permissions you see is the smallest scope available by the Microsoft Account login service ('wl.signin'). This app does NOT use anything from your MSA account except your Profile photo which is shown at the bottom left."
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Grid>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
         </Grid>
 
         <WebView uwpToolkitUi:WebViewExtensions.ContentUri="{Binding BrowserUri}"
                  LoadCompleted="{x:Bind ViewModel.BrowserWindow_LoadCompleted}"
                  Grid.Row="1" />
-
-        <Grid x:Name="FooterGrid"
-              Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}"
-              Grid.Row="2">
-            <TextBlock Text="Your session is good for 60 minutes, you may need re-approve app access upon app launch or time-out."
-                       TextWrapping="Wrap"
-                       Margin="5"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
-        </Grid>
 
         <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
                                      IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
