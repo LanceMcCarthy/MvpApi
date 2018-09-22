@@ -76,6 +76,29 @@
                         Value="Center" />
             </Style>
 
+            <DataTemplate x:Name="TechnologyAreaGroupHeaderTemplate">
+                <Grid HorizontalAlignment="Stretch">
+                    <TextBlock Text="{Binding AwardName}"
+                               Margin="5"
+                               Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                               Style="{StaticResource TitleTextBlockStyle}" />
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Name="TechnologyAreaItemTemplate">
+                <StackPanel MaxWidth="300">
+                    <TextBlock Text="{Binding Name}" />
+                </StackPanel>
+            </DataTemplate>
+
+            <ItemsPanelTemplate x:Name="TechnologyAreaItemsPanelTemplate">
+                <StackPanel MaxWidth="600">
+                    <StackPanel.ChildrenTransitions>
+                        <TransitionCollection />
+                    </StackPanel.ChildrenTransitions>
+                </StackPanel>
+            </ItemsPanelTemplate>
+
             <Style x:Key="TechnologyAreaComboBoxStyle"
                    TargetType="ComboBox">
                 <Setter Property="HorizontalAlignment"
@@ -85,55 +108,6 @@
                 <Setter Property="ItemContainerTransitions">
                     <Setter.Value>
                         <TransitionCollection />
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="GroupStyleSelector">
-                    <Setter.Value>
-                        <selectors:TechAreaGroupStyleSelector>
-                            <selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
-                                <GroupStyle HidesIfEmpty="True">
-                                    <GroupStyle.HeaderTemplate>
-                                        <DataTemplate>
-                                            <Grid Background="{ThemeResource SystemControlForegroundAccentBrush}"
-                                                  HorizontalAlignment="Stretch">
-                                                <TextBlock Text="{Binding AwardName}"
-                                                           Margin="5"
-                                                           Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </GroupStyle.HeaderTemplate>
-                                    <GroupStyle.Panel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel MaxWidth="600">
-                                                <StackPanel.ChildrenTransitions>
-                                                    <TransitionCollection />
-                                                </StackPanel.ChildrenTransitions>
-                                            </StackPanel>
-                                        </ItemsPanelTemplate>
-                                    </GroupStyle.Panel>
-                                </GroupStyle>
-                            </selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
-                        </selectors:TechAreaGroupStyleSelector>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="ItemTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <StackPanel MaxWidth="300">
-                                <TextBlock Text="{Binding Name}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="ItemsPanel">
-                    <Setter.Value>
-                        <ItemsPanelTemplate>
-                            <StackPanel MaxWidth="600">
-                                <StackPanel.ChildrenTransitions>
-                                    <TransitionCollection />
-                                </StackPanel.ChildrenTransitions>
-                            </StackPanel>
-                        </ItemsPanelTemplate>
                     </Setter.Value>
                 </Setter>
                 <Setter Property="Header">
@@ -148,6 +122,21 @@
                         </StackPanel>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="GroupStyleSelector">
+                    <Setter.Value>
+                        <selectors:TechAreaGroupStyleSelector>
+                            <selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
+                                <GroupStyle HidesIfEmpty="True"
+                                            HeaderTemplate="{StaticResource TechnologyAreaGroupHeaderTemplate}"
+                                            Panel="{StaticResource TechnologyAreaItemsPanelTemplate}" />
+                            </selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
+                        </selectors:TechAreaGroupStyleSelector>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemTemplate"
+                        Value="{StaticResource TechnologyAreaItemTemplate}" />
+                <Setter Property="ItemsPanel"
+                        Value="{StaticResource TechnologyAreaItemsPanelTemplate}" />
             </Style>
 
             <Style x:Key="AdditionalTechnologyAreasListViewStyle"
@@ -161,55 +150,6 @@
                         <TransitionCollection />
                     </Setter.Value>
                 </Setter>
-                <Setter Property="GroupStyleSelector">
-                    <Setter.Value>
-                        <selectors:TechAreaGroupStyleSelector>
-                            <selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
-                                <GroupStyle HidesIfEmpty="True">
-                                    <GroupStyle.HeaderTemplate>
-                                        <DataTemplate>
-                                            <Grid Background="{ThemeResource SystemControlForegroundAccentBrush}"
-                                                  HorizontalAlignment="Stretch">
-                                                <TextBlock Text="{Binding AwardName}"
-                                                           Margin="5"
-                                                           Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </GroupStyle.HeaderTemplate>
-                                    <GroupStyle.Panel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel MaxWidth="600">
-                                                <StackPanel.ChildrenTransitions>
-                                                    <TransitionCollection />
-                                                </StackPanel.ChildrenTransitions>
-                                            </StackPanel>
-                                        </ItemsPanelTemplate>
-                                    </GroupStyle.Panel>
-                                </GroupStyle>
-                            </selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
-                        </selectors:TechAreaGroupStyleSelector>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="ItemTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <StackPanel MaxWidth="300">
-                                <TextBlock Text="{Binding Name}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="ItemsPanel">
-                    <Setter.Value>
-                        <ItemsPanelTemplate>
-                            <StackPanel MaxWidth="600">
-                                <StackPanel.ChildrenTransitions>
-                                    <TransitionCollection />
-                                </StackPanel.ChildrenTransitions>
-                            </StackPanel>
-                        </ItemsPanelTemplate>
-                    </Setter.Value>
-                </Setter>
                 <Setter Property="Header">
                     <Setter.Value>
                         <Grid>
@@ -218,6 +158,21 @@
                         </Grid>
                     </Setter.Value>
                 </Setter>
+                <Setter Property="GroupStyleSelector">
+                    <Setter.Value>
+                        <selectors:TechAreaGroupStyleSelector>
+                            <selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
+                                <GroupStyle HidesIfEmpty="True"
+                                            HeaderTemplate="{StaticResource TechnologyAreaGroupHeaderTemplate}"
+                                            Panel="{StaticResource TechnologyAreaItemsPanelTemplate}" />
+                            </selectors:TechAreaGroupStyleSelector.TechnologyAreaGroupStyle>
+                        </selectors:TechAreaGroupStyleSelector>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="ItemTemplate"
+                        Value="{StaticResource TechnologyAreaItemTemplate}" />
+                <Setter Property="ItemsPanel"
+                        Value="{StaticResource TechnologyAreaItemsPanelTemplate}" />
             </Style>
         </ResourceDictionary>
     </common:BootStrapper.Resources>
