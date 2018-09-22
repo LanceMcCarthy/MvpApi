@@ -90,13 +90,14 @@
                         <Button.Content>
                             <StackPanel Orientation="Horizontal">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Additional Areas: " Margin="0,0,5,0"/>
+                                    <TextBlock Text="Additional Areas:"
+                                               Margin="0,0,5,0" />
                                     <TextBlock Text="{Binding SelectedContribution.AdditionalTechnologies.Count}" />
                                 </StackPanel>
                             </StackPanel>
                         </Button.Content>
                         <Button.Flyout>
-                            <Flyout x:Name="AdditionalAreasFlyout">
+                            <Flyout>
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
@@ -106,9 +107,7 @@
                                     <ListView SelectionMode="Multiple"
                                               ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
                                               Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
-                                              extensions:ListViewExtensions.SelectedValues="{Binding SelectedContribution.AdditionalTechnologies}">
-
-                                    </ListView>
+                                              extensions:ListViewExtensions.SelectedValues="{Binding SelectedContribution.AdditionalTechnologies}"/>
                                 </Grid>
                             </Flyout>
                         </Button.Flyout>
