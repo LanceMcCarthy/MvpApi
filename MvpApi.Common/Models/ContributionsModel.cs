@@ -24,6 +24,7 @@ namespace MvpApi.Common.Models
         private string description;
         private int? contributionId;
         private UploadStatus uploadStatus;
+        private ObservableCollection<ContributionTechnologyModel> additionalTechnologies;
 
         /// <summary>
         /// Initializes a new instance of the ContributionsModel class.
@@ -94,7 +95,11 @@ namespace MvpApi.Common.Models
         /// Lance Note: Added to this property to the model manually after the feature was added in August 2018
         /// </summary>
         [JsonProperty(PropertyName = "AdditionalTechnologies")]
-        public ObservableCollection<ContributionTechnologyModel> AdditionalTechnologies { get; set; }
+        public ObservableCollection<ContributionTechnologyModel> AdditionalTechnologies
+        {
+            get => additionalTechnologies;
+            set => SetProperty(ref additionalTechnologies, value);
+        }
 
         /// <summary>
         /// Gets or sets the start date.
