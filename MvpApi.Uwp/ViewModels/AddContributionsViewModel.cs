@@ -319,6 +319,11 @@ namespace MvpApi.Uwp.ViewModels
                     }
 
                     UploadQueue.Remove(contribution);
+
+                    if (UploadQueue.Count == 0)
+                    {
+                        SetupNextEntry();
+                    }
                 }
             }
             catch (Exception ex)
