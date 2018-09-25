@@ -7,6 +7,7 @@
                      xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Converters"
                      xmlns:selectors="using:MvpApi.Uwp.Selectors"
                      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+                     xmlns:template10Converter="using:Template10.Converters"
                      RequestedTheme="Light">
 
     <common:BootStrapper.Resources>
@@ -15,6 +16,42 @@
                 <XamlControlsResources  xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
 
+            <template10Converter:ValueWhenConverter x:Key="InvertBoolConverter">
+                <template10Converter:ValueWhenConverter.When>
+                    <x:Boolean>True</x:Boolean>
+                </template10Converter:ValueWhenConverter.When>
+                <template10Converter:ValueWhenConverter.Value>
+                    <x:Boolean>False</x:Boolean>
+                </template10Converter:ValueWhenConverter.Value>
+                <template10Converter:ValueWhenConverter.Otherwise>
+                    <x:Boolean>True</x:Boolean>
+                </template10Converter:ValueWhenConverter.Otherwise>
+            </template10Converter:ValueWhenConverter>
+
+            <template10Converter:ValueWhenConverter x:Key="BoolToVisibilityConverter">
+                <template10Converter:ValueWhenConverter.When>
+                    <x:Boolean>True</x:Boolean>
+                </template10Converter:ValueWhenConverter.When>
+                <template10Converter:ValueWhenConverter.Value>
+                    <Visibility>Visible</Visibility>
+                </template10Converter:ValueWhenConverter.Value>
+                <template10Converter:ValueWhenConverter.Otherwise>
+                    <Visibility>Collapsed</Visibility>
+                </template10Converter:ValueWhenConverter.Otherwise>
+            </template10Converter:ValueWhenConverter>
+
+            <template10Converter:ValueWhenConverter x:Key="InvertedBoolToVisibilityConverter">
+                <template10Converter:ValueWhenConverter.When>
+                    <x:Boolean>True</x:Boolean>
+                </template10Converter:ValueWhenConverter.When>
+                <template10Converter:ValueWhenConverter.Value>
+                    <Visibility>Collapsed</Visibility>
+                </template10Converter:ValueWhenConverter.Value>
+                <template10Converter:ValueWhenConverter.Otherwise>
+                    <Visibility>Visible</Visibility>
+                </template10Converter:ValueWhenConverter.Otherwise>
+            </template10Converter:ValueWhenConverter>
+
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
             <converters:NullToVisibilityConverter x:Key="InvertedNullToVisibilityConverter" IsInverted="True" />
             <converters:PathToBitmapImageConverter x:Key="BitmapImageConverter" />
@@ -22,15 +59,7 @@
             <converters:DoubleToIntConverter x:Key="DoubleToIntConverter" />
             <converters:UploadStatusBackgroundConverter x:Key="UploadStatusBackgroundConverter" />
             <converters:UploadStatusToBoolConverter x:Key="UploadStatusToBoolConverter" />
-            <toolkit:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
-            <toolkit:BoolToVisibilityConverter x:Key="InvertedBoolToVisibilityConverter">
-                <toolkit:BoolToVisibilityConverter.TrueValue>
-                    <Visibility>Collapsed</Visibility>
-                </toolkit:BoolToVisibilityConverter.TrueValue>
-                <toolkit:BoolToVisibilityConverter.FalseValue>
-                    <Visibility>Visible</Visibility>
-                </toolkit:BoolToVisibilityConverter.FalseValue>
-            </toolkit:BoolToVisibilityConverter>
+
 
             <Style x:Key="PageBusyIndicatorStyle"
                    TargetType="primitives:RadBusyIndicator">
@@ -38,42 +67,6 @@
                         Value="AnimationStyle4" />
                 <Setter Property="Background"
                         Value="{ThemeResource SystemControlForegroundAltMediumHighBrush}" />
-            </Style>
-
-            <Style x:Name="SmallCellContentStyle"
-                   TargetType="TextBlock">
-                <Setter Property="MaxWidth"
-                        Value="100" />
-                <Setter Property="TextTrimming"
-                        Value="CharacterEllipsis" />
-                <Setter Property="Margin"
-                        Value="5" />
-                <Setter Property="VerticalAlignment"
-                        Value="Center" />
-            </Style>
-
-            <Style x:Name="MediumCellContentStyle"
-                   TargetType="TextBlock">
-                <Setter Property="MaxWidth"
-                        Value="250" />
-                <Setter Property="TextTrimming"
-                        Value="CharacterEllipsis" />
-                <Setter Property="Margin"
-                        Value="5" />
-                <Setter Property="VerticalAlignment"
-                        Value="Center" />
-            </Style>
-
-            <Style x:Name="WideCellContentStyle"
-                   TargetType="TextBlock">
-                <Setter Property="MaxWidth"
-                        Value="400" />
-                <Setter Property="TextTrimming"
-                        Value="CharacterEllipsis" />
-                <Setter Property="Margin"
-                        Value="5" />
-                <Setter Property="VerticalAlignment"
-                        Value="Center" />
             </Style>
 
             <Style x:Key="TechnologyAreaComboBoxStyle"
@@ -161,16 +154,6 @@
                 <Setter Property="ItemContainerTransitions">
                     <Setter.Value>
                         <TransitionCollection />
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="HeaderTemplate">
-                    <Setter.Value>
-                        <DataTemplate>
-                            <Grid HorizontalAlignment="Stretch">
-                                <TextBlock Text="Additional Areas (multiple)"
-                                           Style="{StaticResource SubheaderTextBlockStyle}" />
-                            </Grid>
-                        </DataTemplate>
                     </Setter.Value>
                 </Setter>
                 <Setter Property="GroupStyleSelector">

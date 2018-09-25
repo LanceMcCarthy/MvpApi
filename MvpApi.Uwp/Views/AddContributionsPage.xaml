@@ -8,7 +8,9 @@
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:converters="using:MvpApi.Uwp.Converters"
-      xmlns:extensions="using:MvpApi.Uwp.Extensions"
+      xmlns:i="using:Microsoft.Xaml.Interactivity"
+      xmlns:behaviors="using:MvpApi.Uwp.Behaviors"
+      xmlns:controls="using:MvpApi.Uwp.Controls"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -119,17 +121,13 @@
                             </Button.Content>
                             <Button.Flyout>
                                 <Flyout>
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-
-                                        <ListView SelectionMode="Multiple"
-                                                  ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                                                  Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
-                                                  extensions:ListViewExtensions.SelectedValues="{Binding SelectedContribution.AdditionalTechnologies}" />
-                                    </Grid>
+                                    <controls:TechnologyAreasListView x:Name="AdditionalTechnologiesListView"
+                                                                      ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                                                                      AdditionalTechnologies="{Binding SelectedContribution.AdditionalTechnologies}"
+                                                                      Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
+                                                                      SelectionMode="Multiple"
+                                                                      HorizontalAlignment="Stretch"
+                                                                      VerticalAlignment="Stretch" />
                                 </Flyout>
                             </Button.Flyout>
                         </Button>

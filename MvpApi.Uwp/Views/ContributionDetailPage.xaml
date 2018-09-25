@@ -6,9 +6,9 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:data="using:Telerik.UI.Xaml.Controls.Data"
-      xmlns:controls="using:Microsoft.UI.Xaml.Controls"
-      xmlns:extensions="using:MvpApi.Uwp.Extensions"
+      xmlns:i="using:Microsoft.Xaml.Interactivity"
+      xmlns:behaviors="using:MvpApi.Uwp.Behaviors"
+      xmlns:controls="using:MvpApi.Uwp.Controls"
       xmlns:selectors="using:MvpApi.Uwp.Selectors"
       mc:Ignorable="d">
 
@@ -30,6 +30,10 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
 
         <Grid x:Name="HeaderGrid"
               Height="48"
@@ -75,44 +79,43 @@
                                Margin="0,0" />
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal">
-                    <ComboBox x:Name="TechComboBox"
-                              ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                              SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              SelectionChanged="{x:Bind ViewModel.TechnologyComboBox_OnSelectionChanged}"
-                              PlaceholderText="{Binding SelectedContribution.ContributionTechnology.Name}"
-                              Style="{StaticResource TechnologyAreaComboBoxStyle}"
-                              Margin="10,10,10,0">
-                    </ComboBox>
+                <ComboBox x:Name="TechComboBox"
+                          ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                          SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          SelectionChanged="{x:Bind ViewModel.TechnologyComboBox_OnSelectionChanged}"
+                          PlaceholderText="{Binding SelectedContribution.ContributionTechnology.Name}"
+                          Style="{StaticResource TechnologyAreaComboBoxStyle}"
+                          Margin="10,10,10,0">
+                </ComboBox>
 
-                    <Button x:Name="AddAdditionalTechnologyButton"
-                            VerticalAlignment="Bottom">
-                        <Button.Content>
+                <TextBlock Text="Select up to 2 additional technology areas that may also apply to this activity."
+                           Margin="10,10,10,0" />
+
+
+                <!--Click="{x:Bind ViewModel.ShowAdditionalTechnologiesPanelButton_OnClick}"-->
+                <Button x:Name="ShowAdditionalTechnologiesPanelButton"
+                        Margin="10,10,10,0">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal">
                             <StackPanel Orientation="Horizontal">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Additional Areas:"
-                                               Margin="0,0,5,0" />
-                                    <TextBlock Text="{Binding SelectedContribution.AdditionalTechnologies.Count}" />
-                                </StackPanel>
+                                <TextBlock Text="Additional Areas Selected:"
+                                           Margin="0,0,5,0" />
+                                <TextBlock Text="{Binding SelectedContribution.AdditionalTechnologies.Count}" />
                             </StackPanel>
-                        </Button.Content>
-                        <Button.Flyout>
-                            <Flyout>
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-
-                                    <ListView SelectionMode="Multiple"
-                                              ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                                              Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
-                                              extensions:ListViewExtensions.SelectedValues="{Binding SelectedContribution.AdditionalTechnologies}"/>
-                                </Grid>
-                            </Flyout>
-                        </Button.Flyout>
-                    </Button>
-                </StackPanel>
+                        </StackPanel>
+                    </Button.Content>
+                    <Button.Flyout>
+                        <Flyout>
+                            <controls:TechnologyAreasListView x:Name="AdditionalTechnologiesListView"
+                                                              ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                                                              AdditionalTechnologies="{Binding SelectedContribution.AdditionalTechnologies}"
+                                                              Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
+                                                              SelectionMode="Multiple"
+                                                              HorizontalAlignment="Stretch"
+                                                              VerticalAlignment="Stretch" />
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
 
                 <DatePicker Date="{Binding SelectedContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}, UpdateSourceTrigger=PropertyChanged}"
                             HorizontalAlignment="Left"
@@ -272,6 +275,30 @@
                 </ComboBox>
             </StackPanel>
         </ScrollViewer>
+
+        <!--<Grid x:Name="AdditionalTechnologiesPanel"
+              Visibility="{Binding IsSelectingAdditionalTechnologies, Converter={StaticResource BoolToVisibilityConverter}}"
+              Grid.Row="2"
+              Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <controls:TechnologyAreasListView x:Name="AdditionalTechnologiesListView"
+                                              ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                                              AdditionalTechnologies="{Binding SelectedContribution.AdditionalTechnologies}"
+                                              SelectionMode="Multiple"
+                                              Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch" />
+
+            <Button Content="done"
+                    Click="{x:Bind ViewModel.ShowAdditionalTechnologiesPanelButton_OnClick}"
+                    Grid.Row="1"/>
+        </Grid>-->
+
+        
 
         <CommandBar Grid.Row="3">
             <AppBarButton Label="delete"

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,6 +42,8 @@ namespace MvpApi.Uwp.ViewModels
         private bool isSecondAnnualQuantityRequired;
         private bool canSave;
         private string warningMessage;
+
+        //private AdditionalTechnologyAreasPicker picker;
 
         #endregion
 
@@ -132,6 +136,8 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref warningMessage, value);
         }
 
+        public bool IsAdditionalAreasReady { get; set; }
+
         #endregion
         
         #region Event handlers
@@ -188,7 +194,19 @@ namespace MvpApi.Uwp.ViewModels
             if (originalContribution != null)
                 IsSelectedContributionDirty = SelectedContribution.SecondAnnualQuantity == originalContribution.SecondAnnualQuantity;
         }
-        
+
+        //public async void ShowAdditionalTechnologiesPanelButton_OnClick(object sender, RoutedEventArgs e)
+        //{
+        //    if (picker == null)
+        //    {
+        //        picker = new AdditionalTechnologyAreasPicker { Context = this };
+        //    }
+            
+        //    await picker.ShowAsync();
+
+        //}
+
+
         // CommandBar event handlers
 
         public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
