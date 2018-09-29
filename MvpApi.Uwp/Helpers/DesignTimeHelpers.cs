@@ -100,7 +100,12 @@ namespace MvpApi.Uwp.Helpers
                 ContributionType = GenerateContributionTypes()[0],
                 ContributionTypeName = GenerateContributionTypes()[0].Name,
                 ContributionTechnology = GenerateAreaTechnologies()[0],
-                Visibility = GenerateVisibilities()[0]
+                Visibility = GenerateVisibilities()[0],
+                AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
+                {
+                    GenerateAreaTechnologies()[1],
+                    GenerateAreaTechnologies()[2]
+                }
             },
             new ContributionsModel
             {
@@ -115,7 +120,12 @@ namespace MvpApi.Uwp.Helpers
                 ContributionType = GenerateContributionTypes()[0],
                 ContributionTypeName = GenerateContributionTypes()[0].Name,
                 ContributionTechnology = GenerateAreaTechnologies()[0],
-                Visibility = GenerateVisibilities()[0]
+                Visibility = GenerateVisibilities()[0],
+                AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
+                {
+                    GenerateAreaTechnologies()[1],
+                    GenerateAreaTechnologies()[2]
+                }
             },
             new ContributionsModel
             {
@@ -130,7 +140,12 @@ namespace MvpApi.Uwp.Helpers
                 ContributionType = GenerateContributionTypes()[0],
                 ContributionTypeName = GenerateContributionTypes()[0].Name,
                 ContributionTechnology = GenerateAreaTechnologies()[0],
-                Visibility = GenerateVisibilities()[0]
+                Visibility = GenerateVisibilities()[0],
+                AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
+                {
+                    GenerateAreaTechnologies()[1],
+                    GenerateAreaTechnologies()[2]
+                }
             },
             new ContributionsModel
             {
@@ -145,7 +160,12 @@ namespace MvpApi.Uwp.Helpers
                 ContributionType = GenerateContributionTypes()[0],
                 ContributionTypeName = GenerateContributionTypes()[0].Name,
                 ContributionTechnology = GenerateAreaTechnologies()[0],
-                Visibility = GenerateVisibilities()[0]
+                Visibility = GenerateVisibilities()[0],
+                AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
+                {
+                    GenerateAreaTechnologies()[1],
+                    GenerateAreaTechnologies()[2]
+                }
             }
         };
 

@@ -13,6 +13,44 @@
         <viewModels:HomePageViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
+    <Page.Resources>
+        <Style x:Key="SmallCellContentStyle"
+               TargetType="TextBlock">
+            <Setter Property="MaxWidth"
+                    Value="100" />
+            <Setter Property="TextTrimming"
+                    Value="CharacterEllipsis" />
+            <Setter Property="Margin"
+                    Value="5" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+        </Style>
+
+        <Style x:Key="MediumCellContentStyle"
+               TargetType="TextBlock">
+            <Setter Property="MaxWidth"
+                    Value="250" />
+            <Setter Property="TextTrimming"
+                    Value="CharacterEllipsis" />
+            <Setter Property="Margin"
+                    Value="5" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+        </Style>
+
+        <Style x:Key="WideCellContentStyle"
+               TargetType="TextBlock">
+            <Setter Property="MaxWidth"
+                    Value="400" />
+            <Setter Property="TextTrimming"
+                    Value="CharacterEllipsis" />
+            <Setter Property="Margin"
+                    Value="5" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+        </Style>
+    </Page.Resources>
+
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

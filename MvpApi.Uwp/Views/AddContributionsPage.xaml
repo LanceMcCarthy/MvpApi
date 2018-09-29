@@ -8,6 +8,9 @@
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:converters="using:MvpApi.Uwp.Converters"
+      xmlns:i="using:Microsoft.Xaml.Interactivity"
+      xmlns:behaviors="using:MvpApi.Uwp.Behaviors"
+      xmlns:controls="using:MvpApi.Uwp.Controls"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -99,10 +102,36 @@
                         </ComboBox.Header>
                     </ComboBox>
 
-                    <ComboBox ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                              SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              Style="{StaticResource TechnologyAreaComboBoxStyle}"
-                              Margin="10,10,10,0" />
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                                  SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  Style="{StaticResource TechnologyAreaComboBoxStyle}"
+                                  Margin="10,10,10,0" />
+
+                        <Button x:Name="AddAdditionalTechnologyButton"
+                                VerticalAlignment="Bottom">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="Additional Areas:"
+                                                   Margin="0,0,5,0" />
+                                        <TextBlock Text="{Binding SelectedContribution.AdditionalTechnologies.Count}" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button.Content>
+                            <Button.Flyout>
+                                <Flyout>
+                                    <controls:TechnologyAreasListView x:Name="AdditionalTechnologiesListView"
+                                                                      ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                                                                      AdditionalTechnologies="{Binding SelectedContribution.AdditionalTechnologies}"
+                                                                      Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
+                                                                      SelectionMode="Multiple"
+                                                                      HorizontalAlignment="Stretch"
+                                                                      VerticalAlignment="Stretch" />
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
 
                     <DatePicker Date="{Binding SelectedContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}, UpdateSourceTrigger=PropertyChanged}"
                                 HorizontalAlignment="Left"
@@ -230,7 +259,7 @@
                         </input:RadNumericBox>
                     </StackPanel>
 
-                    <ComboBox ItemsSource="{x:Bind ViewModel.Visibilies}"
+                    <ComboBox ItemsSource="{x:Bind ViewModel.Visibilities}"
                               SelectedItem="{Binding SelectedContribution.Visibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               IsTextSearchEnabled="True"
                               DisplayMemberPath="Description"

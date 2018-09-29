@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +13,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using CommonHelpers.Mvvm;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
@@ -41,15 +44,19 @@ namespace MvpApi.Uwp.ViewModels
         private bool canSave;
         private string warningMessage;
 
+        //private AdditionalTechnologyAreasPicker picker;
+
         #endregion
 
         public ContributionDetailViewModel()
         {
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                Visibilies = DesignTimeHelpers.GenerateVisibilities();
+                Visibilities = DesignTimeHelpers.GenerateVisibilities();
                 SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
             }
+
+            RemoveAdditionalTechAreaCommand = new DelegateCommand<ContributionTechnologyModel>(RemoveAdditionalArea);
         }
 
         #region Properties
@@ -62,20 +69,12 @@ namespace MvpApi.Uwp.ViewModels
         
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
 
-        public ObservableCollection<VisibilityViewModel> Visibilies { get; } = new ObservableCollection<VisibilityViewModel>();
+        public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
         
         public bool IsSelectedContributionDirty
         {
             get => isSelectedContributionDirty;
-            set
-            {
-                Set(ref isSelectedContributionDirty, value);
-                
-                // if the object has changes, update the status to pending
-                SelectedContribution.UploadStatus = value 
-                    ? UploadStatus.Pending 
-                    : UploadStatus.None;
-            }
+            set => Set(ref isSelectedContributionDirty, value);
         }
 
         public string AnnualQuantityHeader
@@ -132,34 +131,42 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref warningMessage, value);
         }
 
+        public bool IsAdditionalAreasReady { get; set; }
+
+        public DelegateCommand<ContributionTechnologyModel> RemoveAdditionalTechAreaCommand { get; set; }
+
         #endregion
         
         #region Event handlers
 
-        // Data form event handlers
+        // Data entry event handlers
         
         public void TitleTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            if (originalContribution != null)
-                IsSelectedContributionDirty = SelectedContribution.Title == originalContribution.Title;
+            Compare();
+            //if (originalContribution != null)
+            //    IsSelectedContributionDirty = SelectedContribution.Title == originalContribution.Title;
         }
 
         public void DescriptionTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            if (originalContribution != null)
-                IsSelectedContributionDirty = SelectedContribution.Description == originalContribution.Description;
+            Compare();
+            //if (originalContribution != null)
+            //    IsSelectedContributionDirty = SelectedContribution.Description == originalContribution.Description;
         }
 
         public void UrlTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            if (originalContribution != null)
-                IsSelectedContributionDirty = SelectedContribution.ReferenceUrl == originalContribution.ReferenceUrl;
+            Compare();
+            //if (originalContribution != null)
+            //    IsSelectedContributionDirty = SelectedContribution.ReferenceUrl == originalContribution.ReferenceUrl;
         }
 
         public void TechnologyComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (originalContribution != null)
-                IsSelectedContributionDirty = SelectedContribution.ContributionTechnology.Id == originalContribution.ContributionTechnology.Id;
+            Compare();
+            //if (originalContribution != null)
+            //    IsSelectedContributionDirty = SelectedContribution.ContributionTechnology.Id == originalContribution.ContributionTechnology.Id;
         }
         
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
@@ -173,20 +180,35 @@ namespace MvpApi.Uwp.ViewModels
                 WarningMessage = "";
             }
 
-            if(originalContribution != null)
-                IsSelectedContributionDirty = SelectedContribution.StartDate == originalContribution.StartDate;
+            Compare();
+            //if (originalContribution != null)
+             //   IsSelectedContributionDirty = SelectedContribution.StartDate == originalContribution.StartDate;
         }
 
         public void AnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
         {
-            if (originalContribution != null)
-                IsSelectedContributionDirty = SelectedContribution.AnnualQuantity == originalContribution.AnnualQuantity;
+            Compare();
+            //if (originalContribution != null)
+            //    IsSelectedContributionDirty = SelectedContribution.AnnualQuantity == originalContribution.AnnualQuantity;
         }
 
         public void SecondAnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
         {
-            if (originalContribution != null)
-                IsSelectedContributionDirty = SelectedContribution.SecondAnnualQuantity == originalContribution.SecondAnnualQuantity;
+            Compare();
+            //if (originalContribution != null)
+            //    IsSelectedContributionDirty = SelectedContribution.SecondAnnualQuantity == originalContribution.SecondAnnualQuantity;
+        }
+
+        public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (SelectedContribution.AdditionalTechnologies.Count < 2)
+            {
+                AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
+            }
+            else
+            {
+                await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
+            }
         }
         
         // CommandBar event handlers
@@ -265,49 +287,60 @@ namespace MvpApi.Uwp.ViewModels
 
         #region Methods
         
-        private async Task LoadSupportingDataAsync()
+        private void AddAdditionalArea(ContributionTechnologyModel area)
         {
-            IsBusyMessage = "loading category area technologies...";
-
-            var areaRoots = await App.ApiService.GetContributionAreasAsync();
-
-            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-
-            areas.ForEach(area =>
+            if (!SelectedContribution.AdditionalTechnologies.Contains(area))
             {
-                CategoryAreas.Add(area);
-            });
-
-
-            IsBusyMessage = "loading visibility options...";
-
-            var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-            visibilities.ForEach(visibility =>
-            {
-                Visibilies.Add(visibility);
-            });
+                SelectedContribution.AdditionalTechnologies.Add(area);
+            }
         }
 
-        public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
+        private void RemoveAdditionalArea(ContributionTechnologyModel area)
+        {
+            if (SelectedContribution.AdditionalTechnologies.Contains(area))
+            {
+                SelectedContribution.AdditionalTechnologies.Remove(area);
+            }
+        }
+
+        private void Compare()
         {
             try
             {
-                var submissionResult = await App.ApiService.SubmitContributionAsync(contribution);
+                if (originalContribution == null)
+                    return;
 
-                // copying back the ID which was created on the server once the item was added to the database
-                contribution.ContributionId = submissionResult.ContributionId;
+                var isTitleDifferent = SelectedContribution.Title != originalContribution.Title;
+                var isDescriptionDifferent = SelectedContribution.Description != originalContribution.Description;
+                var isUrlDifferent = SelectedContribution.ReferenceUrl != originalContribution.ReferenceUrl;
+                var isTechnologyDifferent = SelectedContribution.ContributionTechnology.Id != originalContribution.ContributionTechnology.Id;
+                var isDateDifferent = SelectedContribution.StartDate.Value.Date != originalContribution.StartDate.Value.Date;
+                var isAnnualQuantityDifferent = SelectedContribution.AnnualQuantity != originalContribution.AnnualQuantity;
+                var isSecondAnnualQuantityDifferent = SelectedContribution.SecondAnnualQuantity != originalContribution.SecondAnnualQuantity;
 
-                return true;
+                if (isTitleDifferent
+                    || isDescriptionDifferent
+                    || isUrlDifferent
+                    || isTechnologyDifferent
+                    || isDateDifferent
+                    || isAnnualQuantityDifferent
+                    || isSecondAnnualQuantityDifferent)
+                {
+                    IsSelectedContributionDirty = true;
+                    SelectedContribution.UploadStatus = UploadStatus.Pending;
+                }
+                else
+                {
+                    IsSelectedContributionDirty = false;
+                    SelectedContribution.UploadStatus = UploadStatus.None;
+                }
             }
-            catch (Exception ex)
+            catch
             {
-                await new MessageDialog($"Something went wrong saving the item, please try again. Error: {ex.Message}").ShowAsync();
-                return false;
+                
             }
         }
-        
+
         public void DetermineCategoryTechnologyRequirements(ContributionTypeModel contributionType)
         {
             switch (contributionType.EnglishName)
@@ -525,6 +558,53 @@ namespace MvpApi.Uwp.ViewModels
 
         #endregion
 
+        #region API tasks
+
+        private async Task LoadSupportingDataAsync()
+        {
+            IsBusyMessage = "loading category area technologies...";
+
+            var areaRoots = await App.ApiService.GetContributionAreasAsync();
+
+            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
+            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+
+            areas.ForEach(area =>
+            {
+                CategoryAreas.Add(area);
+            });
+
+
+            IsBusyMessage = "loading visibility options...";
+
+            var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+            visibilities.ForEach(visibility =>
+            {
+                Visibilities.Add(visibility);
+            });
+        }
+
+        public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
+        {
+            try
+            {
+                var submissionResult = await App.ApiService.SubmitContributionAsync(contribution);
+
+                // copying back the ID which was created on the server once the item was added to the database
+                contribution.ContributionId = submissionResult.ContributionId;
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog($"Something went wrong saving the item, please try again. Error: {ex.Message}").ShowAsync();
+                return false;
+            }
+        }
+
+        #endregion
+
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
@@ -616,7 +696,7 @@ namespace MvpApi.Uwp.ViewModels
         private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
         {
             e.Handled = IsSelectedContributionDirty;
-
+            
             if (IsSelectedContributionDirty)
             {
                 var md = new MessageDialog("Navigating away now will lose your changes, continue?", "Warning: Unsaved Changes");

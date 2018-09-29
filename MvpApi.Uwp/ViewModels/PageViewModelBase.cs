@@ -1,8 +1,6 @@
-﻿using Template10.Mvvm;
-
-namespace MvpApi.Uwp.ViewModels
+﻿namespace MvpApi.Uwp.ViewModels
 {
-    public class PageViewModelBase : ViewModelBase
+    public class PageViewModelBase : Template10.Mvvm.ViewModelBase
     {
         private bool isBusy;
         private string isBusyMessage;

@@ -50,7 +50,7 @@ namespace MvpApi.Uwp.ViewModels
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
                 Types = DesignTimeHelpers.GenerateContributionTypes();
-                Visibilies = DesignTimeHelpers.GenerateVisibilities();
+                Visibilities = DesignTimeHelpers.GenerateVisibilities();
                 UploadQueue = DesignTimeHelpers.GenerateContributions();
                 SelectedContribution = UploadQueue.FirstOrDefault();
 
@@ -69,7 +69,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public ObservableCollection<ContributionTypeModel> Types { get; } = new ObservableCollection<ContributionTypeModel>();
 
-        public ObservableCollection<VisibilityViewModel> Visibilies { get; } = new ObservableCollection<VisibilityViewModel>();
+        public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
         
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
 
@@ -269,10 +269,11 @@ namespace MvpApi.Uwp.ViewModels
             {
                 ContributionId = 0,
                 StartDate = DateTime.Now,
-                Visibility = Visibilies.FirstOrDefault(),
+                Visibility = Visibilities.FirstOrDefault(),
                 ContributionType = Types.FirstOrDefault(),
                 ContributionTypeName = SelectedContribution?.ContributionType?.Name,
-                ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas.FirstOrDefault()
+                ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas.FirstOrDefault(),
+                AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
             };
         }
 
@@ -318,6 +319,11 @@ namespace MvpApi.Uwp.ViewModels
                     }
 
                     UploadQueue.Remove(contribution);
+
+                    if (UploadQueue.Count == 0)
+                    {
+                        SetupNextEntry();
+                    }
                 }
             }
             catch (Exception ex)
@@ -383,7 +389,7 @@ namespace MvpApi.Uwp.ViewModels
 
             visibilities.ForEach(visibility =>
             {
-                Visibilies.Add(visibility);
+                Visibilities.Add(visibility);
             });
         }
 

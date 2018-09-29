@@ -2,6 +2,7 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
+using CommonHelpers.Common;
 using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
@@ -9,7 +10,7 @@ namespace MvpApi.Common.Models
     /// <summary>
     /// The visibility.
     /// </summary>
-    public partial class VisibilityViewModel : ObservableObject
+    public partial class VisibilityViewModel : BindableBase
     {
         private int? id;
         private string description;

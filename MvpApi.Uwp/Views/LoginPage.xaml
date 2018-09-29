@@ -1,18 +1,16 @@
-﻿<Page
-    x:Class="MvpApi.Uwp.Views.LoginPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:MvpApi.Uwp.Views"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="using:MvpApi.Models"
-    xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
+﻿<Page x:Class="MvpApi.Uwp.Views.LoginPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:MvpApi.Uwp.Views"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:uwpToolkitUi="using:Microsoft.Toolkit.Uwp.UI"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       mc:Ignorable="d">
-    
+
     <Page.DataContext>
-        <viewModels:LoginPageViewModel x:Name="ViewModel"/>
+        <viewModels:LoginPageViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -28,6 +26,27 @@
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
+
+            <Button Content="Why so many permissions?"
+                    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBoolConverter}}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="0,0,5,0">
+                <Button.Flyout>
+                    <Flyout>
+                        <Grid Width="400">
+                            <StackPanel>
+                                <TextBlock Text="When you sign in, the app gets a token that is used to authenticate every call to the MVP portal API. This token is good for 60 minutes, you may need to re-approve upon app re-launch or token expiration."
+                                           TextWrapping="Wrap"
+                                           Margin="0,0,0,10" />
+                                <TextBlock Text="The permissions you see is the smallest scope available by the Microsoft Account login service ('wl.signin'). This app does NOT use anything from your MSA account except your Profile photo which is shown at the bottom left."
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Grid>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
         </Grid>
 
         <WebView uwpToolkitUi:WebViewExtensions.ContentUri="{Binding BrowserUri}"

@@ -1,4 +1,5 @@
-﻿<Page x:Class="MvpApi.Uwp.Views.ContributionDetailPage"
+﻿<Page x:Name="Page"
+      x:Class="MvpApi.Uwp.Views.ContributionDetailPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -34,22 +35,19 @@
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
-            
         </Grid>
 
         <Grid Background="{Binding SelectedContribution.UploadStatus, Converter={StaticResource UploadStatusBackgroundConverter}}"
               Grid.Row="1">
-
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Margin="5">
                 <TextBlock Text="Upload Status:"
-                           Margin="0,0,5,0"/>
+                           Margin="0,0,5,0" />
                 <TextBlock Text="{Binding SelectedContribution.UploadStatus}" />
 
             </StackPanel>
-            
             <Grid Background="Red" Visibility="{Binding WarningMessage, Converter={StaticResource NullToVisibilityConverter}}">
                 <TextBlock Text="{Binding WarningMessage}"
                            Foreground="White"
@@ -71,16 +69,76 @@
                                Margin="0,0" />
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal">
-                    <ComboBox x:Name="TechComboBox"
-                              ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                              SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              SelectionChanged="{x:Bind ViewModel.TechnologyComboBox_OnSelectionChanged}"
-                              PlaceholderText="{Binding SelectedContribution.ContributionTechnology.Name}"
-                              Style="{StaticResource TechnologyAreaComboBoxStyle}"
-                              Margin="10,10,10,0">
-                    </ComboBox>
-                </StackPanel>
+                <ComboBox x:Name="TechComboBox"
+                          ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                          SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          SelectionChanged="{x:Bind ViewModel.TechnologyComboBox_OnSelectionChanged}"
+                          PlaceholderText="{Binding SelectedContribution.ContributionTechnology.Name}"
+                          Style="{StaticResource TechnologyAreaComboBoxStyle}"
+                          Margin="10,10,10,0">
+                </ComboBox>
+
+                <TextBlock Text="Select up to 2 additional technology areas that may also apply to this activity."
+                           Margin="10,10,0,0" />
+
+                <ListView x:Name="SelectedAdditionalTechnologiesListView"
+                          ItemsSource="{Binding SelectedContribution.AdditionalTechnologies}"
+                          Margin="10,5,10,0">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.Header>
+                        <Button x:Name="ShowAdditionalTechnologiesPanelButton"
+                                Content="Add Additional Technology Area"
+                                VerticalAlignment="Top"
+                                Foreground="White"
+                                Background="DarkGreen"
+                                Margin="0,0,10,0">
+                            <Button.Flyout>
+                                <Flyout>
+                                    <ListView x:Name="AdditionalTechnologiesListView"
+                                              DataContext="{x:Bind ViewModel}"
+                                              ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                                              ItemClick="{x:Bind ViewModel.AdditionalTechnologiesListView_OnItemClick}"
+                                              Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
+                                              IsItemClickEnabled="True"
+                                              SelectionMode="None"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch" />
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                    </ListView.Header>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Background="Gray">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <Button Content="X"
+                                        Command="{Binding ElementName=Page, Path=DataContext.RemoveAdditionalTechAreaCommand}"
+                                        CommandParameter="{Binding}"
+                                        VerticalAlignment="Stretch"
+                                        Foreground="White"
+                                        Background="DarkRed"
+                                        Padding="4,0"/>
+
+                                <StackPanel Orientation="Horizontal"
+                                            VerticalAlignment="Center"
+                                            Margin="5"
+                                            Grid.Column="1">
+                                    <TextBlock Text="{Binding Name}"
+                                               Foreground="White"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
 
                 <DatePicker Date="{Binding SelectedContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}, UpdateSourceTrigger=PropertyChanged}"
                             HorizontalAlignment="Left"
@@ -217,7 +275,7 @@
 
                 </StackPanel>
                 
-                <ComboBox ItemsSource="{Binding Visibilies}"
+                <ComboBox ItemsSource="{Binding Visibilities}"
                           SelectedItem="{Binding SelectedContribution.Visibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           IsTextSearchEnabled="True"
                           DisplayMemberPath="Description"
@@ -251,8 +309,9 @@
                           Click="{x:Bind ViewModel.UploadContributionButton_Click}" />
         </CommandBar>
 
-        <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                                     IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+        <primitives:RadBusyIndicator Content="{Binding IsBusyMessage}"
+                                     IsActive="{Binding IsBusy}"
+                                     Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
                                      Style="{StaticResource PageBusyIndicatorStyle}"
                                      Grid.Row="1"
                                      Grid.RowSpan="2" />
