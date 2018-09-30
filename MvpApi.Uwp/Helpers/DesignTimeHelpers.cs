@@ -104,7 +104,6 @@ namespace MvpApi.Uwp.Helpers
                 AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
                 {
                     GenerateAreaTechnologies()[1],
-                    GenerateAreaTechnologies()[2]
                 }
             },
             new ContributionsModel

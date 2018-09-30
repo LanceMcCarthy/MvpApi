@@ -57,12 +57,16 @@ namespace MvpApi.Uwp.ViewModels
                 return;
             }
 
-            EditCommand = new DelegateCommand<ContributionsModel>(async cont => await EditContribution(cont));
-            RemoveCommand = new DelegateCommand<ContributionsModel>(async cont => await RemoveContribution(cont));
+            EditQueuedContributionCommand = new DelegateCommand<ContributionsModel>(async cont => await EditContribution(cont));
+            RemoveQueuedContributionCommand = new DelegateCommand<ContributionsModel>(async cont => await RemoveContribution(cont));
+
+            RemoveAdditionalTechAreaCommand = new DelegateCommand<ContributionTechnologyModel>(RemoveAdditionalArea);
 
             UploadQueue.CollectionChanged += UploadQueue_CollectionChanged;
         }
-        
+
+        #region Properties
+
         // Collections and SelectedItems
 
         public ObservableCollection<ContributionsModel> UploadQueue { get; } = new ObservableCollection<ContributionsModel>();
@@ -79,7 +83,7 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref selectedContribution, value);
         }
         
-        // Form Headers
+        // Data entry control headers, using VM properties to alert validation violations
         
         public string AnnualQuantityHeader
         {
@@ -104,8 +108,6 @@ namespace MvpApi.Uwp.ViewModels
             get => urlHeader;
             set => Set(ref urlHeader, value);
         }
-
-        // Validation properties
 
         public bool IsUrlRequired
         {
@@ -145,11 +147,15 @@ namespace MvpApi.Uwp.ViewModels
 
         // Commands
 
-        public DelegateCommand<ContributionsModel> EditCommand { get; set; }
+        public DelegateCommand<ContributionsModel> EditQueuedContributionCommand { get; set; }
 
-        public DelegateCommand<ContributionsModel> RemoveCommand { get; set; }
+        public DelegateCommand<ContributionsModel> RemoveQueuedContributionCommand { get; set; }
+
+        public DelegateCommand<ContributionTechnologyModel> RemoveAdditionalTechAreaCommand { get; set; }
         
-        // Collection and Selection Changed handlers
+        #endregion
+        
+        #region Event handlers
 
         private void UploadQueue_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -183,7 +189,19 @@ namespace MvpApi.Uwp.ViewModels
                 SelectedContribution.ContributionTypeName = type.EnglishName;
             }
         }
-        
+
+        public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (SelectedContribution.AdditionalTechnologies.Count < 2)
+            {
+                AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
+            }
+            else
+            {
+                await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
+            }
+        }
+
         // Button click handlers
         public async void AddCurrentItemButton_Click(object sender, RoutedEventArgs e)
         {
@@ -258,6 +276,8 @@ namespace MvpApi.Uwp.ViewModels
                     BootStrapper.Current.NavigationService.GoBack();
             }
         }
+        
+        #endregion
 
         #region Methods
 
@@ -276,123 +296,7 @@ namespace MvpApi.Uwp.ViewModels
                 AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
             };
         }
-
-        public async Task EditContribution(ContributionsModel contribution)
-        {
-            if (contribution == null)
-                return;
-            
-            if (contribution.ContributionId == 0)
-            {
-                var md = new MessageDialog("Editing this contribution will replace the unsaved information you have in the form. If you do not want to lose that information, click 'cancel' and add it to the queue before editing this one.", "Warning");
-                md.Commands.Add(new UICommand("edit"));
-                md.Commands.Add(new UICommand("cancel"));
-
-                var dialogResult = await md.ShowAsync();
-
-                if (dialogResult.Label == "cancel")
-                    return;
-            }
-
-            SelectedContribution = contribution;
-            IsEditingQueuedItem = true;
-        }
         
-        public async Task RemoveContribution(ContributionsModel contribution)
-        {
-            if (contribution == null)
-                return;
-
-            try
-            {
-                var md = new MessageDialog("Are you sure you want to remove this contribution from the queue?", "Remove Contribution?");
-                md.Commands.Add(new UICommand("yes"));
-                md.Commands.Add(new UICommand("cancel"));
-
-                var dialogResult = await md.ShowAsync();
-
-                if (dialogResult.Label == "yes")
-                {
-                    if (SelectedContribution == contribution)
-                    {
-                        SelectedContribution = null;
-                    }
-
-                    UploadQueue.Remove(contribution);
-
-                    if (UploadQueue.Count == 0)
-                    {
-                        SetupNextEntry();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
-            }
-        }
-        
-        public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
-        {
-            try
-            {
-                var submissionResult = await App.ApiService.SubmitContributionAsync(contribution);
-
-                // copying back the ID which was created on the server once the item was added to the database
-                contribution.ContributionId = submissionResult.ContributionId;
-
-                // Quality assurance, only logs a successful upload.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
-                
-                return true;
-            }
-            catch (Exception ex)
-            {
-
-                // Quality assurance, only logs a failed upload.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
-
-                await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
-                return false;
-            }
-        }
-        
-        private async Task LoadSupportingDataAsync()
-        {
-            IsBusyMessage = "loading types...";
-
-            var types = await App.ApiService.GetContributionTypesAsync();
-
-            types.ForEach(type =>
-            {
-                Types.Add(type);
-            });
-            
-            IsBusyMessage = "loading technologies...";
-
-            var areaRoots = await App.ApiService.GetContributionAreasAsync();
-
-            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-
-            areas.ForEach(area =>
-            {
-                CategoryAreas.Add(area);
-            });
-
-
-            IsBusyMessage = "loading visibility options...";
-
-            var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-            visibilities.ForEach(visibility =>
-            {
-                Visibilities.Add(visibility);
-            });
-        }
-
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
         {
             switch (contributionType.EnglishName)
@@ -607,9 +511,145 @@ namespace MvpApi.Uwp.ViewModels
                     break;
             }
         }
-        
+
+        private void AddAdditionalArea(ContributionTechnologyModel area)
+        {
+            if (!SelectedContribution.AdditionalTechnologies.Contains(area))
+            {
+                SelectedContribution.AdditionalTechnologies.Add(area);
+            }
+        }
+
+        private void RemoveAdditionalArea(ContributionTechnologyModel area)
+        {
+            if (SelectedContribution.AdditionalTechnologies.Contains(area))
+            {
+                SelectedContribution.AdditionalTechnologies.Remove(area);
+            }
+        }
+
         #endregion
-        
+
+        #region API calls
+
+        public async Task EditContribution(ContributionsModel contribution)
+        {
+            if (contribution == null)
+                return;
+
+            if (contribution.ContributionId == 0)
+            {
+                var md = new MessageDialog("Editing this contribution will replace the unsaved information you have in the form. If you do not want to lose that information, click 'cancel' and add it to the queue before editing this one.", "Warning");
+                md.Commands.Add(new UICommand("edit"));
+                md.Commands.Add(new UICommand("cancel"));
+
+                var dialogResult = await md.ShowAsync();
+
+                if (dialogResult.Label == "cancel")
+                    return;
+            }
+
+            SelectedContribution = contribution;
+            IsEditingQueuedItem = true;
+        }
+
+        public async Task RemoveContribution(ContributionsModel contribution)
+        {
+            if (contribution == null)
+                return;
+
+            try
+            {
+                var md = new MessageDialog("Are you sure you want to remove this contribution from the queue?", "Remove Contribution?");
+                md.Commands.Add(new UICommand("yes"));
+                md.Commands.Add(new UICommand("cancel"));
+
+                var dialogResult = await md.ShowAsync();
+
+                if (dialogResult.Label == "yes")
+                {
+                    if (SelectedContribution == contribution)
+                    {
+                        SelectedContribution = null;
+                    }
+
+                    UploadQueue.Remove(contribution);
+
+                    if (UploadQueue.Count == 0)
+                    {
+                        SetupNextEntry();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
+            }
+        }
+
+        public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
+        {
+            try
+            {
+                var submissionResult = await App.ApiService.SubmitContributionAsync(contribution);
+
+                // copying back the ID which was created on the server once the item was added to the database
+                contribution.ContributionId = submissionResult.ContributionId;
+
+                // Quality assurance, only logs a successful upload.
+                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+                // Quality assurance, only logs a failed upload.
+                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
+
+                await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
+                return false;
+            }
+        }
+
+        private async Task LoadSupportingDataAsync()
+        {
+            IsBusyMessage = "loading types...";
+
+            var types = await App.ApiService.GetContributionTypesAsync();
+
+            types.ForEach(type =>
+            {
+                Types.Add(type);
+            });
+
+            IsBusyMessage = "loading technologies...";
+
+            var areaRoots = await App.ApiService.GetContributionAreasAsync();
+
+            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
+            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+
+            areas.ForEach(area =>
+            {
+                CategoryAreas.Add(area);
+            });
+
+
+            IsBusyMessage = "loading visibility options...";
+
+            var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+            visibilities.ForEach(visibility =>
+            {
+                Visibilities.Add(visibility);
+            });
+        }
+
+        #endregion
+
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)

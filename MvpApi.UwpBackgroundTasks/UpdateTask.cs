@@ -1,5 +1,6 @@
 ﻿using Windows.ApplicationModel.Background;
 using Windows.UI.Notifications;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace MvpApi.UwpBackgroundTasks
 {
@@ -7,16 +8,34 @@ namespace MvpApi.UwpBackgroundTasks
     {
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            var toastnotifier = ToastNotificationManager.CreateToastNotifier();
-            var toastDescriptor = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
+            var toastContent = new ToastContent
+            {
+                Visual = new ToastVisual
+                {
+                    BindingGeneric = new ToastBindingGeneric
+                    {
+                        Children =
+                        {
+                            new AdaptiveText
+                            {
+                                Text = "MVP Companion has been updated :D"
+                            },
+                            new AdaptiveText
+                            {
+                                Text = "You can now set multiple technology categories for a contribution, click here to try it now."
+                            },
+                            new AdaptiveImage
+                            {
+                                Source = "https://dvlup.blob.core.windows.net/hacked-app-files/ToastNotificationHeroImages/ToastNotification1.gif"
+                            }
+                        }
+                    }
+                }
+            };
+            
+            var toast = new ToastNotification(toastContent.GetXml());
 
-            var txtNodes = toastDescriptor.GetElementsByTagName("text");
-            txtNodes[0].AppendChild(toastDescriptor.CreateTextNode("MVP Companion app updated!"));
-            txtNodes[1].AppendChild(toastDescriptor.CreateTextNode("The companion app has been updated for 2018-2019 use. Lots of fixes and workflow improvements, thank you for the great feedback!"));
-
-            var toast = new ToastNotification(toastDescriptor);
-
-            toastnotifier.Show(toast);
+            ToastNotificationManager.CreateToastNotifier().Show(toast);
         }
     }
 }

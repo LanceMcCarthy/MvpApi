@@ -78,24 +78,31 @@
                           Margin="10,10,10,0">
                 </ComboBox>
 
-                <TextBlock Text="Select up to 2 additional technology areas that may also apply to this activity."
+                <TextBlock Text="Optional: Select up to 2 additional technology areas that may also apply to this activity."
                            Margin="10,10,0,0" />
 
                 <ListView x:Name="SelectedAdditionalTechnologiesListView"
                           ItemsSource="{Binding SelectedContribution.AdditionalTechnologies}"
+                          HorizontalAlignment="Left"
                           Margin="10,5,10,0">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsStackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="Padding" Value="0"/>
                         </Style>
                     </ListView.ItemContainerStyle>
-                    <ListView.Header>
-                        <Button x:Name="ShowAdditionalTechnologiesPanelButton"
-                                Content="Add Additional Technology Area"
-                                VerticalAlignment="Top"
+                    <ListView.Footer>
+                        <Button Visibility="{Binding SelectedContribution.AdditionalTechnologies.Count, Converter={StaticResource CountToVisibilityConverter}}"
+                                Content="+"
+                                FontWeight="Bold"
+                                VerticalAlignment="Center"
                                 Foreground="White"
                                 Background="DarkGreen"
-                                Margin="0,0,10,0">
+                                Margin="0,0,0,0">
                             <Button.Flyout>
                                 <Flyout>
                                     <ListView x:Name="AdditionalTechnologiesListView"
@@ -110,10 +117,11 @@
                                 </Flyout>
                             </Button.Flyout>
                         </Button>
-                    </ListView.Header>
+                    </ListView.Footer>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Background="Gray">
+                            <Grid Background="Gray"
+                                  Margin="0,0,10,0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition/>

@@ -8,9 +8,6 @@
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:converters="using:MvpApi.Uwp.Converters"
-      xmlns:i="using:Microsoft.Xaml.Interactivity"
-      xmlns:behaviors="using:MvpApi.Uwp.Behaviors"
-      xmlns:controls="using:MvpApi.Uwp.Controls"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -26,6 +23,7 @@
                 <SymbolIcon Symbol="Save" />
             </converters:BoolToIconConverter.TrueIcon>
         </converters:BoolToIconConverter>
+
         <CollectionViewSource x:Name="awardCategoriesCvs"
                               Source="{Binding CategoryAreas}"
                               ItemsPath="ContributionAreas"
@@ -102,36 +100,81 @@
                         </ComboBox.Header>
                     </ComboBox>
 
-                    <StackPanel Orientation="Horizontal">
-                        <ComboBox ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                                  SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  Style="{StaticResource TechnologyAreaComboBoxStyle}"
-                                  Margin="10,10,10,0" />
+                    <ComboBox ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                              SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              Style="{StaticResource TechnologyAreaComboBoxStyle}"
+                              Margin="10,10,10,0" />
 
-                        <Button x:Name="AddAdditionalTechnologyButton"
-                                VerticalAlignment="Bottom">
-                            <Button.Content>
-                                <StackPanel Orientation="Horizontal">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Additional Areas:"
-                                                   Margin="0,0,5,0" />
-                                        <TextBlock Text="{Binding SelectedContribution.AdditionalTechnologies.Count}" />
+                    <TextBlock Text="Optional: Select up to 2 additional technology areas that may also apply to this activity."
+                               Margin="10,10,0,0" />
+
+                    <ListView x:Name="SelectedAdditionalTechnologiesListView"
+                              ItemsSource="{Binding SelectedContribution.AdditionalTechnologies}"
+                              HorizontalAlignment="Left"
+                              Margin="10,5,10,0">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <ItemsStackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Padding"
+                                        Value="0" />
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.Footer>
+                            <Button Visibility="{Binding SelectedContribution.AdditionalTechnologies.Count, Converter={StaticResource CountToVisibilityConverter}}"
+                                    Content="+"
+                                    FontWeight="Bold"
+                                    VerticalAlignment="Center"
+                                    Foreground="White"
+                                    Background="DarkGreen"
+                                    Margin="0,0,0,0">
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <ListView x:Name="AdditionalTechnologiesListView"
+                                                  DataContext="{x:Bind ViewModel}"
+                                                  ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                                                  ItemClick="{x:Bind ViewModel.AdditionalTechnologiesListView_OnItemClick}"
+                                                  Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
+                                                  IsItemClickEnabled="True"
+                                                  SelectionMode="None"
+                                                  HorizontalAlignment="Stretch"
+                                                  VerticalAlignment="Stretch" />
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </ListView.Footer>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Background="Gray"
+                                      Margin="0,0,10,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button Content="X"
+                                            Command="{Binding ElementName=Page, Path=DataContext.RemoveAdditionalTechAreaCommand}"
+                                            CommandParameter="{Binding}"
+                                            VerticalAlignment="Stretch"
+                                            Foreground="White"
+                                            Background="DarkRed"
+                                            Padding="4,0" />
+
+                                    <StackPanel Orientation="Horizontal"
+                                                VerticalAlignment="Center"
+                                                Margin="5"
+                                                Grid.Column="1">
+                                        <TextBlock Text="{Binding Name}"
+                                                   Foreground="White"
+                                                   VerticalAlignment="Center" />
                                     </StackPanel>
-                                </StackPanel>
-                            </Button.Content>
-                            <Button.Flyout>
-                                <Flyout>
-                                    <controls:TechnologyAreasListView x:Name="AdditionalTechnologiesListView"
-                                                                      ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                                                                      AdditionalTechnologies="{Binding SelectedContribution.AdditionalTechnologies}"
-                                                                      Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
-                                                                      SelectionMode="Multiple"
-                                                                      HorizontalAlignment="Stretch"
-                                                                      VerticalAlignment="Stretch" />
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
-                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
 
                     <DatePicker Date="{Binding SelectedContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}, UpdateSourceTrigger=PropertyChanged}"
                                 HorizontalAlignment="Left"
@@ -346,7 +389,7 @@
                             </StackPanel>
 
                             <StackPanel Grid.Column="1">
-                                <Button Command="{Binding ElementName=Page, Path=DataContext.EditCommand}"
+                                <Button Command="{Binding ElementName=Page, Path=DataContext.EditQueuedContributionCommand}"
                                         CommandParameter="{Binding}"
                                         Margin="5">
                                     <Button.Content>
@@ -354,7 +397,7 @@
                                                     Foreground="White" />
                                     </Button.Content>
                                 </Button>
-                                <Button Command="{Binding ElementName=Page, Path=DataContext.RemoveCommand}"
+                                <Button Command="{Binding ElementName=Page, Path=DataContext.RemoveQueuedContributionCommand}"
                                         CommandParameter="{Binding}"
                                         Margin="5">
                                     <Button.Content>
@@ -403,8 +446,9 @@
                    Grid.RowSpan="2"
                    Grid.Column="1" />
 
-        <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                                     IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+        <primitives:RadBusyIndicator Content="{Binding IsBusyMessage}"
+                                     IsActive="{Binding IsBusy}"
+                                     Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
                                      Style="{StaticResource PageBusyIndicatorStyle}"
                                      Grid.Row="1"
                                      Grid.RowSpan="2"

@@ -138,35 +138,25 @@ namespace MvpApi.Uwp.ViewModels
         #endregion
         
         #region Event handlers
-
-        // Data entry event handlers
         
         public void TitleTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             Compare();
-            //if (originalContribution != null)
-            //    IsSelectedContributionDirty = SelectedContribution.Title == originalContribution.Title;
         }
 
         public void DescriptionTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             Compare();
-            //if (originalContribution != null)
-            //    IsSelectedContributionDirty = SelectedContribution.Description == originalContribution.Description;
         }
 
         public void UrlTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             Compare();
-            //if (originalContribution != null)
-            //    IsSelectedContributionDirty = SelectedContribution.ReferenceUrl == originalContribution.ReferenceUrl;
         }
 
         public void TechnologyComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Compare();
-            //if (originalContribution != null)
-            //    IsSelectedContributionDirty = SelectedContribution.ContributionTechnology.Id == originalContribution.ContributionTechnology.Id;
         }
         
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
@@ -181,22 +171,16 @@ namespace MvpApi.Uwp.ViewModels
             }
 
             Compare();
-            //if (originalContribution != null)
-             //   IsSelectedContributionDirty = SelectedContribution.StartDate == originalContribution.StartDate;
         }
 
         public void AnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
         {
             Compare();
-            //if (originalContribution != null)
-            //    IsSelectedContributionDirty = SelectedContribution.AnnualQuantity == originalContribution.AnnualQuantity;
         }
 
         public void SecondAnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
         {
             Compare();
-            //if (originalContribution != null)
-            //    IsSelectedContributionDirty = SelectedContribution.SecondAnnualQuantity == originalContribution.SecondAnnualQuantity;
         }
 
         public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
@@ -211,8 +195,6 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
         
-        // CommandBar event handlers
-
         public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
         {
             var isValid = await SelectedContribution.Validate(true);

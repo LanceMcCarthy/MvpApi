@@ -4,7 +4,6 @@
                      xmlns:local="using:MvpApi.Uwp"
                      xmlns:common="using:Template10.Common"
                      xmlns:converters="using:MvpApi.Uwp.Converters"
-                     xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Converters"
                      xmlns:selectors="using:MvpApi.Uwp.Selectors"
                      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
                      xmlns:template10Converter="using:Template10.Converters"
@@ -13,7 +12,7 @@
     <common:BootStrapper.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <XamlControlsResources  xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
 
             <template10Converter:ValueWhenConverter x:Key="InvertBoolConverter">
@@ -52,6 +51,17 @@
                 </template10Converter:ValueWhenConverter.Otherwise>
             </template10Converter:ValueWhenConverter>
 
+            <!-- If value > 1, return Collapsed-->
+            <converters:ThresholdConverter x:Key="CountToVisibilityConverter"
+                                           Threshold="1">
+                <converters:ThresholdConverter.OverResult>
+                    <Visibility>Collapsed</Visibility>
+                </converters:ThresholdConverter.OverResult>
+                <converters:ThresholdConverter.UnderResult>
+                    <Visibility>Visible</Visibility>
+                </converters:ThresholdConverter.UnderResult>
+            </converters:ThresholdConverter>
+
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
             <converters:NullToVisibilityConverter x:Key="InvertedNullToVisibilityConverter" IsInverted="True" />
             <converters:PathToBitmapImageConverter x:Key="BitmapImageConverter" />
@@ -59,7 +69,6 @@
             <converters:DoubleToIntConverter x:Key="DoubleToIntConverter" />
             <converters:UploadStatusBackgroundConverter x:Key="UploadStatusBackgroundConverter" />
             <converters:UploadStatusToBoolConverter x:Key="UploadStatusToBoolConverter" />
-
 
             <Style x:Key="PageBusyIndicatorStyle"
                    TargetType="primitives:RadBusyIndicator">
