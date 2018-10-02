@@ -23,6 +23,7 @@ using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
 using Template10.Common;
 using Template10.Mvvm;
+using MvpApi.Uwp.Services;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -347,7 +348,18 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                string accessToken = StorageHelpers.LoadToken("access_token");
+                if (string.IsNullOrEmpty(accessToken))
+                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                else
+                {
+                    string authHeader = $"bearer {accessToken}";
+                    string authHeader2 = "bearer EwA4A61DBAAUcSSzoTJJsy+XrnQXgAKO5cj4yc8AAUffbUIeVEnM7Q6wZw0iPGht5vQMDRk0QULIGAkP3WAP9/HrJhhKqcDrtquGfFihHFbp1nYXtxVVQiuwu6KVMsjvvtaHfkfuMy+LZjasjzNscQ90WTFmoBrGkb1xlC5WNjglNGl4J0sz6uxrm6Zzmawcs0sXwtwQuv/O2fiwVS3nWAunzisymMrhoeQAU44uyQGX8NMyI8b2YCLE5Mtey/M59/byL7yTIqivcotKsfhTbzshQPQbjKlI/ARG8xdaIMoV0h/c00h0wm/Zu6jWx5eI/Y18Q0UD3vfVvDn4s60P2+RSjlEi9pRGRoNrQtUL5IRRFGfBURSkDibIYjmHeQgDZgAACBX+JXpr5DkpCAKi8dzRqF1SzyQ19YhJQpf0kvNi5RNztmMTXpvVxQKbLUUUVuU7BnYiEFsZ6gJT1Uzlz7woTFKBJZDHmIgEZRkS6T16HSlUeVMHicbTWU7r0OiYI5Zq7JoSzzwhEVL/DEQUfkPE8wQEwGhcugSXGazm/rGjBGBauvH+i/2p+9VDbFoGNK4CfJ7fIIpaGhgJDTANhxx52xb41nxhVPDdnCjEox5cHIYExCavO4LKPI7X4U/RYoM9CAoaKPcl+u8Tn5D3V7wRtTHOUY6OpCk81+E6z2JG6ipzVkSNtMMOf2EUSp495UZyvWDN31IfSXf1nwRaGUu/W+5MjHeXVM84gjPFsjONDqCnaIIK97HPHmRJIEoDgfTp8YH0b1rQd07rpdXY4rFPRk5XM6teBjGYxXIgKTFz49Z5ju7BmWHQb+CTqcxOp5XCG2uXJOS1nJmnh6iRRQW1ejTiITyOakyjnHCBViOydvzSjkvplskLuroV186BdJ9yjBUX8zPPMaEo1rHw6Y6T2tJmoBrotjqzw7ouuOV0ylZOc+E/0O8LxUeUAciETT3EWUQQVkQRWIgS7e8/coXsrfWqMIuwmAF+d/odNhNmBPnpzKjSS2RjYICvq7+S2YWkVCGK8S5TVB9+uXRx9QWc7NBelwNbWHQ6wIx+hSxHr95fcWc6Qh9uU3Fk1UPw9t16noubPAI=";
+                    var e = authHeader2.Equals(authHeader);
+                    //App.ApiService = new MvpApiService(Constants.SubscriptionKey, authHeader2);
+                    App.ApiService = new MvpApiService(Constants.SubscriptionKey, authHeader);
+                    var result = App.ApiService.GetProfileAsync();
+                }
             }
         }
 
