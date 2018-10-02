@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,9 +15,11 @@ using CommonHelpers.Mvvm;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
+using MvpApi.Uwp.Services;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Services.NavigationService;
@@ -597,68 +597,130 @@ namespace MvpApi.Uwp.ViewModels
                     BootStrapper.Current.NavigationService.GoBack();
             }
 
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
+            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
             {
-                try
+                if (shellVm.IsLoggedIn)
                 {
-                    IsBusy = true;
-
-                    // Get the associated lists from the API
-                    await LoadSupportingDataAsync();
-
-                    // Read the passed contribution parameter
-                    if (parameter is ContributionsModel param)
+                    try
                     {
-                        SelectedContribution = param;
-                        
-                        SelectedContribution.UploadStatus = UploadStatus.None;
+                        IsBusy = true;
 
-                        // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
-                        DetermineCategoryTechnologyRequirements(SelectedContribution.ContributionType);
-                        
-                        // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-                        originalContribution = SelectedContribution.Clone();
+                        // Get the associated lists from the API
+                        await LoadSupportingDataAsync();
 
-                        if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                        // Read the passed contribution parameter
+                        if (parameter is ContributionsModel param)
                         {
-                            var td = new TutorialDialog
-                            {
-                                SettingsKey = "ContributionDetailPageTutorialShown",
-                                MessageTitle = "Contribution Details",
-                                Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
-                                          "- Click 'Save' button to save changes.\r\n" +
-                                          "- Click 'Delete' button to permanently delete the contribution.\r\n" +
-                                          "- Click the back button to leave and cancel any changes.\r\n\n" +
-                                          "Note: Pay attention to how the 'required' fields change depending on the technology selection."
-                            };
+                            SelectedContribution = param;
 
-                            await td.ShowAsync();
+                            SelectedContribution.UploadStatus = UploadStatus.None;
+
+                            // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
+                            DetermineCategoryTechnologyRequirements(SelectedContribution.ContributionType);
+
+                            // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
+                            originalContribution = SelectedContribution.Clone();
+
+                            if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                            {
+                                var td = new TutorialDialog
+                                {
+                                    SettingsKey = "ContributionDetailPageTutorialShown",
+                                    MessageTitle = "Contribution Details",
+                                    Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
+                                              "- Click 'Save' button to save changes.\r\n" +
+                                              "- Click 'Delete' button to permanently delete the contribution.\r\n" +
+                                              "- Click the back button to leave and cancel any changes.\r\n\n" +
+                                              "Note: Pay attention to how the 'required' fields change depending on the technology selection."
+                                };
+
+                                await td.ShowAsync();
+                            }
+                        }
+                        else
+                        {
+                            await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
+
+                            if (BootStrapper.Current.NavigationService.CanGoBack)
+                                BootStrapper.Current.NavigationService.GoBack();
+                        }
+
+                        // To prevent accidental back navigation
+                        NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"LoadDataAsync Exception {ex}");
+                    }
+                    finally
+                    {
+                        IsBusyMessage = "";
+                        IsBusy = false;
+                    }
+                }
+                else
+                {
+                    // user is not logged in, try the refresh token first. If this fails, then navigate to login page to start over
+                    try
+                    {
+                        string accessToken = StorageHelpers.LoadToken("access_token");
+
+                        if (string.IsNullOrEmpty(accessToken))
+                        {
+                            // no tokens in storage
+                            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                        }
+                        else
+                        {
+                            IsBusy = true;
+
+                            string authHeader = $"bearer {accessToken}";
+
+                            App.ApiService = new MvpApiService(Constants.SubscriptionKey, authHeader);
+
+                            shellVm.IsLoggedIn = true;
+                            IsBusyMessage = "downloading profile info...";
+                            shellVm.Mvp = await App.ApiService.GetProfileAsync();
+
+                            IsBusyMessage = "downloading profile image...";
+                            shellVm.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage(ApplicationData.Current.LocalFolder);
+                            
+                            IsBusy = false;
+
+
+
+                            // Get the associated lists from the API
+                            await LoadSupportingDataAsync();
+
+                            // Read the passed contribution parameter
+                            if (parameter is ContributionsModel param)
+                            {
+                                SelectedContribution = param;
+
+                                SelectedContribution.UploadStatus = UploadStatus.None;
+
+                                // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
+                                DetermineCategoryTechnologyRequirements(SelectedContribution.ContributionType);
+
+                                // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
+                                originalContribution = SelectedContribution.Clone();
+                            }
+                            else
+                            {
+                                await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
+
+                                if (BootStrapper.Current.NavigationService.CanGoBack)
+                                    BootStrapper.Current.NavigationService.GoBack();
+                            }
                         }
                     }
-                    else
+                    catch
                     {
-                        await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
-
-                        if (BootStrapper.Current.NavigationService.CanGoBack)
-                            BootStrapper.Current.NavigationService.GoBack();
+                        // Something went wrong, just navigate the to login page and start over
+                        await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
                     }
-
-                    // To prevent accidental back navigation
-                    NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
                 }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"LoadDataAsync Exception {ex}");
-                }
-                finally
-                {
-                    IsBusyMessage = "";
-                    IsBusy = false;
-                }
-            }
-            else
-            {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                
             }
         }
 

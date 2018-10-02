@@ -71,47 +71,7 @@ namespace MvpApi.Uwp.ViewModels
                 }
             });
         }
-
-        private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
-        {
-            try
-            {
-                // Here we use a different flag when the view model is busy loading items because we dont want to cover the UI
-                // The IsBusy flag is used for when deleting items, when we want to block the UI
-                IsLoadingMoreItems = true;
-
-                var result = await App.ApiService.GetContributionsAsync(currentOffset, (int)count);
-
-                if (result == null)
-                    return null;
-
-                currentOffset = result.PagingIndex;
-
-                DisplayTotal = $"{currentOffset} of {result.TotalContributions}";
-
-                // If we've recieved all the contributions, return null to stop automatic loading
-                if (result.PagingIndex == result.TotalContributions)
-                    return null;
-
-                return result.Contributions;
-            }
-            catch (Exception ex)
-            {
-                // Only log this exception after the user is logged in
-                if (App.ShellPage?.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
-                {
-                    await ex.LogExceptionAsync();
-                    Debug.WriteLine($"LoadMoreItems Exception: {ex}");
-                }
-                    
-                return null;
-            }
-            finally
-            {
-                IsLoadingMoreItems = false;
-            }
-        }
-
+        
         #region Properties
 
         public IncrementalLoadingCollection<ContributionsModel> Contributions
@@ -300,7 +260,47 @@ namespace MvpApi.Uwp.ViewModels
         #endregion
 
         #region Methods
-        
+
+        private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
+        {
+            try
+            {
+                // Here we use a different flag when the view model is busy loading items because we dont want to cover the UI
+                // The IsBusy flag is used for when deleting items, when we want to block the UI
+                IsLoadingMoreItems = true;
+
+                var result = await App.ApiService.GetContributionsAsync(currentOffset, (int)count);
+
+                if (result == null)
+                    return null;
+
+                currentOffset = result.PagingIndex;
+
+                DisplayTotal = $"{currentOffset} of {result.TotalContributions}";
+
+                // If we've recieved all the contributions, return null to stop automatic loading
+                if (result.PagingIndex == result.TotalContributions)
+                    return null;
+
+                return result.Contributions;
+            }
+            catch (Exception ex)
+            {
+                // Only log this exception after the user is logged in
+                if (App.ShellPage?.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
+                {
+                    await ex.LogExceptionAsync();
+                    Debug.WriteLine($"LoadMoreItems Exception: {ex}");
+                }
+
+                return null;
+            }
+            finally
+            {
+                IsLoadingMoreItems = false;
+            }
+        }
+
         private void ResetData()
         {
             if (SelectedContributions.Any())
@@ -328,37 +328,67 @@ namespace MvpApi.Uwp.ViewModels
                 return;
             }
 
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
+            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
             {
-                if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                if (shellVm.IsLoggedIn)
                 {
-                    var td = new TutorialDialog
+                    if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
                     {
-                        SettingsKey = "HomePageTutorialShown",
-                        MessageTitle = "Home Page",
-                        Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
-                                  "- Group or sort the contributions by any column.\r\n" +
-                                  "- Select a contribution to view its details or edit it.\r\n" +
-                                  "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
-                                  "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
-                    };
+                        var td = new TutorialDialog
+                        {
+                            SettingsKey = "HomePageTutorialShown",
+                            MessageTitle = "Home Page",
+                            Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
+                                      "- Group or sort the contributions by any column.\r\n" +
+                                      "- Select a contribution to view its details or edit it.\r\n" +
+                                      "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
+                                      "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
+                        };
 
-                    await td.ShowAsync();
+                        await td.ShowAsync();
+                    }
                 }
-            }
-            else
-            {
-                string accessToken = StorageHelpers.LoadToken("access_token");
-                if (string.IsNullOrEmpty(accessToken))
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
                 else
                 {
-                    //TODO: If there is a access token in storage, just use that and try to hit API endpoint
-                    //TODO: If getting 404 - refresh token and try again
-                    //TODO: Extra bonus points maybe to use the expires_in and already check if token refresh is needed at app start to skip first not needed API call
-                    string authHeader = $"bearer {accessToken}";
-                    App.ApiService = new MvpApiService(Constants.SubscriptionKey, authHeader);
-                    var result = App.ApiService.GetProfileAsync();
+                    // user is not logged in, try the refresh token first. If this fails, then navigate to login page to start over
+                    try
+                    {
+                        string accessToken = StorageHelpers.LoadToken("access_token");
+
+                        if (string.IsNullOrEmpty(accessToken))
+                        {
+                            // no tokens in storage
+                            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                        }
+                        else
+                        {
+                            //TODO: If there is a access token in storage, just use that and try to hit API endpoint
+                            //TODO: If getting 404 - refresh token and try again
+                            //TODO: Extra bonus points maybe to use the expires_in and already check if token refresh is needed at app start to skip first not needed API call
+                            string authHeader = $"bearer {accessToken}";
+
+                            App.ApiService = new MvpApiService(Constants.SubscriptionKey, authHeader);
+
+                            IsBusy = true;
+
+                            shellVm.IsLoggedIn = true;
+                            IsBusyMessage = "downloading profile info...";
+                            shellVm.Mvp = await App.ApiService.GetProfileAsync();
+
+                            IsBusyMessage = "downloading profile image...";
+                            shellVm.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage(ApplicationData.Current.LocalFolder);
+
+                            // Same as clicking Refresh button the app bar
+                            ResetData();
+
+                            IsBusy = false;
+                        }
+                    }
+                    catch
+                    {
+                        // Something went wrong, just navigate the to login page and start over
+                        await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                    }
                 }
             }
         }

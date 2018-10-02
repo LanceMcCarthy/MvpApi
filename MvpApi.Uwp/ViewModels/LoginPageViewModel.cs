@@ -194,9 +194,57 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
-                // TODO Figure out how to use refresh token
-                // Login
-                BrowserUri = SignInUrl;
+                try
+                {
+                    string accessToken = StorageHelpers.LoadToken("access_token");
+
+                    if (string.IsNullOrEmpty(accessToken))
+                    {
+                        // if no token stored, go through OAuth workflow
+                        BrowserUri = SignInUrl;
+                    }
+                    else
+                    {
+                        // if a token is stored, use that first. The refresh token will automatically store a new valid access token
+                        try
+                        {
+                            string authHeader = $"bearer {accessToken}";
+
+                            App.ApiService = new MvpApiService(Constants.SubscriptionKey, authHeader);
+
+                            IsBusy = true;
+
+                            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
+                            {
+                                shellVm.IsLoggedIn = true;
+                                IsBusyMessage = "downloading profile info...";
+                                shellVm.Mvp = await App.ApiService.GetProfileAsync();
+
+                                IsBusyMessage = "downloading profile image...";
+                                shellVm.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage(ApplicationData.Current.LocalFolder);
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            Debug.WriteLine(exception);
+                        }
+                        finally
+                        {
+                            IsBusyMessage = "";
+                            IsBusy = false;
+                        }
+
+                        if (BootStrapper.Current.NavigationService.CanGoBack)
+                            BootStrapper.Current.NavigationService.GoBack();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Exception attempting to use stored access token, falling back on normal login flow. \r\nException {ex}");
+
+
+                    BrowserUri = SignInUrl;
+                }
             }
         }
 

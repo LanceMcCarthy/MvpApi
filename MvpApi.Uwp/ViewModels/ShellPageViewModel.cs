@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Popups;
@@ -54,33 +53,12 @@ namespace MvpApi.Uwp.ViewModels
         }
         
         /// <summary>
-        /// Timestamp of last login. There is a 60 minute session limit for the access token returned after a login.
-        /// </summary>
-        public DateTime LoginTimeStamp { get; set; }
-
-        /// <summary>
         /// Denotes whether the user is currently logged in and able to make successful requests to the API
         /// </summary>
         public bool IsLoggedIn
         {
-            get
-            {
-                // API has a valid session time of 60 minutes, force sign-in by returning false
-                if (DateTime.Now - LoginTimeStamp > TimeSpan.FromMinutes(60))
-                {
-                    isLoggedIn = false;
-                }
-
-                Debug.WriteLine($"IsLoggedIn (get): {isLoggedIn}");
-
-                return isLoggedIn;
-            }
-            set
-            {
-                Debug.WriteLine($"IsLoggedIn (set): {value}");
-
-                Set(ref isLoggedIn, value);
-            }
+            get => isLoggedIn;
+            set => Set(ref isLoggedIn, value);
         }
         
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)

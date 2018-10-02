@@ -19,6 +19,7 @@ using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
+using MvpApi.Uwp.Services;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Mvvm;
@@ -660,82 +661,101 @@ namespace MvpApi.Uwp.ViewModels
                     BootStrapper.Current.NavigationService.GoBack();
             }
 
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
+            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
             {
-                try
+                if (shellVm.IsLoggedIn)
                 {
-                    IsBusy = true;
-
-                    // ** Get the neccessary associated data from the API **
-
-                    await LoadSupportingDataAsync();
-                    
-                    SetupNextEntry();
-
-                    if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                    try
                     {
-                        var td = new TutorialDialog
+                        IsBusy = true;
+
+                        // ** Get the necessary associated data from the API **
+
+                        await LoadSupportingDataAsync();
+
+                        SetupNextEntry();
+
+                        if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
                         {
-                            SettingsKey = "AddContributionPageTutorialShown",
-                            MessageTitle = "Add Contribution Page",
-                            Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
-                                      "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
-                                      "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
-                                      "- Click 'Upload' to save the queue to your profile.\r\n" +
-                                      "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
-                                      "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
-                        };
+                            var td = new TutorialDialog
+                            {
+                                SettingsKey = "AddContributionPageTutorialShown",
+                                MessageTitle = "Add Contribution Page",
+                                Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
+                                          "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
+                                          "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
+                                          "- Click 'Upload' to save the queue to your profile.\r\n" +
+                                          "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
+                                          "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
+                            };
 
-                        await td.ShowAsync();
+                            await td.ShowAsync();
+                        }
+
+                        // To prevent accidental back navigation
+                        if (BootStrapper.Current.NavigationService.FrameFacade != null)
+                            BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
                     }
-                    
-                    // To prevent accidental back navigation
-                    if(BootStrapper.Current.NavigationService.FrameFacade != null)
-                        BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
+                    }
+                    finally
+                    {
+                        IsBusyMessage = "";
+                        IsBusy = false;
+                    }
+                }
+                else
+                {
+                    // user is not logged in, try the refresh token first. If this fails, then navigate to login page to start over
+                    try
+                    {
+                        string accessToken = StorageHelpers.LoadToken("access_token");
 
-                    // subscribe in case the user's session expires
-                    shellVm.IsLoggedInChanged += ShellVm_IsLoggedInChanged;
+                        if (string.IsNullOrEmpty(accessToken))
+                        {
+                            // no tokens in storage
+                            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                        }
+                        else
+                        {
+                            IsBusy = true;
+
+                            string authHeader = $"bearer {accessToken}";
+
+                            App.ApiService = new MvpApiService(Constants.SubscriptionKey, authHeader);
+                            
+                            shellVm.IsLoggedIn = true;
+                            IsBusyMessage = "downloading profile info...";
+                            shellVm.Mvp = await App.ApiService.GetProfileAsync();
+
+                            IsBusyMessage = "downloading profile image...";
+                            shellVm.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage(ApplicationData.Current.LocalFolder);
+
+                            // now that user logged back in, reset up the view
+                            await LoadSupportingDataAsync();
+
+                            SetupNextEntry();
+
+                            IsBusy = false;
+                        }
+                    }
+                    catch
+                    {
+                        // Something went wrong, just navigate the to login page and start over
+                        await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
-                }
-                finally
-                {
-                    IsBusyMessage = "";
-                    IsBusy = false;
-                }
-            }
-            else
-            {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
             }
         }
-
-        private async void ShellVm_IsLoggedInChanged(object sender, LoginChangedEventArgs args)
-        {
-            // TODO Instead of navigating the user to the login page, create a model dialog that they can stay on the page and login again or use refresh token
-
-            await new MessageDialog("The API session times out after 60 minutes, we need to log you back in now.\r\n\nDon't worry, any pending uploads will be here when you come back.", "Session Expired").ShowAsync();
-            
-            if (UploadQueue.Any())
-            {
-                // TODO cache queued items
-            }
-            
-            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
-        }
+        
 
         public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
         {
             if (BootStrapper.Current.NavigationService.FrameFacade != null)
                 BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
-
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
-            {
-                shellVm.IsLoggedInChanged -= ShellVm_IsLoggedInChanged;
-            }
-
+            
             return base.OnNavigatingFromAsync(args);
         }
 
