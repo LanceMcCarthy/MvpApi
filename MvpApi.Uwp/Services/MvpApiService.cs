@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
 using Newtonsoft.Json;
+using MvpApi.Uwp.ViewModels;
 
 namespace MvpApi.Uwp.Services
 {
@@ -48,6 +49,10 @@ namespace MvpApi.Uwp.Services
             {
                 using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile"))
                 {
+                    if(response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        var result = await LoginPageViewModel.RequestAuthorizationAsync(LoginPageViewModel.AccessTokenUrl, StorageHelpers.LoadToken("refresh_token"), true);
+                    }
                     var json = await response.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<ProfileViewModel>(json);
                 }

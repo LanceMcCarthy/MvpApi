@@ -19,7 +19,7 @@ namespace MvpApi.Uwp.ViewModels
         #region Fields
 
         private static readonly string RedirectUrl = "https://login.live.com/oauth20_desktop.srf";
-        private static readonly string AccessTokenUrl = "https://login.live.com/oauth20_token.srf";
+        public static readonly string AccessTokenUrl = "https://login.live.com/oauth20_token.srf";
         private static readonly Uri SignInUrl = new Uri($"https://login.live.com/oauth20_authorize.srf?client_id={Constants.ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={Constants.Scope}");
         private static readonly string RefreshTokenUrl = $"https://login.live.com/oauth20_token.srf?client_id={Constants.ClientId}&client_secret={Constants.ClientSecret}&redirect_uri=https://login.live.com/oauth20_desktop.srf&grant_type=refresh_token&refresh_token=";
         
@@ -93,7 +93,7 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        private static async Task<string> RequestAuthorizationAsync(string requestUrl, string authCode)
+        public static async Task<string> RequestAuthorizationAsync(string requestUrl, string authCode, bool refresh = false)
         {
             try
             {
@@ -102,8 +102,8 @@ namespace MvpApi.Uwp.ViewModels
                     var content = new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("client_id", Constants.ClientId),
-                        new KeyValuePair<string, string>("grant_type", "authorization_code"),
-                        new KeyValuePair<string, string>("code", authCode.Split('&')[0]),
+                        new KeyValuePair<string, string>("grant_type", refresh ? "refresh_token" : "authorization_code"),
+                        new KeyValuePair<string, string>(refresh ? "refresh_token" : "code", authCode.Split('&')[0]),
                         new KeyValuePair<string, string>("redirect_uri", RedirectUrl)
                     };
 
