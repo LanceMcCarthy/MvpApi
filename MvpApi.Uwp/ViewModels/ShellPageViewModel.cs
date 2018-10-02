@@ -4,11 +4,9 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Popups;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
@@ -20,7 +18,6 @@ namespace MvpApi.Uwp.ViewModels
         private ProfileViewModel mvp;
         private string profileImagePath;
         private bool isLoggedIn;
-        private readonly DispatcherTimer sessionTimer;
         
         public ShellPageViewModel()
         {
@@ -30,22 +27,6 @@ namespace MvpApi.Uwp.ViewModels
                 IsLoggedIn = true;
                 ProfileImagePath = "/Images/MvpIcon.png";
                 return;
-            }
-
-            sessionTimer = new DispatcherTimer();
-            sessionTimer.Interval = TimeSpan.FromMinutes(5);
-
-            
-        }
-
-        private void SessionTimer_Tick(object sender, object e)
-        {
-            Debug.WriteLine($"Session Timer - Tick");
-
-            if (DateTime.Now - LoginTimeStamp > TimeSpan.FromMinutes(60))
-            {
-                Debug.WriteLine($"Session Timer - Session Expired");
-                IsLoggedIn = false;
             }
         }
 
@@ -78,7 +59,7 @@ namespace MvpApi.Uwp.ViewModels
         public DateTime LoginTimeStamp { get; set; }
 
         /// <summary>
-        /// Denotes whether the user is currently loigged in and able to make successful requests to the API
+        /// Denotes whether the user is currently logged in and able to make successful requests to the API
         /// </summary>
         public bool IsLoggedIn
         {
@@ -99,32 +80,8 @@ namespace MvpApi.Uwp.ViewModels
                 Debug.WriteLine($"IsLoggedIn (set): {value}");
 
                 Set(ref isLoggedIn, value);
-                
-                if (value)
-                {
-                    LoginTimeStamp = DateTime.Now;
-
-                    if(!sessionTimer.IsEnabled)
-                        sessionTimer.Start();
-                }
-                else
-                {
-                    if(sessionTimer.IsEnabled)
-                        sessionTimer.Stop();
-                }
-
-                // Fire off event to alert any subscribing view models that the user needs to log back in 
-                // and it should cache any incomplete forms
-                IsLoggedInChanged?.Invoke(this, new LoginChangedEventArgs(value));
             }
         }
-        
-        public delegate void LoggedInChanged(object sender, LoginChangedEventArgs args);
-
-        /// <summary>
-        /// Raised when the user is logged in, logs out or times out.
-        /// </summary>
-        public event LoggedInChanged IsLoggedInChanged;
         
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
@@ -135,16 +92,12 @@ namespace MvpApi.Uwp.ViewModels
                 return;
             }
 
-            sessionTimer.Tick += SessionTimer_Tick;
-            
             if (!IsLoggedIn)
                 BootStrapper.Current.NavigationService.Navigate(typeof(LoginPage));
         }
         
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
         {
-            sessionTimer.Tick -= SessionTimer_Tick;
-
             return base.OnNavigatedFromAsync(pageState, suspending);
         }
     }
