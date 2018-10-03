@@ -52,6 +52,7 @@ namespace MvpApi.Uwp.Services
                     if(response.StatusCode == HttpStatusCode.NotFound)
                     {
                         await LoginPageViewModel.RequestAuthorizationAsync(LoginPageViewModel.AccessTokenUrl, StorageHelpers.LoadToken("refresh_token"), true);
+                        return null;
                     }
 
                     var json = await response.Content.ReadAsStringAsync();

@@ -2,21 +2,34 @@
 
 A client application to allow for faster contribution browsing, editing and upload to help renewing MVPs get up to date for renewal. 
 
-### Instalation Options
+### Installation
 - [Microsoft Store (Windows 10)](https://www.microsoft.com/store/apps/9NRXNX3WLH77) 
-- Clone this repo, then build and deploy locally
 
-### Major Features:
-- Fast contribution entry with bulk uploading (enter all of your contributions at once!)
+### Highlighted Features
+- Fast contribution entry with bulk uploading 
+- The new multiple "Additional Technology Areas" feature supported
 - Group and sort contributions list in an easy to navigate DataGrid
-- Easily edit existing entries
+- Fast and easy contribution editing
 
-### Animated GIFs and screenshots
+### Screenshots and GIFs
 
-**Bulk Upload**
+#### Fast Browsing (*Filtering, Grouping, Sorting and Load On Demand*)
+
+![image](https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVPCompGridFeatures.png)
+
+#### Automatic login refresh
+
+![image](https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVP_Companion_1.7_update.gif)
+
+#### Bulk Upload
 
 ![image](https://content.screencast.com/users/lance.mccarthy/folders/Snagit/media/054a5bfe-3d1f-4aec-b4df-1473d662e789/03.09.2018-18.36.GIF)
 
-**Contributions Browsing**
+#### Set multiple Technology Areas
 
-![image](https://user-images.githubusercontent.com/3520532/35474311-7dfd8aee-035a-11e8-920c-47a74fa59493.png)
+![image](https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MultipleTechAreas.gif)
+
+
+
+
+

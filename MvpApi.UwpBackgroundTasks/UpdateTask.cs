@@ -18,15 +18,15 @@ namespace MvpApi.UwpBackgroundTasks
                         {
                             new AdaptiveText
                             {
-                                Text = "MVP Companion has been updated :D"
+                                Text = "MVP Companion update └(^o^)┐"
                             },
                             new AdaptiveText
                             {
-                                Text = "You can now set multiple technology categories for a contribution, click here to try it now."
+                                Text = "New Feature: Automatically logs you in on app launch (no more nag)! Fix: The 'base64' signin problem has been resolved."
                             },
                             new AdaptiveImage
                             {
-                                Source = "https://dvlup.blob.core.windows.net/hacked-app-files/ToastNotificationHeroImages/ToastNotification1.gif"
+                                Source = "https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVP_Companion_1.7_update.gif"
                             }
                         }
                     }

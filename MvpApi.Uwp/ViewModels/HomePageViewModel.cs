@@ -23,7 +23,6 @@ using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
 using Template10.Common;
 using Template10.Mvvm;
-using MvpApi.Uwp.Services;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -350,45 +349,7 @@ namespace MvpApi.Uwp.ViewModels
                 }
                 else
                 {
-                    // user is not logged in, try the refresh token first. If this fails, then navigate to login page to start over
-                    try
-                    {
-                        string accessToken = StorageHelpers.LoadToken("access_token");
-
-                        if (string.IsNullOrEmpty(accessToken))
-                        {
-                            // no tokens in storage
-                            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
-                        }
-                        else
-                        {
-                            //TODO: If there is a access token in storage, just use that and try to hit API endpoint
-                            //TODO: If getting 404 - refresh token and try again
-                            //TODO: Extra bonus points maybe to use the expires_in and already check if token refresh is needed at app start to skip first not needed API call
-                            string authHeader = $"bearer {accessToken}";
-
-                            App.ApiService = new MvpApiService(Constants.SubscriptionKey, authHeader);
-
-                            IsBusy = true;
-
-                            shellVm.IsLoggedIn = true;
-                            IsBusyMessage = "downloading profile info...";
-                            shellVm.Mvp = await App.ApiService.GetProfileAsync();
-
-                            IsBusyMessage = "downloading profile image...";
-                            shellVm.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage(ApplicationData.Current.LocalFolder);
-
-                            // Same as clicking Refresh button the app bar
-                            ResetData();
-
-                            IsBusy = false;
-                        }
-                    }
-                    catch
-                    {
-                        // Something went wrong, just navigate the to login page and start over
-                        await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
-                    }
+                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
                 }
             }
         }

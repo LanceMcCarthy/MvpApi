@@ -241,8 +241,7 @@ namespace MvpApi.Uwp.ViewModels
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Exception attempting to use stored access token, falling back on normal login flow. \r\nException {ex}");
-
-
+                    
                     BrowserUri = SignInUrl;
                 }
             }

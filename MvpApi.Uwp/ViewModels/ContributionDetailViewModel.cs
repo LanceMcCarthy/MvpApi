@@ -660,67 +660,8 @@ namespace MvpApi.Uwp.ViewModels
                 }
                 else
                 {
-                    // user is not logged in, try the refresh token first. If this fails, then navigate to login page to start over
-                    try
-                    {
-                        string accessToken = StorageHelpers.LoadToken("access_token");
-
-                        if (string.IsNullOrEmpty(accessToken))
-                        {
-                            // no tokens in storage
-                            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
-                        }
-                        else
-                        {
-                            IsBusy = true;
-
-                            string authHeader = $"bearer {accessToken}";
-
-                            App.ApiService = new MvpApiService(Constants.SubscriptionKey, authHeader);
-
-                            shellVm.IsLoggedIn = true;
-                            IsBusyMessage = "downloading profile info...";
-                            shellVm.Mvp = await App.ApiService.GetProfileAsync();
-
-                            IsBusyMessage = "downloading profile image...";
-                            shellVm.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage(ApplicationData.Current.LocalFolder);
-                            
-                            IsBusy = false;
-
-
-
-                            // Get the associated lists from the API
-                            await LoadSupportingDataAsync();
-
-                            // Read the passed contribution parameter
-                            if (parameter is ContributionsModel param)
-                            {
-                                SelectedContribution = param;
-
-                                SelectedContribution.UploadStatus = UploadStatus.None;
-
-                                // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
-                                DetermineCategoryTechnologyRequirements(SelectedContribution.ContributionType);
-
-                                // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-                                originalContribution = SelectedContribution.Clone();
-                            }
-                            else
-                            {
-                                await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
-
-                                if (BootStrapper.Current.NavigationService.CanGoBack)
-                                    BootStrapper.Current.NavigationService.GoBack();
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        // Something went wrong, just navigate the to login page and start over
-                        await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
-                    }
+                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
                 }
-                
             }
         }
 
