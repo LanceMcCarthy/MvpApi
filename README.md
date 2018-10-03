@@ -27,9 +27,4 @@ A client application to allow for faster contribution browsing, editing and uplo
 
 #### Set multiple Technology Areas
 
-![image](https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MultipleTechAreas.gif)
-
-
-
-
-
+![image](https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MutipleTechAreas.gif)
