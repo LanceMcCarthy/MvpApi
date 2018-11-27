@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Identity.Client;
 using MvpApi.Common.Models;
 using MvpApi.Services.Utilities;
 using Newtonsoft.Json;
@@ -16,9 +14,9 @@ namespace MvpApi.Services.Apis
 {
     public class MvpApiService : IDisposable
     {
-        private static readonly string redirectUrl = "https://login.live.com/oauth20_desktop.srf";
+        //private static readonly string redirectUrl = "https://login.live.com/oauth20_desktop.srf";
         private readonly HttpClient _client;
-        private string _subscriptionKey;
+        //private string _subscriptionKey;
         //private string _clientId;
 
         /// <summary>

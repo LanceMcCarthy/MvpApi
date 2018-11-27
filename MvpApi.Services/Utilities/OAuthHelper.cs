@@ -8,31 +8,36 @@ namespace MvpApi.Services.Utilities
 {
     public class OAuthHelper
     {
-        // NOTE System.ArgumentException: MSAL always sends the scopes 'openid profile offline_access', do not include in scopes parameters
-        string[] scopes = new string[] { "user.read", "user.readbasic.all", "user.readwrite", "email" };
+        // Live SDK -> Graph scope comparison https://docs.microsoft.com/en-us/onedrive/developer/rest-api/concepts/migrating-from-live-sdk?view=odsp-graph-online#permissions
+        // string[] oldLiveScopes = { "wl.emails", "wl.basic", "wl.offline_access", "wl.signin" };
+
+        // Graph equivalents for Live SDK scope are: "email", "Contacts.Read", "offline_access", "openid"
+        // Note: Don't include 'openid' 'profile' or 'offline_access' in array, these are always sent by MSAL (you'll get exception)
+        readonly string[] _graphScopes = { "Contacts.Read", "email" }; // 
 
         public OAuthHelper()
         {
             // MSAL test
             // - for any Work or School accounts, or Microsoft personal account, use "common"
             // - for Microsoft Personal account, use "consumers"
-            string tenant = "common";
+            string clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
+            string tenant = "consumers";
             string authority = $"https://login.microsoftonline.com/{tenant}";
 
-            PublicClientApp = new PublicClientApplication("090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff", authority);
+            PublicClientApp = new PublicClientApplication(clientId, authority);
         }
 
         public PublicClientApplication PublicClientApp { get; }
 
         public async Task<AuthenticationResult> LogInAsync()
         {
-            AuthenticationResult authResult = null;
+            AuthenticationResult authResult;
 
             var accounts = await PublicClientApp.GetAccountsAsync();
 
             try
             {
-                authResult = await PublicClientApp.AcquireTokenSilentAsync(scopes, accounts.FirstOrDefault());
+                authResult = await PublicClientApp.AcquireTokenSilentAsync(_graphScopes, accounts.FirstOrDefault());
             }
             catch (MsalUiRequiredException ex)
             {
@@ -41,7 +46,7 @@ namespace MvpApi.Services.Utilities
 
                 try
                 {
-                    authResult = await PublicClientApp.AcquireTokenAsync(scopes);
+                    authResult = await PublicClientApp.AcquireTokenAsync(_graphScopes);
                 }
                 catch (MsalException msalex)
                 {
@@ -59,8 +64,11 @@ namespace MvpApi.Services.Utilities
             {
                 Debug.WriteLine($"{authResult.Account.Username} - Signed In. Expires {authResult.ExpiresOn.ToLocalTime()}{Environment.NewLine}");
                 Debug.WriteLine(DisplayBasicTokenInfo(authResult));
+
+                // Store encrypted
                 StorageHelpers.Instance.StoreToken("access_token", authResult.AccessToken);
                 StorageHelpers.Instance.StoreToken("expires_on", authResult.ExpiresOn.ToString());
+                
                 return authResult;
             }
             else
