@@ -20,20 +20,6 @@ namespace MvpApi.Tests.ServicesTests
         }
 
         [TestMethod]
-        public void Initialization()
-        {
-            // Arrange
-            MvpApiService client = null;
-            client = new MvpApiService("12345");
-
-            // Act
-            client.InitializeAsync().GetAwaiter().GetResult();
-
-            // Assert
-            Assert.IsTrue(client.IsInitialized, "Service was not initialized");
-        }
-
-        [TestMethod]
         public void GetProfileImage()
         {
             // Todo write test
