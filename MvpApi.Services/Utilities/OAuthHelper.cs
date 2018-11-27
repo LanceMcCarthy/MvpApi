@@ -62,12 +62,12 @@ namespace MvpApi.Services.Utilities
 
             if (authResult != null)
             {
-                Debug.WriteLine($"{authResult.Account.Username} - Signed In. Expires {authResult.ExpiresOn.ToLocalTime()}{Environment.NewLine}");
-                Debug.WriteLine(DisplayBasicTokenInfo(authResult));
+                //Debug.WriteLine($"{authResult.Account.Username} - Signed In. Expires {authResult.ExpiresOn.ToLocalTime()}{Environment.NewLine}");
+                //Debug.WriteLine(DisplayBasicTokenInfo(authResult));
 
                 // Store encrypted
-                StorageHelpers.Instance.StoreToken("access_token", authResult.AccessToken);
-                StorageHelpers.Instance.StoreToken("expires_on", authResult.ExpiresOn.ToString());
+                // StorageHelpers.Instance.StoreToken("access_token", authResult.AccessToken);
+                // StorageHelpers.Instance.StoreToken("expires_on", authResult.ExpiresOn.ToString());
                 
                 return authResult;
             }
@@ -78,7 +78,7 @@ namespace MvpApi.Services.Utilities
             }
         }
 
-        public async Task<string> LogOutAsync()
+        public async Task<Tuple<bool, string>> LogOutAsync()
         {
             var accounts = await PublicClientApp.GetAccountsAsync();
 
@@ -87,15 +87,15 @@ namespace MvpApi.Services.Utilities
                 try
                 {
                     await PublicClientApp.RemoveAsync(accounts.FirstOrDefault());
-                    return "User has signed-out";
+                    return new Tuple<bool, string>(true, "User has signed out.");
                 }
                 catch (MsalException ex)
                 {
-                    return $"Error signing-out user: {ex.Message}";
+                    return new Tuple<bool, string>(false, $"Error signing-out user: {ex.Message}");
                 }
             }
 
-            return "There were no accounts to sign out of";
+            return new Tuple<bool, string>(true, "There were no signed-in accounts.");
         }
 
         public string DisplayBasicTokenInfo(AuthenticationResult authResult)

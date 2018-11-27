@@ -1,46 +1,65 @@
-﻿<Page
-    x:Class="MvpCompanion.Uwp.MainPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:MvpCompanion.Uwp"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+﻿<Page x:Class="MvpCompanion.Uwp.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="using:MvpCompanion.Uwp"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+      mc:Ignorable="d">
 
     <Grid>
-        <StackPanel Background="Azure" Margin="10">
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Right">
-                <Button x:Name="CallMvpApiButton"
-                        Content="Call MVP API"
-                        HorizontalAlignment="Right"
-                        Padding="5"
-                        Click="CallMvpPApiButton_Click"
-                        Margin="5" />
-                <Button x:Name="SignOutButton"
-                        Content="Sign-Out"
-                        HorizontalAlignment="Right"
-                        Padding="5"
-                        Click="SignOutButton_Click"
-                        Margin="5"
-                        Visibility="Collapsed" />
-            </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel x:Name="ResultStackPanel" 
+                    Margin="10">
             <TextBlock Text="API Call Results"
-                   Margin="0,0,0,-5" />
+                       Margin="5" />
             <TextBox x:Name="ResultText"
-                     TextWrapping="Wrap"
                      MinHeight="120"
-                     Margin="5" />
+                     Margin="5"
+                     TextWrapping="Wrap" />
             <TextBlock Text="Token Info"
-                   Margin="0,0,0,-5"/>
+                       Margin="5" />
             <TextBox x:Name="TokenInfoText"
-                     TextWrapping="Wrap"
                      MinHeight="70"
-                     Margin="5"/>
+                     Margin="5"
+                     TextWrapping="Wrap" />
         </StackPanel>
 
-        <primitives:RadBusyIndicator x:Name="BusyIndicator" />
+        <CommandBar Grid.Row="1">
+            <AppBarButton x:Name="GetMvpContributionsButton"
+                          Icon="Document"
+                          Label="Get Contributions"
+                          Click="GetMvpContributionsButton_Click"
+                          Visibility="Collapsed" />
+            <AppBarButton x:Name="GetMvpProfileButton"
+                          Icon="Download"
+                          Label="Get Profile"
+                          Click="GetMvpProfileButton_Click"
+                          Visibility="Collapsed" />
+            <AppBarButton x:Name="SignInButton"
+                          Label="Sign In"
+                          Icon="AddFriend"
+                          Click="SignInButton_Click" />
+            <AppBarButton x:Name="SignOutButton"
+                          Label="Sign Out"
+                          Icon="BlockContact"
+                          Click="SignOutButton_Click"
+                          Visibility="Collapsed"/>
+
+            <CommandBar.SecondaryCommands>
+                <AppBarButton x:Name="ManualTestButton"
+                              Label="Manual Test"
+                              Click="ManualTestButton_Click"
+                              Visibility="Collapsed" />
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+
+        <primitives:RadBusyIndicator x:Name="BusyIndicator" 
+                                     Grid.RowSpan="2"/>
     </Grid>
 </Page>

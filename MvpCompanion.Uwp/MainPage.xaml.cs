@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
 using Microsoft.Identity.Client;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
@@ -15,195 +11,176 @@ namespace MvpCompanion.Uwp
     {
         private MvpApiService _apiService;
         private OAuthHelper _oauthHelper;
-        AuthenticationResult _authResult;
+        private AuthenticationResult _authResult;
 
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
-        private async void CallMvpPApiButton_Click(object sender, RoutedEventArgs e)
+        private async void GetMvpProfileButton_Click(object sender, RoutedEventArgs e)
         {
-            BusyIndicator.IsActive = true;
-            
             if (_oauthHelper == null)
+                return;
+
+            BusyIndicator.IsActive = true;
+
+            if (_apiService == null)
             {
-                BusyIndicator.Content = "creating OAuthHelper service...";
-                _oauthHelper = new OAuthHelper();
-
-                BusyIndicator.Content = "logging in...";
-                _authResult = await _oauthHelper.LogInAsync();
-
-                DisplayBasicTokenInfo(_authResult);
-
-                ResultText.Text = _authResult.Account.Username + "is signed in";
-
-                BusyIndicator.Content = "newing up MVP API service...";
+                BusyIndicator.Content = "creating MVPService...";
 
                 _apiService = new MvpApiService(_authResult.AccessToken);
-                
             }
-
-            BusyIndicator.Content = "getting photo...";
+            
+            BusyIndicator.Content = "getting profile...";
 
             var profile = await _apiService.GetProfileAsync();
 
             if (profile == null)
             {
-                ResultText.Text += " BUT HAD A BAD API CALL";
+                ResultText.Text = "MVP Api Service did not respond. Check Debug window for more details.";
             }
             else
             {
-                ResultText.Text = $"YAY! {profile.DisplayName}'s profile was fetched!!!";
+                ResultText.Text = $"Profile Name: {profile.DisplayName}{Environment.NewLine}";
+                ResultText.Text += $"Headline: {profile.Headline}{Environment.NewLine}";
+                ResultText.Text += $"First Awarded in: {profile.FirstAwardYear}{Environment.NewLine}";
+                ResultText.Text += $"Bio: {profile.Biography}";
             }
             
             BusyIndicator.Content = "";
             BusyIndicator.IsActive = false;
         }
 
+        private async void GetMvpContributionsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_oauthHelper == null)
+                return;
+
+            BusyIndicator.IsActive = true;
+
+            if (_apiService == null || _authResult.ExpiresOn < DateTime.Now)
+            {
+                BusyIndicator.Content = "creating MVPService...";
+                _apiService = new MvpApiService(_authResult.AccessToken);
+            }
+
+            BusyIndicator.Content = "getting contributions...";
+
+            var contributions = await _apiService.GetContributionsAsync(0, 10);
+
+            if (contributions == null)
+            {
+                ResultText.Text = "MVP Api Service did not respond. Check Debug window for more details.";
+            }
+            else if (contributions?.TotalContributions < 1)
+            {
+                ResultText.Text = $"TotalContributions is zero";
+            }
+            else if(contributions.Contributions != null)
+            {
+                foreach (var contribution in contributions?.Contributions)
+                {
+
+                    ResultText.Text = $"{contribution.Description}{Environment.NewLine}";
+                }
+            }
+
+            BusyIndicator.Content = "";
+            BusyIndicator.IsActive = false;
+        }
+
+        private async void SignInButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_oauthHelper == null)
+            {
+                BusyIndicator.Content = "logging in...";
+
+                _oauthHelper = new OAuthHelper();
+                _authResult = await _oauthHelper.LogInAsync();
+
+                if (_authResult != null)
+                {
+                    var bearerWithToken = _authResult.CreateAuthorizationHeader();
+                    _apiService = new MvpApiService(bearerWithToken);
+
+                    ResultText.Text = _authResult.Account.Username + "is signed in";
+
+                    TokenInfoText.Text += $"Username: {_authResult.Account.Username}{Environment.NewLine}";
+                    TokenInfoText.Text += $"Token Expires: {_authResult.ExpiresOn.ToLocalTime()}{Environment.NewLine}";
+                    TokenInfoText.Text += $"Authorization: Bearer {_authResult.AccessToken}{Environment.NewLine}";
+
+                    SetLoggedInStatus(true);
+                }
+                else
+                {
+                    SetLoggedInStatus(false);
+                }
+            }
+        }
+
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
             if (_apiService != null)
             {
-                await _oauthHelper.LogOutAsync();
+                var result = await _oauthHelper.LogOutAsync();
+
+                if (result.Item1)
+                {
+                    SetLoggedInStatus();
+                }
+
+                ResultText.Text = result.Item2;
             }
         }
-
-        private void DisplayBasicTokenInfo(AuthenticationResult authResult)
+        
+        private void SetLoggedInStatus(bool isLoggedIn)
         {
             TokenInfoText.Text = "";
-            if (authResult != null)
+
+            if (isLoggedIn)
             {
-                TokenInfoText.Text += $"Username: {authResult.Account.Username}" + Environment.NewLine;
-                TokenInfoText.Text += $"Token Expires: {authResult.ExpiresOn.ToLocalTime()}" + Environment.NewLine;
-                TokenInfoText.Text += $"Access Token: {authResult.AccessToken}" + Environment.NewLine;
+                SignInButton.Visibility = Visibility.Collapsed;
+                SignOutButton.Visibility = Visibility.Visible;
+
+                GetMvpProfileButton.Visibility = Visibility.Visible;
+                GetMvpContributionsButton.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                SignInButton.Visibility = Visibility.Visible;
+                SignOutButton.Visibility = Visibility.Collapsed;
+
+                GetMvpProfileButton.Visibility = Visibility.Collapsed;
+                GetMvpContributionsButton.Visibility = Visibility.Collapsed;
             }
         }
 
+        // WORKS when using a token generated by MSFT Live endpoint.
+        private async void ManualTestButton_Click(object sender, RoutedEventArgs e)
+        {
+            BusyIndicator.IsActive = true;
+            BusyIndicator.Content = "getting profile...";
+            var tokenCopiedFromMvpApiPortal = "EwAoA61DBAAUcSSzoTJJsy+XrnQXgAKO5cj4yc8AAbvJWkc4qLdSLAufZ17LoE+xdF4XFpgruR3xP7bhrHJuA/AXKSDJ9ZeG3FDoFbA3VVqkngpF0ehExwmvJb3wimYze9p6IYx3cvNSDbsybw8h4T8In7OhcjQh+U3rs5fY2wT0+RbqUDzixn6RzXELTsB0F/C0Yr5StnjOs77IAW0qmGvRqki7eJ142YEgr9yRIBWBnzK3UHDkCsfPXmqphSE2eHpedcIvLf2gJO8PBciQ5wwOAq43APieIlBLyshbIlQj+U+ztZbodYDrzUxBj6vFl20ODyHFnD7RrUD3jNeVEQ250Me+umAjXpLW3mPdPZDaqCfk+towMzbR9LfRPG0DZgAACLBe613ym4jB+AHUZko6BgHin2Ik9lvkZeKjaziw39BO23BaG2UXW6ApXrBdl7LdRBCFL614Znhd/v9rb5uxjh0Z09K75pblUHB9d+eEyq/K7FwK3cIpHSx6kKLiut9grcYVaIzkvGaz7AgvYPotsiriV1mOwbrQLlQnGY1y+2i4f6xuIq9+DoAnP5Zo5KRk18l7bh9lvzYAXD8BrZsf7Mq2JLU3DHAYP4KFnk5FUS0f3o86g7QQqYwThvGWpvVzT7E54hQpsqbXLa4VLGoDICKwmdSxviOE1AhBNtdTCOMNOej2Uoa50Yw5IzPoqLewLdJTq/1bCwBW31CgPZDaWkopI/95dxf5YLN8joXVDPsMe8QtNhwihYAj9ei7s3ji7VkajZUZNIXJ1SXyu64RZ5eSH4tbhGbs7pOdvCwM8z2Jb32MXWjzzrmAJopJxlrhkD7RqMWeSJcJHlzZKtSA2Xbo5hURgN2V+O9vl72o5g1QywI7AC+tCuSSfpo47U5S20JeD9NNWFqzpoLxm2y1BNslo0/f43FkwcnTMJ2bMZzCia25LWorb/3iIaDXmmNHZVhWwBb6sbug+DDDgtHju1hPXNWExdsr/3IvJH5w+NCh91FKVmL6vC5iK7SUwSNXqzjVIBSjs07fe3aU2EehUunR2+kGASDBsft5BUolHa+sxMQiAg==";
 
-        // System.ArgumentException: MSAL always sends the scopes 'openid profile offline_access', do not include in scopes parameters
-        //static string[] scopes = { "user.read", "user.readbasic.all", "user.readwrite", "email" };
+            _apiService = new MvpApiService(tokenCopiedFromMvpApiPortal);
 
-        //public async Task InitializeAsync()
-        //{
-        //    // MSAL test
-        //    // - for any Work or School accounts, or Microsoft personal account, use "common"
-        //    // - for Microsoft Personal account, use "consumers"
-        //    string tenant = "common";
-        //    string authority = $"https://login.microsoftonline.com/{tenant}";
+            var profile = await _apiService.GetProfileAsync();
 
+            if (profile == null)
+            {
+                ResultText.Text = "MVP Api Service did not respond. Check Debug window for more details.";
+            }
+            else
+            {
+                ResultText.Text = $"Profile Name: {profile.DisplayName}{Environment.NewLine}";
+                ResultText.Text += $"Headline: {profile.Headline}{Environment.NewLine}";
+                ResultText.Text += $"First Awarded in: {profile.FirstAwardYear}{Environment.NewLine}";
+                ResultText.Text += $"Bio: {profile.Biography}";
+            }
 
-        //    PublicClientApp = new PublicClientApplication(_clientId, authority, _userTokenCache); //string ClientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
-
-        //}
-
-        //public PublicClientApplication PublicClientApp { get; private set; }
-
-        //public async Task<string> LogInAsync()
-        //{
-        //    AuthenticationResult authResult = null;
-
-        //    var accounts = await PublicClientApp.GetAccountsAsync();
-
-        //    try
-        //    {
-        //        authResult = await PublicClientApp.AcquireTokenSilentAsync(scopes, accounts.FirstOrDefault());
-        //        return $"{authResult.Account.Username} - Signed In. Expires {authResult.ExpiresOn.ToLocalTime()}";
-        //    }
-        //    catch (MsalUiRequiredException ex)
-        //    {
-        //        // A MsalUiRequiredException happened on AcquireTokenSilentAsync, this indicates you need to call AcquireTokenAsync to acquire a token
-        //        Debug.WriteLine($"MsalUiRequiredException: {ex.Message}");
-
-        //        try
-        //        {
-        //            authResult = await PublicClientApp.AcquireTokenAsync(scopes);
-
-        //        }
-        //        catch (MsalException msalex)
-        //        {
-        //            return $"Error Acquiring Token:{Environment.NewLine}{msalex}";
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return $"Error Acquiring Token Silently:{Environment.NewLine}{ex}";
-        //    }
-
-        //    if (authResult != null)
-        //    {
-
-        //        Debug.WriteLine(DisplayBasicTokenInfo(authResult));
-        //        return $"{authResult.Account.Username} - Signed In. Expires {authResult.ExpiresOn.ToLocalTime()}";
-        //    }
-        //    else
-        //    {
-        //        return "user not signed in";
-        //    }
-        //}
-
-        //public async Task<string> LogOutAsync()
-        //{
-        //    var accounts = await PublicClientApp.GetAccountsAsync();
-
-        //    if (accounts.Any())
-        //    {
-        //        try
-        //        {
-        //            await PublicClientApp.RemoveAsync(accounts.FirstOrDefault());
-        //            return "User has signed-out";
-        //        }
-        //        catch (MsalException ex)
-        //        {
-        //            return $"Error signing-out user: {ex.Message}";
-        //        }
-        //    }
-
-        //    return "There were no accounts to sign out of";
-        //}
-
-        //public static string DisplayBasicTokenInfo(AuthenticationResult authResult)
-        //{
-        //    var tokenInfoText = "";
-
-        //    if (authResult != null)
-        //    {
-        //        tokenInfoText += $"Username: {authResult.Account.Username}" + Environment.NewLine;
-        //        tokenInfoText += $"Token Expires: {authResult.ExpiresOn.ToLocalTime()}" + Environment.NewLine;
-        //        tokenInfoText += $"Access Token: {authResult.AccessToken}" + Environment.NewLine;
-        //    }
-
-        //    return tokenInfoText;
-        //}
-
-        //#region MSALToken Management
-
-        //private TokenCache _userTokenCache;
-
-        //private readonly object _fileLock = new object();
-
-        //private void BeforeAccessNotification(TokenCacheNotificationArgs args)
-        //{
-        //    lock (_fileLock)
-        //    {
-        //        var userCache = StorageHelpers.Instance.LoadDecrypted()
-        //        args.TokenCache.
-        //    }
-        //}
-
-        //private void AfterAccessNotification(TokenCacheNotificationArgs args)
-        //{
-        //    // if the access operation resulted in a cache update
-        //    if (args.TokenCache.HasStateChanged)
-        //    {
-        //        lock (_fileLock)
-        //        {
-        //            StorageHelpers.Instance.StoreEncrypted(args.TokenCache);
-        //            args.TokenCache.HasStateChanged = false;
-        //        }
-        //    }
-        //}
-
-        //#endregion
+            BusyIndicator.Content = "";
+            BusyIndicator.IsActive = false;
+        }
     }
 }
