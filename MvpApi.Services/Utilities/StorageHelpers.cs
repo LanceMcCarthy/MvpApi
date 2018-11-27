@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 
 namespace MvpApi.Services.Utilities
@@ -172,7 +173,7 @@ namespace MvpApi.Services.Utilities
 
         #region Encryption methods
 
-        private string Encrypt(string inputText)
+        public string Encrypt(string inputText)
         {
             var textBytes = Encoding.Unicode.GetBytes(inputText);
 
@@ -189,7 +190,7 @@ namespace MvpApi.Services.Utilities
             }
         }
 
-        private string Decrypt(string encryptedText)
+        public string Decrypt(string encryptedText)
         {
             // The text is encrypted first, then converted to base64
             var encryptedBytes = Convert.FromBase64String(encryptedText);
@@ -199,9 +200,41 @@ namespace MvpApi.Services.Utilities
             using (var memoryStream = new MemoryStream(encryptedBytes))
             using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Read))
             {
-                byte[] textBytes = new byte[encryptedBytes.Length];
-                int decryptedCount = cryptoStream.Read(textBytes, 0, textBytes.Length);
-                return Encoding.Unicode.GetString(textBytes, 0, decryptedCount);
+                byte[] decryptedBytes = new byte[encryptedBytes.Length];
+                int decryptedCount = cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);
+                return Encoding.Unicode.GetString(decryptedBytes, 0, decryptedCount);
+            }
+        }
+
+        public void StoreEncrypted(byte[] unencryptedData, string fileName = ".msalcache.bin")
+        {
+            using (var cipher = new RijndaelManaged { Key = _symmetricKey, IV = _initializationVector })
+            using (var cryptoTransform = cipher.CreateEncryptor())
+            using (var memoryStream = new MemoryStream())
+            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write))
+            {
+                cryptoStream.Write(unencryptedData, 0, unencryptedData.Length);
+                cryptoStream.FlushFinalBlock();
+                var encryptedBytes = memoryStream.ToArray();
+                
+                var filePath = Path.Combine(_appDataFolder, fileName);
+                File.WriteAllBytes(filePath, encryptedBytes);
+            }
+        }
+
+        public byte[] LoadDecrypted(string fileName = ".msalcache.bin")
+        {
+            var filePath = Path.Combine(_appDataFolder, fileName);
+            var encryptedBytes = File.ReadAllBytes(filePath);
+
+            using (var cipher = new RijndaelManaged())
+            using (var cryptoTransform = cipher.CreateDecryptor(_symmetricKey, _initializationVector))
+            using (var memoryStream = new MemoryStream(encryptedBytes))
+            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Read))
+            {
+                byte[] decryptedBytes = new byte[encryptedBytes.Length];
+                cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);
+                return decryptedBytes;
             }
         }
 

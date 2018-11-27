@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Identity.Client;
 using MvpApi.Common.Models;
 using MvpApi.Services.Utilities;
 using Newtonsoft.Json;
@@ -16,24 +18,26 @@ namespace MvpApi.Services.Apis
     {
         private static readonly string redirectUrl = "https://login.live.com/oauth20_desktop.srf";
         private readonly HttpClient _client;
+        private string _subscriptionKey;
+        //private string _clientId;
 
         /// <summary>
         /// Service that interacts with the MVP API
         /// </summary>
-        /// <param name="apiKey">the Ocp-Apim-Subscription-Key you got from your MVP API portal</param>
-        /// <param name="authorizationHeader">Authorization header. Example: "Bearer AccessTokenGoesHere"</param>
-        public MvpApiService(string authorizationHeader)
+        /// <param name="accessToken">Access Token from Live SDK OAuth 2.0</param>
+        public MvpApiService(string accessToken)
         {
             var handler = new HttpClientHandler();
             if (handler.SupportsAutomaticDecompression)
                 handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-
-            var subscriptionKey = ApiKeyManager.Instance.SubscriptionKey;
             
             _client = new HttpClient(handler);
-            _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
-            _client.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "3d199a7fb1c443e1985375f0572f58f8");
+
         }
+
+        public bool IsInitialized { get; set; }
 
         #region API usage
 
@@ -41,21 +45,22 @@ namespace MvpApi.Services.Apis
         /// Returns the profile data of the currently signed in MVP
         /// </summary>
         /// <returns>The MVP's profile information</returns>
-        public async Task<ProfileViewModel> GetProfileAsync(string accessTokenUrl, string refreshToken)
+        public async Task<ProfileViewModel> GetProfileAsync()
         {
             try
             {
                 using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile"))
                 {
-                    if(response.StatusCode == HttpStatusCode.NotFound)
+                    if (response.IsSuccessStatusCode)
                     {
-                        await RequestAuthorizationAsync(accessTokenUrl, StorageHelpers.Instance.LoadToken("refresh_token"), true);
+                        var json = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<ProfileViewModel>(json);
+                    }
+                    else
+                    {
+
                         return null;
                     }
-
-                    var json = await response.Content.ReadAsStringAsync();
-
-                    return JsonConvert.DeserializeObject<ProfileViewModel>(json);
                 }
             }
             catch (HttpRequestException e)
@@ -540,71 +545,180 @@ namespace MvpApi.Services.Apis
         
         #endregion
 
-        #region Authorization
+        #region Initialization and Authorization
+
+        //public async Task InitializeAsync()
+        //{
+        //    var subKey = StorageHelpers.Instance.LoadToken("subscription-key");
+
+        //    if(string.IsNullOrEmpty(subKey))
+        //    {
+        //        using (var response = await _client.GetAsync("https://dvlup.blob.core.windows.net/general-app-files/JsonConfigs/MvpCompanionKeys.json"))
+        //        {
+        //            var json = await response.Content.ReadAsStringAsync();
+        //            var keys = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+
+        //            Debug.WriteLine($"Keys Downloaded: {keys}");
+
+        //            var downloadedSubKey = keys["SubscriptionKey"];
+
+        //            if (!string.IsNullOrEmpty(downloadedSubKey))
+        //            {
+
+        //            }
+
+        //            //_clientId = keys["ClientId"];
+        //        }
+        //    }
+
+            
+        //    _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+
+        //    IsInitialized = true;
+        //}
+
+        //public async Task<string> RequestAuthorizationAsync(string requestUrl, string authCode, bool refresh = false)
+        //{
+        //    try
+        //    {
+        //        var content = new List<KeyValuePair<string, string>>
+        //            {
+        //                new KeyValuePair<string, string>("client_id", _clientId),
+        //                new KeyValuePair<string, string>("grant_type", refresh ? "refresh_token" : "authorization_code"),
+        //                new KeyValuePair<string, string>(refresh ? "refresh_token" : "code", authCode.Split('&')[0]),
+        //                new KeyValuePair<string, string>("redirect_uri", redirectUrl)
+        //            };
+
+        //        var postContent = new FormUrlEncodedContent(content);
+
+        //        var responseTxt = "";
+        //        var authHeader = "";
+
+        //        using (var response = await _client.PostAsync(new Uri(requestUrl), postContent))
+        //        {
+        //            responseTxt = await response.Content.ReadAsStringAsync();
+        //        }
+
+        //        var tokenData = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseTxt);
+
+        //        if (tokenData.ContainsKey("access_token"))
+        //        {
+        //            // Store the expiration time of the token, currently 3600 seconds (an hour)
+        //            StorageHelpers.Instance.SaveSetting("expires_in", tokenData["expires_in"]);
+
+        //            StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
+        //            StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
+
+        //            // We need to prefix the access token with the token type for the auth header. 
+        //            // Currently this is always "bearer", doing this to be more future proof
+        //            var tokenType = tokenData["token_type"];
+        //            var cleanedAccessToken = tokenData["access_token"].Split('&')[0];
+
+        //            authHeader = $"{tokenType} {cleanedAccessToken}";
+        //        }
+
+        //        return authHeader;
+        //    }
+        //    catch (HttpRequestException e)
+        //    {
+        //        if (e.Message.Contains("401"))
+        //        {
+        //            //TODO Try refresh token, access token is only valid for 60 minutes
+        //        }
+
+        //        Debug.WriteLine($"RequestAuthorizationAsync HttpRequestException: {e}");
+        //        return null;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Debug.WriteLine($"RequestAuthorizationAsync Exception: {e}");
+        //        return null;
+        //    }
+        //}
         
-        public static async Task<string> RequestAuthorizationAsync(string requestUrl, string authCode, bool refresh = false)
-        {
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    var content = new List<KeyValuePair<string, string>>
-                    {
-                        new KeyValuePair<string, string>("client_id", ApiKeyManager.Instance.ClientId),
-                        new KeyValuePair<string, string>("grant_type", refresh ? "refresh_token" : "authorization_code"),
-                        new KeyValuePair<string, string>(refresh ? "refresh_token" : "code", authCode.Split('&')[0]),
-                        new KeyValuePair<string, string>("redirect_uri", redirectUrl)
-                    };
+        //// System.ArgumentException: MSAL always sends the scopes 'openid profile offline_access', do not include in scopes parameters
+        //static string[] scopes = { "user.read", "user.readbasic.all", "user.readwrite", "email" };
 
-                    var postContent = new FormUrlEncodedContent(content);
-
-                    var responseTxt = "";
-                    var authHeader = "";
-
-                    using (var response = await client.PostAsync(new Uri(requestUrl), postContent))
-                    {
-                        responseTxt = await response.Content.ReadAsStringAsync();
-                    }
-
-                    var tokenData = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseTxt);
-
-                    if (tokenData.ContainsKey("access_token"))
-                    {
-                        // Store the expiration time of the token, currently 3600 seconds (an hour)
-                        StorageHelpers.Instance.SaveSetting("expires_in", tokenData["expires_in"]);
-
-                        StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
-                        StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
-
-                        // We need to prefix the access token with the token type for the auth header. 
-                        // Currently this is always "bearer", doing this to be more future proof
-                        var tokenType = tokenData["token_type"];
-                        var cleanedAccessToken = tokenData["access_token"].Split('&')[0];
-
-                        authHeader = $"{tokenType} {cleanedAccessToken}";
-                    }
-
-                    return authHeader;
-                }
-            }
-            catch (HttpRequestException e)
-            {
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
-                Debug.WriteLine($"RequestAuthorizationAsync HttpRequestException: {e}");
-                return null;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine($"RequestAuthorizationAsync Exception: {e}");
-                return null;
-            }
-        }
+        //public PublicClientApplication PublicClientApp { get; private set; }
         
+        //public async Task<string> LogInAsync()
+        //{
+        //    AuthenticationResult authResult = null;
+
+        //    var accounts = await PublicClientApp.GetAccountsAsync();
+
+        //    try
+        //    {
+        //        authResult = await PublicClientApp.AcquireTokenSilentAsync(scopes, accounts.FirstOrDefault());
+        //        return $"{authResult.Account.Username} - Signed In. Expires {authResult.ExpiresOn.ToLocalTime()}";
+        //    }
+        //    catch (MsalUiRequiredException ex)
+        //    {
+        //        // A MsalUiRequiredException happened on AcquireTokenSilentAsync, this indicates you need to call AcquireTokenAsync to acquire a token
+        //        Debug.WriteLine($"MsalUiRequiredException: {ex.Message}");
+
+        //        try
+        //        {
+        //            authResult = await PublicClientApp.AcquireTokenAsync(scopes);
+        //        }
+        //        catch (MsalException msalex)
+        //        {
+        //            return $"Error Acquiring Token:{Environment.NewLine}{msalex}";
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return $"Error Acquiring Token Silently:{Environment.NewLine}{ex}";
+        //    }
+
+        //    if (authResult != null)
+        //    {
+        //        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
+        //        Debug.WriteLine(DisplayBasicTokenInfo(authResult));
+        //        return $"{authResult.Account.Username} - Signed In. Expires {authResult.ExpiresOn.ToLocalTime()}";
+        //    }
+        //    else
+        //    {
+        //        return "user not signed in";
+        //    }
+        //}
+
+        //public async Task<string> LogOutAsync()
+        //{
+        //    var accounts = await PublicClientApp.GetAccountsAsync();
+
+        //    if (accounts.Any())
+        //    {
+        //        try
+        //        {
+        //            await PublicClientApp.RemoveAsync(accounts.FirstOrDefault());
+        //            return "User has signed-out";
+        //        }
+        //        catch (MsalException ex)
+        //        {
+        //            return $"Error signing-out user: {ex.Message}";
+        //        }
+        //    }
+
+        //    return "There were no accounts to sign out of";
+        //}
+
+        //public static string DisplayBasicTokenInfo(AuthenticationResult authResult)
+        //{
+        //    var tokenInfoText = "";
+
+        //    if (authResult != null)
+        //    {
+        //        tokenInfoText += $"Username: {authResult.Account.Username}" + Environment.NewLine;
+        //        tokenInfoText += $"Token Expires: {authResult.ExpiresOn.ToLocalTime()}" + Environment.NewLine;
+        //        tokenInfoText += $"Access Token: {authResult.AccessToken}" + Environment.NewLine;
+        //    }
+
+        //    return tokenInfoText;
+        //}
+
         #endregion
+        
 
         public void Dispose()
         {

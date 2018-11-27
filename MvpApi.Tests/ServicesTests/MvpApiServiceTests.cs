@@ -7,7 +7,7 @@ namespace MvpApi.Tests.ServicesTests
     public class MvpApiServiceTests
     {
         [TestMethod]
-        public void Initialization()
+        public void Instantiation()
         {
             // Arrange
             MvpApiService client = null;
@@ -17,6 +17,20 @@ namespace MvpApi.Tests.ServicesTests
 
             // Assert
             Assert.IsNotNull(client);
+        }
+
+        [TestMethod]
+        public void Initialization()
+        {
+            // Arrange
+            MvpApiService client = null;
+            client = new MvpApiService("12345");
+
+            // Act
+            client.InitializeAsync().GetAwaiter().GetResult();
+
+            // Assert
+            Assert.IsTrue(client.IsInitialized, "Service was not initialized");
         }
 
         [TestMethod]
