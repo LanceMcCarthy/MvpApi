@@ -25,7 +25,7 @@
             <TextBlock Text="Token Info"
                        Margin="5" />
             <TextBox x:Name="TokenInfoText"
-                     MinHeight="70"
+                     MinHeight="120"
                      Margin="5"
                      TextWrapping="Wrap" />
         </StackPanel>

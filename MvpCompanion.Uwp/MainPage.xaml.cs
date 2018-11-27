@@ -102,10 +102,12 @@ namespace MvpCompanion.Uwp
                 if (_authResult != null)
                 {
                     var bearerWithToken = _authResult.CreateAuthorizationHeader();
+
                     _apiService = new MvpApiService(bearerWithToken);
 
                     ResultText.Text = _authResult.Account.Username + "is signed in";
 
+                    TokenInfoText.Text = "";
                     TokenInfoText.Text += $"Username: {_authResult.Account.Username}{Environment.NewLine}";
                     TokenInfoText.Text += $"Token Expires: {_authResult.ExpiresOn.ToLocalTime()}{Environment.NewLine}";
                     TokenInfoText.Text += $"Authorization: Bearer {_authResult.AccessToken}{Environment.NewLine}";
@@ -127,7 +129,7 @@ namespace MvpCompanion.Uwp
 
                 if (result.Item1)
                 {
-                    SetLoggedInStatus();
+                    SetLoggedInStatus(false);
                 }
 
                 ResultText.Text = result.Item2;
@@ -136,8 +138,6 @@ namespace MvpCompanion.Uwp
         
         private void SetLoggedInStatus(bool isLoggedIn)
         {
-            TokenInfoText.Text = "";
-
             if (isLoggedIn)
             {
                 SignInButton.Visibility = Visibility.Collapsed;
@@ -161,7 +161,7 @@ namespace MvpCompanion.Uwp
         {
             BusyIndicator.IsActive = true;
             BusyIndicator.Content = "getting profile...";
-            var tokenCopiedFromMvpApiPortal = "EwAoA61DBAAUcSSzoTJJsy+XrnQXgAKO5cj4yc8AAbvJWkc4qLdSLAufZ17LoE+xdF4XFpgruR3xP7bhrHJuA/AXKSDJ9ZeG3FDoFbA3VVqkngpF0ehExwmvJb3wimYze9p6IYx3cvNSDbsybw8h4T8In7OhcjQh+U3rs5fY2wT0+RbqUDzixn6RzXELTsB0F/C0Yr5StnjOs77IAW0qmGvRqki7eJ142YEgr9yRIBWBnzK3UHDkCsfPXmqphSE2eHpedcIvLf2gJO8PBciQ5wwOAq43APieIlBLyshbIlQj+U+ztZbodYDrzUxBj6vFl20ODyHFnD7RrUD3jNeVEQ250Me+umAjXpLW3mPdPZDaqCfk+towMzbR9LfRPG0DZgAACLBe613ym4jB+AHUZko6BgHin2Ik9lvkZeKjaziw39BO23BaG2UXW6ApXrBdl7LdRBCFL614Znhd/v9rb5uxjh0Z09K75pblUHB9d+eEyq/K7FwK3cIpHSx6kKLiut9grcYVaIzkvGaz7AgvYPotsiriV1mOwbrQLlQnGY1y+2i4f6xuIq9+DoAnP5Zo5KRk18l7bh9lvzYAXD8BrZsf7Mq2JLU3DHAYP4KFnk5FUS0f3o86g7QQqYwThvGWpvVzT7E54hQpsqbXLa4VLGoDICKwmdSxviOE1AhBNtdTCOMNOej2Uoa50Yw5IzPoqLewLdJTq/1bCwBW31CgPZDaWkopI/95dxf5YLN8joXVDPsMe8QtNhwihYAj9ei7s3ji7VkajZUZNIXJ1SXyu64RZ5eSH4tbhGbs7pOdvCwM8z2Jb32MXWjzzrmAJopJxlrhkD7RqMWeSJcJHlzZKtSA2Xbo5hURgN2V+O9vl72o5g1QywI7AC+tCuSSfpo47U5S20JeD9NNWFqzpoLxm2y1BNslo0/f43FkwcnTMJ2bMZzCia25LWorb/3iIaDXmmNHZVhWwBb6sbug+DDDgtHju1hPXNWExdsr/3IvJH5w+NCh91FKVmL6vC5iK7SUwSNXqzjVIBSjs07fe3aU2EehUunR2+kGASDBsft5BUolHa+sxMQiAg==";
+            var tokenCopiedFromMvpApiPortal = "";
 
             _apiService = new MvpApiService(tokenCopiedFromMvpApiPortal);
 
