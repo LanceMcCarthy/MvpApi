@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 
 namespace MvpApi.Services.Utilities
@@ -44,6 +44,7 @@ namespace MvpApi.Services.Utilities
             }
             catch (Exception e)
             {
+                e.LogException();
                 Debug.WriteLine(e);
                 return null;
             }
@@ -54,15 +55,15 @@ namespace MvpApi.Services.Utilities
             try
             {
                 var filePath = Path.Combine(_appDataFolder, $"{key}.txt");
-                
-                var encryptedToken = Encrypt(value);
+                var encryptedToken = EncryptString(value);
 
                 File.WriteAllText(filePath, encryptedToken);
-                
+
                 return true;
             }
             catch (Exception e)
             {
+                e.LogException();
                 Debug.WriteLine($"StoreToken Exception: {e}");
                 return false;
             }
@@ -77,9 +78,7 @@ namespace MvpApi.Services.Utilities
                 if (File.Exists(filePath))
                 {
                     var storedValue = File.ReadAllText(filePath);
-
-                    var decryptedToken = Decrypt(storedValue);
-
+                    var decryptedToken = DecryptString(storedValue);
                     return decryptedToken;
                 }
                 else
@@ -89,6 +88,7 @@ namespace MvpApi.Services.Utilities
             }
             catch (Exception e)
             {
+                e.LogException();
                 Debug.WriteLine($"LoadToken Exception: {e}");
                 return null;
             }
@@ -104,6 +104,7 @@ namespace MvpApi.Services.Utilities
             }
             catch (Exception e)
             {
+                e.LogException();
                 Debug.WriteLine($"DeleteToken Exception: {e}");
                 return false;
             }
@@ -169,45 +170,74 @@ namespace MvpApi.Services.Utilities
             }
         }
 
+        public bool SaveEncrypted(string key, byte [] unencryptedBytes)
+        {
+            try
+            {
+                var encryptedBytes = EncryptBytes(unencryptedBytes);
+                
+                var filePath = Path.Combine(_appDataFolder, $".{key}.bin");
+                File.WriteAllBytes(filePath, encryptedBytes);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                e.LogException();
+                return false;
+            }
+        }
+
+        public byte[] LoadDecrypted(string key)
+        {
+            try
+            {
+                var filePath = Path.Combine(_appDataFolder, $".{key}.bin");
+
+                if (File.Exists(filePath))
+                {
+                    var encryptedBytes = File.ReadAllBytes(filePath);
+                    var decryptedBytes = DecryptBytes(encryptedBytes);
+                    return decryptedBytes;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                e.LogException();
+                return null;
+            }
+        }
+
         #endregion
 
         #region Encryption methods
-
-        public string Encrypt(string inputText)
+        
+        private string EncryptString(string inputText)
         {
             var textBytes = Encoding.Unicode.GetBytes(inputText);
+            var encryptedBytes = EncryptBytes(textBytes);
 
-            using(var cipher = new RijndaelManaged { Key = _symmetricKey, IV = _initializationVector })
-            using (var cryptoTransform = cipher.CreateEncryptor())
-            using (var memoryStream = new MemoryStream())
-            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write))
-            {
-                cryptoStream.Write(textBytes, 0, textBytes.Length);
-                cryptoStream.FlushFinalBlock();
-
-                // Convert encrypted string to base64 for easier storage
-                return Convert.ToBase64String(memoryStream.ToArray());
-            }
+            Debug.WriteLine($"EncryptString complete: {encryptedBytes.Length} bytes");
+            return Convert.ToBase64String(encryptedBytes);
         }
 
-        public string Decrypt(string encryptedText)
+        private string DecryptString(string encryptedText)
         {
-            // The text is encrypted first, then converted to base64
+            // NOTE: This string is encrypted first, THEN converted to Base64 (not just obfuscated as Base64)
             var encryptedBytes = Convert.FromBase64String(encryptedText);
+            var decryptedBytes = DecryptBytes(encryptedBytes);
 
-            using (var cipher = new RijndaelManaged())
-            using (var cryptoTransform = cipher.CreateDecryptor(_symmetricKey, _initializationVector))
-            using (var memoryStream = new MemoryStream(encryptedBytes))
-            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Read))
-            {
-                byte[] decryptedBytes = new byte[encryptedBytes.Length];
-                int decryptedCount = cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);
-                return Encoding.Unicode.GetString(decryptedBytes, 0, decryptedCount);
-            }
+            Debug.WriteLine($"DecryptString complete: {decryptedBytes.Length} bytes");
+            return Encoding.Unicode.GetString(decryptedBytes, 0, decryptedBytes.Length);
         }
 
-        public void StoreEncrypted(byte[] unencryptedData, string fileName = ".msalcache.bin")
+        private byte[] EncryptBytes(byte[] unencryptedData)
         {
+            // I chose Rijndael instead of AES because of it's support for larger block size (AES only support 128)
             using (var cipher = new RijndaelManaged { Key = _symmetricKey, IV = _initializationVector })
             using (var cryptoTransform = cipher.CreateEncryptor())
             using (var memoryStream = new MemoryStream())
@@ -216,25 +246,23 @@ namespace MvpApi.Services.Utilities
                 cryptoStream.Write(unencryptedData, 0, unencryptedData.Length);
                 cryptoStream.FlushFinalBlock();
                 var encryptedBytes = memoryStream.ToArray();
-                
-                var filePath = Path.Combine(_appDataFolder, fileName);
-                File.WriteAllBytes(filePath, encryptedBytes);
+                Debug.WriteLine($"EncryptBytes complete: {encryptedBytes.Length} bytes");
+                return encryptedBytes;
             }
         }
 
-        public byte[] LoadDecrypted(string fileName = ".msalcache.bin")
+        private byte[] DecryptBytes(byte[] encryptedBytes)
         {
-            var filePath = Path.Combine(_appDataFolder, fileName);
-            var encryptedBytes = File.ReadAllBytes(filePath);
-
             using (var cipher = new RijndaelManaged())
             using (var cryptoTransform = cipher.CreateDecryptor(_symmetricKey, _initializationVector))
             using (var memoryStream = new MemoryStream(encryptedBytes))
             using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Read))
             {
                 byte[] decryptedBytes = new byte[encryptedBytes.Length];
-                cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);
-                return decryptedBytes;
+                int bytesRead = cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);
+
+                // Note - I'm using Take() to clean up junk bytes at the end of the array
+                return decryptedBytes.Take(bytesRead).ToArray();
             }
         }
 
