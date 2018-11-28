@@ -12,6 +12,7 @@ namespace MvpCompanion.Uwp
         private MvpApiService _apiService;
         private OAuthHelper _oauthHelper;
         private AuthenticationResult _authResult;
+        private LoginDialog _loginDialog;
 
         public MainPage()
         {
@@ -20,17 +21,21 @@ namespace MvpCompanion.Uwp
 
         private async void GetMvpProfileButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_oauthHelper == null)
-                return;
-
             BusyIndicator.IsActive = true;
 
-            if (_apiService == null)
-            {
-                BusyIndicator.Content = "creating MVPService...";
+            // todo authenticate again
+            //if (_apiService == null)
+            //{
+            //    if (_oauthHelper == null)
+            //    {
+            //        Debug.WriteLine($"_oauthHelper was null");
+            //        return;
+            //    }
 
-                _apiService = new MvpApiService(_authResult.AccessToken);
-            }
+            //    BusyIndicator.Content = "creating MVPService...";
+
+            //    _apiService = new MvpApiService(_authResult.AccessToken);
+            //}
             
             BusyIndicator.Content = "getting profile...";
 
@@ -54,16 +59,20 @@ namespace MvpCompanion.Uwp
 
         private async void GetMvpContributionsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_oauthHelper == null)
-                return;
-
             BusyIndicator.IsActive = true;
 
-            if (_apiService == null || _authResult.ExpiresOn < DateTime.Now)
-            {
-                BusyIndicator.Content = "creating MVPService...";
-                _apiService = new MvpApiService(_authResult.AccessToken);
-            }
+            // todo authenticate again
+            //if (_apiService == null)
+            //{
+            //    if (_oauthHelper == null)
+            //    {
+            //        Debug.WriteLine($"_oauthHelper was null");
+            //        return;
+            //    }
+
+            //    BusyIndicator.Content = "creating MVPService...";
+            //    _apiService = new MvpApiService(_authResult.AccessToken);
+            //}
 
             BusyIndicator.Content = "getting contributions...";
 
@@ -92,47 +101,95 @@ namespace MvpCompanion.Uwp
 
         private async void SignInButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_oauthHelper == null)
+            TokenInfoText.Text = "";
+            BusyIndicator.Content = "logging in...";
+
+            if (AuthProviderSwitch.IsOn)
             {
-                BusyIndicator.Content = "logging in...";
+                BusyIndicator.Content = "logging in with MSAL...";
 
-                _oauthHelper = new OAuthHelper();
-                _authResult = await _oauthHelper.LogInAsync();
-
-                if (_authResult != null)
+                if (_oauthHelper == null)
                 {
-                    var bearerWithToken = _authResult.CreateAuthorizationHeader();
+                    _oauthHelper = new OAuthHelper();
+                    _authResult = await _oauthHelper.LogInAsync();
 
-                    _apiService = new MvpApiService(bearerWithToken);
+                    if (_authResult != null)
+                    {
+                        var bearerWithToken = _authResult.CreateAuthorizationHeader();
 
-                    ResultText.Text = _authResult.Account.Username + "is signed in";
+                        _apiService = new MvpApiService(bearerWithToken);
 
-                    TokenInfoText.Text = "";
-                    TokenInfoText.Text += $"Username: {_authResult.Account.Username}{Environment.NewLine}";
-                    TokenInfoText.Text += $"Token Expires: {_authResult.ExpiresOn.ToLocalTime()}{Environment.NewLine}";
-                    TokenInfoText.Text += $"Authorization: Bearer {_authResult.AccessToken}{Environment.NewLine}";
+                        ResultText.Text = _authResult.Account.Username + "is signed in";
+                        
+                        TokenInfoText.Text += $"Username: {_authResult.Account.Username}{Environment.NewLine}";
+                        TokenInfoText.Text += $"Token Expires: {_authResult.ExpiresOn.ToLocalTime()}{Environment.NewLine}";
+                        TokenInfoText.Text += $"Authorization: Bearer {_authResult.AccessToken}{Environment.NewLine}";
 
-                    SetLoggedInStatus(true);
+                        SetLoggedInStatus(true);
+                    }
+                    else
+                    {
+                        SetLoggedInStatus(false);
+                    }
+                }
+            }
+            else
+            {
+                BusyIndicator.Content = "logging in with LoginDialog...";
+
+                _loginDialog = new LoginDialog();
+                await _loginDialog.AttemptSilentRefreshAsync();
+
+                //await loginDialog.ShowAsync();
+
+                if (string.IsNullOrEmpty(_loginDialog.AuthorizationCode))
+                {
+                    ResultText.Text = "WebView Was Not Successful";
                 }
                 else
                 {
-                    SetLoggedInStatus(false);
+                    _apiService = new MvpApiService(_loginDialog.AuthorizationCode);
+
+                    ResultText.Text = $"LoginDialog Successful!{Environment.NewLine}";
+                    TokenInfoText.Text = $"Authorization: Bearer {_loginDialog.AuthorizationCode}{Environment.NewLine}";
+
+                    SetLoggedInStatus(true);
                 }
             }
+
+            BusyIndicator.IsActive = false;
+            BusyIndicator.Content = "";
         }
 
         private async void SignOutButton_Click(object sender, RoutedEventArgs e)
         {
             if (_apiService != null)
             {
-                var result = await _oauthHelper.LogOutAsync();
-
-                if (result.Item1)
+                // determine which service to logout with
+                if(AuthProviderSwitch.IsOn)
                 {
-                    SetLoggedInStatus(false);
-                }
+                    var result = await _oauthHelper.LogOutAsync();
 
-                ResultText.Text = result.Item2;
+                    if (result.Item1)
+                    {
+                        SetLoggedInStatus(false);
+                        _authResult = null;
+                        _oauthHelper = null;
+                    }
+
+                    ResultText.Text = result.Item2;
+                }
+                else
+                {
+                    var result = await _loginDialog.SignOutAsync();
+
+                    if (result.Item1)
+                    {
+                        SetLoggedInStatus(false);
+                    }
+
+                    ResultText.Text = result.Item2;
+                }
             }
         }
         
@@ -161,7 +218,8 @@ namespace MvpCompanion.Uwp
         {
             BusyIndicator.IsActive = true;
             BusyIndicator.Content = "getting profile...";
-            var tokenCopiedFromMvpApiPortal = "";
+
+            var tokenCopiedFromMvpApiPortal = "IMPORTANT COPY AND PASTE A TOKEN FROM MVP PORTAL CONSOLE";
 
             _apiService = new MvpApiService(tokenCopiedFromMvpApiPortal);
 

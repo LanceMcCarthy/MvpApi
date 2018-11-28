@@ -31,6 +31,10 @@
         </StackPanel>
 
         <CommandBar Grid.Row="1">
+            <CommandBar.Content>
+                <ToggleSwitch x:Name="AuthProviderSwitch" OnContent="MSAL Enabled" OffContent="WebView Enabled" Margin="10,0,0,0"/>
+            </CommandBar.Content>
+
             <AppBarButton x:Name="GetMvpContributionsButton"
                           Icon="Document"
                           Label="Get Contributions"
