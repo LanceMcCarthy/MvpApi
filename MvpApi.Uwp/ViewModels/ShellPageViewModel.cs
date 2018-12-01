@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.Storage;
+using Windows.Storage.Search;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Toolkit.Uwp.Connectivity;
@@ -62,33 +66,95 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         /// <summary>
-        /// Authenticates the user on app launch, but can be shown again from anywhere in the application
+        /// Self-contained authentication helper. Will attempt silent login if a refresh token is available, otherwise will show a 
         /// </summary>
-        public LoginDialog LoginManager { get; set; }
+        private LoginDialog _loginManager;
 
-        public async Task VerifyLoginAsync()
+        /// <summary>
+        /// Logs in the user by showing a ContentDialog for authentication.
+        /// Silent Operation if the user has previously logged in, a silent login will be attempted first (using the refresh token).
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> SignInAsync()
         {
-            if(LoginManager == null)
+            // Initialize LoginDialog. This is a special ContentDialog that will handle authentication lifecycle
+            if(_loginManager == null)
             {
-                LoginManager = new LoginDialog();
+                _loginManager = new LoginDialog();
             }
             
-            await LoginManager.AttemptSilentRefreshAsync();
-
-            if (!string.IsNullOrEmpty(LoginManager.AuthorizationCode))
+            try
             {
-                App.ApiService = new MvpApiService(LoginManager.AuthorizationCode);
+                // Invoke sign in procedure (this handles token storage internally)
+                await _loginManager.AttemptSilentRefreshAsync();
 
-                IsLoggedIn = true;
+                if (!string.IsNullOrEmpty(_loginManager.AuthorizationCode))
+                {
+                    App.ApiService = new MvpApiService(_loginManager.AuthorizationCode);
 
-                IsBusyMessage = "downloading profile info...";
-                Mvp = await App.ApiService.GetProfileAsync();
+                    IsLoggedIn = true;
 
-                IsBusyMessage = "downloading profile image...";
-                ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+                    IsBusyMessage = "downloading profile info...";
+                    Mvp = await App.ApiService.GetProfileAsync();
+
+                    IsBusyMessage = "downloading profile image...";
+                    ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+                }
             }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+            }
+
+            return !string.IsNullOrEmpty(_loginManager.AuthorizationCode);
         }
-        
+
+        public async Task SignOutAsync()
+        {
+            // Invoke sign out procedure (this will handle token storage internally), returns Tuple with success and message
+            var result = await _loginManager.SignOutAsync();
+
+            // If sign out was successful, handle app-specific files and resources
+            if (result.Item1)
+            {
+                // Clean up profile objects
+                IsLoggedIn = false;
+                Mvp = null;
+                ProfileImagePath = null;
+                
+                // Clean up files
+                try
+                {
+                    // Profile photo file
+                    var imageFile = await ApplicationData.Current.LocalFolder.TryGetItemAsync("ProfilePicture.jpg");
+                    if (imageFile != null)
+                    {
+                        await imageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+                    }
+                    
+                    // TODO Clean up Log files (there are automatically kept to a limit of 5 by the logging system).
+                    //var query = ApplicationData.Current.LocalFolder.CreateFileQuery();
+                    //var files = await query.GetFilesAsync();
+
+                    //foreach (var file in files)
+                    //{
+                    //    if (file.FileType == "log")
+                    //    {
+                    //        await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
+                    //    }
+                    //}
+                }
+                catch (Exception e)
+                {
+                    await e.LogExceptionAsync();
+                    Debug.WriteLine(e);
+                }
+            }
+
+            // show user result of sign out attempt
+            await new MessageDialog($"{result.Item2}", result.Item1 ? "Success" : "Error").ShowAsync();
+        }
+
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)

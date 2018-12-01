@@ -662,6 +662,18 @@ namespace MvpApi.Uwp.ViewModels
 
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
             {
+                // Verify the user is logged in
+                if (!shellVm.IsLoggedIn)
+                {
+                    IsBusy = true;
+                    IsBusyMessage = "logging in...";
+
+                    await shellVm.SignInAsync();
+
+                    IsBusyMessage = "";
+                    IsBusy = false;
+                }
+
                 if (shellVm.IsLoggedIn)
                 {
                     try
@@ -705,11 +717,6 @@ namespace MvpApi.Uwp.ViewModels
                         IsBusy = false;
                     }
                 }
-                else
-                {
-                    await shellVm.VerifyLoginAsync();
-                    //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
-                }
             }
         }
         
@@ -750,7 +757,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
-
+                await ex.LogExceptionAsync();
             }
         }
 

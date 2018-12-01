@@ -32,8 +32,7 @@ namespace MvpApi.Uwp.Dialogs
             this.AuthorizationCode = "";
             this.Hide();
         }
-
-
+        
         private async void WebView_OnLoadCompleted(object sender, NavigationEventArgs e)
         {
             var url = e.Uri.AbsoluteUri;
@@ -67,6 +66,10 @@ namespace MvpApi.Uwp.Dialogs
             }
         }
 
+        /// <summary>
+        /// Shows the ContentDialog for manual sign in
+        /// </summary>
+        /// <returns></returns>
         public async Task SignInAsync()
         {
             await this.ShowAsync();
@@ -74,6 +77,7 @@ namespace MvpApi.Uwp.Dialogs
             this.webView.Source = _signInUrl;
         }
 
+        // Shows ContentDialog to sign out
         public async Task<Tuple<bool, string>> SignOutAsync()
         {
             try
@@ -85,13 +89,16 @@ namespace MvpApi.Uwp.Dialogs
                 StorageHelpers.DeleteToken("access_token");
                 StorageHelpers.DeleteToken("refresh_token");
 
-                this.Hide();
                 return new Tuple<bool, string>(true, "You have signed out");
             }
             catch (Exception e)
             {
-                this.Hide();
+                await e.LogExceptionAsync();
                 return new Tuple<bool, string>(false, $"Error signing out: {e.Message}");
+            }
+            finally
+            {
+                this.Hide();
             }
         }
 
@@ -101,23 +108,26 @@ namespace MvpApi.Uwp.Dialogs
             {
                 using (var client = new HttpClient())
                 {
-                    var content = new List<KeyValuePair<string, string>>
+                    // Construct the Form content, this is where I add the OAuth token (could be access token or refresh token)
+                    var postContent = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
                     {
                         new KeyValuePair<string, string>("client_id", _clientId),
                         new KeyValuePair<string, string>("grant_type", isRefresh ? "refresh_token" : "authorization_code"),
                         new KeyValuePair<string, string>(isRefresh ? "refresh_token" : "code", authCode.Split('&')[0]),
                         new KeyValuePair<string, string>("redirect_uri", _redirectUrl)
-                    };
+                    });
 
-                    var postContent = new FormUrlEncodedContent(content);
-
+                    // Variable to hold the response data
                     var responseTxt = "";
 
+                    // post the Form data
                     using (var response = await client.PostAsync(new Uri(_accessTokenUrl), postContent))
                     {
+                        // Read the response
                         responseTxt = await response.Content.ReadAsStringAsync();
                     }
 
+                    // Deserialize the parameters from the response
                     var tokenData = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseTxt);
 
                     if (tokenData.ContainsKey("access_token"))
@@ -138,28 +148,35 @@ namespace MvpApi.Uwp.Dialogs
                     }
                     else
                     {
+                        // Always set the Authorization code to null if there was a problem.
                         this.AuthorizationCode = null;
                     }
                 }
             }
             catch (HttpRequestException e)
             {
+                await e.LogExceptionAsync();
+
                 if (e.Message.Contains("401"))
                 {
                     //TODO Try refresh token, access token is only valid for 60 minutes
                 }
 
                 Debug.WriteLine($"LoginDialog HttpRequestException: {e}");
+
+                // Always set the Authorization code to null if there was a problem.
                 this.AuthorizationCode = null;
             }
             catch (Exception e)
             {
+                await e.LogExceptionAsync();
                 Debug.WriteLine($"LoginDialog Exception: {e}");
+
+                // Always set the Authorization code to null if there was a problem.
                 this.AuthorizationCode = null;
             }
             finally
             {
-                // Close dialog
                 this.Hide();
             }
         }
