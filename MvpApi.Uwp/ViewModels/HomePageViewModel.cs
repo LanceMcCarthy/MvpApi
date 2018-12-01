@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
+using MvpApi.Services.Apis;
 using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Helpers;
@@ -66,7 +67,7 @@ namespace MvpApi.Uwp.ViewModels
                 }
                 else
                 {
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+
                 }
             });
         }
@@ -329,27 +330,37 @@ namespace MvpApi.Uwp.ViewModels
 
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
             {
-                if (shellVm.IsLoggedIn)
+                if (!shellVm.IsLoggedIn)
                 {
-                    if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                    {
-                        var td = new TutorialDialog
-                        {
-                            SettingsKey = "HomePageTutorialShown",
-                            MessageTitle = "Home Page",
-                            Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
-                                      "- Group or sort the contributions by any column.\r\n" +
-                                      "- Select a contribution to view its details or edit it.\r\n" +
-                                      "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
-                                      "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
-                        };
+                    IsBusy = true;
+                    IsBusyMessage = "logging in...";
 
-                        await td.ShowAsync();
+                    await shellVm.SignInAsync();
+
+                    if (shellVm.IsLoggedIn)
+                    {
+                        // Reloads DataGrid
+                        ResetData();
                     }
+
+                    IsBusyMessage = "";
+                    IsBusy = false;
                 }
-                else
+
+                if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
                 {
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                    var td = new TutorialDialog
+                    {
+                        SettingsKey = "HomePageTutorialShown",
+                        MessageTitle = "Home Page",
+                        Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
+                                  "- Group or sort the contributions by any column.\r\n" +
+                                  "- Select a contribution to view its details or edit it.\r\n" +
+                                  "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
+                                  "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
+                    };
+
+                    await td.ShowAsync();
                 }
             }
         }

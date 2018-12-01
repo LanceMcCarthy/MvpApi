@@ -4,8 +4,7 @@ using System.Linq;
 using System.Net;
 
 // Credit: James M. Croft, find original source here https://github.com/jamesmcroft/WinUX-UWP-Toolkit/blob/develop/WinUX.Common/Extensions/Extensions.Url.cs
-
-namespace MvpApi.Uwp.Extensions
+namespace MvpApi.Common.Extensions
 {
     public static class UriExtensions
     {

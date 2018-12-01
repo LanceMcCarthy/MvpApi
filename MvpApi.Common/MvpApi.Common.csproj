@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommonHelpers" Version="1.0.7" />
+    <PackageReference Include="CommonHelpers" Version="1.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 

@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
-using MvpApi.Uwp.Views;
-using Template10.Common;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -24,28 +23,29 @@ namespace MvpApi.Uwp.ViewModels
 
         public string ProfileImagePath { get; set; } = (App.ShellPage.DataContext as ShellPageViewModel)?.ProfileImagePath;
         
-        public void LoginButton_Click(object sender, RoutedEventArgs e)
+        public async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            BootStrapper.Current.NavigationService.Navigate(typeof(LoginPage));
+            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
+            {
+                await shellVm.SignInAsync();
+            }
         }
 
-        public void LogoutButton_Click(object sender, RoutedEventArgs e)
+        public async void LogoutButton_Click(object sender, RoutedEventArgs e)
         {
-            // Passing a bool true parameter performs logout
-            BootStrapper.Current.NavigationService.Navigate(typeof(LoginPage), true);
+            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
+            {
+                await shellVm.SignOutAsync();
+            }
         }
         
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
+            if (App.ShellPage.DataContext is ShellPageViewModel shellVm && !shellVm.IsLoggedIn)
             {
-
-            }
-            else
-            {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                await shellVm.SignInAsync();
             }
         }
 

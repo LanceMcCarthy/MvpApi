@@ -1,43 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Windows.Graphics.Imaging;
-using Windows.Storage;
-using Windows.UI.Popups;
-using Windows.UI.Xaml.Media.Imaging;
 using MvpApi.Common.Models;
-using MvpApi.Uwp.Helpers;
+using MvpApi.Services.Utilities;
 using Newtonsoft.Json;
-using MvpApi.Uwp.ViewModels;
 
-namespace MvpApi.Uwp.Services
+namespace MvpApi.Services.Apis
 {
     public class MvpApiService : IDisposable
     {
-        private readonly HttpClient client;
+        private readonly HttpClient _client;
 
         /// <summary>
         /// Service that interacts with the MVP API
         /// </summary>
-        /// <param name="apiKey">the Ocp-Apim-Subscription-Key you got from your MVP API portal</param>
-        /// <param name="authorizationHeader">Authorization header. Example: "Bearer AccessTokenGoesHere"</param>
-        public MvpApiService(string apiKey, string authorizationHeader)
+        /// <param name="authorizationHeaderContent">OAuth 2.0 AccessToken from Live SDK or MS Graph via Azure AD v2 endpoint
+        /// IMPORTANT: Bearer prefix needed</param>
+        public MvpApiService(string authorizationHeaderContent)
         {
             var handler = new HttpClientHandler();
             if (handler.SupportsAutomaticDecompression)
                 handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-
-            client = new HttpClient(handler);
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", apiKey);
-            client.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
+            
+            _client = new HttpClient(handler);
+            _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "3d199a7fb1c443e1985375f0572f58f8");
+            _client.DefaultRequestHeaders.Add("Authorization", authorizationHeaderContent);
         }
+        
+        #region API Endpoints
 
         /// <summary>
         /// Returns the profile data of the currently signed in MVP
@@ -47,17 +42,19 @@ namespace MvpApi.Uwp.Services
         {
             try
             {
-                using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile"))
+                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile"))
                 {
-                    if(response.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        await LoginPageViewModel.RequestAuthorizationAsync(LoginPageViewModel.AccessTokenUrl, StorageHelpers.LoadToken("refresh_token"), true);
-                        return null;
-                    }
-
                     var json = await response.Content.ReadAsStringAsync();
 
-                    return JsonConvert.DeserializeObject<ProfileViewModel>(json);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return JsonConvert.DeserializeObject<ProfileViewModel>(json);
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"GetProfileAsync{Environment.NewLine} -StatusCode: {response.StatusCode}{Environment.NewLine} -Content: {json}");
+                        return null;
+                    }
                 }
             }
             catch (HttpRequestException e)
@@ -79,9 +76,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                await e.LogExceptionWithUserMessage(
-                    "Sorry, there was a problem retrieving your profile. If you'd like to send a technical summary to the app development team, click Yes.",
-                    "Get Profile Error");
+                await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
                 return null;
@@ -97,7 +92,7 @@ namespace MvpApi.Uwp.Services
             try
             {
                 // the result is Detected mime type: image/jpeg; charset=binary
-                using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
+                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
                 {
                     var base64String = await response.Content.ReadAsStringAsync();
 
@@ -118,24 +113,6 @@ namespace MvpApi.Uwp.Services
                     }
                     catch(Exception ex)
                     {
-                        var md = new MessageDialog("You can email the error and copy base64 into your clipboard.\r\n\nThis would let you test the image data directly using a base64 converter (base64converter.com) or paste it into the email", "Image Decoding Failed");
-
-                        md.Commands.Add(new UICommand("send error only"));
-                        md.Commands.Add(new UICommand("send error and copy base64"));
-                        md.Commands.Add(new UICommand("cancel"));
-
-                        var result = await md.ShowAsync();
-
-                        if (result.Label == "send error only")
-                        {
-                            await FeedbackHelpers.Current.EmailErrorMessageAsync(ex.Message);
-                        }
-                        else if (result.Label == "send error and copy base64")
-                        {
-                            FeedbackHelpers.Current.CopyToClipboard(base64String);
-                            await FeedbackHelpers.Current.EmailErrorMessageAsync(ex.Message);
-                        }
-
                         return null;
                     }
                 }
@@ -159,10 +136,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                await e.LogExceptionWithUserMessage(
-                    "Sorry, there was a problem retrieving your profile image. If you'd like to send a technical summary to the app development team, click Yes.",
-                    "Get Profile Image Error");
-                
+                await e.LogExceptionAsync();
                 Debug.WriteLine($"GetProfileImageAsync Exception: {e}");
                 return null;
             }
@@ -171,15 +145,13 @@ namespace MvpApi.Uwp.Services
         /// <summary>
         /// Downloads and saves the image file to LocalFolder
         /// </summary>
-        /// <param name="folder">StorageFolder location</param>
-        /// <param name="fileNameWithoutExtension">filename for image, default is</param>
         /// <returns>File path</returns>
-        public async Task<string> DownloadAndSaveProfileImage(StorageFolder folder, string fileNameWithoutExtension = "ProfilePicture")
+        public async Task<string> DownloadAndSaveProfileImage()
         {
             try
             {
                 // the result is Detected mime type: image/jpeg; charset=binary
-                using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
+                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
                 {
                     var base64String = await response.Content.ReadAsStringAsync();
 
@@ -209,38 +181,13 @@ namespace MvpApi.Uwp.Services
                         
                         var imgBytes = Convert.FromBase64String(base64String);
 
-                        var imageFile = await folder.CreateFileAsync($"{fileNameWithoutExtension}.{fileExtension}", CreationCollisionOption.ReplaceExisting);
-
-                        using (var ms = new MemoryStream(imgBytes, 0, imgBytes.Length))
-                        using (var fileStream = await imageFile.OpenStreamForWriteAsync())
-                        {
-                            ms.CopyTo(fileStream);
-                        }
-
-                        Debug.WriteLine($"Image Decoded: {imgBytes?.Length} bytes");
-
-                        return imageFile.Path;
+                        var filePath = StorageHelpers.Instance.SaveImage(imgBytes, $"ProfilePicture.{fileExtension}");
+                        return filePath;
                     }
-                    catch (Exception ex)
+                    catch (Exception e)
                     {
-                        var md = new MessageDialog("You can email the error and copy base64 into your clipboard.\r\n\nThis would let you test the image data directly using a base64 converter (base64converter.com) or paste it into the email", "Image Decoding Failed");
-
-                        md.Commands.Add(new UICommand("send error only"));
-                        md.Commands.Add(new UICommand("send error and copy base64"));
-                        md.Commands.Add(new UICommand("cancel"));
-                        
-                        var result = await md.ShowAsync();
-
-                        if (result.Label == "send error only")
-                        {
-                            await FeedbackHelpers.Current.EmailErrorMessageAsync(ex.Message);
-                        }
-                        else if (result.Label == "send error and copy base64")
-                        {
-                            FeedbackHelpers.Current.CopyToClipboard(base64String);
-                            await FeedbackHelpers.Current.EmailErrorMessageAsync(ex.Message);
-                        }
-
+                        await e.LogExceptionAsync();
+                        Debug.WriteLine($"DownloadAndSaveProfileImage Exception: {e}");
                         return null;
                     }
                 }
@@ -264,10 +211,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                await e.LogExceptionWithUserMessage(
-                    "Sorry, there was a problem retrieving your profile image. If you'd like to send a technical summary to the app development team, click Yes.",
-                    "Get Profile Image Error");
-
+                await e.LogExceptionAsync();
                 Debug.WriteLine($"GetProfileImageAsync Exception: {e}");
                 return null;
             }
@@ -286,7 +230,7 @@ namespace MvpApi.Uwp.Services
 
             try
             {
-                using (var response = await client.GetAsync($"https://mvpapi.azure-api.net/mvp/api/contributions/{offset}/{limit}"))
+                using (var response = await _client.GetAsync($"https://mvpapi.azure-api.net/mvp/api/contributions/{offset}/{limit}"))
                 {
                     var json = await response.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<ContributionViewModel>(json);
@@ -311,9 +255,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                await e.LogExceptionWithUserMessage(
-                    "Sorry, there was a problem retrieving your contributions. If you'd like to send a technical summary to the app development team, click Yes.",
-                    "Get Contributions Error");
+                await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetContributionsAsync Exception: {e}");
                 return null;
@@ -339,7 +281,7 @@ namespace MvpApi.Uwp.Services
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                     
-                    using (var response = await client.PostAsync("https://mvpapi.azure-api.net/mvp/api/contributions?", content))
+                    using (var response = await _client.PostAsync("https://mvpapi.azure-api.net/mvp/api/contributions?", content))
                     {
                         var json = await response.Content.ReadAsStringAsync();
 
@@ -372,20 +314,8 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                if (e.Message.Contains("Error converting value"))
-                {
-                    await e.LogExceptionWithUserMessage(
-                        $"There was an invalid value for one of the submissions fields and the API rejected it. See the error message below for more details, make the adjustment and save it again:\r\n\n" +
-                        $"{e.Message}",
-                        "Submit Contribution Error");
-                }
-                else
-                {
-                    await e.LogExceptionWithUserMessage(
-                        $"Sorry, there was an unexpected problem uploading the contribution '{contribution.Title}'. If you'd like to send a technical summary to the app development team, click Yes.",
-                        "Submit Contribution Error");
-                }
-                
+                await e.LogExceptionAsync();
+
                 Debug.WriteLine($"SubmitContributionAsync Exception: {e}");
 
                 return null;
@@ -412,7 +342,7 @@ namespace MvpApi.Uwp.Services
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    using (var response = await client.PutAsync("https://mvpapi.azure-api.net/mvp/api/contributions", content))
+                    using (var response = await _client.PutAsync("https://mvpapi.azure-api.net/mvp/api/contributions", content))
                     {
                         return response.IsSuccessStatusCode;
                     }
@@ -437,9 +367,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                await e.LogExceptionWithUserMessage(
-                    $"Sorry, there was a problem updating the contribution '{contribution.Title}'. If you'd like to send a technical summary to the app development team, click Yes.",
-                    "Update Contribution Error");
+                await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
                 return null;
@@ -447,7 +375,7 @@ namespace MvpApi.Uwp.Services
         }
 
         /// <summary>
-        /// Deleted s contribution
+        /// Delete contribution
         /// </summary>
         /// <param name="contribution">Item to delete</param>
         /// <returns>Success or failure</returns>
@@ -458,7 +386,7 @@ namespace MvpApi.Uwp.Services
 
             try
             {
-                using (var response = await client.DeleteAsync($"https://mvpapi.azure-api.net/mvp/api/contributions?id={contribution.ContributionId}"))
+                using (var response = await _client.DeleteAsync($"https://mvpapi.azure-api.net/mvp/api/contributions?id={contribution.ContributionId}"))
                 {
                     return response.IsSuccessStatusCode;
                 }
@@ -482,9 +410,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                await e.LogExceptionWithUserMessage(
-                    $"Sorry, there was a problem deleting the contribution '{contribution.Title}'. If you'd like to send a technical summary to the app development team, click Yes.",
-                    "Delete Contribution Error");
+                await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
                 return null;
@@ -499,7 +425,7 @@ namespace MvpApi.Uwp.Services
         {
             try
             {
-                using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/contributiontypes"))
+                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/contributiontypes"))
                 {
                     var json = await response.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<IReadOnlyList<ContributionTypeModel>>(json);
@@ -524,9 +450,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                await e.LogExceptionWithUserMessage(
-                    "Sorry, there was a problem getting contributions types list. If you'd like to send a technical summary to the app development team, click Yes.",
-                    "Get Contribution Types Error");
+                await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetContributionTypesAsync Exception: {e}");
                 return null;
@@ -541,7 +465,7 @@ namespace MvpApi.Uwp.Services
         {
             try
             {
-                using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/contributionareas"))
+                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/contributionareas"))
                 {
                     var json = await response.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<IReadOnlyList<ContributionAreasRootItem>>(json);
@@ -566,9 +490,7 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                await e.LogExceptionWithUserMessage(
-                    "Sorry, there was a problem getting contributions areas list. If you'd like to send a technical summary to the app development team, click Yes.",
-                    "Get Contribution Areas Error");
+                await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetContributionTechnologiesAsync Exception: {e}");
                 return null;
@@ -583,7 +505,7 @@ namespace MvpApi.Uwp.Services
         {
             try
             {
-                using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/sharingpreferences"))
+                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/sharingpreferences"))
                 {
                     var json = await response.Content.ReadAsStringAsync();
                     return JsonConvert.DeserializeObject<IReadOnlyList<VisibilityViewModel>>(json);
@@ -608,18 +530,18 @@ namespace MvpApi.Uwp.Services
             }
             catch (Exception e)
             {
-                await e.LogExceptionWithUserMessage(
-                    "Sorry, there was a problem getting contribution visibilities list. If you'd like to send a technical summary to the app development team, click Yes.",
-                    "Get Visibilities Error");
+                await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetVisibilitiesAsync Exception: {e}");
                 return null;
             }
         }
         
+        #endregion
+
         public void Dispose()
         {
-            client?.Dispose();
+            _client?.Dispose();
         }
     }
 }

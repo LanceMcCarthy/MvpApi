@@ -133,8 +133,11 @@ namespace MvpApi.Uwp.Helpers
             {
                 await PurgeLogFilesAsync();
 
+                // Create a unique file name using the current day.
                 var fileName = "MVPCompanion_ErrorLog" + "_" + DateTime.Today.ToString("yyyyMMdd") + "." + "log";
                 var localFolder = ApplicationData.Current.LocalFolder;
+
+                // Write to an existing log file if it already exists for that day
                 var logFolder = await localFolder.CreateFolderAsync("Logs", CreationCollisionOption.OpenIfExists);
                 var logFile = await logFolder.CreateFileAsync(fileName, CreationCollisionOption.OpenIfExists);
 

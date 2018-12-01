@@ -18,11 +18,11 @@ namespace MvpApi.UwpBackgroundTasks
                         {
                             new AdaptiveText
                             {
-                                Text = "MVP Companion update └(^o^)┐"
+                                Text = "Major MVP Companion Update"
                             },
                             new AdaptiveText
                             {
-                                Text = "New Feature: Automatically logs you in on app launch (no more nag)! Fix: The 'base64' signin problem has been resolved."
+                                Text = "Brand new authentication system! It will automatically signin or show a simple popup."
                             },
                             new AdaptiveImage
                             {
