@@ -115,6 +115,9 @@
     <Compile Include="Dialogs\AdditionalTechnologyAreasPicker.xaml.cs">
       <DependentUpon>AdditionalTechnologyAreasPicker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\LoginDialog.xaml.cs">
+      <DependentUpon>LoginDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\TutorialDialog.xaml.cs">
       <DependentUpon>TutorialDialog.xaml</DependentUpon>
     </Compile>
@@ -134,7 +137,6 @@
     <Compile Include="ViewModels\ContributionDetailViewModel.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
     <Compile Include="ViewModels\KudosViewModel.cs" />
-    <Compile Include="ViewModels\LoginPageViewModel.cs" />
     <Compile Include="ViewModels\PageViewModelBase.cs" />
     <Compile Include="ViewModels\ProfilePageViewModel.cs" />
     <Compile Include="ViewModels\ShellPageViewModel.cs" />
@@ -152,9 +154,6 @@
     </Compile>
     <Compile Include="Views\KudosPage.xaml.cs">
       <DependentUpon>KudosPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\LoginPage.xaml.cs">
-      <DependentUpon>LoginPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProfilePage.xaml.cs">
       <DependentUpon>ProfilePage.xaml</DependentUpon>
@@ -237,6 +236,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dialogs\LoginDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\TutorialDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -258,10 +261,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\KudosPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\LoginPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -306,7 +305,7 @@
       <Version>2.0.181018003</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>11.0.2</Version>
+      <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
       <Version>1.0.1.2</Version>
@@ -319,6 +318,10 @@
     <ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj">
       <Project>{3159ae84-b479-420c-ba42-e328d4159144}</Project>
       <Name>MvpApi.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MvpApi.Services\MvpApi.Services.csproj">
+      <Project>{edc2d11b-fe53-454b-a7e5-6c74e89fa479}</Project>
+      <Name>MvpApi.Services</Name>
     </ProjectReference>
     <ProjectReference Include="..\MvpApi.UwpBackgroundTasks\MvpApi.UwpBackgroundTasks.csproj">
       <Project>{9d7ff5ea-20d9-40e3-9704-e3e7b5e2dc25}</Project>

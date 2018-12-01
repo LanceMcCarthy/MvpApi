@@ -19,7 +19,6 @@ using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
-using MvpApi.Uwp.Services;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Services.NavigationService;
@@ -660,7 +659,8 @@ namespace MvpApi.Uwp.ViewModels
                 }
                 else
                 {
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                    await shellVm.VerifyLoginAsync();
+                    //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
                 }
             }
         }

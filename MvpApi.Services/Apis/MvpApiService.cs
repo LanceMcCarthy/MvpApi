@@ -29,9 +29,7 @@ namespace MvpApi.Services.Apis
             
             _client = new HttpClient(handler);
             _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "3d199a7fb1c443e1985375f0572f58f8");
-
             _client.DefaultRequestHeaders.Add("Authorization", authorizationHeaderContent);
-            //_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
         
         #region API Endpoints

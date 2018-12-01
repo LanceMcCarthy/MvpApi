@@ -68,7 +68,9 @@ namespace MvpApi.Services.Utilities
                 // Store encrypted
                 // StorageHelpers.Instance.StoreToken("access_token", authResult.AccessToken);
                 // StorageHelpers.Instance.StoreToken("expires_on", authResult.ExpiresOn.ToString());
-                
+
+                Debug.WriteLine($"LogInAsync Start: {authResult.Account.Username}");
+
                 return authResult;
             }
             else

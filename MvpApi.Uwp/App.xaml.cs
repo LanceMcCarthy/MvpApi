@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 using MvpApi.Uwp.Helpers;
-using MvpApi.Uwp.Services;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Controls;
 using Microsoft.Services.Store.Engagement;
+using MvpApi.Services.Apis;
 
 namespace MvpApi.Uwp
 {

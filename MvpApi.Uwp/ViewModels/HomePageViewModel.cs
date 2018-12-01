@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
+using MvpApi.Services.Apis;
 using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Helpers;
@@ -66,7 +67,36 @@ namespace MvpApi.Uwp.ViewModels
                 }
                 else
                 {
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                    //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+
+                    //if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
+                    //{
+                    //    IsBusy = true;
+                    //    IsBusyMessage = "logging in...";
+
+                    //    if(shellVm.LoginManager == null)
+                    //        shellVm.LoginManager = new LoginDialog();
+
+                    //    // The attempt will fall back to showing the dialog
+                    //    await shellVm.LoginManager.AttemptSilentRefreshAsync();
+
+                    //    if (!string.IsNullOrEmpty(shellVm.LoginManager.AuthorizationCode))
+                    //    {
+                    //        App.ApiService = new MvpApiService(shellVm.LoginManager.AuthorizationCode);
+
+                    //        shellVm.IsLoggedIn = true;
+
+                    //        IsBusyMessage = "downloading profile info...";
+                    //        shellVm.Mvp = await App.ApiService.GetProfileAsync();
+
+                    //        IsBusyMessage = "downloading profile image...";
+                    //        shellVm.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+
+                    //        ResetData();
+                    //    }
+
+                    //    IsBusy = false;
+                    //}
                 }
             });
         }
@@ -349,7 +379,40 @@ namespace MvpApi.Uwp.ViewModels
                 }
                 else
                 {
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(LoginPage));
+                    IsBusy = true;
+                    IsBusyMessage = "logging in...";
+
+                    await shellVm.VerifyLoginAsync();
+
+                    if (shellVm.IsLoggedIn)
+                    {
+                        ResetData();
+                    }
+
+                    IsBusyMessage = "";
+                    IsBusy = false;
+
+                    //shellVm.LoginManager = new LoginDialog();
+
+                    //// The attempt will fall back to showing the dialog
+                    //await shellVm.LoginManager.AttemptSilentRefreshAsync();
+
+                    //if (!string.IsNullOrEmpty(shellVm.LoginManager.AuthorizationCode))
+                    //{
+                    //    App.ApiService = new MvpApiService(shellVm.LoginManager.AuthorizationCode);
+
+                    //    shellVm.IsLoggedIn = true;
+
+                    //    IsBusyMessage = "downloading profile info...";
+                    //    shellVm.Mvp = await App.ApiService.GetProfileAsync();
+
+                    //    IsBusyMessage = "downloading profile image...";
+                    //    shellVm.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+
+                    //    ResetData();
+                    //}
+
+                    //IsBusy = false;
                 }
             }
         }
