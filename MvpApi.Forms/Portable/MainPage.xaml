@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MvpApi.Forms.Portable"
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+             xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.XamarinForms.Primitives"
+             xmlns:models="clr-namespace:MvpApi.Forms.Portable.Models;assembly=MvpApi.Forms.Portable"
+             xmlns:viewModels="clr-namespace:MvpApi.Forms.Portable.ViewModels;assembly=MvpApi.Forms.Portable"
+             ios:Page.UseSafeArea="true"
+             x:Class="MvpApi.Forms.Portable.MainPage">
+
+    <ContentPage.BindingContext>
+        <viewModels:MainPageViewModel x:Name="ViewModel"/>
+    </ContentPage.BindingContext>
+
+    <Grid>
+        <primitives:RadSideDrawer x:Name="SideDrawer"
+                                  IsOpen="{Binding IsDrawerOpen, Mode=TwoWay}">
+            <primitives:RadSideDrawer.DrawerContent>
+                <Grid>
+                    <StackLayout>
+                        <Button Text="Home"
+                                TextColor="{StaticResource LightTextColor}"
+                                Command="{Binding GoToViewCommand}"
+                                CommandParameter="{x:Static models:ViewType.Home}"
+                                Margin="5" />
+                        <Button Text="Call Log"
+                                TextColor="{StaticResource LightTextColor}"
+                                Command="{Binding GoToViewCommand}"
+                                CommandParameter="{x:Static models:ViewType.Profile}"
+                                Margin="5" />
+                        <Button Text="About"
+                                TextColor="{StaticResource LightTextColor}"
+                                Command="{Binding GoToViewCommand}"
+                                CommandParameter="{x:Static models:ViewType.About}"
+                                Margin="5" />
+                        <Button Text="Signout"
+                                TextColor="{StaticResource LightTextColor}"
+                                Clicked="SignOutButton_OnClicked"
+                                Margin="5" />
+                    </StackLayout>
+                </Grid>
+            </primitives:RadSideDrawer.DrawerContent>
+        </primitives:RadSideDrawer>
+
+        <!--<input:RadButton Text="MENU"
+                         Command="{Binding ToggleDrawerCommand}"
+                         VerticalOptions="Start"
+                         HorizontalOptions="Start"
+                         Margin="5"
+                         BorderColor="Black"
+                         BorderThickness="2" />-->
+    </Grid>
+</ContentPage>
