@@ -127,7 +127,6 @@
     <Compile Include="Helpers\FeedbackHelpers.cs" />
     <Compile Include="Helpers\TaskUtilities.cs" />
     <Compile Include="Helpers\DesignTimeHelpers.cs" />
-    <Compile Include="Models\Kudos.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Selectors\TechAreaGroupStyleSelector.cs" />
     <Compile Include="ViewModels\AboutViewModel.cs" />

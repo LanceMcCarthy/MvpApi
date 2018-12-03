@@ -11,8 +11,8 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Advertising.WinRT.UI;
 using Microsoft.Services.Store.Engagement;
+using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
-using MvpApi.Uwp.Models;
 using Newtonsoft.Json.Linq;
 
 namespace MvpApi.Uwp.ViewModels
