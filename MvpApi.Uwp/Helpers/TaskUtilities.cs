@@ -46,12 +46,9 @@ namespace MvpApi.Uwp.Helpers
                         exceptionDispatchInfo = ExceptionDispatchInfo.Capture(ex);
                     }
 
-                }).AsTask().Wait();
+                }).AsTask(cancellationToken).Wait(cancellationToken);
 
-            if (exceptionDispatchInfo != null)
-            {
-                exceptionDispatchInfo.Throw();
-            }
+            exceptionDispatchInfo?.Throw();
 
             return result;
         }

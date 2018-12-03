@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Extensions;
-using MvpApi.Uwp.Helpers;
+using MvpApi.Services.Utilities;
 using Newtonsoft.Json;
 
 namespace MvpApi.Uwp.Dialogs
@@ -52,7 +52,7 @@ namespace MvpApi.Uwp.Dialogs
 
         public async Task AttemptSilentRefreshAsync()
         {
-            var refreshToken = StorageHelpers.LoadToken("refresh_token");
+            var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
 
             if (!string.IsNullOrEmpty(refreshToken))
             {
@@ -86,8 +86,8 @@ namespace MvpApi.Uwp.Dialogs
 
                 this.webView.Source = _signOutUri;
 
-                StorageHelpers.DeleteToken("access_token");
-                StorageHelpers.DeleteToken("refresh_token");
+                StorageHelpers.Instance.DeleteToken("access_token");
+                StorageHelpers.Instance.DeleteToken("refresh_token");
 
                 return new Tuple<bool, string>(true, "You have signed out");
             }
@@ -133,10 +133,10 @@ namespace MvpApi.Uwp.Dialogs
                     if (tokenData.ContainsKey("access_token"))
                     {
                         // Store the expiration time of the token, currently 3600 seconds (an hour)
-                        StorageHelpers.SaveLocalSetting("expires_in", tokenData["expires_in"]);
+                        StorageHelpers.Instance.SaveSetting("expires_in", tokenData["expires_in"]);
 
-                        StorageHelpers.StoreToken("access_token", tokenData["access_token"]);
-                        StorageHelpers.StoreToken("refresh_token", tokenData["refresh_token"]);
+                        StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
+                        StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
 
                         // We need to prefix the access token with the token type for the auth header. 
                         // Currently this is always "bearer", doing this to be more future proof

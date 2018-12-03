@@ -28,6 +28,7 @@ namespace MvpApi.Uwp.ViewModels
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
             {
                 await shellVm.SignInAsync();
+                RefreshState();
             }
         }
 
@@ -36,7 +37,14 @@ namespace MvpApi.Uwp.ViewModels
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
             {
                 await shellVm.SignOutAsync();
+                RefreshState();
             }
+        }
+
+        private void RefreshState()
+        {
+            RaisePropertyChanged(nameof(this.Mvp));
+            RaisePropertyChanged(nameof(this.ProfileImagePath));
         }
         
         #region Navigation

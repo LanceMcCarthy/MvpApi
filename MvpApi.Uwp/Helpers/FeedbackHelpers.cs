@@ -10,7 +10,7 @@ namespace MvpApi.Uwp.Helpers
     public sealed class FeedbackHelpers
     {
         private static volatile FeedbackHelpers _current;
-        private static object syncRoot = new Object();
+        private static readonly object SyncRoot = new object();
 
         private FeedbackHelpers() { }
 
@@ -21,7 +21,7 @@ namespace MvpApi.Uwp.Helpers
                 if (_current != null)
                     return _current;
 
-                lock (syncRoot)
+                lock (SyncRoot)
                 {
                     if (_current == null)
                         _current = new FeedbackHelpers();

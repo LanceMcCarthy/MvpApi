@@ -203,5 +203,4 @@ namespace MvpApi.Uwp.Helpers
             new VisibilityViewModel(3, "Public")
         };
     }
-
 }

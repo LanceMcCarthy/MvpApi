@@ -120,7 +120,7 @@ namespace MvpApi.Uwp.ViewModels
                 // Clean up profile objects
                 IsLoggedIn = false;
                 Mvp = null;
-                ProfileImagePath = null;
+                ProfileImagePath = "";
                 
                 // Clean up files
                 try

@@ -25,7 +25,7 @@ namespace MvpApi.Uwp.Helpers
             var displayInformation = DisplayInformation.GetForCurrentView();
             var touchCapabilities = new TouchCapabilities();
             
-            builder.AppendLine("***** Diagnositic Information *****\r\n\n");
+            builder.AppendLine("***** Diagnostic Information *****\r\n\n");
 #if DEBUG
             builder.AppendLine("DEBUG\r\n");
 #endif
