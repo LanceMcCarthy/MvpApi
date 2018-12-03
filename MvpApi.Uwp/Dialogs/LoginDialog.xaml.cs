@@ -13,6 +13,8 @@ namespace MvpApi.Uwp.Dialogs
 {
     public sealed partial class LoginDialog : ContentDialog
     {
+        // IMPORTANT Get your own ClientID key here https://mvpapi.portal.azure-api.net/
+        // This clientID will be changed frequently and your app built with this will stop working
         private static readonly string _scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
         private static readonly string _clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
         private readonly string _redirectUrl = "https://login.live.com/oauth20_desktop.srf";
