@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:MvpApi.Forms.Portable.Converters;assembly=MvpApi.Forms.Portable"
+             x:Class="MvpApi.Forms.Portable.App">
+
+    <Application.Resources>
+	    <Color x:Key="LightTextColor">#FFFFFF</Color>
+	    <Color x:Key="MediumTextColor">#FF888888</Color>
+	    <Color x:Key="DarkTextColor">#FF444444</Color>
+	    <Color x:Key="LightBlueColor">#BCE0FD</Color>
+	    <Color x:Key="MediumBlueColor">#2699FB</Color>
+	    <Color x:Key="DarkBlueColor">#007FEB</Color>
+
+	    <converters:ConfigurableBoolConverter x:Key="InvertBoolConverter"
+	                                          x:TypeArguments="x:Boolean"
+	                                          TrueResult="False"
+	                                          FalseResult="True" />
+
+	    <converters:ConfigurableBoolConverter x:Key="BoolToGreenRedConverter"
+	                                          x:TypeArguments="Color"
+	                                          TrueResult="MediumSeaGreen"
+	                                          FalseResult="DarkRed" />
+    </Application.Resources>
+</Application>
