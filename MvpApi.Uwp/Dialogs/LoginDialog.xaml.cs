@@ -19,7 +19,6 @@ namespace MvpApi.Uwp.Dialogs
         private readonly string _accessTokenUrl = "https://login.live.com/oauth20_token.srf";
         private readonly Uri _signInUrl = new Uri($"https://login.live.com/oauth20_authorize.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={_scope}");
         private readonly Uri _signOutUri = new Uri($"https://login.live.com/oauth20_logout.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf");
-        private WebView webView;
 
         public string AuthorizationCode { get; set; }
 
