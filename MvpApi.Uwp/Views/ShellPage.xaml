@@ -6,6 +6,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:controls="using:Template10.Controls"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
+      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -34,7 +35,7 @@
                                     Width="48"
                                     Height="48" />
                         <TextBlock Text="Home"
-                                   Margin="12, 0, 0, 0"
+                                   Margin="12,0,0,0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
@@ -46,7 +47,7 @@
                                     Width="48"
                                     Height="48" />
                         <TextBlock Text="Profile"
-                                   Margin="12, 0, 0, 0"
+                                   Margin="12,0,0,0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
@@ -70,7 +71,7 @@
                         </Grid>
                         
                         <TextBlock Text="Kudos"
-                                   Margin="12, 0, 0, 0"
+                                   Margin="12,0,0,0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
@@ -82,27 +83,25 @@
                                   Width="48"
                                   Height="48" />
                         <TextBlock Text="About"
-                                   Margin="12, 0, 0, 0"
+                                   Margin="12,0,0,0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
                 <controls:HamburgerButtonInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
-                        <Button>
+                        <Button Padding="0" Margin="0">
                             <Button.Content>
                                 <Grid>
                                     <SymbolIcon Symbol="Contact"
                                                 Width="48"
                                                 Height="48" />
-                                    <Ellipse x:Name="ProfileImageEllipse"
+                                    <Ellipse Visibility="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}"
                                              Margin="5"
-                                             Visibility="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}"
                                              Width="38"
                                              Height="38">
                                         <Ellipse.Fill>
-                                            <ImageBrush x:Name="ProfileImageBrush"
-                                                        ImageSource="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource BitmapImageConverter}, Mode=OneWay}" />
+                                            <ImageBrush ImageSource="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource BitmapImageConverter}, Mode=OneWay}" />
                                         </Ellipse.Fill>
                                     </Ellipse>
                                 </Grid>
@@ -110,13 +109,11 @@
                             <Button.Flyout>
                                 <MenuFlyout>
                                     <MenuFlyout.Items>
-                                        <MenuFlyoutItem x:Name="LoginMenuFlyoutItem" 
-                                                        Text="Login"
-                                                        Visibility="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolToVisibilityConverter}}"
+                                        <MenuFlyoutItem Text="Login"
+                                                        Visibility="{x:Bind ViewModel.IsLoggedIn, Converter={StaticResource InvertedBoolToVisibilityConverter}, Mode=OneWay}"
                                                         Click="{x:Bind ViewModel.LoginMenuFlyoutItem_OnClick}"/>
-                                        <MenuFlyoutItem x:Name="LogoutMenuFlyoutItem"
-                                                        Text="Logout"
-                                                        Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}}"
+                                        <MenuFlyoutItem Text="Logout"
+                                                        Visibility="{x:Bind ViewModel.IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
                                                         Click="{x:Bind ViewModel.LogoutMenuFlyoutItem_OnClick}"/>
                                     </MenuFlyout.Items>
                                 </MenuFlyout>
@@ -124,12 +121,12 @@
                         </Button>
 
                         <TextBlock Text="Login"
-                                   Visibility="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolToVisibilityConverter}}"
-                                   Margin="12, 0, 0, 0"
+                                   Visibility="{x:Bind ViewModel.IsLoggedIn, Converter={StaticResource InvertedBoolToVisibilityConverter}, Mode=OneWay}"
+                                   Margin="12,0,0,0"
                                    VerticalAlignment="Center" />
                         <TextBlock Text="Logout"
-                                   Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}}"
-                                   Margin="12, 0, 0, 0"
+                                   Visibility="{x:Bind ViewModel.IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
+                                   Margin="12,0,0,0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
@@ -137,9 +134,13 @@
         </controls:HamburgerMenu>
 
         <Grid x:Name="LoginRoot"
-              Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}}"
+              Visibility="{x:Bind ViewModel.IsLoggedIn, Converter={StaticResource InvertedBoolToVisibilityConverter}, Mode=OneWay}"
               Background="{ThemeResource SystemControlChromeHighAcrylicElementMediumBrush}">
+
+            <primitives:RadBusyIndicator IsActive="{Binding IsBusy}" Content="{Binding IsBusyMessage}"/>
+
             <WebView NavigationCompleted="{x:Bind ViewModel.WebView_OnNavigationCompleted}"
+                     Source="{Binding WebViewUri}"
                      Width="400"
                      Height="600"/>
 
