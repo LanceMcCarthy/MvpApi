@@ -3,13 +3,17 @@ using Windows.UI.Xaml.Data;
 
 namespace MvpApi.Uwp.Converters
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// Converts between DateTime and DateTimeOffset
+    /// </summary>
     internal class DateTimeToDateTimeOffsetConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             try
             {
-                DateTime date = (DateTime)value;
+                var date = (DateTime)value;
                 return new DateTimeOffset(date);
             }
             catch
@@ -22,7 +26,7 @@ namespace MvpApi.Uwp.Converters
         {
             try
             {
-                DateTimeOffset dto = (DateTimeOffset)value;
+                var dto = (DateTimeOffset)value;
                 return dto.DateTime;
             }
             catch

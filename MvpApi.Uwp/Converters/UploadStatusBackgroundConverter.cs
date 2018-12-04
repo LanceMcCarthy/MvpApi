@@ -6,7 +6,11 @@ using MvpApi.Common.Models;
 
 namespace MvpApi.Uwp.Converters
 {
-    class UploadStatusBackgroundConverter : IValueConverter
+    /// <inheritdoc />
+    /// <summary>
+    /// Converts UploadStatus enumeration to a color (a visual indicator for upload state).
+    /// </summary>
+    internal class UploadStatusBackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

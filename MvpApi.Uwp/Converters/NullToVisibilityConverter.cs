@@ -4,6 +4,7 @@ using Windows.UI.Xaml.Data;
 
 namespace MvpApi.Uwp.Converters
 {
+    /// <inheritdoc />
     /// <summary>
     /// Value Converter that can be used for empty strings as well as objects
     /// </summary>

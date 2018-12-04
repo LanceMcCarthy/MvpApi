@@ -4,6 +4,10 @@ using Windows.UI.Xaml.Data;
 
 namespace MvpApi.Uwp.Converters
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// Returns a chosen IconElement depending on the boolean value
+    /// </summary>
     internal class BoolToIconConverter : IValueConverter
     {
         public IconElement TrueIcon { get; set; }

@@ -3,13 +3,17 @@ using Windows.UI.Xaml.Data;
 
 namespace MvpApi.Uwp.Converters
 {
-    public class ThresholdConverter : IValueConverter
+    /// <inheritdoc />
+    /// <summary>
+    /// Returns one of two objects depending on a set threshold amount
+    /// </summary>
+    internal class ThresholdConverter : IValueConverter
     {
         /// <summary>
-        ///The value that the UnderResult will be returned for. Ex. If the threshold is 10, OverResult will be returned when Value hits 11
+        /// OverResult will be returned when the value is larger than the threshold amount (UnderResult is used when Threshold is equal to value)
         /// </summary>
         public int Threshold { get; set; }
-
+        
         public object UnderResult { get; set; }
 
         public object OverResult { get; set; }
