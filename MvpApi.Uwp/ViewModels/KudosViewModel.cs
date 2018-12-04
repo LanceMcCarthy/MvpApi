@@ -19,9 +19,9 @@ namespace MvpApi.Uwp.ViewModels
 {
     public class KudosViewModel : PageViewModelBase
     {
-        private StoreContext context;
-        private Visibility feedbackHubButtonVisibility;
-        private InterstitialAd myInterstitialAd;
+        private StoreContext _context;
+        private Visibility _feedbackHubButtonVisibility;
+        private InterstitialAd _myInterstitialAd;
 
         public KudosViewModel()
         {
@@ -36,8 +36,8 @@ namespace MvpApi.Uwp.ViewModels
         
         public Visibility FeedbackHubButtonVisibility
         {
-            get => feedbackHubButtonVisibility;
-            set => Set(ref feedbackHubButtonVisibility, value);
+            get => _feedbackHubButtonVisibility;
+            set => Set(ref _feedbackHubButtonVisibility, value);
         }
 
         public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
@@ -67,9 +67,9 @@ namespace MvpApi.Uwp.ViewModels
                 }
 
                 // double check the ad is ready using the State value
-                if (myInterstitialAd.State == InterstitialAdState.Ready)
+                if (_myInterstitialAd.State == InterstitialAdState.Ready)
                 {
-                    myInterstitialAd.Show();
+                    _myInterstitialAd.Show();
                 }
             }
         }
@@ -134,10 +134,10 @@ namespace MvpApi.Uwp.ViewModels
                 IsBusy = true;
                 IsBusyMessage = "in-app purchase in progress (you should see a separate window)...";
 
-                if (context == null)
-                    context = StoreContext.GetDefault();
+                if (_context == null)
+                    _context = StoreContext.GetDefault();
                 
-                var result = await context.RequestPurchaseAsync(storeId);
+                var result = await _context.RequestPurchaseAsync(storeId);
 
                 IsBusyMessage = "action complete, reviewing result...";
 
@@ -211,7 +211,7 @@ namespace MvpApi.Uwp.ViewModels
         private void RefreshAd()
         {
             // Note: Ad unit name is 'KudosVideoInterstitial'
-            myInterstitialAd.RequestAd(AdType.Video, "9nrxnx3wlh77", "1100019939");
+            _myInterstitialAd.RequestAd(AdType.Video, "9nrxnx3wlh77", "1100019939");
 
             var kudo = KudosCollection.FirstOrDefault(a => a.Title == "Video Ad");
             if (kudo != null) kudo.IsBusy = true;
@@ -225,11 +225,11 @@ namespace MvpApi.Uwp.ViewModels
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
-            myInterstitialAd = new InterstitialAd();
-            myInterstitialAd.AdReady += MyInterstitialAd_AdReady;
-            myInterstitialAd.ErrorOccurred += MyInterstitialAd_ErrorOccurred;
-            myInterstitialAd.Completed += MyInterstitialAd_Completed;
-            myInterstitialAd.Cancelled += MyInterstitialAd_Cancelled;
+            _myInterstitialAd = new InterstitialAd();
+            _myInterstitialAd.AdReady += MyInterstitialAd_AdReady;
+            _myInterstitialAd.ErrorOccurred += MyInterstitialAd_ErrorOccurred;
+            _myInterstitialAd.Completed += MyInterstitialAd_Completed;
+            _myInterstitialAd.Cancelled += MyInterstitialAd_Cancelled;
 
             RefreshAd();
 
@@ -238,10 +238,10 @@ namespace MvpApi.Uwp.ViewModels
 
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
         {
-            myInterstitialAd.AdReady -= MyInterstitialAd_AdReady;
-            myInterstitialAd.ErrorOccurred -= MyInterstitialAd_ErrorOccurred;
-            myInterstitialAd.Completed -= MyInterstitialAd_Completed;
-            myInterstitialAd.Cancelled -= MyInterstitialAd_Cancelled;
+            _myInterstitialAd.AdReady -= MyInterstitialAd_AdReady;
+            _myInterstitialAd.ErrorOccurred -= MyInterstitialAd_ErrorOccurred;
+            _myInterstitialAd.Completed -= MyInterstitialAd_Completed;
+            _myInterstitialAd.Cancelled -= MyInterstitialAd_Cancelled;
 
             return base.OnNavigatedFromAsync(pageState, suspending);
         }

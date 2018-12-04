@@ -13,14 +13,14 @@ namespace MvpApi.Uwp.ViewModels
 {
     public class AboutViewModel : PageViewModelBase
     {
-        private readonly ApplicationDataContainer roamingSettings;
+        private readonly ApplicationDataContainer _roamingSettings;
 
-        private Visibility feedbackHubButtonVisibility;
-        private int daysToKeepErrorLogs = 5;
+        private Visibility _feedbackHubButtonVisibility;
+        private int _daysToKeepErrorLogs = 5;
 
         public AboutViewModel()
         {
-            roamingSettings = ApplicationData.Current.RoamingSettings;
+            _roamingSettings = ApplicationData.Current.RoamingSettings;
         }
 
         public string AppVersion
@@ -39,29 +39,29 @@ namespace MvpApi.Uwp.ViewModels
         {
             get
             {
-                if (roamingSettings.Values.TryGetValue("DaysToKeepErrorLogs", out object rawValue))
+                if (_roamingSettings.Values.TryGetValue("DaysToKeepErrorLogs", out object rawValue))
                 {
-                    daysToKeepErrorLogs = Convert.ToInt32(rawValue);
+                    _daysToKeepErrorLogs = Convert.ToInt32(rawValue);
                 }
                 else
                 {
-                    roamingSettings.Values["DaysToKeepErrorLogs"] = daysToKeepErrorLogs;
+                    _roamingSettings.Values["DaysToKeepErrorLogs"] = _daysToKeepErrorLogs;
                 }
 
-                return daysToKeepErrorLogs;
+                return _daysToKeepErrorLogs;
             }
             set
             {
-                Set(ref daysToKeepErrorLogs, value);
+                Set(ref _daysToKeepErrorLogs, value);
 
-                roamingSettings.Values["DaysToKeepErrorLogs"] = value;
+                _roamingSettings.Values["DaysToKeepErrorLogs"] = value;
             }
         }
         
         public Visibility FeedbackHubButtonVisibility
         {
-            get => feedbackHubButtonVisibility;
-            set => Set(ref feedbackHubButtonVisibility, value);
+            get => _feedbackHubButtonVisibility;
+            set => Set(ref _feedbackHubButtonVisibility, value);
         }
 
         public async void EmailButton_Click(object sender, RoutedEventArgs e)

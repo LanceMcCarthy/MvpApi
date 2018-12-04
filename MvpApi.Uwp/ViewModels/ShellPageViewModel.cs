@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
-using Windows.Storage.Search;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Toolkit.Uwp.Connectivity;
@@ -18,9 +16,9 @@ namespace MvpApi.Uwp.ViewModels
 {
     public class ShellPageViewModel : PageViewModelBase
     {
-        private ProfileViewModel mvp;
-        private string profileImagePath;
-        private bool isLoggedIn;
+        private ProfileViewModel _mvp;
+        private string _profileImagePath;
+        private bool _isLoggedIn;
         
         public ShellPageViewModel()
         {
@@ -38,11 +36,11 @@ namespace MvpApi.Uwp.ViewModels
         /// </summary>
         public string ProfileImagePath
         {
-            get => profileImagePath;
+            get => _profileImagePath;
             set
             {
                 //enforcing propChanged
-                profileImagePath = value;
+                _profileImagePath = value;
                 RaisePropertyChanged();
             }
         }
@@ -52,8 +50,8 @@ namespace MvpApi.Uwp.ViewModels
         /// </summary>
         public ProfileViewModel Mvp
         {
-            get => mvp;
-            set => Set(ref mvp, value);
+            get => _mvp;
+            set => Set(ref _mvp, value);
         }
         
         /// <summary>
@@ -61,8 +59,8 @@ namespace MvpApi.Uwp.ViewModels
         /// </summary>
         public bool IsLoggedIn
         {
-            get => isLoggedIn;
-            set => Set(ref isLoggedIn, value);
+            get => _isLoggedIn;
+            set => Set(ref _isLoggedIn, value);
         }
 
         /// <summary>
@@ -131,11 +129,11 @@ namespace MvpApi.Uwp.ViewModels
                     {
                         await imageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
                     }
-                    
+
                     // TODO Clean up Log files (there are automatically kept to a limit of 5 by the logging system).
                     //var query = ApplicationData.Current.LocalFolder.CreateFileQuery();
                     //var files = await query.GetFilesAsync();
-
+                    
                     //foreach (var file in files)
                     //{
                     //    if (file.FileType == "log")

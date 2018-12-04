@@ -15,11 +15,9 @@ using CommonHelpers.Mvvm;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
-using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Services.NavigationService;
 using Template10.Utils;
@@ -30,18 +28,18 @@ namespace MvpApi.Uwp.ViewModels
     {
         #region Fields
 
-        private ContributionsModel originalContribution;
-        private ContributionsModel selectedContribution;
-        private bool isSelectedContributionDirty;
-        private string urlHeader = "Url";
-        private string annualQuantityHeader = "Annual Quantity";
-        private string secondAnnualQuantityHeader = "Second Annual Quantity";
-        private string annualReachHeader = "Annual Reach";
-        private bool isUrlRequired;
-        private bool isAnnualQuantityRequired;
-        private bool isSecondAnnualQuantityRequired;
-        private bool canSave;
-        private string warningMessage;
+        private ContributionsModel _originalContribution;
+        private ContributionsModel _selectedContribution;
+        private bool _isSelectedContributionDirty;
+        private string _urlHeader = "Url";
+        private string _annualQuantityHeader = "Annual Quantity";
+        private string _secondAnnualQuantityHeader = "Second Annual Quantity";
+        private string _annualReachHeader = "Annual Reach";
+        private bool _isUrlRequired;
+        private bool _isAnnualQuantityRequired;
+        private bool _isSecondAnnualQuantityRequired;
+        private bool _canSave;
+        private string _warningMessage;
 
         //private AdditionalTechnologyAreasPicker picker;
 
@@ -62,8 +60,8 @@ namespace MvpApi.Uwp.ViewModels
 
         public ContributionsModel SelectedContribution
         {
-            get => selectedContribution;
-            set => Set(ref selectedContribution, value);
+            get => _selectedContribution;
+            set => Set(ref _selectedContribution, value);
         }
         
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
@@ -72,62 +70,62 @@ namespace MvpApi.Uwp.ViewModels
         
         public bool IsSelectedContributionDirty
         {
-            get => isSelectedContributionDirty;
-            set => Set(ref isSelectedContributionDirty, value);
+            get => _isSelectedContributionDirty;
+            set => Set(ref _isSelectedContributionDirty, value);
         }
 
         public string AnnualQuantityHeader
         {
-            get => annualQuantityHeader;
-            set => Set(ref annualQuantityHeader, value);
+            get => _annualQuantityHeader;
+            set => Set(ref _annualQuantityHeader, value);
         }
 
         public string SecondAnnualQuantityHeader
         {
-            get => secondAnnualQuantityHeader;
-            set => Set(ref secondAnnualQuantityHeader, value);
+            get => _secondAnnualQuantityHeader;
+            set => Set(ref _secondAnnualQuantityHeader, value);
         }
 
         public string AnnualReachHeader
         {
-            get => annualReachHeader;
-            set => Set(ref annualReachHeader, value);
+            get => _annualReachHeader;
+            set => Set(ref _annualReachHeader, value);
         }
 
         public string UrlHeader
         {
-            get => urlHeader;
-            set => Set(ref urlHeader, value);
+            get => _urlHeader;
+            set => Set(ref _urlHeader, value);
         }
 
         public bool IsUrlRequired
         {
-            get => isUrlRequired;
-            set => Set(ref isUrlRequired, value);
+            get => _isUrlRequired;
+            set => Set(ref _isUrlRequired, value);
         }
 
         public bool IsAnnualQuantityRequired
         {
-            get => isAnnualQuantityRequired;
-            set => Set(ref isAnnualQuantityRequired, value);
+            get => _isAnnualQuantityRequired;
+            set => Set(ref _isAnnualQuantityRequired, value);
         }
 
         public bool IsSecondAnnualQuantityRequired
         {
-            get => isSecondAnnualQuantityRequired;
-            set => Set(ref isSecondAnnualQuantityRequired, value);
+            get => _isSecondAnnualQuantityRequired;
+            set => Set(ref _isSecondAnnualQuantityRequired, value);
         }
 
         public bool CanSave
         {
-            get => canSave;
-            set => Set(ref canSave, value);
+            get => _canSave;
+            set => Set(ref _canSave, value);
         }
 
         public string WarningMessage
         {
-            get => warningMessage;
-            set => Set(ref warningMessage, value);
+            get => _warningMessage;
+            set => Set(ref _warningMessage, value);
         }
 
         public bool IsAdditionalAreasReady { get; set; }
@@ -288,16 +286,16 @@ namespace MvpApi.Uwp.ViewModels
         {
             try
             {
-                if (originalContribution == null)
+                if (_originalContribution == null)
                     return;
 
-                var isTitleDifferent = SelectedContribution.Title != originalContribution.Title;
-                var isDescriptionDifferent = SelectedContribution.Description != originalContribution.Description;
-                var isUrlDifferent = SelectedContribution.ReferenceUrl != originalContribution.ReferenceUrl;
-                var isTechnologyDifferent = SelectedContribution.ContributionTechnology.Id != originalContribution.ContributionTechnology.Id;
-                var isDateDifferent = SelectedContribution.StartDate.Value.Date != originalContribution.StartDate.Value.Date;
-                var isAnnualQuantityDifferent = SelectedContribution.AnnualQuantity != originalContribution.AnnualQuantity;
-                var isSecondAnnualQuantityDifferent = SelectedContribution.SecondAnnualQuantity != originalContribution.SecondAnnualQuantity;
+                var isTitleDifferent = SelectedContribution.Title != _originalContribution.Title;
+                var isDescriptionDifferent = SelectedContribution.Description != _originalContribution.Description;
+                var isUrlDifferent = SelectedContribution.ReferenceUrl != _originalContribution.ReferenceUrl;
+                var isTechnologyDifferent = SelectedContribution.ContributionTechnology.Id != _originalContribution.ContributionTechnology.Id;
+                var isDateDifferent = SelectedContribution.StartDate.Value.Date != _originalContribution.StartDate.Value.Date;
+                var isAnnualQuantityDifferent = SelectedContribution.AnnualQuantity != _originalContribution.AnnualQuantity;
+                var isSecondAnnualQuantityDifferent = SelectedContribution.SecondAnnualQuantity != _originalContribution.SecondAnnualQuantity;
 
                 if (isTitleDifferent
                     || isDescriptionDifferent
@@ -630,7 +628,7 @@ namespace MvpApi.Uwp.ViewModels
                             DetermineCategoryTechnologyRequirements(SelectedContribution.ContributionType);
 
                             // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-                            originalContribution = SelectedContribution.Clone();
+                            _originalContribution = SelectedContribution.Clone();
 
                             if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
                             {

@@ -2,19 +2,19 @@
 {
     public class PageViewModelBase : Template10.Mvvm.ViewModelBase
     {
-        private bool isBusy;
-        private string isBusyMessage;
+        private bool _isBusy;
+        private string _isBusyMessage;
 
         public bool IsBusy
         {
-            get => isBusy;
-            set => Set(ref isBusy, value);
+            get => _isBusy;
+            set => Set(ref _isBusy, value);
         }
 
         public string IsBusyMessage
         {
-            get => isBusyMessage;
-            set => Set(ref isBusyMessage, value);
+            get => _isBusyMessage;
+            set => Set(ref _isBusyMessage, value);
         }
     }
 }

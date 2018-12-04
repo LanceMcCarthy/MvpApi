@@ -23,8 +23,8 @@ namespace MvpApi.Uwp.Extensions
             if(contribution == null)
                 throw new NullReferenceException("The contribution was null");
 
-            bool isValid = true;
-            string failedFieldName = "";
+            var isValid = true;
+            var failedFieldName = "";
             
             // Check title
             if (string.IsNullOrEmpty(contribution?.Title))
@@ -237,7 +237,7 @@ namespace MvpApi.Uwp.Extensions
         }
 
         /// <summary>
-        /// Deep clones the ContributionsModel (no reference to oringal
+        /// Deep clones the ContributionsModel (no reference to original)
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
@@ -249,7 +249,7 @@ namespace MvpApi.Uwp.Extensions
         }
 
         /// <summary>
-        /// Helper to remove items from a colleciton without collection modification issues
+        /// Helper to remove items from a collection without collection modification issues
         /// </summary>
         /// <typeparam name="TContributionsModel"></typeparam>
         /// <param name="coll">Collection of Contributions</param>

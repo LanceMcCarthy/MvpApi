@@ -14,7 +14,6 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpApi.Services.Apis;
 using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Helpers;
@@ -31,15 +30,15 @@ namespace MvpApi.Uwp.ViewModels
     {
         #region Fields
 
-        private int? currentOffset = 0;
-        private string displayTotal;
-        private DataGridSelectionMode gridSelectionMode = DataGridSelectionMode.Single;
-        private bool isMultipleSelectionEnabled;
-        private bool isLoadingMoreItems;
-        private IncrementalLoadingCollection<ContributionsModel> contributions;
-        private bool areAppbarButtonsEnabled;
-        private bool isInternetDisabled;
-        private uint batchSize = 50;
+        private int? _currentOffset = 0;
+        private string _displayTotal;
+        private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
+        private bool _isMultipleSelectionEnabled;
+        private bool _isLoadingMoreItems;
+        private IncrementalLoadingCollection<ContributionsModel> _contributions;
+        private bool _areAppBarButtonsEnabled;
+        private bool _isInternetDisabled;
+        private uint _batchSize = 50;
 
         #endregion
 
@@ -76,8 +75,8 @@ namespace MvpApi.Uwp.ViewModels
 
         public IncrementalLoadingCollection<ContributionsModel> Contributions
         {
-            get => contributions;
-            set => Set(ref contributions, value);
+            get => _contributions;
+            set => Set(ref _contributions, value);
         }
         
         public ObservableCollection<object> SelectedContributions { get; set; }
@@ -88,16 +87,16 @@ namespace MvpApi.Uwp.ViewModels
 
         public string DisplayTotal
         {
-            get => displayTotal;
-            set => Set(ref displayTotal, value);
+            get => _displayTotal;
+            set => Set(ref _displayTotal, value);
         }
 
         public bool IsMultipleSelectionEnabled
         {
-            get => isMultipleSelectionEnabled;
+            get => _isMultipleSelectionEnabled;
             set
             {
-                Set(ref isMultipleSelectionEnabled, value);
+                Set(ref _isMultipleSelectionEnabled, value);
 
                 GridSelectionMode = value
                     ? DataGridSelectionMode.Multiple
@@ -107,26 +106,26 @@ namespace MvpApi.Uwp.ViewModels
 
         public DataGridSelectionMode GridSelectionMode
         {
-            get => gridSelectionMode;
-            set => Set(ref gridSelectionMode, value);
+            get => _gridSelectionMode;
+            set => Set(ref _gridSelectionMode, value);
         }
 
         public bool AreAppbarButtonsEnabled
         {
-            get => areAppbarButtonsEnabled;
-            set => Set(ref areAppbarButtonsEnabled, value);
+            get => _areAppBarButtonsEnabled;
+            set => Set(ref _areAppBarButtonsEnabled, value);
         }
 
         public bool IsLoadingMoreItems
         {
-            get => isLoadingMoreItems;
-            set => Set(ref isLoadingMoreItems, value);
+            get => _isLoadingMoreItems;
+            set => Set(ref _isLoadingMoreItems, value);
         }
 
         public bool IsInternetDisabled
         {
-            get => isInternetDisabled;
-            set => Set(ref isInternetDisabled, value);
+            get => _isInternetDisabled;
+            set => Set(ref _isInternetDisabled, value);
         }
 
         public uint SelectedBatchSize
@@ -135,18 +134,18 @@ namespace MvpApi.Uwp.ViewModels
             {
                 if (ApplicationData.Current.LocalSettings.Values.TryGetValue("BatchSize", out object rawValue))
                 {
-                    batchSize = Convert.ToUInt32(rawValue);
+                    _batchSize = Convert.ToUInt32(rawValue);
                 }
                 else
                 {
-                    ApplicationData.Current.LocalSettings.Values["BatchSize"] = batchSize;
+                    ApplicationData.Current.LocalSettings.Values["BatchSize"] = _batchSize;
                 }
 
-                return batchSize;
+                return _batchSize;
             }
             set
             {
-                Set(ref batchSize, value);
+                Set(ref _batchSize, value);
 
                 ApplicationData.Current.LocalSettings.Values["BatchSize"] = value;
 
@@ -197,7 +196,7 @@ namespace MvpApi.Uwp.ViewModels
                 // We can do this by resetting the offset and starting over
                 IsBusyMessage = "refreshing contributions...";
 
-                currentOffset = 0;
+                _currentOffset = 0;
 
                 Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
 
@@ -269,14 +268,14 @@ namespace MvpApi.Uwp.ViewModels
                 // The IsBusy flag is used for when deleting items, when we want to block the UI
                 IsLoadingMoreItems = true;
 
-                var result = await App.ApiService.GetContributionsAsync(currentOffset, (int)count);
+                var result = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
 
                 if (result == null)
                     return null;
 
-                currentOffset = result.PagingIndex;
+                _currentOffset = result.PagingIndex;
 
-                DisplayTotal = $"{currentOffset} of {result.TotalContributions}";
+                DisplayTotal = $"{_currentOffset} of {result.TotalContributions}";
 
                 // If we've recieved all the contributions, return null to stop automatic loading
                 if (result.PagingIndex == result.TotalContributions)
@@ -309,7 +308,7 @@ namespace MvpApi.Uwp.ViewModels
             }
 
             IsMultipleSelectionEnabled = false;
-            currentOffset = 0;
+            _currentOffset = 0;
 
             Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = SelectedBatchSize };
         }

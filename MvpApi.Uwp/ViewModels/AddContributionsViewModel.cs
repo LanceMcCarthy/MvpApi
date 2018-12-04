@@ -15,11 +15,9 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
-using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Mvvm;
 using Template10.Services.NavigationService;
@@ -31,17 +29,17 @@ namespace MvpApi.Uwp.ViewModels
     {
         #region Fields
         
-        private ContributionsModel selectedContribution;
-        private string urlHeader = "Url";
-        private string annualQuantityHeader = "Annual Quantity";
-        private string secondAnnualQuantityHeader = "Second Annual Quantity";
-        private string annualReachHeader = "Annual Reach";
-        private bool isUrlRequired;
-        private bool isAnnualQuantityRequired;
-        private bool isSecondAnnualQuantityRequired;
-        private bool canUpload = true;
-        private bool isEditingQueuedItem;
-        private string warningMessage;
+        private ContributionsModel _selectedContribution;
+        private string _urlHeader = "Url";
+        private string _annualQuantityHeader = "Annual Quantity";
+        private string _secondAnnualQuantityHeader = "Second Annual Quantity";
+        private string _annualReachHeader = "Annual Reach";
+        private bool _isUrlRequired;
+        private bool _isAnnualQuantityRequired;
+        private bool _isSecondAnnualQuantityRequired;
+        private bool _canUpload = true;
+        private bool _isEditingQueuedItem;
+        private string _warningMessage;
 
         #endregion
 
@@ -79,70 +77,70 @@ namespace MvpApi.Uwp.ViewModels
 
         public ContributionsModel SelectedContribution
         {
-            get => selectedContribution;
-            set => Set(ref selectedContribution, value);
+            get => _selectedContribution;
+            set => Set(ref _selectedContribution, value);
         }
         
         // Data entry control headers, using VM properties to alert validation violations
         
         public string AnnualQuantityHeader
         {
-            get => annualQuantityHeader;
-            set => Set(ref annualQuantityHeader, value);
+            get => _annualQuantityHeader;
+            set => Set(ref _annualQuantityHeader, value);
         }
 
         public string SecondAnnualQuantityHeader
         {
-            get => secondAnnualQuantityHeader;
-            set => Set(ref secondAnnualQuantityHeader, value);
+            get => _secondAnnualQuantityHeader;
+            set => Set(ref _secondAnnualQuantityHeader, value);
         }
 
         public string AnnualReachHeader
         {
-            get => annualReachHeader;
-            set => Set(ref annualReachHeader, value);
+            get => _annualReachHeader;
+            set => Set(ref _annualReachHeader, value);
         }
 
         public string UrlHeader
         {
-            get => urlHeader;
-            set => Set(ref urlHeader, value);
+            get => _urlHeader;
+            set => Set(ref _urlHeader, value);
         }
 
         public bool IsUrlRequired
         {
-            get => isUrlRequired;
-            set => Set(ref isUrlRequired, value);
+            get => _isUrlRequired;
+            set => Set(ref _isUrlRequired, value);
         }
 
         public bool IsAnnualQuantityRequired
         {
-            get => isAnnualQuantityRequired;
-            set => Set(ref isAnnualQuantityRequired, value);
+            get => _isAnnualQuantityRequired;
+            set => Set(ref _isAnnualQuantityRequired, value);
         }
 
         public bool IsSecondAnnualQuantityRequired
         {
-            get => isSecondAnnualQuantityRequired;
-            set => Set(ref isSecondAnnualQuantityRequired, value);
+            get => _isSecondAnnualQuantityRequired;
+            set => Set(ref _isSecondAnnualQuantityRequired, value);
         }
         
         public bool CanUpload
         {
-            get => canUpload;
-            set => Set(ref canUpload, value);
+            get => _canUpload;
+            set => Set(ref _canUpload, value);
         }
 
         public bool IsEditingQueuedItem
         {
-            get => isEditingQueuedItem;
-            set => Set(ref isEditingQueuedItem, value);
+            get => _isEditingQueuedItem;
+            set => Set(ref _isEditingQueuedItem, value);
         }
 
         public string WarningMessage
         {
-            get => warningMessage;
-            set => Set(ref warningMessage, value);
+            get => _warningMessage;
+            set => Set(ref _warningMessage, value);
         }
 
         // Commands

@@ -26,13 +26,13 @@ namespace MvpApi.Uwp.Dialogs
 
         public LoginDialog()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         private void LoginDialog_OnSecondaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            this.AuthorizationCode = "";
-            this.Hide();
+            AuthorizationCode = "";
+            Hide();
         }
         
         private async void WebView_OnLoadCompleted(object sender, NavigationEventArgs e)
@@ -43,12 +43,12 @@ namespace MvpApi.Uwp.Dialogs
             if (url.Contains("code="))
             {
                 var authCode = e.Uri.ExtractQueryValue("code");
-                await this.RequestAuthorizationAsync(authCode);
+                await RequestAuthorizationAsync(authCode);
             }
             else if (url.Contains("lc="))
             {
                 // Redirect to signin page if there's a bounce
-                this.webView.Source = _signInUrl;
+                LoginWebView.Source = _signInUrl;
             }
         }
 
@@ -59,12 +59,12 @@ namespace MvpApi.Uwp.Dialogs
             if (!string.IsNullOrEmpty(refreshToken))
             {
                 // there is a token stored, let's try to use it and not even have to show UI
-                await this.RequestAuthorizationAsync(refreshToken, true);
+                await RequestAuthorizationAsync(refreshToken, true);
             }
             else
             {
                 // no token available, show dialog to get user to signin and accept
-                await this.ShowAsync();
+                await ShowAsync();
             }
         }
 
@@ -74,9 +74,9 @@ namespace MvpApi.Uwp.Dialogs
         /// <returns></returns>
         public async Task SignInAsync()
         {
-            await this.ShowAsync();
+            await ShowAsync();
 
-            this.webView.Source = _signInUrl;
+            LoginWebView.Source = _signInUrl;
         }
 
         // Shows ContentDialog to sign out
@@ -84,9 +84,9 @@ namespace MvpApi.Uwp.Dialogs
         {
             try
             {
-                await this.ShowAsync();
+                await ShowAsync();
 
-                this.webView.Source = _signOutUri;
+                LoginWebView.Source = _signOutUri;
 
                 StorageHelpers.Instance.DeleteToken("access_token");
                 StorageHelpers.Instance.DeleteToken("refresh_token");
@@ -100,7 +100,7 @@ namespace MvpApi.Uwp.Dialogs
             }
             finally
             {
-                this.Hide();
+                Hide();
             }
         }
 
@@ -146,12 +146,12 @@ namespace MvpApi.Uwp.Dialogs
                         var cleanedAccessToken = tokenData["access_token"].Split('&')[0];
 
                         // set public property that is "returned"
-                        this.AuthorizationCode = $"{tokenType} {cleanedAccessToken}";
+                        AuthorizationCode = $"{tokenType} {cleanedAccessToken}";
                     }
                     else
                     {
                         // Always set the Authorization code to null if there was a problem.
-                        this.AuthorizationCode = null;
+                        AuthorizationCode = null;
                     }
                 }
             }
@@ -167,7 +167,7 @@ namespace MvpApi.Uwp.Dialogs
                 Debug.WriteLine($"LoginDialog HttpRequestException: {e}");
 
                 // Always set the Authorization code to null if there was a problem.
-                this.AuthorizationCode = null;
+                AuthorizationCode = null;
             }
             catch (Exception e)
             {
@@ -175,11 +175,11 @@ namespace MvpApi.Uwp.Dialogs
                 Debug.WriteLine($"LoginDialog Exception: {e}");
 
                 // Always set the Authorization code to null if there was a problem.
-                this.AuthorizationCode = null;
+                AuthorizationCode = null;
             }
             finally
             {
-                this.Hide();
+                Hide();
             }
         }
     }

@@ -11,33 +11,33 @@ namespace MvpApi.Uwp.Dialogs
     public sealed partial class AdditionalTechnologyAreasPicker : ContentDialog
     {
         public ContributionDetailViewModel Context { get; set; }
-        private CollectionViewSource cvs;
+        private CollectionViewSource _cvs;
 
         public AdditionalTechnologyAreasPicker()
         {
-            this.DataContext = Context;
+            DataContext = Context;
 
             InitializeComponent();
             
             TechnologyAreasListView.SelectionChanged += TechnologyAreasListView_OnSelectionChanged;
 
-            this.Opened += AdditionalTechnologyAreasPicker_Opened;
+            Opened += AdditionalTechnologyAreasPicker_Opened;
         }
 
         private void AdditionalTechnologyAreasPicker_Opened(ContentDialog sender, ContentDialogOpenedEventArgs args)
         {
-            if (cvs == null)
+            if (_cvs == null)
             {
                 BusyIndicator.IsActive = true;
 
-                cvs = new CollectionViewSource
+                _cvs = new CollectionViewSource
                 {
                     Source = Context.CategoryAreas,
                     IsSourceGrouped = true,
                     ItemsPath = new PropertyPath("ContributionAreas")
                 };
 
-                TechnologyAreasListView.ItemsSource = cvs.View;
+                TechnologyAreasListView.ItemsSource = _cvs.View;
 
                 BusyIndicator.IsActive = false;
             }
