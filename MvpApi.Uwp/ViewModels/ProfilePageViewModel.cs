@@ -15,6 +15,7 @@ namespace MvpApi.Uwp.ViewModels
     {
         private ProfileViewModel _mvp;
         private string _profileImagePath;
+        private bool _isInEditMode;
 
         public ProfilePageViewModel()
         {
@@ -36,11 +37,22 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _profileImagePath, value);
         }
 
-        public async void EditProfileButton_Click(object sender, RoutedEventArgs e)
+        public bool IsInEditMode
         {
-            await new MessageDialog("To Be Implemented soon").ShowAsync();
+            get => _isInEditMode;
+            set => Set(ref _isInEditMode, value);
         }
-        
+
+        public async void SaveProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            await new MessageDialog("Changes cannot be saved at this time, the API service has not implemented SetProfile yet. This will be implemented soon.").ShowAsync();
+        }
+
+        public async void UpdateProfilePictureButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            await new MessageDialog("Changes cannot be saved at this time, the API service has not implemented SetProfilePicture yet. This will be implemented soon.").ShowAsync();
+        }
+
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
