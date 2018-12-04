@@ -37,9 +37,16 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
             {
+                IsBusy = true;
+                IsBusyMessage = "signing in...";
+
                 await shellVm.SignInAsync();
+
                 this.Mvp = shellVm.Mvp;
                 this.ProfileImagePath = shellVm.ProfileImagePath;
+
+                IsBusyMessage = "";
+                IsBusy = false;
             }
         }
 
@@ -47,9 +54,16 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
             {
+                IsBusy = true;
+                IsBusyMessage = "signing out...";
+
                 await shellVm.SignOutAsync();
+
                 this.Mvp = null;
                 this.ProfileImagePath = null;
+
+                IsBusyMessage = "";
+                IsBusy = false;
             }
         }
         
@@ -61,11 +75,17 @@ namespace MvpApi.Uwp.ViewModels
             {
                 if (!shellVm.IsLoggedIn)
                 {
+                    IsBusy = true;
+                    IsBusyMessage = "signing in...";
+
                     await shellVm.SignInAsync();
                 }
 
                 this.Mvp = shellVm.Mvp;
                 this.ProfileImagePath = shellVm.ProfileImagePath;
+
+                IsBusyMessage = "";
+                IsBusy = false;
             }
         }
 

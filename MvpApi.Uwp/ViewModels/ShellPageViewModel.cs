@@ -89,14 +89,14 @@ namespace MvpApi.Uwp.ViewModels
                 if (!string.IsNullOrEmpty(_loginManager.AuthorizationCode))
                 {
                     App.ApiService = new MvpApiService(_loginManager.AuthorizationCode);
-
-                    IsLoggedIn = true;
-
+                    
                     IsBusyMessage = "downloading profile info...";
                     Mvp = await App.ApiService.GetProfileAsync();
 
                     IsBusyMessage = "downloading profile image...";
                     ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+
+                    IsLoggedIn = true;
                 }
             }
             catch (Exception e)
