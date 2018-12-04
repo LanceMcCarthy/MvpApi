@@ -138,6 +138,9 @@ namespace MvpApi.Uwp.Views
 
         private async Task InitializeMvpApiAsync(string authorizationHeader)
         {
+            ViewModel.IsBusy = true;
+            ViewModel.IsBusyMessage = "refreshing session...";
+
             // Hide overlay if it's still visible
             if (LoginOverlay.Visibility == Visibility.Visible)
             {
@@ -160,6 +163,9 @@ namespace MvpApi.Uwp.Views
             
             //Navigate to the home page
             await BootStrapper.Current.NavigationService.NavigateAsync(typeof(HomePage));
+
+            ViewModel.IsBusy = false;
+            ViewModel.IsBusyMessage = "";
         }
 
         public async Task SignOutAsync()
