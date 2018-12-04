@@ -49,10 +49,10 @@
                         Grid.Row="0"
                         Grid.Column="1"
                         VerticalAlignment="Top">
-                <TextBlock Text="{Binding Mvp.FullName, FallbackValue=LanceMcCarthy}"
+                <TextBlock Text="{Binding Mvp.FullName}"
                            Style="{ThemeResource HeaderTextBlockStyle}"
                            TextWrapping="Wrap" />
-                <TextBlock Text="{Binding Mvp.Headline, FallbackValue=Headline}"
+                <TextBlock Text="{Binding Mvp.Headline}"
                            Style="{StaticResource TitleTextBlockStyle}" />
             </StackPanel>
 
@@ -63,7 +63,7 @@
                     <TextBlock Text="First MVP award in:"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                Margin="0,0,10,0" />
-                    <TextBlock Text="{Binding Mvp.FirstAwardYear, FallbackValue=2014}"
+                    <TextBlock Text="{Binding Mvp.FirstAwardYear}"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                FontWeight="SemiBold"
                                TextWrapping="Wrap" />
@@ -72,7 +72,7 @@
                     <TextBlock Text="Years as MVP:"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                Margin="0,0,10,0" />
-                    <TextBlock Text="{Binding Mvp.YearsAsMvp, FallbackValue=5}"
+                    <TextBlock Text="{Binding Mvp.YearsAsMvp}"
                                Style="{ThemeResource SubtitleTextBlockStyle}"
                                FontWeight="SemiBold"
                                TextWrapping="Wrap" />
@@ -81,17 +81,17 @@
         </Grid>
 
         <ScrollViewer Grid.Row="2">
-            <TextBlock Text="{Binding Mvp.Biography, FallbackValue=BiographyGoesHere}"
+            <TextBlock Text="{Binding Mvp.Biography}"
                        TextWrapping="Wrap"
                        Margin="20,20,20,0"/>
         </ScrollViewer>
 
         <CommandBar Grid.Row="3">
-            <AppBarButton x:Name="EditProfileButton"
+            <!--<AppBarButton x:Name="EditProfileButton"
                           Label="log in"
                           Icon="Edit"
                           Click="{x:Bind ViewModel.LoginButton_Click}"
-                          Visibility="{Binding Mvp, Converter={StaticResource InvertedNullToVisibilityConverter}}" />
+                          Visibility="{Binding Mvp, Converter={StaticResource InvertedNullToVisibilityConverter}}" />-->
             <AppBarButton x:Name="LoginButton"
                           Label="log in"
                           Icon="AddFriend"
