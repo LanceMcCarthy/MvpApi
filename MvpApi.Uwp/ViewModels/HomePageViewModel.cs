@@ -333,12 +333,12 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     IsBusy = true;
                     IsBusyMessage = "logging in...";
-
+                    
                     await shellVm.SignInAsync();
 
                     if (shellVm.IsLoggedIn)
                     {
-                        // Reloads DataGrid
+                        IsBusyMessage = "loading contributions...";
                         ResetData();
                     }
 
