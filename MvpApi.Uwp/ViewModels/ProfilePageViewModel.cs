@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
+using MvpApi.Uwp.Views;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -33,52 +36,23 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _profileImagePath, value);
         }
 
-        public async void LoginButton_Click(object sender, RoutedEventArgs e)
+        public async void EditProfileButton_Click(object sender, RoutedEventArgs e)
         {
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
-            {
-                IsBusy = true;
-                IsBusyMessage = "signing in...";
-
-                await shellVm.SignInAsync();
-
-                this.Mvp = shellVm.Mvp;
-                this.ProfileImagePath = shellVm.ProfileImagePath;
-
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
-        }
-
-        public async void LogoutButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
-            {
-                IsBusy = true;
-                IsBusyMessage = "signing out...";
-
-                await shellVm.SignOutAsync();
-
-                this.Mvp = null;
-                this.ProfileImagePath = null;
-
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
+            await new MessageDialog("To Be Implemented soon").ShowAsync();
         }
         
         #region Navigation
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
+            if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
             {
                 if (!shellVm.IsLoggedIn)
                 {
                     IsBusy = true;
                     IsBusyMessage = "signing in...";
 
-                    await shellVm.SignInAsync();
+                    await ShellPage.Instance.SignInAsync();
                 }
 
                 this.Mvp = shellVm.Mvp;

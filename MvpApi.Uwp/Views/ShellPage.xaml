@@ -17,7 +17,7 @@
         <controls:HamburgerMenu x:Name="Menu"
                                 VisualStateNarrowMinWidth="0"
                                 VisualStateNormalMinWidth="641"
-                                VisualStateWideMinWidth="1600" 
+                                VisualStateWideMinWidth="1600"
                                 NavButtonCheckedBackground="#44FFFFFF"
                                 NavButtonForeground="{ThemeResource ApplicationForegroundThemeBrush}"
                                 NavButtonCheckedForeground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
@@ -69,7 +69,7 @@
                                       Width="48"
                                       Height="48" />
                         </Grid>
-                        
+
                         <TextBlock Text="Kudos"
                                    Margin="12,0,0,0"
                                    VerticalAlignment="Center" />
@@ -87,66 +87,46 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
-                <controls:HamburgerButtonInfo>
+                <controls:HamburgerButtonInfo Tapped="LogoutButton_OnClick" >
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
-                        <Button Padding="0" Margin="0">
-                            <Button.Content>
-                                <Grid>
-                                    <SymbolIcon Symbol="Contact"
-                                                Width="48"
-                                                Height="48" />
-                                    <Ellipse Visibility="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}"
-                                             Margin="5"
-                                             Width="38"
-                                             Height="38">
-                                        <Ellipse.Fill>
-                                            <ImageBrush ImageSource="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource BitmapImageConverter}, Mode=OneWay}" />
-                                        </Ellipse.Fill>
-                                    </Ellipse>
-                                </Grid>
-                            </Button.Content>
-                            <Button.Flyout>
-                                <MenuFlyout>
-                                    <MenuFlyout.Items>
-                                        <MenuFlyoutItem Text="Login"
-                                                        Visibility="{x:Bind ViewModel.IsLoggedIn, Converter={StaticResource InvertedBoolToVisibilityConverter}, Mode=OneWay}"
-                                                        Click="{x:Bind ViewModel.LoginMenuFlyoutItem_OnClick}"/>
-                                        <MenuFlyoutItem Text="Logout"
-                                                        Visibility="{x:Bind ViewModel.IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
-                                                        Click="{x:Bind ViewModel.LogoutMenuFlyoutItem_OnClick}"/>
-                                    </MenuFlyout.Items>
-                                </MenuFlyout>
-                            </Button.Flyout>
-                        </Button>
+                        <Grid>
+                            <SymbolIcon Symbol="Contact"
+                                        Width="48"
+                                        Height="48" />
+                            <Ellipse Visibility="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}"
+                                     Margin="5"
+                                     Width="38"
+                                     Height="38">
+                                <Ellipse.Fill>
+                                    <ImageBrush ImageSource="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource BitmapImageConverter}, Mode=OneWay}" />
+                                </Ellipse.Fill>
+                            </Ellipse>
+                        </Grid>
 
-                        <TextBlock Text="Login"
-                                   Visibility="{x:Bind ViewModel.IsLoggedIn, Converter={StaticResource InvertedBoolToVisibilityConverter}, Mode=OneWay}"
-                                   Margin="12,0,0,0"
-                                   VerticalAlignment="Center" />
-                        <TextBlock Text="Logout"
-                                   Visibility="{x:Bind ViewModel.IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}"
-                                   Margin="12,0,0,0"
-                                   VerticalAlignment="Center" />
+                        <Button Click="LogoutButton_OnClick"
+                                Content="Logout"
+                                Background="DarkRed"
+                                Foreground="White"
+                                Margin="10,0,0,0" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
             </controls:HamburgerMenu.SecondaryButtons>
         </controls:HamburgerMenu>
 
-        <Grid x:Name="LoginRoot"
-              Visibility="{x:Bind ViewModel.IsLoggedIn, Converter={StaticResource InvertedBoolToVisibilityConverter}, Mode=OneWay}"
+        <Grid x:Name="LoginOverlay"
+              Visibility="Collapsed"
               Background="{ThemeResource SystemControlChromeHighAcrylicElementMediumBrush}">
 
-            <primitives:RadBusyIndicator IsActive="{Binding IsBusy}" Content="{Binding IsBusyMessage}"/>
-
-            <WebView NavigationCompleted="{x:Bind ViewModel.WebView_OnNavigationCompleted}"
-                     Source="{Binding WebViewUri}"
+            <WebView x:Name="AuthWebView"
+                     NavigationCompleted="WebView_OnNavigationCompleted"
                      Width="400"
-                     Height="600"/>
+                     Height="600"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center" />
 
             <Button Content="Why so many permissions?"
                     Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBoolConverter}}"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Margin="10">
@@ -154,16 +134,42 @@
                     <Flyout>
                         <Grid Width="400">
                             <StackPanel>
-                                <TextBlock Text="The permissions list you see is the smallest scope available by the Microsoft Account login service. This app does NOT use anything from your Microsoft account directly, it's only used to get an access token."
-                                           TextWrapping="Wrap" 
+                                <TextBlock Text="The permissions list you see is the smallest scope available by the Microsoft Account login service and app does not use anything from your Microsoft account directly."
+                                           TextWrapping="Wrap"
                                            Margin="0,0,0,10" />
-                                <TextBlock Text="When you login, MVP Companion gets an access token and a refresh token from Microsoft Live, this is used to authenticate every call to the MVP portal API."
-                                           TextWrapping="Wrap"/>
+                                <TextBlock Text="When you login, MVP Companion gets an access token and a refresh token from Microsoft Live, this token is then used to authenticate every call to the MVP portal API."
+                                           TextWrapping="Wrap" />
                             </StackPanel>
                         </Grid>
                     </Flyout>
                 </Button.Flyout>
             </Button>
+
+            <Button Content="Problems?"
+                    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="10">
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel Width="300">
+                            <TextBlock Text="If you're having trouble signing in, or staying signed in, there might be a problem with the token cache. Click the button below to get a fresh start."
+                                       TextWrapping="Wrap"
+                                       Margin="5" />
+                            <Button Content="Reset Cache"
+                                    Background="DarkRed"
+                                    Foreground="White"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="5"
+                                    Click="LogoutButton_OnClick" />
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
         </Grid>
+
+        <primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                     Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}" 
+                                     AnimationStyle="AnimationStyle1"/>
     </Grid>
 </Page>
