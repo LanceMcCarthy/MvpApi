@@ -38,6 +38,18 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
+                <controls:HamburgerButtonInfo PageType="local:ProfilePage"
+                                              ClearHistory="True">
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <SymbolIcon Symbol="ContactInfo"
+                                    Width="48"
+                                    Height="48" />
+                        <TextBlock Text="Profile"
+                                   Margin="12, 0, 0, 0"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </controls:HamburgerButtonInfo>
             </controls:HamburgerMenu.PrimaryButtons>
 
             <controls:HamburgerMenu.SecondaryButtons>
@@ -74,31 +86,83 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
-                <controls:HamburgerButtonInfo PageType="local:ProfilePage">
+                <controls:HamburgerButtonInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
-                        <Grid>
-                            <SymbolIcon Symbol="Contact"
-                                        Width="48"
-                                        Height="48" />
-                            <Ellipse x:Name="ProfileImageEllipse"
-                                     Margin="5"
-                                     Visibility="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}"
-                                     Width="38"
-                                     Height="38">
-                                <Ellipse.Fill>
-                                    <ImageBrush x:Name="ProfileImageBrush"
-                                                ImageSource="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource BitmapImageConverter}, Mode=OneWay}" />
-                                </Ellipse.Fill>
-                            </Ellipse>
-                        </Grid>
+                        <Button>
+                            <Button.Content>
+                                <Grid>
+                                    <SymbolIcon Symbol="Contact"
+                                                Width="48"
+                                                Height="48" />
+                                    <Ellipse x:Name="ProfileImageEllipse"
+                                             Margin="5"
+                                             Visibility="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}"
+                                             Width="38"
+                                             Height="38">
+                                        <Ellipse.Fill>
+                                            <ImageBrush x:Name="ProfileImageBrush"
+                                                        ImageSource="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource BitmapImageConverter}, Mode=OneWay}" />
+                                        </Ellipse.Fill>
+                                    </Ellipse>
+                                </Grid>
+                            </Button.Content>
+                            <Button.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyout.Items>
+                                        <MenuFlyoutItem x:Name="LoginMenuFlyoutItem" 
+                                                        Text="Login"
+                                                        Visibility="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolToVisibilityConverter}}"
+                                                        Click="{x:Bind ViewModel.LoginMenuFlyoutItem_OnClick}"/>
+                                        <MenuFlyoutItem x:Name="LogoutMenuFlyoutItem"
+                                                        Text="Logout"
+                                                        Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                        Click="{x:Bind ViewModel.LogoutMenuFlyoutItem_OnClick}"/>
+                                    </MenuFlyout.Items>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
 
-                        <TextBlock Text="Profile"
+                        <TextBlock Text="Login"
+                                   Visibility="{Binding IsLoggedIn, Converter={StaticResource InvertedBoolToVisibilityConverter}}"
+                                   Margin="12, 0, 0, 0"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Text="Logout"
+                                   Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}}"
                                    Margin="12, 0, 0, 0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
             </controls:HamburgerMenu.SecondaryButtons>
         </controls:HamburgerMenu>
+
+        <Grid x:Name="LoginRoot"
+              Visibility="{Binding IsLoggedIn, Converter={StaticResource BoolToVisibilityConverter}}"
+              Background="{ThemeResource SystemControlChromeHighAcrylicElementMediumBrush}">
+            <WebView NavigationCompleted="{x:Bind ViewModel.WebView_OnNavigationCompleted}"
+                     Width="400"
+                     Height="600"/>
+
+            <Button Content="Why so many permissions?"
+                    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBoolConverter}}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="10">
+                <Button.Flyout>
+                    <Flyout>
+                        <Grid Width="400">
+                            <StackPanel>
+                                <TextBlock Text="The permissions list you see is the smallest scope available by the Microsoft Account login service. This app does NOT use anything from your Microsoft account directly, it's only used to get an access token."
+                                           TextWrapping="Wrap" 
+                                           Margin="0,0,0,10" />
+                                <TextBlock Text="When you login, MVP Companion gets an access token and a refresh token from Microsoft Live, this is used to authenticate every call to the MVP portal API."
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Grid>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
     </Grid>
 </Page>
