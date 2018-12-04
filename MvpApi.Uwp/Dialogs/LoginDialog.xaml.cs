@@ -23,7 +23,7 @@ namespace MvpApi.Uwp.Dialogs
         private readonly Uri _signOutUri = new Uri($"https://login.live.com/oauth20_logout.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf");
 
         public string AuthorizationCode { get; set; }
-
+        
         public LoginDialog()
         {
             InitializeComponent();
@@ -34,22 +34,25 @@ namespace MvpApi.Uwp.Dialogs
             AuthorizationCode = "";
             Hide();
         }
-        
+
         private async void WebView_OnLoadCompleted(object sender, NavigationEventArgs e)
         {
-            var url = e.Uri.AbsoluteUri;
-
+            if (e.Uri == null || e.Uri.AbsoluteUri == null)
+            {
+                LoginWebView.Source = _signInUrl;
+                return;
+            }
+            
             // get token
-            if (url.Contains("code="))
+            if (e.Uri.AbsoluteUri.Contains("code="))
             {
                 var authCode = e.Uri.ExtractQueryValue("code");
                 await RequestAuthorizationAsync(authCode);
             }
-            else if (url.Contains("lc="))
+            else if (e.Uri.AbsoluteUri.Contains("lc="))
             {
                 // Redirect to signin page if there's a bounce
                 LoginWebView.Source = _signInUrl;
-                LoginWebView.Refresh();
             }
         }
 
@@ -65,9 +68,7 @@ namespace MvpApi.Uwp.Dialogs
             else
             {
                 // no token available, show dialog to get user to signin and accept
-                await ShowAsync();
-                LoginWebView.Source = _signInUrl;
-                LoginWebView.Refresh();
+                await SignInAsync();
             }
         }
 
