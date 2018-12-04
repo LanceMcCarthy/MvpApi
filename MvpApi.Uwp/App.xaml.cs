@@ -14,7 +14,7 @@ namespace MvpApi.Uwp
 {
     sealed partial class App : BootStrapper
     {
-        //public static ShellPage ShellPage { get; private set; }
+        public static ShellPage ShellPage { get; private set; }
         
         public static MvpApiService ApiService { get; set; }
         

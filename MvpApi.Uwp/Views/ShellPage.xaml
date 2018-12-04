@@ -170,6 +170,6 @@
 
         <primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                                      Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}" 
-                                     AnimationStyle="AnimationStyle1"/>
+                                     AnimationStyle="AnimationStyle7"/>
     </Grid>
 </Page>
