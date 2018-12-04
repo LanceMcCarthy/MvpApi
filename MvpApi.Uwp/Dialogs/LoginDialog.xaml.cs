@@ -49,6 +49,7 @@ namespace MvpApi.Uwp.Dialogs
             {
                 // Redirect to signin page if there's a bounce
                 LoginWebView.Source = _signInUrl;
+                LoginWebView.Refresh();
             }
         }
 
@@ -65,6 +66,8 @@ namespace MvpApi.Uwp.Dialogs
             {
                 // no token available, show dialog to get user to signin and accept
                 await ShowAsync();
+                LoginWebView.Source = _signInUrl;
+                LoginWebView.Refresh();
             }
         }
 
@@ -75,7 +78,6 @@ namespace MvpApi.Uwp.Dialogs
         public async Task SignInAsync()
         {
             await ShowAsync();
-
             LoginWebView.Source = _signInUrl;
         }
 
