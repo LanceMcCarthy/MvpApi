@@ -580,7 +580,7 @@ namespace MvpApi.Services.Apis
             return null;
         }
 
-        public async Task<IReadOnlyList<OnlineIdentityViewModel>> GetOnlineIdentitiesAsync()
+        public async Task<IReadOnlyList<OnlineIdentity>> GetOnlineIdentitiesAsync()
         {
             try
             {
@@ -589,7 +589,7 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<IReadOnlyList<OnlineIdentityViewModel>>(json);
+                        return JsonConvert.DeserializeObject<IReadOnlyList<OnlineIdentity>>(json);
                     }
                     else
                     {

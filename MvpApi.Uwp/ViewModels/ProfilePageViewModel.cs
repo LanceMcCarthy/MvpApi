@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Popups;
@@ -16,6 +17,7 @@ namespace MvpApi.Uwp.ViewModels
         private ProfileViewModel _mvp;
         private string _profileImagePath;
         private bool _isInEditMode;
+        private ObservableCollection<OnlineIdentity> _onlineIdentities;
 
         public ProfilePageViewModel()
         {
@@ -31,6 +33,12 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _mvp, value);
         }
 
+        public ObservableCollection<OnlineIdentity> OnlineIdentities
+        {
+            get => _onlineIdentities;
+            set => Set(ref _onlineIdentities, value);
+        }
+
         public string ProfileImagePath
         {
             get => _profileImagePath;
@@ -41,6 +49,21 @@ namespace MvpApi.Uwp.ViewModels
         {
             get => _isInEditMode;
             set => Set(ref _isInEditMode, value);
+        }
+
+        private async Task RefreshOnlineIdentitiesAsync()
+        {
+            IsBusy = true;
+            IsBusyMessage = "loading Online Identities...";
+
+            var identities = await App.ApiService.GetOnlineIdentitiesAsync();
+
+            OnlineIdentities = identities != null 
+                ? new ObservableCollection<OnlineIdentity>(identities) 
+                : new ObservableCollection<OnlineIdentity>();
+
+            IsBusyMessage = "";
+            IsBusy = false;
         }
 
         public async void SaveProfileButton_Click(object sender, RoutedEventArgs e)
@@ -70,6 +93,8 @@ namespace MvpApi.Uwp.ViewModels
                 this.Mvp = shellVm.Mvp;
                 this.ProfileImagePath = shellVm.ProfileImagePath;
 
+                await RefreshOnlineIdentitiesAsync();
+                
                 IsBusyMessage = "";
                 IsBusy = false;
             }

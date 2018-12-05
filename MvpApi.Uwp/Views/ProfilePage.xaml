@@ -4,6 +4,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
+      xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
+      xmlns:models="using:MvpApi.Common.Models"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -13,7 +15,7 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="260" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -32,6 +34,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
             <Ellipse x:Name="ProfileImageEllipse"
@@ -45,63 +48,66 @@
                 </Ellipse.Fill>
             </Ellipse>
 
-            <Button Content="Change Photo"
-                    Visibility="{Binding IsInEditMode, Converter={StaticResource BoolToVisibilityConverter}}"
-                    Click="{x:Bind ViewModel.UpdateProfilePictureButton_OnClick}"
-                    Background="{ThemeResource SystemControlBackgroundAccentBrush}"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Bottom"
-                    Margin="5"
-                    Grid.Column="0"/>
-
-            <StackPanel Margin="20"
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        VerticalAlignment="Top">
-                <TextBlock Text="{Binding Mvp.FullName}"
-                           Style="{ThemeResource HeaderTextBlockStyle}"
-                           TextWrapping="Wrap" />
-                <TextBlock Text="{Binding Mvp.Headline}"
-                           Style="{StaticResource TitleTextBlockStyle}" />
-            </StackPanel>
-
-            <StackPanel Margin="20"
-                        Grid.Row="0"
-                        VerticalAlignment="Bottom"
-                        Grid.Column="1">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="First MVP award in:"
-                               Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Margin="0,0,10,0" />
-                    <TextBlock Text="{Binding Mvp.FirstAwardYear}"
-                               Style="{ThemeResource SubtitleTextBlockStyle}"
-                               FontWeight="SemiBold"
+            <Grid x:Name="DetailsGrid"
+                  Grid.Column="1">
+                <StackPanel Margin="20"
+                            Grid.Row="0"
+                            VerticalAlignment="Top">
+                    <TextBlock Text="{Binding Mvp.FullName}"
+                               Style="{ThemeResource HeaderTextBlockStyle}"
                                TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Mvp.Headline}"
+                               Style="{StaticResource TitleTextBlockStyle}" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Years as MVP:"
-                               Style="{ThemeResource SubtitleTextBlockStyle}"
-                               Margin="0,0,10,0" />
-                    <TextBlock Text="{Binding Mvp.YearsAsMvp}"
-                               Style="{ThemeResource SubtitleTextBlockStyle}"
-                               FontWeight="SemiBold"
-                               TextWrapping="Wrap" />
-                </StackPanel>
-            </StackPanel>
-        </Grid>
 
-        <ScrollViewer Grid.Row="2">
-            <Grid>
+                <StackPanel Margin="20"
+                            Grid.Row="0"
+                            VerticalAlignment="Bottom">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="First MVP award in:"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding Mvp.FirstAwardYear}"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Years as MVP:"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding Mvp.YearsAsMvp}"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+            
+            <ScrollViewer Grid.Column="2">
                 <TextBlock Text="{Binding Mvp.Biography}"
                            Visibility="{Binding IsInEditMode, Converter={StaticResource InvertedBoolToVisibilityConverter}}"
                            TextWrapping="Wrap"
-                           Margin="20,20,20,0" />
-                <TextBox Text="{Binding Mvp.Biography, Mode=TwoWay}"
-                         Visibility="{Binding IsInEditMode, Converter={StaticResource BoolToVisibilityConverter}}"
-                         TextWrapping="Wrap"
-                         Margin="20,20,20,0" />
-            </Grid>
-        </ScrollViewer>
+                           Margin="10,10,10,0" />
+            </ScrollViewer>
+        </Grid>
+
+        <GridView x:Name="OnlineIdentitiesGridView"
+                  ItemsSource="{Binding OnlineIdentities}"
+                  Grid.Row="2">
+            <GridView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding DisplayName}"/>
+                        <TextBlock Text="{Binding SocialNetwork.Name}"/>
+                        <TextBlock Text="{Binding SocialNetwork.Website}" />
+                        <TextBlock Text="{Binding SocialNetwork.SystemCollectionEnabled}" />
+                        <TextBlock Text="{Binding MicrosoftAccount}"/>
+                        <TextBlock Text="{Binding Submitted}" />
+                    </StackPanel>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
 
         <CommandBar Grid.Row="3">
             <AppBarButton x:Name="SaveButton"
