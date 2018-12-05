@@ -18,6 +18,7 @@ using MvpApi.Common.Models;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
+using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Mvvm;
 using Template10.Services.NavigationService;
@@ -658,7 +659,7 @@ namespace MvpApi.Uwp.ViewModels
                     BootStrapper.Current.NavigationService.GoBack();
             }
 
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
+            if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
             {
                 // Verify the user is logged in
                 if (!shellVm.IsLoggedIn)
@@ -666,7 +667,7 @@ namespace MvpApi.Uwp.ViewModels
                     IsBusy = true;
                     IsBusyMessage = "logging in...";
 
-                    await shellVm.SignInAsync();
+                    await ShellPage.Instance.SignInAsync();
 
                     IsBusyMessage = "";
                     IsBusy = false;

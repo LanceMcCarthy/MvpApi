@@ -52,23 +52,13 @@ namespace MvpApi.Uwp
                 if (originalArgs != null && originalArgs.Contains("id"))
                 {
                     Debug.WriteLine($"OnActivated ToastNotification argument: {originalArgs}");
-                    NavigationService.Navigate(typeof(HomePage), originalArgs);
                 }
-                else
-                {
-                    NavigationService.Navigate(typeof(HomePage));
-                }
-            }
-            else
-            {
-                NavigationService.Navigate(typeof(HomePage));
             }
         }
 
         private async void OnUnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
         {
             e.Handled = true;
-
             await e.Exception.LogExceptionWithUserMessage();
         }
     }

@@ -18,15 +18,15 @@ namespace MvpApi.UwpBackgroundTasks
                         {
                             new AdaptiveText
                             {
-                                Text = "Major MVP Companion Update"
+                                Text = "MVP Companion Updated!"
                             },
                             new AdaptiveText
                             {
-                                Text = "Brand new authentication system! It will automatically signin or show a simple popup."
+                                Text = "Now using Rijndael encryption, login bug fixes and new acrylic accents. Profile editing coming soon!"
                             },
                             new AdaptiveImage
                             {
-                                Source = "https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVP_Companion_1.7_update.gif"
+                                Source = "https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVP_Companion_1.8.1.png"
                             }
                         }
                     }

@@ -327,14 +327,14 @@ namespace MvpApi.Uwp.ViewModels
                 return;
             }
 
-            if (App.ShellPage.DataContext is ShellPageViewModel shellVm)
+            if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
             {
                 if (!shellVm.IsLoggedIn)
                 {
                     IsBusy = true;
                     IsBusyMessage = "logging in...";
                     
-                    await shellVm.SignInAsync();
+                    await ShellPage.Instance.SignInAsync();
 
                     if (shellVm.IsLoggedIn)
                     {

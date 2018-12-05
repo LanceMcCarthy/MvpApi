@@ -11,6 +11,9 @@ namespace MvpApi.Uwp.Converters
             if (value == null)
                 return null;
 
+            if (string.IsNullOrEmpty(value.ToString()))
+                return null;
+            
             return new BitmapImage(new Uri((string)value));
         }
 

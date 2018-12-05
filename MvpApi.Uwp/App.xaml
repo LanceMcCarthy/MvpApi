@@ -72,9 +72,9 @@
             <Style x:Key="PageBusyIndicatorStyle"
                    TargetType="primitives:RadBusyIndicator">
                 <Setter Property="AnimationStyle"
-                        Value="AnimationStyle4" />
+                        Value="AnimationStyle7" />
                 <Setter Property="Background"
-                        Value="{ThemeResource SystemControlForegroundAltMediumHighBrush}" />
+                        Value="{ThemeResource SystemControlChromeMediumAcrylicElementMediumBrush}" />
             </Style>
 
             <Style x:Key="TechnologyAreaComboBoxStyle"
