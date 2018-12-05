@@ -114,9 +114,6 @@
     <Compile Include="Dialogs\AdditionalTechnologyAreasPicker.xaml.cs">
       <DependentUpon>AdditionalTechnologyAreasPicker.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\LoginDialog.xaml.cs">
-      <DependentUpon>LoginDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Dialogs\TutorialDialog.xaml.cs">
       <DependentUpon>TutorialDialog.xaml</DependentUpon>
     </Compile>
@@ -229,10 +226,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Dialogs\AdditionalTechnologyAreasPicker.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\LoginDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
