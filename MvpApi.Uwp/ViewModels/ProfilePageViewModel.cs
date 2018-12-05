@@ -45,12 +45,12 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void SaveProfileButton_Click(object sender, RoutedEventArgs e)
         {
-            await new MessageDialog("Changes cannot be saved at this time, the API service has not implemented SetProfile yet. This will be implemented soon.").ShowAsync();
+            await new MessageDialog("You can't save profile changes yet, this will be available in v1.9, the next major update.", "Coming Soon").ShowAsync();
         }
 
         public async void UpdateProfilePictureButton_OnClick(object sender, RoutedEventArgs e)
         {
-            await new MessageDialog("Changes cannot be saved at this time, the API service has not implemented SetProfilePicture yet. This will be implemented soon.").ShowAsync();
+            await new MessageDialog("You can't upload photo yet, this will be available in v1.9, the next major update.", "Coming Soon").ShowAsync();
         }
 
         #region Navigation
