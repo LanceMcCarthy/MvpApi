@@ -31,7 +31,10 @@ namespace MvpApi.Services.Apis
             _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "3d199a7fb1c443e1985375f0572f58f8");
             _client.DefaultRequestHeaders.Add("Authorization", authorizationHeaderContent);
         }
-        
+
+        public event EventHandler<EventArgs> AccessTokenExpired;
+        public event EventHandler<EventArgs> RequestErrorOccurred;
+
         #region API Endpoints
 
         /// <summary>
@@ -284,11 +287,9 @@ namespace MvpApi.Services.Apis
                     using (var response = await _client.PostAsync("https://mvpapi.azure-api.net/mvp/api/contributions?", content))
                     {
                         var json = await response.Content.ReadAsStringAsync();
-
                         Debug.WriteLine($"Submission Save JSON: {json}");
 
                         var result = JsonConvert.DeserializeObject<ContributionsModel>(json);
-
                         Debug.WriteLine($"Submission Save Result: ID {result.ContributionId}");
 
                         return result;
@@ -536,9 +537,150 @@ namespace MvpApi.Services.Apis
                 return null;
             }
         }
-        
-        #endregion
 
+        public async Task<IReadOnlyList<OnlineIdentityViewModel>> GetOnlineIdentitiesAsync()
+        {
+            try
+            {
+                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/onlineidentities"))
+                {
+                    if(response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<IReadOnlyList<OnlineIdentityViewModel>>(json);
+                    }
+                    else
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+                
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                }
+
+                Debug.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Debug.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return null;
+        }
+
+        public async Task<OnlineIdentity> SubmitOnlineIdentityAsync(OnlineIdentity onlineIdentity)
+        {
+            if (onlineIdentity == null)
+                throw new NullReferenceException("The OnlineIdentity parameter was null.");
+
+            try
+            {
+                var serializedOnlineIdentity = JsonConvert.SerializeObject(onlineIdentity);
+                byte[] byteData = Encoding.UTF8.GetBytes(serializedOnlineIdentity);
+
+                using (var content = new ByteArrayContent(byteData))
+                {
+                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                    using (var response = await _client.PostAsync("https://mvpapi.azure-api.net/mvp/api/onlineidentities?", content))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var json = await response.Content.ReadAsStringAsync();
+                            Debug.WriteLine($"OnlineIdentity Save JSON: {json}");
+
+                            var result = JsonConvert.DeserializeObject<OnlineIdentity>(json);
+                            Debug.WriteLine($"OnlineIdentity Save Result: ID {result.PrivateSiteId}");
+
+                            return result;
+                        }
+                        else
+                        {
+                            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                            {
+                                AccessTokenExpired?.Invoke(this, new EventArgs());
+                            }
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+                
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                }
+
+                Debug.WriteLine($"SubmitOnlineIdentitiesAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Debug.WriteLine($"SubmitOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return null;
+        }
+
+        public async Task<bool> DeleteOnlineIdentityAsync(OnlineIdentity onlineIdentity)
+        {
+            if (onlineIdentity == null)
+                throw new NullReferenceException("The OnlineIdentity parameter was null.");
+
+            try
+            {
+                using (var response = await _client.DeleteAsync($"https://mvpapi.azure-api.net/mvp/api/onlineidentities?id={onlineIdentity.PrivateSiteId}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                }
+
+                Debug.WriteLine($"SubmitOnlineIdentitiesAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Debug.WriteLine($"SubmitOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return false;
+        }
+
+        #endregion
+        
         public void Dispose()
         {
             _client?.Dispose();
