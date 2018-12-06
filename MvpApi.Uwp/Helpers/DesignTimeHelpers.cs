@@ -198,9 +198,389 @@ namespace MvpApi.Uwp.Helpers
 
         public static ObservableCollection<VisibilityViewModel> GenerateVisibilities() => new ObservableCollection<VisibilityViewModel>
         {
-            new VisibilityViewModel(1, "Microsoft"),
-            new VisibilityViewModel(2, "MVP Community"),
-            new VisibilityViewModel(3, "Public")
+            new VisibilityViewModel(299600000, "Microsoft", "MicrosoftVisibilityText"),
+            new VisibilityViewModel(299600003, "MVP Community", "MVPVisibilityText"),
+            new VisibilityViewModel(299600002, "Public", "PublicVisibilityText")
+        };
+
+        public static ObservableCollection<OnlineIdentityViewModel> GenerateOnlineIdentities() => new ObservableCollection<OnlineIdentityViewModel>
+        {
+            // Linked Identity
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 96470,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Exchange DL Subscription Email",
+                    IconUrl = "~/Content/Images/socialGeneric.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "http://lance.mccarthy@live.com",
+                OnlineIdentityVisibility = GenerateVisibilities()[0],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 130761,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Exchange DL Subscription Email",
+                    IconUrl = "~/Content/Images/socialGeneric.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "http://windowsappdevelopment-mvp-nda@mstechdiscussions.com",
+                OnlineIdentityVisibility = GenerateVisibilities()[1],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            // other identities
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 96471,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Xbox Live gamertag",
+                    IconUrl = "~/Content/Images/xbox.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "OuttaSyyte",
+                OnlineIdentityVisibility = GenerateVisibilities()[0],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 96471,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Klout",
+                    IconUrl = "~/Content/Images/socialKlout.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "https://klout.com/#/lancewmccarthy",
+                OnlineIdentityVisibility = GenerateVisibilities()[0],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 40775,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "LinkedIn",
+                    IconUrl = "~/Content/Images/socialLi.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "http://www.linkedin.com/in/lancewmccarthy/",
+                OnlineIdentityVisibility = GenerateVisibilities()[1],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 40777,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "MSDN/Technet",
+                    IconUrl = "~/Content/Images/socialTN.png",
+                    SystemCollectionEnabled = true
+                },
+                Url = "http://social.technet.microsoft.com/profile/lancelot%20software/",
+                OnlineIdentityVisibility = GenerateVisibilities()[0],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = null,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 40772,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Microsoft Connect",
+                    IconUrl = "~/Content/Images/socialGeneric.png",
+                    SystemCollectionEnabled = true
+                },
+                Url = "lance.mccarthy@live.com",
+                OnlineIdentityVisibility = GenerateVisibilities()[0],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = null,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 40773,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Twitter",
+                    IconUrl = "~/Content/Images/socialTwitter.png",
+                    SystemCollectionEnabled = true
+                },
+                Url = "http://twitter.com/lancewmccarthy",
+                OnlineIdentityVisibility = GenerateVisibilities()[2],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 40782,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "YouTube",
+                    IconUrl = "~/Content/Images/socialYT.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "http://www.youtube.com/user/outtasyyte/",
+                OnlineIdentityVisibility = GenerateVisibilities()[2],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 130762,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "YouTube",
+                    IconUrl = "~/Content/Images/socialYT.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "https://www.youtube.com/channel/UCV6JsDh22ENSF8DPvHBAs-w",
+                OnlineIdentityVisibility = GenerateVisibilities()[2],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 96469,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "GitHub",
+                    IconUrl = "~/Content/Images/github.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "https://github.com/LanceMcCarthy",
+                OnlineIdentityVisibility = GenerateVisibilities()[2],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 96578,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "StackOverflow",
+                    IconUrl = "~/Content/Images/StackOverflow.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "http://stackoverflow.com/users/1406210/lance-mccarthy",
+                OnlineIdentityVisibility = GenerateVisibilities()[0],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 96578,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "StackOverflow",
+                    IconUrl = "~/Content/Images/StackOverflow.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "http://windowsphone.stackexchange.com/users/141/lance-mccarthy",
+                OnlineIdentityVisibility = GenerateVisibilities()[0],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 96472,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Windows/Windows Phone Dev Center ID",
+                    IconUrl = "~/Content/Images/windowsPhone.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "https://www.microsoft.com/en-us/search/result.aspx?q=Lancelot+Software&form=apps",
+                OnlineIdentityVisibility = GenerateVisibilities()[0],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 40776,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Blog",
+                    IconUrl = "~/Content/Images/socialGeneric.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "https://dvlup.com",
+                OnlineIdentityVisibility = GenerateVisibilities()[2],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 130760,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Meetup",
+                    IconUrl = "~/Content/Images/socialGeneric.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "https://www.meetup.com/members/14958841/",
+                OnlineIdentityVisibility = GenerateVisibilities()[2],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            },
+            new OnlineIdentityViewModel
+            {
+                PrivateSiteId = 130759,
+                SocialNetwork = new SocialNetworkViewModel
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Instagram",
+                    IconUrl = "~/Content/Images/socialGeneric.png",
+                    SystemCollectionEnabled = false
+                },
+                Url = "https://www.instagram.com/ambassadorlance/",
+                OnlineIdentityVisibility = GenerateVisibilities()[2],
+                ContributionCollected = false,
+                DisplayName = "",
+                UserId = null,
+                MicrosoftAccount = null,
+                PrivacyConsentStatus = true,
+                PrivacyConsentCheckStatus = false,
+                PrivacyConsentCheckDate = null,
+                PrivacyConsentUnCheckDate = null,
+                Submitted = false
+            }
         };
     }
 }

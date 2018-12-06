@@ -104,12 +104,14 @@
     <Compile Include="Common\TechnologyKeyLookup.cs" />
     <Compile Include="Controls\TechnologyAreasListView.cs" />
     <Compile Include="Converters\BoolToIconConverter.cs" />
+    <Compile Include="Converters\MvcContentUrlConverter.cs" />
+    <Compile Include="Converters\PrivacyLevelToBrushConverter.cs" />
     <Compile Include="Converters\ThresholdConverter.cs" />
     <Compile Include="Converters\DoubleToIntConverter.cs" />
     <Compile Include="Converters\DateTimeToDateTimeOffsetConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\PathToBitmapImageConverter.cs" />
-    <Compile Include="Converters\UploadStatusBackgroundConverter.cs" />
+    <Compile Include="Converters\UploadStatusToBrushConverter.cs" />
     <Compile Include="Converters\UploadStatusToBoolConverter.cs" />
     <Compile Include="Dialogs\AdditionalTechnologyAreasPicker.xaml.cs">
       <DependentUpon>AdditionalTechnologyAreasPicker.xaml</DependentUpon>

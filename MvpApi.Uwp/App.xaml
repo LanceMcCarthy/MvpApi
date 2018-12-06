@@ -66,8 +66,11 @@
             <converters:PathToBitmapImageConverter x:Key="BitmapImageConverter" />
             <converters:DateTimeToDateTimeOffsetConverter x:Key="DateTimeOffsetConverter" />
             <converters:DoubleToIntConverter x:Key="DoubleToIntConverter" />
-            <converters:UploadStatusBackgroundConverter x:Key="UploadStatusBackgroundConverter" />
+            <converters:UploadStatusToBrushConverter x:Key="UploadStatusBackgroundConverter" />
             <converters:UploadStatusToBoolConverter x:Key="UploadStatusToBoolConverter" />
+
+            <converters:MvcContentUrlConverter x:Key="MvcContentUrlConverter" />
+            <converters:PrivacyLevelToBrushConverter x:Key="PrivacyLevelToBrushConverter"/>
 
             <Style x:Key="PageBusyIndicatorStyle"
                    TargetType="primitives:RadBusyIndicator">

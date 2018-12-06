@@ -34,7 +34,6 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
-                <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
             <Ellipse x:Name="ProfileImageEllipse"
@@ -83,43 +82,102 @@
                     </StackPanel>
                 </StackPanel>
             </Grid>
-            
-            <ScrollViewer Grid.Column="2">
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="SubHeaderGrid"
+                  Grid.ColumnSpan="2"
+                  Height="35"
+                  Background="{ThemeResource SystemControlHighlightAltListAccentMediumBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Biography"
+                           Style="{StaticResource SubtitleTextBlockStyle}"
+                           Padding="5"
+                           Foreground="{ThemeResource AppBarBackgroundThemeBrush}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+
+                <TextBlock Text="Online Identities"
+                           HorizontalAlignment="Center"
+                           Padding="5"
+                           Foreground="{ThemeResource AppBarBackgroundThemeBrush}"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                           Grid.Column="1" />
+            </Grid>
+
+            <ScrollViewer Grid.Row="0"
+                          Grid.Column="0">
                 <TextBlock Text="{Binding Mvp.Biography}"
-                           Visibility="{Binding IsInEditMode, Converter={StaticResource InvertedBoolToVisibilityConverter}}"
                            TextWrapping="Wrap"
                            Margin="10,10,10,0" />
             </ScrollViewer>
+
+            <ListView x:Name="OnlineIdentitiesGridView"
+                      ItemsSource="{Binding OnlineIdentities}"
+                      Grid.Row="1"
+                      Grid.Column="1">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="VerticalContentAlignment"
+                                Value="Stretch" />
+                        <Setter Property="HorizontalContentAlignment"
+                                Value="Stretch" />
+                        <Setter Property="VerticalAlignment"
+                                Value="Stretch" />
+                        <Setter Property="HorizontalAlignment"
+                                Value="Stretch" />
+                        <Setter Property="Padding"
+                                Value="0" />
+                        <Setter Property="Margin"
+                                Value="10" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding SocialNetwork.IconUrl, Converter={StaticResource MvcContentUrlConverter}}"
+                                       Width="20"
+                                       Height="20"
+                                       Margin="0,0,10,0" />
+                                <TextBlock Text="{Binding SocialNetwork.Name}"
+                                           Style="{ThemeResource SubtitleTextBlockStyle}" />
+                            </StackPanel>
+
+                            <HyperlinkButton Content="Open in browser..."
+                                             NavigateUri="{Binding Url}" />
+
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Visible to:"
+                                           Margin="0,0,5,0"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding OnlineIdentityVisibility.Description}"
+                                           Foreground="{Binding OnlineIdentityVisibility, Converter={StaticResource PrivacyLevelToBrushConverter}}"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
 
-        <GridView x:Name="OnlineIdentitiesGridView"
-                  ItemsSource="{Binding OnlineIdentities}"
-                  Grid.Row="2">
-            <GridView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Text="{Binding DisplayName}"/>
-                        <TextBlock Text="{Binding SocialNetwork.Name}"/>
-                        <TextBlock Text="{Binding SocialNetwork.Website}" />
-                        <TextBlock Text="{Binding SocialNetwork.SystemCollectionEnabled}" />
-                        <TextBlock Text="{Binding MicrosoftAccount}"/>
-                        <TextBlock Text="{Binding Submitted}" />
-                    </StackPanel>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-        </GridView>
-
         <CommandBar Grid.Row="3">
-            <AppBarButton x:Name="SaveButton"
-                          Label="save"
-                          Icon="Save"
-                          Click="{x:Bind ViewModel.SaveProfileButton_Click}"
-                          Visibility="{Binding IsInEditMode, Converter={StaticResource BoolToVisibilityConverter}}" />
-
-            <AppBarToggleButton x:Name="EditProfileToggleButton"
-                                IsChecked="{Binding IsInEditMode, Mode=TwoWay}"
-                                Label="edit"
-                                Icon="Edit" />
+            <AppBarButton x:Name="AddOnlineIdentityButton"
+                          Label="add online identity"
+                          Icon="Add"
+                          Click="{x:Bind ViewModel.AddOnlineIdentityButton_Click}" />
         </CommandBar>
     </Grid>
 </Page>

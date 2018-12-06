@@ -580,7 +580,7 @@ namespace MvpApi.Services.Apis
             return null;
         }
 
-        public async Task<IReadOnlyList<OnlineIdentity>> GetOnlineIdentitiesAsync()
+        public async Task<IReadOnlyList<OnlineIdentityViewModel>> GetOnlineIdentitiesAsync()
         {
             try
             {
@@ -589,7 +589,7 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<IReadOnlyList<OnlineIdentity>>(json);
+                        return JsonConvert.DeserializeObject<IReadOnlyList<OnlineIdentityViewModel>>(json);
                     }
                     else
                     {
@@ -620,7 +620,7 @@ namespace MvpApi.Services.Apis
             return null;
         }
 
-        public async Task<OnlineIdentity> SubmitOnlineIdentityAsync(OnlineIdentity onlineIdentity)
+        public async Task<OnlineIdentity> SubmitOnlineIdentityAsync(OnlineIdentityViewModel onlineIdentity)
         {
             if (onlineIdentity == null)
                 throw new NullReferenceException("The OnlineIdentity parameter was null.");
@@ -677,7 +677,7 @@ namespace MvpApi.Services.Apis
             return null;
         }
 
-        public async Task<bool> DeleteOnlineIdentityAsync(OnlineIdentity onlineIdentity)
+        public async Task<bool> DeleteOnlineIdentityAsync(OnlineIdentityViewModel onlineIdentity)
         {
             if (onlineIdentity == null)
                 throw new NullReferenceException("The OnlineIdentity parameter was null.");
