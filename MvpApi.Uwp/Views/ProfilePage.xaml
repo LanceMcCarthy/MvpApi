@@ -4,8 +4,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
-      xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
-      xmlns:models="using:MvpApi.Common.Models"
+      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -95,9 +94,10 @@
             </Grid.ColumnDefinitions>
 
             <Grid x:Name="SubHeaderGrid"
+                  BorderThickness="0,2,0,1"
+                  BorderBrush="{ThemeResource SystemControlHighlightAltListAccentLowBrush}"
                   Grid.ColumnSpan="2"
-                  Height="35"
-                  Background="{ThemeResource SystemControlHighlightAltListAccentMediumBrush}">
+                  Height="35">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*" />
                     <ColumnDefinition Width="1*" />
@@ -105,14 +105,14 @@
                 <TextBlock Text="Biography"
                            Style="{StaticResource SubtitleTextBlockStyle}"
                            Padding="5"
-                           Foreground="{ThemeResource AppBarBackgroundThemeBrush}"
+                           Foreground="{ThemeResource SystemControlHighlightAltAccentBrush}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
 
                 <TextBlock Text="Online Identities"
                            HorizontalAlignment="Center"
                            Padding="5"
-                           Foreground="{ThemeResource AppBarBackgroundThemeBrush}"
+                           Foreground="{ThemeResource SystemControlHighlightAltAccentBrush}"
                            Style="{ThemeResource SubtitleTextBlockStyle}"
                            Grid.Column="1" />
             </Grid>
@@ -157,7 +157,7 @@
                             </StackPanel>
 
                             <HyperlinkButton Content="Open in browser..."
-                                             NavigateUri="{Binding Url}" />
+                                             NavigateUri="{Binding Url, Converter={StaticResource StringToUriConverter}}" />
 
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Identity visible to:"
@@ -171,13 +171,19 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+
+            <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                                         IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                         Style="{StaticResource PageBusyIndicatorStyle}"
+                                         Grid.Row="1"
+                                         Grid.Column="1" />
         </Grid>
 
-        <CommandBar Grid.Row="3">
+        <!--<CommandBar Grid.Row="3">
             <AppBarButton x:Name="AddOnlineIdentityButton"
                           Label="add online identity"
                           Icon="Add"
                           Click="{x:Bind ViewModel.AddOnlineIdentityButton_Click}" />
-        </CommandBar>
+        </CommandBar>-->
     </Grid>
 </Page>

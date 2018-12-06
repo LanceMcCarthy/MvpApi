@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
-using Windows.UI.Popups;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
@@ -64,25 +61,26 @@ namespace MvpApi.Uwp.ViewModels
             IsBusy = false;
         }
 
-        public async void AddOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
-        {
-            var md = new MessageDialog("What type of online identity would you like to add?\r\n'Linked Identity' is an MSDN property (e.g. MSDN or Microsoft Community Forum), these can be used to automatically create contributions based on your activity.\r\n'Other Identity' for everything else, like social networks, GitHub and StackOverflow. ", "Add Online Identity");
+        // TODO Create and upload new OnlineIdentity
+        //public async void AddOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var md = new MessageDialog("What type of online identity would you like to add?\r\n'Linked Identity' is an MSDN property (e.g. MSDN or Microsoft Community Forum), these can be used to automatically create contributions based on your activity.\r\n'Other Identity' for everything else, like social networks, GitHub and StackOverflow. ", "Add Online Identity");
 
-            md.Commands.Add(new UICommand("Linked Identity"));
-            md.Commands.Add(new UICommand("Other Identity"));
+        //    md.Commands.Add(new UICommand("Linked Identity"));
+        //    md.Commands.Add(new UICommand("Other Identity"));
             
-            var result = await md.ShowAsync();
+        //    var result = await md.ShowAsync();
 
-            if (result.Label == "Linked")
-            {
+        //    if (result.Label == "Linked")
+        //    {
 
-            }
+        //    }
 
-            if (result.Label == "Other")
-            {
+        //    if (result.Label == "Other")
+        //    {
 
-            }
-        }
+        //    }
+        //}
 
         #region Navigation
 

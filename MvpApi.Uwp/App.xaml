@@ -70,7 +70,8 @@
             <converters:UploadStatusToBoolConverter x:Key="UploadStatusToBoolConverter" />
 
             <converters:MvcContentUrlConverter x:Key="MvcContentUrlConverter" />
-            <converters:PrivacyLevelToBrushConverter x:Key="PrivacyLevelToBrushConverter"/>
+            <converters:PrivacyLevelToBrushConverter x:Key="PrivacyLevelToBrushConverter" />
+            <converters:StringToUriConverter x:Key="StringToUriConverter" />
 
             <Style x:Key="PageBusyIndicatorStyle"
                    TargetType="primitives:RadBusyIndicator">
