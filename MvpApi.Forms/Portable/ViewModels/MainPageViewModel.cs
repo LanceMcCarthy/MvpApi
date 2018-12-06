@@ -4,8 +4,8 @@ using CommonHelpers.Common;
 using MvpApi.Common.Models;
 using MvpApi.Forms.Portable.Common;
 using MvpApi.Forms.Portable.Models;
-using MvpApi.Services.Apis;
 using Telerik.XamarinForms.DataControls.ListView;
+using Telerik.XamarinForms.DataGrid;
 using Xamarin.Forms;
 
 namespace MvpApi.Forms.Portable.ViewModels
@@ -18,13 +18,14 @@ namespace MvpApi.Forms.Portable.ViewModels
 
         private bool _isDrawerOpen;
         private string _status;
+        private ContributionsModel _selectedContribution;
 
         public MainPageViewModel()
         {
             GoToViewCommand = new Command(LoadView);
             ToggleDrawerCommand = new Command(ToggleDrawer);
         }
-
+        
         #region MVP Profile Properties
 
         /// <summary>
@@ -66,22 +67,32 @@ namespace MvpApi.Forms.Portable.ViewModels
             get => _isDrawerOpen;
             set => SetProperty(ref _isDrawerOpen, value);
         }
-        
+
         public string Status
         {
             get => _status;
             set => SetProperty(ref _status, value);
         }
 
+        public ContributionsModel SelectedContribution
+        {
+            get => _selectedContribution;
+            set => SetProperty(ref _selectedContribution, value);
+        }
+
         public SelectionMode GridSelectionMode { get; set; }
 
         public ObservableCollection<ContributionsModel> Contributions { get; set; } = new ObservableCollection<ContributionsModel>();
 
-        #region View state and navigation
+        #region Commands
+
+        public Command<DataGridSelectionChangedEventArgs> GridSelectionChangedCommand { get; set; }
 
         public Command GoToViewCommand { get; set; }
 
         public Command ToggleDrawerCommand { get; set; }
+
+        #endregion
         
         public INavigationHandler NavigationHandler { private get; set; }
 
@@ -97,10 +108,11 @@ namespace MvpApi.Forms.Portable.ViewModels
             // Work after view appears
             if ((ViewType)viewType == ViewType.Home)
             {
-                if(!Contributions.Any())
+                if (!Contributions.Any())
                 {
                     // TODO quick test, replace with incremental loading collection
                     var result = await App.ApiService.GetContributionsAsync(0, 10);
+
                     foreach (var item in result.Contributions)
                     {
                         this.Contributions.Add(item);
@@ -113,9 +125,5 @@ namespace MvpApi.Forms.Portable.ViewModels
         {
             IsDrawerOpen = !IsDrawerOpen;
         }
-
-        #endregion
-
-        
     }
 }

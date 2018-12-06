@@ -24,7 +24,7 @@
                                 Command="{Binding GoToViewCommand}"
                                 CommandParameter="{x:Static models:ViewType.Home}"
                                 Margin="5" />
-                        <Button Text="Call Log"
+                        <Button Text="Profile"
                                 TextColor="{StaticResource LightTextColor}"
                                 Command="{Binding GoToViewCommand}"
                                 CommandParameter="{x:Static models:ViewType.Profile}"
