@@ -9,7 +9,6 @@ using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
-using Telerik.Core.Data;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -67,9 +66,23 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void AddOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
         {
-            await new MessageDialog("Would you like to add another Online Identity to your profile?", "Add Online Identity").ShowAsync();
+            var md = new MessageDialog("What type of online identity would you like to add?\r\n'Linked Identity' is an MSDN property (e.g. MSDN or Microsoft Community Forum), these can be used to automatically create contributions based on your activity.\r\n'Other Identity' for everything else, like social networks, GitHub and StackOverflow. ", "Add Online Identity");
+
+            md.Commands.Add(new UICommand("Linked Identity"));
+            md.Commands.Add(new UICommand("Other Identity"));
+            
+            var result = await md.ShowAsync();
+
+            if (result.Label == "Linked")
+            {
+
+            }
+
+            if (result.Label == "Other")
+            {
+
+            }
         }
-        
 
         #region Navigation
 

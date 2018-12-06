@@ -117,7 +117,7 @@
                            Grid.Column="1" />
             </Grid>
 
-            <ScrollViewer Grid.Row="0"
+            <ScrollViewer Grid.Row="1"
                           Grid.Column="0">
                 <TextBlock Text="{Binding Mvp.Biography}"
                            TextWrapping="Wrap"
@@ -160,7 +160,7 @@
                                              NavigateUri="{Binding Url}" />
 
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Visible to:"
+                                <TextBlock Text="Identity visible to:"
                                            Margin="0,0,5,0"
                                            VerticalAlignment="Center" />
                                 <TextBlock Text="{Binding OnlineIdentityVisibility.Description}"
