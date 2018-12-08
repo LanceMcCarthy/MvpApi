@@ -7,7 +7,7 @@
 
     <Grid>
         <telerikGrid:RadDataGrid ItemsSource="{Binding Contributions}"
-                                 SelectionChanged="RadDataGrid_SelectionChanged"
+                                 SelectedItem="{Binding SelectedContribution, Mode=TwoWay}"
                                  AutoGenerateColumns="False">
             <telerikGrid:RadDataGrid.Columns>
                 <telerikGrid:DataGridDateColumn PropertyName="StartDate"
@@ -15,7 +15,7 @@
                 <telerikGrid:DataGridTextColumn PropertyName="Title"
                                                 HeaderText="Title"/>
                 <telerikGrid:DataGridTextColumn PropertyName="ContributionTypeName"
-                                                HeaderText="Type" />
+                                                HeaderText="ContributionTypeName" />
                 <telerikGrid:DataGridTextColumn PropertyName="Description"
                                                 HeaderText="Description" />
             </telerikGrid:RadDataGrid.Columns>

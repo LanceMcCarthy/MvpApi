@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:input="clr-namespace:Telerik.XamarinForms.Input;assembly=Telerik.XamarinForms.Input"
              x:Class="MvpApi.Forms.Portable.Views.DetailView">
     <Grid>
         <Grid.RowDefinitions>
@@ -10,18 +9,29 @@
         </Grid.RowDefinitions>
 
         <StackLayout>
-            <Label Text="{Binding Title}" />
-            <Label Text="{Binding Description}"/>
-            <Label Text="{Binding StartDate, StringFormat='Start Date: {0:g}'}"/>
-
-            <Label Text="{Binding ReferenceUrl}" />
-            <Label Text="{Binding AnnualQuantity, StringFormat='Annual Quantity {0:N0}'}" />
-            <Label Text="{Binding SecondAnnualQuantity, StringFormat='Second Annual Quantity {0:N0}'}" />
+            <Label Text="{Binding SelectedContribution.ContributionTypeName}"
+                   HorizontalTextAlignment="Center"
+                   LineBreakMode="WordWrap"
+                   FontSize="Large" />
+            <Label Text="{Binding SelectedContribution.Title}" 
+                   FontSize="Medium"/>
+            <Label Text="{Binding SelectedContribution.Description}"
+                   LineBreakMode="WordWrap"
+                   FontSize="Medium" />
+            <Label Text="{Binding SelectedContribution.StartDate, StringFormat='Start Date: {0:g}'}"
+                   FontSize="Medium" />
+            <Label Text="{Binding SelectedContribution.ReferenceUrl}"
+                   FontSize="Small" />
+            <Label Text="{Binding SelectedContribution.AnnualQuantity, StringFormat='Annual Quantity {0:N0}'}"
+                   FontSize="Medium" />
+            <Label Text="{Binding SelectedContribution.SecondAnnualQuantity, StringFormat='Second Annual Quantity {0:N0}'}"
+                   FontSize="Medium" />
         </StackLayout>
 
         <Button Text="done"
                 Clicked="DoneButton_Clicked"
                 HorizontalOptions="Center"
-                Margin="5"/>
+                Margin="5"
+                Grid.Row="1"/>
     </Grid>
 </ContentView>

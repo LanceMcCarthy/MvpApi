@@ -2,6 +2,7 @@
 <Application xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:MvpApi.Forms.Portable.Converters;assembly=MvpApi.Forms.Portable"
+             xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.XamarinForms.Primitives"
              x:Class="MvpApi.Forms.Portable.App">
 
     <Application.Resources>
@@ -12,7 +13,14 @@
 	    <Color x:Key="MediumBlueColor">#2699FB</Color>
 	    <Color x:Key="DarkBlueColor">#007FEB</Color>
 
-	    <converters:ConfigurableBoolConverter x:Key="InvertBoolConverter"
+        <Color x:Key="LightBackgroundColor">#FAFAFA</Color>
+        <Color x:Key="GrayBackgroundColor">#C0C0C0</Color>
+
+        <Color x:Key="LightTranslucentBackgroundColor">#CCEAEAEC</Color>
+        <Color x:Key="MediumTranslucentBackgroundColor">#AA000000</Color>
+        <Color x:Key="DarkTranslucentBackgroundColor">#CC000000</Color>
+
+        <converters:ConfigurableBoolConverter x:Key="InvertBoolConverter"
 	                                          x:TypeArguments="x:Boolean"
 	                                          TrueResult="False"
 	                                          FalseResult="True" />
@@ -21,5 +29,114 @@
 	                                          x:TypeArguments="Color"
 	                                          TrueResult="MediumSeaGreen"
 	                                          FalseResult="DarkRed" />
+
+        <converters:MvcContentUrlConverter x:Key="MvcContentUrlConverter" />
+        <converters:PrivacyLevelToColorConverter x:Key="PrivacyLevelToColorConverter" />
+
+        <RowDefinitionCollection x:Key="AutoStarRowDefinitions">
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </RowDefinitionCollection>
+
+        <RowDefinitionCollection x:Key="OneTwoStarRowDefinitions">
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="2*" />
+        </RowDefinitionCollection>
+
+        <Style x:Key="TopPageBusyIndicatorStyle"
+               TargetType="primitives:RadBusyIndicator">
+            <Setter Property="AnimationType"
+                    Value="Animation6" />
+            <Setter Property="AnimationContentHeightRequest"
+                    Value="100" />
+            <Setter Property="AnimationContentWidthRequest"
+                    Value="100" />
+            <Setter Property="BackgroundColor"
+                    Value="Transparent" />
+            <Setter Property="AnimationContentColor"
+                    Value="{StaticResource MediumBlueColor}" />
+            <Setter Property="BusyContentTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <ContentPresenter Content="{TemplateBinding Path=AnimationContent}"
+                                              Grid.Row="1" />
+                            <ContentPresenter Content="{TemplateBinding Path=BusyContent}"
+                                              Grid.Row="2" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BusyIndicatorStyle"
+               TargetType="primitives:RadBusyIndicator">
+            <Setter Property="AnimationType"
+                    Value="Animation6" />
+            <Setter Property="AnimationContentHeightRequest"
+                    Value="100" />
+            <Setter Property="AnimationContentWidthRequest"
+                    Value="100" />
+            <Setter Property="BackgroundColor"
+                    Value="{StaticResource LightTranslucentBackgroundColor}" />
+            <Setter Property="AnimationContentColor"
+                    Value="{StaticResource MediumBlueColor}" />
+            <Setter Property="BusyContentTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <ContentPresenter Content="{TemplateBinding Path=AnimationContent}"
+                                              Grid.Row="1" />
+                            <ContentPresenter Content="{TemplateBinding Path=BusyContent}"
+                                              Grid.Row="2" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="PageHeaderGridStyle"
+               TargetType="Grid">
+            <Setter Property="BackgroundColor"
+                    Value="{StaticResource LightBlueColor}" />
+        </Style>
+
+        <Style x:Key="PageHeaderStackLayoutStyle"
+               TargetType="Grid">
+            <Setter Property="BackgroundColor"
+                    Value="{StaticResource LightBlueColor}" />
+        </Style>
+
+        <Style x:Key="ImageBorderCircleStyle"
+               TargetType="primitives:RadBorder">
+            <Setter Property="BorderThickness"
+                    Value="2" />
+            <Setter Property="CornerRadius"
+                    Value="90" />
+            <Setter Property="BorderColor"
+                    Value="{StaticResource LightBlueColor}" />
+        </Style>
+
+        <Style x:Key="HintOverlayLabelStyle"
+               TargetType="Label">
+            <Setter Property="HorizontalTextAlignment"
+                    Value="Center" />
+            <Setter Property="LineBreakMode"
+                    Value="WordWrap" />
+            <Setter Property="TextColor"
+                    Value="{StaticResource LightTextColor}" />
+        </Style>
     </Application.Resources>
 </Application>

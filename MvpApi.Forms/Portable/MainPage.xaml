@@ -1,11 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage x:Name="Page"
+             xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MvpApi.Forms.Portable"
              xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
              xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.XamarinForms.Primitives"
              xmlns:models="clr-namespace:MvpApi.Forms.Portable.Models;assembly=MvpApi.Forms.Portable"
              xmlns:viewModels="clr-namespace:MvpApi.Forms.Portable.ViewModels;assembly=MvpApi.Forms.Portable"
+             xmlns:input="clr-namespace:Telerik.XamarinForms.Input;assembly=Telerik.XamarinForms.Input"
              ios:Page.UseSafeArea="true"
              x:Class="MvpApi.Forms.Portable.MainPage">
 
@@ -15,27 +17,64 @@
 
     <Grid>
         <primitives:RadSideDrawer x:Name="SideDrawer"
-                                  IsOpen="{Binding IsDrawerOpen, Mode=TwoWay}">
+                                  IsOpen="{Binding IsDrawerOpen, Mode=TwoWay}"
+                                  DrawerTransitionType="SlideInOnTop">
             <primitives:RadSideDrawer.DrawerContent>
-                <Grid>
-                    <StackLayout>
+                <Grid BackgroundColor="{StaticResource LightBackgroundColor}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="200"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <Grid BackgroundColor="{StaticResource DarkBlueColor}"
+                          HeightRequest="200">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <primitives:RadBorder Style="{StaticResource ImageBorderCircleStyle}"
+                                              BorderColor="{StaticResource LightBackgroundColor}"
+                                              BackgroundColor="{StaticResource LightBackgroundColor}"
+                                              VerticalOptions="Center"
+                                              HorizontalOptions="Center"
+                                              HeightRequest="120"
+                                              WidthRequest="120"
+                                              Margin="40,20,40,20">
+                            <Image x:Name="ProfileImage"
+                                   Source="{Binding ProfileImagePath}"/>
+                        </primitives:RadBorder>
+
+                        <Label Text="{Binding Mvp.DisplayName}"
+                               TextColor="{StaticResource LightTextColor}"
+                               FontSize="Medium"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,10"
+                               Grid.Row="1" />
+                    </Grid>
+
+                    <StackLayout Grid.Row="1">
                         <Button Text="Home"
                                 TextColor="{StaticResource LightTextColor}"
+                                BackgroundColor="{StaticResource MediumBlueColor}"
                                 Command="{Binding GoToViewCommand}"
                                 CommandParameter="{x:Static models:ViewType.Home}"
                                 Margin="5" />
                         <Button Text="Profile"
                                 TextColor="{StaticResource LightTextColor}"
+                                BackgroundColor="{StaticResource MediumBlueColor}"
                                 Command="{Binding GoToViewCommand}"
                                 CommandParameter="{x:Static models:ViewType.Profile}"
                                 Margin="5" />
                         <Button Text="About"
                                 TextColor="{StaticResource LightTextColor}"
+                                BackgroundColor="{StaticResource MediumBlueColor}"
                                 Command="{Binding GoToViewCommand}"
                                 CommandParameter="{x:Static models:ViewType.About}"
                                 Margin="5" />
                         <Button Text="Signout"
                                 TextColor="{StaticResource LightTextColor}"
+                                BackgroundColor="{StaticResource MediumBlueColor}"
                                 Clicked="SignOutButton_OnClicked"
                                 Margin="5" />
                     </StackLayout>
@@ -43,12 +82,20 @@
             </primitives:RadSideDrawer.DrawerContent>
         </primitives:RadSideDrawer>
 
-        <!--<input:RadButton Text="MENU"
-                         Command="{Binding ToggleDrawerCommand}"
-                         VerticalOptions="Start"
-                         HorizontalOptions="Start"
-                         Margin="5"
-                         BorderColor="Black"
-                         BorderThickness="2" />-->
+        <primitives:RadBusyIndicator x:Name="BusyIndicator"
+                                     IsVisible="{Binding IsBusy}"
+                                     IsBusy="{Binding IsBusy}"
+                                     Style="{StaticResource TopPageBusyIndicatorStyle}">
+            <primitives:RadBusyIndicator.BusyContent>
+                <Label Text="{Binding IsBusyMessage}"
+                       BindingContext="{Binding BindingContext, Source={x:Reference Page}}"
+                       HorizontalTextAlignment="Center" />
+            </primitives:RadBusyIndicator.BusyContent>
+            <primitives:RadBusyIndicator.Content>
+                <Grid BindingContext="{x:Reference Page}"
+                      WidthRequest="{Binding Width}"
+                      HeightRequest="{Binding Height}" />
+            </primitives:RadBusyIndicator.Content>
+        </primitives:RadBusyIndicator>
     </Grid>
 </ContentPage>

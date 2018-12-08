@@ -1,11 +1,9 @@
 ﻿using System.Collections.ObjectModel;
-using System.Linq;
+using System.Threading.Tasks;
 using CommonHelpers.Common;
 using MvpApi.Common.Models;
 using MvpApi.Forms.Portable.Common;
 using MvpApi.Forms.Portable.Models;
-using Telerik.XamarinForms.DataControls.ListView;
-using Telerik.XamarinForms.DataGrid;
 using Xamarin.Forms;
 
 namespace MvpApi.Forms.Portable.ViewModels
@@ -13,19 +11,22 @@ namespace MvpApi.Forms.Portable.ViewModels
     public class MainPageViewModel : ViewModelBase
     {
         private ProfileViewModel _mvp;
+        private ObservableCollection<ContributionsModel> _contributions;
+        private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
+        private ContributionsModel _selectedContribution;
+
         private string _profileImagePath;
         private bool _isLoggedIn;
 
         private bool _isDrawerOpen;
         private string _status;
-        private ContributionsModel _selectedContribution;
 
         public MainPageViewModel()
         {
             GoToViewCommand = new Command(LoadView);
             ToggleDrawerCommand = new Command(ToggleDrawer);
         }
-        
+
         #region MVP Profile Properties
 
         /// <summary>
@@ -41,19 +42,37 @@ namespace MvpApi.Forms.Portable.ViewModels
                 OnPropertyChanged();
             }
         }
-
-        /// <summary>
-        /// Currently signed in MVP profile
-        /// </summary>
+        
         public ProfileViewModel Mvp
         {
             get => _mvp;
             set => SetProperty(ref _mvp, value);
         }
 
-        /// <summary>
-        /// Denotes whether the user is currently logged in and able to make successful requests to the API
-        /// </summary>
+        public ObservableCollection<ContributionsModel> Contributions
+        {
+            get => _contributions ?? (_contributions = new ObservableCollection<ContributionsModel>());
+            set => SetProperty(ref _contributions, value);
+        }
+
+        public ObservableCollection<OnlineIdentityViewModel> OnlineIdentities
+        {
+            get => _onlineIdentities ?? (_onlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
+            set => SetProperty(ref _onlineIdentities, value);
+        }
+
+        public ContributionsModel SelectedContribution
+        {
+            get => _selectedContribution;
+            set
+            {
+                if (SetProperty(ref _selectedContribution, value))
+                {
+                    LoadView(_selectedContribution == null ? ViewType.Home : ViewType.Detail);
+                }
+            }
+        }
+        
         public bool IsLoggedIn
         {
             get => _isLoggedIn;
@@ -73,27 +92,11 @@ namespace MvpApi.Forms.Portable.ViewModels
             get => _status;
             set => SetProperty(ref _status, value);
         }
-
-        public ContributionsModel SelectedContribution
-        {
-            get => _selectedContribution;
-            set => SetProperty(ref _selectedContribution, value);
-        }
-
-        public SelectionMode GridSelectionMode { get; set; }
-
-        public ObservableCollection<ContributionsModel> Contributions { get; set; } = new ObservableCollection<ContributionsModel>();
-
-        #region Commands
-
-        public Command<DataGridSelectionChangedEventArgs> GridSelectionChangedCommand { get; set; }
-
+        
         public Command GoToViewCommand { get; set; }
 
         public Command ToggleDrawerCommand { get; set; }
 
-        #endregion
-        
         public INavigationHandler NavigationHandler { private get; set; }
 
         public async void LoadView(object viewType)
@@ -103,24 +106,76 @@ namespace MvpApi.Forms.Portable.ViewModels
             {
             }
 
+            // Invoke View change in
             NavigationHandler.LoadView((ViewType)viewType);
 
             // Work after view appears
             if ((ViewType)viewType == ViewType.Home)
             {
-                if (!Contributions.Any())
+                if (!IsBusy)
                 {
-                    // TODO quick test, replace with incremental loading collection
-                    var result = await App.ApiService.GetContributionsAsync(0, 10);
+                    IsBusy = true;
+                }
 
-                    foreach (var item in result.Contributions)
-                    {
-                        this.Contributions.Add(item);
-                    }
+                IsBusyMessage = "refreshing contributions...";
+                
+                await RefreshContributionsAsync();// TODO This is a temporary test, replace with incremental loading collection
+            }
+
+            if ((ViewType)viewType == ViewType.Profile)
+            {
+                if (!IsBusy)
+                {
+                    IsBusy = true;
+                }
+                
+                IsBusyMessage = "loading Online Identities...";
+
+                await RefreshOnlineIdentitiesAsync();
+            }
+
+            //Close drawer if it open
+            if (IsDrawerOpen)
+            {
+                IsDrawerOpen = false;
+            }
+
+            if (IsBusy)
+            {
+                IsBusyMessage = "";
+                IsBusy = false;
+            }
+        }
+
+        private async Task RefreshContributionsAsync()
+        {
+            var contributionsResult = await App.ApiService.GetContributionsAsync(0, 30);
+
+            if (contributionsResult != null & contributionsResult?.Contributions.Count > 0)
+            {
+                if (Contributions.Count > 1)
+                    Contributions.Clear();
+
+                foreach (var contribution in contributionsResult.Contributions)
+                {
+                    Contributions.Add(contribution);
                 }
             }
         }
 
+        private async Task RefreshOnlineIdentitiesAsync()
+        {
+            var identities = await App.ApiService.GetOnlineIdentitiesAsync();
+
+            if (identities != null & identities?.Count > 0)
+            {
+                foreach (var onlineIdentity in identities)
+                {
+                    OnlineIdentities.Add(onlineIdentity);
+                }
+            }
+        }
+        
         private void ToggleDrawer()
         {
             IsDrawerOpen = !IsDrawerOpen;

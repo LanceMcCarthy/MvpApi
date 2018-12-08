@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using MvpApi.Common.Extensions;
@@ -27,19 +26,59 @@ namespace MvpApi.Forms.Portable
             this._webView = new WebView();
             this._webView.Navigated += WebView_OnNavigated;
         }
+        
+        private async void SignOutButton_OnClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                this.SideDrawer.MainContent = this._webView;
+                this._webView.Source = _signOutUri;
+
+                StorageHelpers.Instance.DeleteToken("access_token");
+                StorageHelpers.Instance.DeleteToken("refresh_token");
+            }
+            catch (Exception ex)
+            {
+                await ex.LogExceptionAsync();
+                await this.DisplayAlert("Error", "something went wrong signing you out, try again.", "ok");
+            }
+        }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
 
             ViewModel.IsBusy = true;
+            ViewModel.IsBusyMessage = "authenticating...";
 
             var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
 
             if (!string.IsNullOrEmpty(refreshToken))
             {
                 // there is a token stored, let's try to use it and not even have to show UI
-                await this.RequestAuthorizationAsync(refreshToken, true);
+                var authorization = await this.RequestAuthorizationAsync(refreshToken, true);
+
+                if (string.IsNullOrEmpty(authorization))
+                {
+                    // no token available, show dialog to get user to signin and accept
+                    SideDrawer.MainContent = _webView;
+                    this._webView.Source = _signInUrl;
+                }
+                else
+                {
+                    App.ApiService = new MvpApiService(authorization);
+
+                    ViewModel.IsLoggedIn = true;
+
+                    ViewModel.IsBusyMessage = "downloading profile info...";
+                    ViewModel.Mvp = await App.ApiService.GetProfileAsync();
+
+                    ViewModel.IsBusyMessage = "downloading profile image...";
+                    ViewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+                    
+                    // Using ViewModel method in order to trigger appropriate data downloads for that view
+                    this.ViewModel.LoadView(ViewType.Home);
+                }
             }
             else
             {
@@ -52,6 +91,8 @@ namespace MvpApi.Forms.Portable
             ViewModel.IsBusy = false;
         }
 
+        #region Global Navigation
+        
         public void LoadView(ViewType viewType)
         {
             switch (viewType)
@@ -82,7 +123,9 @@ namespace MvpApi.Forms.Portable
             return base.OnBackButtonPressed();
         }
 
-        #region Authentication
+        #endregion
+        
+        #region Global Authentication
 
         private static readonly string _scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
         private static readonly string _clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
@@ -122,7 +165,7 @@ namespace MvpApi.Forms.Portable
 
         }
         
-        private async Task RequestAuthorizationAsync(string authCode, bool isRefresh = false)
+        private async Task<string> RequestAuthorizationAsync(string authCode, bool isRefresh = false)
         {
             try
             {
@@ -152,9 +195,6 @@ namespace MvpApi.Forms.Portable
 
                     if (tokenData.ContainsKey("access_token"))
                     {
-                        // Store the expiration time of the token, currently 3600 seconds (an hour)
-                        StorageHelpers.Instance.SaveSetting("expires_in", tokenData["expires_in"]);
-
                         StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
                         StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
 
@@ -164,62 +204,24 @@ namespace MvpApi.Forms.Portable
                         var cleanedAccessToken = tokenData["access_token"].Split('&')[0];
 
                         // set public property that is "returned"
-                        var authorization = $"{tokenType} {cleanedAccessToken}";
-
-                        App.ApiService = new MvpApiService(authorization);
-
-                        ViewModel.IsLoggedIn = true;
-
-                        ViewModel.IsBusyMessage = "downloading profile info...";
-                        ViewModel.Mvp = await App.ApiService.GetProfileAsync();
-
-                        ViewModel.IsBusyMessage = "downloading profile image...";
-                        ViewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
-                        
-                        // Todo maybe switch to instance
-                        this.ViewModel.LoadView(ViewType.Home);
+                        return $"{tokenType} {cleanedAccessToken}";
                     }
                 }
             }
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
-
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
-                Debug.WriteLine($"LoginDialog HttpRequestException: {e}");
-
                 await this.DisplayAlert("Error", $"Something went wrong signing you in, try again. {e.Message}", "ok");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
-                Debug.WriteLine($"LoginDialog Exception: {e}");
-
                 await this.DisplayAlert("Error", $"Something went wrong signing you in, try again. {e.Message}", "ok");
             }
+
+            return null;
         }
 
         #endregion
-
-        private async void SignOutButton_OnClicked(object sender, EventArgs e)
-        {
-            try
-            {
-                this.SideDrawer.MainContent = this._webView;
-                this._webView.Source = _signOutUri;
-
-                StorageHelpers.Instance.DeleteToken("access_token");
-                StorageHelpers.Instance.DeleteToken("refresh_token");
-            }
-            catch (Exception ex)
-            {
-                await ex.LogExceptionAsync();
-                await this.DisplayAlert("Error", "something went wrong signing you out, try again.", "ok");
-            }
-        }
     }
 }
