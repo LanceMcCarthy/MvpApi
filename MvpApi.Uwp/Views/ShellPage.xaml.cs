@@ -45,7 +45,7 @@ namespace MvpApi.Uwp.Views
 
             Loaded += ShellPage_Loaded;
         }
-
+        
         private async void ShellPage_Loaded(object sender, RoutedEventArgs e)
         {
             if (NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
@@ -147,8 +147,18 @@ namespace MvpApi.Uwp.Views
                 LoginOverlay.Visibility = Visibility.Collapsed;
             }
 
+            // remove any previously wired up event handlers
+            if (App.ApiService != null)
+            {
+                App.ApiService.AccessTokenExpired -= ApiService_AccessTokenExpired;
+                App.ApiService.RequestErrorOccurred -= ApiService_RequestErrorOccurred;
+            }
+
             // New-up the service
             App.ApiService = new MvpApiService(authorizationHeader);
+            
+            App.ApiService.AccessTokenExpired += ApiService_AccessTokenExpired;
+            App.ApiService.RequestErrorOccurred += ApiService_RequestErrorOccurred;
 
             // Trigger UI changes (e.g. hide the overlay)
             ViewModel.IsLoggedIn = true;
@@ -284,7 +294,17 @@ namespace MvpApi.Uwp.Views
             return authorizationHeader;
         }
         
+        private async void ApiService_AccessTokenExpired(object sender, EventArgs e)
+        {
+            // If the API service returned 401 or 403, this event will fire. Try using the refresh token to get a new access token.
+            await SignInAsync();
+        }
+
+        private async void ApiService_RequestErrorOccurred(object sender, EventArgs e)
+        {
+            await new MessageDialog("There was a 500 status error making a call to the MVP Api service.\r\n\nIf this persists, try logging out manually to reset your login credentials (click your profile photo).").ShowAsync();
+        }
         #endregion
-        
+
     }
 }

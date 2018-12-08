@@ -99,7 +99,12 @@ namespace MvpApi.Services.Utilities
             try
             {
                 var filePath = Path.Combine(_appDataFolder, $"{key}.txt");
-                File.Delete(filePath);
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
                 return true;
             }
             catch (Exception e)
@@ -177,6 +182,7 @@ namespace MvpApi.Services.Utilities
                 var encryptedBytes = EncryptBytes(unencryptedBytes);
                 
                 var filePath = Path.Combine(_appDataFolder, $".{key}.bin");
+
                 File.WriteAllBytes(filePath, encryptedBytes);
 
                 return true;

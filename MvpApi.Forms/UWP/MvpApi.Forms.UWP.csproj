@@ -151,10 +151,10 @@
     <PackageReference Include="Telerik.UI.for.Xamarin">
       <Version>2018.3.1122.3</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="3.1.0.697729" />
-    <PackageReference Include="SkiaSharp" Version="1.59.3" />
-    <PackageReference Include="SkiaSharp.Views " Version="1.59.3" />
-    <PackageReference Include="SkiaSharp.Views.Forms " Version="1.59.3" />
+    <PackageReference Include="Xamarin.Forms" Version="3.4.0.1008975" />
+    <PackageReference Include="SkiaSharp" Version="1.68.0" />
+    <PackageReference Include="SkiaSharp.Views " Version="1.68.0" />
+    <PackageReference Include="SkiaSharp.Views.Forms " Version="1.68.0" />
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.2" />
   </ItemGroup>
   <ItemGroup>

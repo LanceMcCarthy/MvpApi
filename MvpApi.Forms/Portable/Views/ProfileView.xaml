@@ -1,10 +1,51 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+<ContentView x:Name="View" 
+             xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:dataControls="clr-namespace:Telerik.XamarinForms.DataControls;assembly=Telerik.XamarinForms.DataControls"
+             xmlns:listView="clr-namespace:Telerik.XamarinForms.DataControls.ListView;assembly=Telerik.XamarinForms.DataControls"
+             xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.XamarinForms.Primitives"
              x:Class="MvpApi.Forms.Portable.Views.ProfileView">
-  <ContentView.Content>
-      <StackLayout>
-          <Label Text="Hello Xamarin.Forms!" />
-      </StackLayout>
-  </ContentView.Content>
+
+    <Grid RowDefinitions="{StaticResource OneTwoStarRowDefinitions}">
+        <Label Text="{Binding Mvp.Biography}"
+               Margin="10"
+               LineBreakMode="WordWrap"
+               VerticalOptions="Fill"
+               HorizontalOptions="Fill"
+               Grid.Row="0" />
+
+        <dataControls:RadListView x:Name="listView"
+                                  ItemsSource="{Binding OnlineIdentities}"
+                                  Grid.Row="1">
+            <dataControls:RadListView.ItemTemplate>
+                <DataTemplate>
+                    <listView:ListViewTemplateCell>
+                        <StackLayout Margin="10,0,10,10">
+                            <StackLayout Orientation="Horizontal">
+                                <Image Source="{Binding SocialNetwork.IconUrl, Converter={StaticResource MvcContentUrlConverter}}"
+                                       WidthRequest="20"
+                                       HeightRequest="20"
+                                       Margin="0,0,10,0" />
+                                <Label Text="{Binding SocialNetwork.Name}"
+                                       FontSize="Large" />
+                            </StackLayout>
+
+                            <!--<HyperlinkButton Content="Open in browser..."
+                                             NavigateUri="{Binding Url, Converter={StaticResource StringToUriConverter}}" />-->
+
+                            <StackLayout Orientation="Horizontal">
+                                <Label Text="Identity visible to:"
+                                       Margin="0,0,5,0"
+                                       VerticalOptions="Center" />
+                                <Label Text="{Binding OnlineIdentityVisibility.Description}"
+                                       TextColor="{Binding OnlineIdentityVisibility, Converter={StaticResource PrivacyLevelToColorConverter}}"
+                                       VerticalOptions="Center" />
+                            </StackLayout>
+                        </StackLayout>
+                    </listView:ListViewTemplateCell>
+                </DataTemplate>
+            </dataControls:RadListView.ItemTemplate>
+        </dataControls:RadListView>
+    </Grid>
 </ContentView>

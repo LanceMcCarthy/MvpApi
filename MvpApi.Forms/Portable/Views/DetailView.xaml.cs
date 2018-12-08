@@ -1,20 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using MvpApi.Forms.Portable.ViewModels;
+using System;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace MvpApi.Forms.Portable.Views
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class DetailView : ContentView
+    public partial class DetailView : ContentView
 	{
-		public DetailView ()
+        public DetailView()
 		{
-			InitializeComponent ();
-		}
-	}
+			InitializeComponent();
+        }
+        
+        private void DoneButton_Clicked(object sender, EventArgs e)
+        {
+            if (BindingContext is MainPageViewModel vm)
+            {
+                vm.SelectedContribution = null;
+            }
+        }
+    }
 }

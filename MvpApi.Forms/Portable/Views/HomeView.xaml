@@ -2,12 +2,16 @@
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:telerikGrid="clr-namespace:Telerik.XamarinForms.DataGrid;assembly=Telerik.XamarinForms.DataGrid"
+             xmlns:behaviors="clr-namespace:MvpApi.Forms.Portable.Behaviors"
              x:Class="MvpApi.Forms.Portable.Views.HomeView">
 
     <Grid>
         <telerikGrid:RadDataGrid ItemsSource="{Binding Contributions}"
+                                 SelectedItem="{Binding SelectedContribution, Mode=TwoWay}"
                                  AutoGenerateColumns="False">
             <telerikGrid:RadDataGrid.Columns>
+                <telerikGrid:DataGridDateColumn PropertyName="StartDate"
+                                                HeaderText="Start Date" />
                 <telerikGrid:DataGridTextColumn PropertyName="Title"
                                                 HeaderText="Title"/>
                 <telerikGrid:DataGridTextColumn PropertyName="ContributionTypeName"

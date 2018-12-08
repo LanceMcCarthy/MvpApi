@@ -20,18 +20,29 @@ namespace MvpApi.Services.Apis
         /// Service that interacts with the MVP API
         /// </summary>
         /// <param name="authorizationHeaderContent">OAuth 2.0 AccessToken from Live SDK or MS Graph via Azure AD v2 endpoint
-        /// IMPORTANT: Bearer prefix needed</param>
+        /// IMPORTANT: 'Bearer' prefix needed before the token code</param>
         public MvpApiService(string authorizationHeaderContent)
         {
             var handler = new HttpClientHandler();
             if (handler.SupportsAutomaticDecompression)
                 handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-            
+
             _client = new HttpClient(handler);
             _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "3d199a7fb1c443e1985375f0572f58f8");
             _client.DefaultRequestHeaders.Add("Authorization", authorizationHeaderContent);
         }
-        
+
+        /// <summary>
+        /// This event will fire when there is a 401 or 403 returned from an API call. This indicates that a new Access Token is needed.
+        /// Use this event to use the refresh token to get a new access token automatically.
+        /// </summary>
+        public event EventHandler<EventArgs> AccessTokenExpired;
+
+        /// <summary>
+        /// This event fires when the API call results in a HttpStatusCode 500 result is obtained.
+        /// </summary>
+        public event EventHandler<EventArgs> RequestErrorOccurred;
+
         #region API Endpoints
 
         /// <summary>
@@ -44,43 +55,39 @@ namespace MvpApi.Services.Apis
             {
                 using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile"))
                 {
-                    var json = await response.Content.ReadAsStringAsync();
-
                     if (response.IsSuccessStatusCode)
                     {
+                        var json = await response.Content.ReadAsStringAsync();
                         return JsonConvert.DeserializeObject<ProfileViewModel>(json);
                     }
                     else
                     {
-                        Debug.WriteLine($"GetProfileAsync{Environment.NewLine} -StatusCode: {response.StatusCode}{Environment.NewLine} -Content: {json}");
-                        return null;
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
                     }
                 }
             }
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
-
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
+                
                 if (e.Message.Contains("500"))
                 {
-
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
                 }
 
                 Debug.WriteLine($"GetProfileAsync HttpRequestException: {e}");
-                return null;
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
-                return null;
             }
+
+            return null;
         }
 
         /// <summary>
@@ -94,52 +101,54 @@ namespace MvpApi.Services.Apis
                 // the result is Detected mime type: image/jpeg; charset=binary
                 using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
                 {
-                    var base64String = await response.Content.ReadAsStringAsync();
-
-                    try
+                    if (response.IsSuccessStatusCode)
                     {
-                        if (string.IsNullOrEmpty(base64String))
+                        var base64String = await response.Content.ReadAsStringAsync();
+
+                        try
                         {
-                            return null;
+                            if (string.IsNullOrEmpty(base64String))
+                            {
+                                return null;
+                            }
+
+                            base64String = base64String.TrimStart('"').TrimEnd('"');
+                            
+                            return Convert.FromBase64String(base64String);
                         }
-
-                        base64String = base64String.TrimStart('"').TrimEnd('"');
-
-                        var imgBytes = Convert.FromBase64String(base64String);
-                        
-                        Debug.WriteLine($"Image Decoded: {imgBytes?.Length} bytes");
-
-                        return imgBytes;
+                        catch (Exception e)
+                        {
+                            await e.LogExceptionAsync();
+                            Debug.WriteLine($"GetProfileImageAsync Image Conversion Exception: {e}");
+                        }
                     }
-                    catch(Exception ex)
+                    else
                     {
-                        return null;
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
                     }
                 }
             }
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
-
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
+                
                 if (e.Message.Contains("500"))
                 {
-
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
                 }
 
                 Debug.WriteLine($"GetProfileImageAsync HttpRequestException: {e}");
-                return null;
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
                 Debug.WriteLine($"GetProfileImageAsync Exception: {e}");
-                return null;
             }
+
+            return null;
         }
 
         /// <summary>
@@ -153,68 +162,72 @@ namespace MvpApi.Services.Apis
                 // the result is Detected mime type: image/jpeg; charset=binary
                 using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
                 {
-                    var base64String = await response.Content.ReadAsStringAsync();
-
-                    try
+                    if (response.IsSuccessStatusCode)
                     {
-                        if (string.IsNullOrEmpty(base64String))
+                        var base64String = await response.Content.ReadAsStringAsync();
+
+                        try
                         {
-                            return null;
+                            if (string.IsNullOrEmpty(base64String))
+                            {
+                                return null;
+                            }
+
+                            base64String = base64String.TrimStart('"').TrimEnd('"');
+
+                            // determine file type
+                            var data = base64String.Substring(0, 5);
+
+                            var fileExtension = string.Empty;
+
+                            switch (data.ToUpper())
+                            {
+                                case "IVBOR":
+                                    fileExtension = "png";
+                                    break;
+                                case "/9J/4":
+                                    fileExtension = "jpg";
+                                    break;
+                            }
+
+                            var imgBytes = Convert.FromBase64String(base64String);
+
+                            var filePath = StorageHelpers.Instance.SaveImage(imgBytes, $"ProfilePicture.{fileExtension}");
+                            return filePath;
                         }
-
-                        base64String = base64String.TrimStart('"').TrimEnd('"');
-
-                        // determine file type
-                        var data = base64String.Substring(0, 5);
-
-                        var fileExtension = string.Empty;
-
-                        switch (data.ToUpper())
+                        catch (Exception e)
                         {
-                            case "IVBOR":
-                                fileExtension = "png";
-                                break;
-                            case "/9J/4":
-                                fileExtension = "jpg";
-                                break;
+                            await e.LogExceptionAsync();
+                            Debug.WriteLine($"DownloadAndSaveProfileImage Exception: {e}");
                         }
-                        
-                        var imgBytes = Convert.FromBase64String(base64String);
-
-                        var filePath = StorageHelpers.Instance.SaveImage(imgBytes, $"ProfilePicture.{fileExtension}");
-                        return filePath;
                     }
-                    catch (Exception e)
+                    else
                     {
-                        await e.LogExceptionAsync();
-                        Debug.WriteLine($"DownloadAndSaveProfileImage Exception: {e}");
-                        return null;
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
                     }
                 }
             }
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
-
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
+                
                 if (e.Message.Contains("500"))
                 {
-
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
                 }
 
                 Debug.WriteLine($"GetProfileImageAsync HttpRequestException: {e}");
-                return null;
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
                 Debug.WriteLine($"GetProfileImageAsync Exception: {e}");
-                return null;
             }
+
+            return null;
         }
 
         /// <summary>
@@ -232,34 +245,39 @@ namespace MvpApi.Services.Apis
             {
                 using (var response = await _client.GetAsync($"https://mvpapi.azure-api.net/mvp/api/contributions/{offset}/{limit}"))
                 {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<ContributionViewModel>(json);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<ContributionViewModel>(json);
+                    }
+                    else
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
+                    }
                 }
             }
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
 
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
                 if (e.Message.Contains("500"))
                 {
-
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
                 }
 
                 Debug.WriteLine($"GetContributionsAsync HttpRequestException: {e}");
-                return null;
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetContributionsAsync Exception: {e}");
-                return null;
             }
+
+            return null;
         }
 
         /// <summary>
@@ -276,22 +294,25 @@ namespace MvpApi.Services.Apis
             {
                 var serializedContribution = JsonConvert.SerializeObject(contribution);
                 byte[] byteData = Encoding.UTF8.GetBytes(serializedContribution);
-                
+
                 using (var content = new ByteArrayContent(byteData))
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                    
+
                     using (var response = await _client.PostAsync("https://mvpapi.azure-api.net/mvp/api/contributions?", content))
                     {
-                        var json = await response.Content.ReadAsStringAsync();
-
-                        Debug.WriteLine($"Submission Save JSON: {json}");
-
-                        var result = JsonConvert.DeserializeObject<ContributionsModel>(json);
-
-                        Debug.WriteLine($"Submission Save Result: ID {result.ContributionId}");
-
-                        return result;
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var json = await response.Content.ReadAsStringAsync();
+                            return JsonConvert.DeserializeObject<ContributionsModel>(json);
+                        }
+                        else
+                        {
+                            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                            {
+                                AccessTokenExpired?.Invoke(this, new EventArgs());
+                            }
+                        }
                     }
                 }
             }
@@ -299,27 +320,20 @@ namespace MvpApi.Services.Apis
             {
                 await e.LogExceptionAsync();
 
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
                 if (e.Message.Contains("500"))
                 {
-                    
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
                 }
 
                 Debug.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
-                return null;
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
-
                 Debug.WriteLine($"SubmitContributionAsync Exception: {e}");
-
-                return null;
             }
+
+            return null;
         }
 
         /// <summary>
@@ -329,7 +343,7 @@ namespace MvpApi.Services.Apis
         /// <returns>Bool to denote update success or failure</returns>
         public async Task<bool?> UpdateContributionAsync(ContributionsModel contribution)
         {
-            if(contribution == null)
+            if (contribution == null)
                 throw new NullReferenceException("The contribution parameter was null.");
 
             try
@@ -344,7 +358,17 @@ namespace MvpApi.Services.Apis
 
                     using (var response = await _client.PutAsync("https://mvpapi.azure-api.net/mvp/api/contributions", content))
                     {
-                        return response.IsSuccessStatusCode;
+                        if (response.IsSuccessStatusCode)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                            {
+                                AccessTokenExpired?.Invoke(this, new EventArgs());
+                            }
+                        }
                     }
                 }
             }
@@ -352,14 +376,9 @@ namespace MvpApi.Services.Apis
             {
                 await e.LogExceptionAsync();
 
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
                 if (e.Message.Contains("500"))
                 {
-                    
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
                 }
 
                 Debug.WriteLine($"UpdateContributionAsync HttpRequestException: {e}");
@@ -370,8 +389,9 @@ namespace MvpApi.Services.Apis
                 await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
-                return null;
             }
+
+            return null;
         }
 
         /// <summary>
@@ -388,21 +408,26 @@ namespace MvpApi.Services.Apis
             {
                 using (var response = await _client.DeleteAsync($"https://mvpapi.azure-api.net/mvp/api/contributions?id={contribution.ContributionId}"))
                 {
-                    return response.IsSuccessStatusCode;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
+                    }
                 }
             }
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
 
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
                 if (e.Message.Contains("500"))
                 {
-
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
                 }
 
                 Debug.WriteLine($"UpdateContributionAsync HttpRequestException: {e}");
@@ -415,6 +440,8 @@ namespace MvpApi.Services.Apis
                 Debug.WriteLine($"GetProfileAsync Exception: {e}");
                 return null;
             }
+
+            return null;
         }
 
         /// <summary>
@@ -427,34 +454,39 @@ namespace MvpApi.Services.Apis
             {
                 using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/contributiontypes"))
                 {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<IReadOnlyList<ContributionTypeModel>>(json);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<IReadOnlyList<ContributionTypeModel>>(json);
+                    }
+                    else
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
+                    }
                 }
             }
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
 
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
                 if (e.Message.Contains("500"))
                 {
-
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
                 }
 
                 Debug.WriteLine($"GetContributionTypesAsync HttpRequestException: {e}");
-                return null;
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetContributionTypesAsync Exception: {e}");
-                return null;
             }
+
+            return null;
         }
 
         /// <summary>
@@ -467,34 +499,39 @@ namespace MvpApi.Services.Apis
             {
                 using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/contributionareas"))
                 {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<IReadOnlyList<ContributionAreasRootItem>>(json);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<IReadOnlyList<ContributionAreasRootItem>>(json);
+                    }
+                    else
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
+                    }
                 }
             }
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
 
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
                 if (e.Message.Contains("500"))
                 {
-
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
                 }
 
                 Debug.WriteLine($"GetContributionTechnologiesAsync HttpRequestException: {e}");
-                return null;
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetContributionTechnologiesAsync Exception: {e}");
-                return null;
             }
+
+            return null;
         }
 
         /// <summary>
@@ -507,36 +544,182 @@ namespace MvpApi.Services.Apis
             {
                 using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/sharingpreferences"))
                 {
-                    var json = await response.Content.ReadAsStringAsync();
-                    return JsonConvert.DeserializeObject<IReadOnlyList<VisibilityViewModel>>(json);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<IReadOnlyList<VisibilityViewModel>>(json);
+
+                    }
+                    else
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
+                    }
                 }
             }
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
 
-                if (e.Message.Contains("401"))
-                {
-                    //TODO Try refresh token, access token is only valid for 60 minutes
-                }
-
                 if (e.Message.Contains("500"))
                 {
-
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
                 }
 
                 Debug.WriteLine($"GetVisibilitiesAsync HttpRequestException: {e}");
-                return null;
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
                 Debug.WriteLine($"GetVisibilitiesAsync Exception: {e}");
-                return null;
             }
+
+            return null;
         }
-        
+
+        public async Task<IReadOnlyList<OnlineIdentityViewModel>> GetOnlineIdentitiesAsync()
+        {
+            try
+            {
+                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/onlineidentities"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<IReadOnlyList<OnlineIdentityViewModel>>(json);
+                    }
+                    else
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                }
+
+                Debug.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+                Debug.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return null;
+        }
+
+        public async Task<OnlineIdentity> SubmitOnlineIdentityAsync(OnlineIdentityViewModel onlineIdentity)
+        {
+            if (onlineIdentity == null)
+                throw new NullReferenceException("The OnlineIdentity parameter was null.");
+
+            try
+            {
+                var serializedOnlineIdentity = JsonConvert.SerializeObject(onlineIdentity);
+                byte[] byteData = Encoding.UTF8.GetBytes(serializedOnlineIdentity);
+
+                using (var content = new ByteArrayContent(byteData))
+                {
+                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                    using (var response = await _client.PostAsync("https://mvpapi.azure-api.net/mvp/api/onlineidentities?", content))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var json = await response.Content.ReadAsStringAsync();
+                            Debug.WriteLine($"OnlineIdentity Save JSON: {json}");
+
+                            var result = JsonConvert.DeserializeObject<OnlineIdentity>(json);
+                            Debug.WriteLine($"OnlineIdentity Save Result: ID {result.PrivateSiteId}");
+
+                            return result;
+                        }
+                        else
+                        {
+                            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                            {
+                                AccessTokenExpired?.Invoke(this, new EventArgs());
+                            }
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                }
+
+                Debug.WriteLine($"SubmitOnlineIdentitiesAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Debug.WriteLine($"SubmitOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return null;
+        }
+
+        public async Task<bool> DeleteOnlineIdentityAsync(OnlineIdentityViewModel onlineIdentity)
+        {
+            if (onlineIdentity == null)
+                throw new NullReferenceException("The OnlineIdentity parameter was null.");
+
+            try
+            {
+                using (var response = await _client.DeleteAsync($"https://mvpapi.azure-api.net/mvp/api/onlineidentities?id={onlineIdentity.PrivateSiteId}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                }
+
+                Debug.WriteLine($"SubmitOnlineIdentitiesAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Debug.WriteLine($"SubmitOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return false;
+        }
+
         #endregion
 
         public void Dispose()

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
-using Windows.UI.Popups;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
@@ -14,14 +12,15 @@ namespace MvpApi.Uwp.ViewModels
     public class ProfilePageViewModel : PageViewModelBase
     {
         private ProfileViewModel _mvp;
+        private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
         private string _profileImagePath;
-        private bool _isInEditMode;
 
         public ProfilePageViewModel()
         {
             if (DesignMode.DesignModeEnabled)
             {
                 Mvp = DesignTimeHelpers.GenerateSampleMvp();
+                OnlineIdentities = DesignTimeHelpers.GenerateOnlineIdentities();
             }
         }
 
@@ -31,27 +30,57 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _mvp, value);
         }
 
+        public ObservableCollection<OnlineIdentityViewModel> OnlineIdentities
+        {
+            get => _onlineIdentities ?? (_onlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
+            set => Set(ref _onlineIdentities, value);
+        }
+
         public string ProfileImagePath
         {
             get => _profileImagePath;
             set => Set(ref _profileImagePath, value);
         }
-
-        public bool IsInEditMode
+        
+        private async Task RefreshOnlineIdentitiesAsync()
         {
-            get => _isInEditMode;
-            set => Set(ref _isInEditMode, value);
+            IsBusy = true;
+            IsBusyMessage = "loading Online Identities...";
+
+            var identities = await App.ApiService.GetOnlineIdentitiesAsync();
+
+            if (identities != null & identities?.Count > 0)
+            {
+                foreach (var onlineIdentity in identities)
+                {
+                    OnlineIdentities.Add(onlineIdentity);
+                }
+            }
+            
+            IsBusyMessage = "";
+            IsBusy = false;
         }
 
-        public async void SaveProfileButton_Click(object sender, RoutedEventArgs e)
-        {
-            await new MessageDialog("You can't save profile changes yet, this will be available in v1.9, the next major update.", "Coming Soon").ShowAsync();
-        }
+        // TODO Create and upload new OnlineIdentity
+        //public async void AddOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var md = new MessageDialog("What type of online identity would you like to add?\r\n'Linked Identity' is an MSDN property (e.g. MSDN or Microsoft Community Forum), these can be used to automatically create contributions based on your activity.\r\n'Other Identity' for everything else, like social networks, GitHub and StackOverflow. ", "Add Online Identity");
 
-        public async void UpdateProfilePictureButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            await new MessageDialog("You can't upload photo yet, this will be available in v1.9, the next major update.", "Coming Soon").ShowAsync();
-        }
+        //    md.Commands.Add(new UICommand("Linked Identity"));
+        //    md.Commands.Add(new UICommand("Other Identity"));
+            
+        //    var result = await md.ShowAsync();
+
+        //    if (result.Label == "Linked")
+        //    {
+
+        //    }
+
+        //    if (result.Label == "Other")
+        //    {
+
+        //    }
+        //}
 
         #region Navigation
 
@@ -70,6 +99,8 @@ namespace MvpApi.Uwp.ViewModels
                 this.Mvp = shellVm.Mvp;
                 this.ProfileImagePath = shellVm.ProfileImagePath;
 
+                await RefreshOnlineIdentitiesAsync();
+                
                 IsBusyMessage = "";
                 IsBusy = false;
             }
