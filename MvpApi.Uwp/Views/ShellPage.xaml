@@ -87,6 +87,20 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
+
+                <controls:HamburgerButtonInfo PageType="local:PreferencesPage">
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <FontIcon FontFamily="Segoe MDL2 Assets"
+                                  Glyph="&#xE713;"
+                                  Width="48"
+                                  Height="48" />
+                        <TextBlock Text="Preferences"
+                                   Margin="12,0,0,0"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </controls:HamburgerButtonInfo>
+
                 <controls:HamburgerButtonInfo Tapped="LogoutButton_OnClick" >
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">

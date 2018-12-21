@@ -93,7 +93,32 @@
                           CanUserChooseColumns="False"
                           UserGroupMode="Disabled"
                           SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
+                          AlternationStep="2"
+                          AlternationStartIndex="1"
+                          AlternateRowBackground="#FFF2F2F2"
                           Grid.Row="1">
+            <grid:RadDataGrid.GroupHeaderTemplate>
+                <DataTemplate>
+                    <Grid Background="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToBrushConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Group.Key}"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0"/>
+                            <TextBlock Text="-"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Group.Items.Count}"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0"/>
+                            <TextBlock Text="Items"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </grid:RadDataGrid.GroupHeaderTemplate>
             <grid:RadDataGrid.Columns>
                 <grid:DataGridDateColumn PropertyName="StartDate"
                                          CellContentFormat="{}{0:d}"
@@ -103,7 +128,7 @@
                                          CellContentStyle="{StaticResource WideCellContentStyle}" />
                 <grid:DataGridTextColumn PropertyName="ContributionTypeName"
                                          Header="Contribution Type"
-                                         CellContentStyle="{StaticResource WideCellContentStyle}" />
+                                         CellContentStyle="{StaticResource WideCellContentStyle}"/>
                 <grid:DataGridTextColumn PropertyName="Description"
                                          Header="Description"
                                          CellContentStyle="{StaticResource MediumCellContentStyle}" />
