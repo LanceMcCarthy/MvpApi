@@ -89,7 +89,7 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
 
@@ -99,9 +99,10 @@
                   Grid.ColumnSpan="2"
                   Height="35">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="2*" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
+
                 <TextBlock Text="Biography"
                            Style="{StaticResource SubtitleTextBlockStyle}"
                            Padding="5"
@@ -124,8 +125,10 @@
                            Margin="10,10,10,0" />
             </ScrollViewer>
 
-            <ListView x:Name="OnlineIdentitiesGridView"
+            <ListView x:Name="OnlineIdentitiesListView"
                       ItemsSource="{Binding OnlineIdentities}"
+                      SelectionChanged="{x:Bind ViewModel.OnlineIdentitiesListView_OnSelectionChanged}"
+                      SelectionMode="{Binding ListViewSelectionMode}"
                       Grid.Row="1"
                       Grid.Column="1">
                 <ListView.ItemContainerStyle>
@@ -139,9 +142,9 @@
                         <Setter Property="HorizontalAlignment"
                                 Value="Stretch" />
                         <Setter Property="Padding"
-                                Value="0" />
-                        <Setter Property="Margin"
                                 Value="10" />
+                        <Setter Property="Margin"
+                                Value="0" />
                     </Style>
                 </ListView.ItemContainerStyle>
                 <ListView.ItemTemplate>
@@ -156,7 +159,7 @@
                                            Style="{ThemeResource SubtitleTextBlockStyle}" />
                             </StackPanel>
 
-                            <HyperlinkButton Content="Open in browser..."
+                            <HyperlinkButton Content="{Binding Url}"
                                              NavigateUri="{Binding Url, Converter={StaticResource StringToUriConverter}}" />
 
                             <StackPanel Orientation="Horizontal">
@@ -179,11 +182,27 @@
                                          Grid.Column="1" />
         </Grid>
 
-        <!--<CommandBar Grid.Row="3">
-            <AppBarButton x:Name="AddOnlineIdentityButton"
-                          Label="add online identity"
-                          Icon="Add"
-                          Click="{x:Bind ViewModel.AddOnlineIdentityButton_Click}" />
-        </CommandBar>-->
+        <CommandBar Grid.Row="3">
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Label="Export Online Identities"
+                              Click="{x:Bind ViewModel.ExportButton_OnClick}" />
+            </CommandBar.SecondaryCommands>
+            <AppBarButton Label="delete identity"
+                          Icon="Delete"
+                          Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                          IsEnabled="{Binding AreAppBarButtonsEnabled}"
+                          Click="{x:Bind ViewModel.DeleteOnlineIdentityButton_Click}" />
+            <AppBarButton Label="clear selection"
+                          Icon="ClearSelection"
+                          Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                          IsEnabled="{Binding AreAppBarButtonsEnabled}"
+                          Click="{x:Bind ViewModel.ClearSelectionButton_Click}" />
+            <AppBarToggleButton Label="multiple selection"
+                                Icon="Bullets"
+                                IsChecked="{Binding IsMultipleSelectionEnabled, Mode=TwoWay}" />
+            <AppBarButton Label="refresh identities"
+                          Icon="Refresh"
+                          Click="{x:Bind ViewModel.RefreshOnlineIdentitiesButton_Click}" />
+        </CommandBar>
     </Grid>
 </Page>

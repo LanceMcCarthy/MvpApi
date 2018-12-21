@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.Storage.Provider;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -254,6 +256,54 @@ namespace MvpApi.Uwp.ViewModels
                     GroupDescriptors.Add(new PropertyGroupDescriptor { DisplayContent = "Contribution Type", PropertyName = nameof(ContributionsModel.ContributionTypeName) });
                     break;
             }
+        }
+
+        public async void ExportButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            IsBusy = true;
+            IsBusyMessage = "exporting all contributions...";
+
+            var jsonData = await App.ApiService.ExportContributionsAsync();
+
+            if (string.IsNullOrEmpty(jsonData))
+                return;
+
+            var savePicker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                SuggestedFileName = $"MVP Contributions {DateTime.Now:yyyy-dd-M--HH-mm-ss}"
+            };
+
+            savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
+
+            var file = await savePicker.PickSaveFileAsync();
+            
+            if (file != null)
+            {
+                IsBusyMessage = "saving file...";
+
+                // prevents file changes by syncing services like OneDrive
+                CachedFileManager.DeferUpdates(file);
+
+                await FileIO.WriteTextAsync(file, jsonData);
+
+                // releases the hold on the file so syncing services can make changes
+                var status = await CachedFileManager.CompleteUpdatesAsync(file);
+
+                if (status == FileUpdateStatus.Complete)
+                {
+                    var message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
+                                  "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
+                                  "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
+                                  "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
+                                  "4. Now you can us 'Save As' to xlsx file or csv.";
+
+                    await new MessageDialog(message, "Export Saved").ShowAsync();
+                }
+            }
+
+            IsBusyMessage = "";
+            IsBusy = false;
         }
 
         #endregion
