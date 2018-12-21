@@ -100,7 +100,6 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\DateTimeMonthKeyLookup.cs" />
-    <Compile Include="Common\DesignConstants.cs" />
     <Compile Include="Common\LoginChangedEventArgs.cs" />
     <Compile Include="Common\TechnologyKeyLookup.cs" />
     <Compile Include="Controls\TechnologyAreasListView.cs" />
@@ -126,6 +125,7 @@
     <Compile Include="Helpers\DiagnosticsHelper.cs" />
     <Compile Include="Helpers\ExceptionLogger.cs" />
     <Compile Include="Helpers\FeedbackHelpers.cs" />
+    <Compile Include="Helpers\PaletteHelper.cs" />
     <Compile Include="Helpers\TaskUtilities.cs" />
     <Compile Include="Helpers\DesignTimeHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -137,7 +137,6 @@
     <Compile Include="ViewModels\HomePageViewModel.cs" />
     <Compile Include="ViewModels\KudosViewModel.cs" />
     <Compile Include="ViewModels\PageViewModelBase.cs" />
-    <Compile Include="ViewModels\PreferencesPageViewModel.cs" />
     <Compile Include="ViewModels\ProfilePageViewModel.cs" />
     <Compile Include="ViewModels\ShellPageViewModel.cs" />
     <Compile Include="Views\AboutPage.xaml.cs">
@@ -154,9 +153,6 @@
     </Compile>
     <Compile Include="Views\KudosPage.xaml.cs">
       <DependentUpon>KudosPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PreferencesPage.xaml.cs">
-      <DependentUpon>PreferencesPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProfilePage.xaml.cs">
       <DependentUpon>ProfilePage.xaml</DependentUpon>
@@ -260,10 +256,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\KudosPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\PreferencesPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
