@@ -723,6 +723,48 @@ namespace MvpApi.Services.Apis
 
         #endregion
 
+        #region Utilities
+
+        public async Task<string> ExportContributionsAsync()
+        {
+            try
+            {
+                var ping = await GetContributionsAsync(0, 1);
+
+                var totalContributions = ping.TotalContributions;
+
+                if (totalContributions != null)
+                {
+                    var allContributions = await GetContributionsAsync(0, (int)totalContributions);
+
+                    return JsonConvert.SerializeObject(allContributions);
+                }
+                else
+                {
+                    return "";
+                }
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        public async Task<string> ExportOnlineIdentitiesAsync()
+        {
+            try
+            {
+                var onlineIdentities = await GetOnlineIdentitiesAsync();
+                return JsonConvert.SerializeObject(onlineIdentities);
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        #endregion
+
         public void Dispose()
         {
             _client?.Dispose();

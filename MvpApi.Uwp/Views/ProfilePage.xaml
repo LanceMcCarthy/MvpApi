@@ -183,6 +183,10 @@
         </Grid>
 
         <CommandBar Grid.Row="3">
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Label="Export Online Identities"
+                              Click="{x:Bind ViewModel.ExportButton_OnClick}" />
+            </CommandBar.SecondaryCommands>
             <AppBarButton Label="delete identity"
                           Icon="Delete"
                           Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"

@@ -127,6 +127,9 @@
 
         <CommandBar Grid.Row="2"
                     VerticalContentAlignment="Top">
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Label="Export All Contributions" Click="{x:Bind ViewModel.ExportButton_OnClick}"/>
+            </CommandBar.SecondaryCommands>
             <AppBarButton Label="Grid Options"
                           Icon="Repair">
                 <AppBarButton.Flyout>
