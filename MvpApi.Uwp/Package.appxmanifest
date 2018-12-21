@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="61469LanceLotSoftware.MVPCompanion" Publisher="CN=51B5A8B2-5D86-4826-BBE2-C92E963A4C02" Version="1.8.1.0" />
+  <Identity Name="61469LanceLotSoftware.MVPCompanion" Publisher="CN=51B5A8B2-5D86-4826-BBE2-C92E963A4C02" Version="1.8.2.0" />
   <mp:PhoneIdentity PhoneProductId="22fbf170-42f6-4410-a6a7-189807341e16" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>MVP Companion</DisplayName>

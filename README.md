@@ -3,9 +3,11 @@
 A client application to allow for faster contribution browsing, editing and upload to help renewing MVPs get up to date for renewal. 
 
 
-| Platform | Build Status Release  |
+| Platform | Release  |
 |----------|-----------------------|
 | UWP | [![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/MVP%20Companion%20UWP)](https://lance.visualstudio.com/MVP%20Companion%20Ops/_build/latest?definitionId=5) |
+
+Note: Build badges are experimental. Failed builds are due to the DevOps configuration, not code quality.
 
 
 ### Installation
