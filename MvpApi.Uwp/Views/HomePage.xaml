@@ -6,7 +6,6 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -62,38 +61,77 @@
               Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
 
-            <TextBlock Text="Home Page"
+            <TextBlock Text="Home"
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
 
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Right">
-
-                <primitives:RadBusyIndicator IsActive="{Binding IsLoadingMoreItems}"
-                                             VerticalAlignment="Center"
-                                             AnimationStyle="AnimationStyle7"
-                                             Content=""
-                                             Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                             Margin="0,4,10,0" />
-
-                <TextBlock x:Name="DisplayTotalTextBlock"
-                           VerticalAlignment="Center"
-                           Text="{Binding DisplayTotal}"
-                           Margin="0,0,10,0" />
-            </StackPanel>
+            <Button HorizontalAlignment="Right"
+                    Background="Transparent"
+                    Margin="0,0,10,0">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Symbol="ShowBcc" 
+                                    Margin="5"/>
+                        <TextBlock Text="Group By"
+                                   Margin="5" />
+                    </StackPanel>
+                </Button.Content>
+                <Button.Flyout>
+                    <Flyout LightDismissOverlayMode="On">
+                        <StackPanel Margin="10,10,10,5">
+                            <TextBlock Text="Grouping" />
+                            <RadioButton Content="None"
+                                         IsChecked="True"
+                                         GroupName="DataGridGroup"
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                            <RadioButton Content="Contribution Type"
+                                         GroupName="DataGridGroup"
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                            <RadioButton Content="Award Area"
+                                         GroupName="DataGridGroup"
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                            <RadioButton Content="Date"
+                                         GroupName="DataGridGroup"
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
         </Grid>
 
         <grid:RadDataGrid x:Name="ContributionsGrid"
                           ItemsSource="{Binding Contributions}"
                           IsBusyIndicatorEnabled="{Binding IsBusy}"
                           SelectionMode="{Binding GridSelectionMode}"
-                          IncrementalLoadingMode="Auto"
                           AutoGenerateColumns="False"
                           CanUserChooseColumns="False"
                           UserGroupMode="Disabled"
                           SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
+                          GridLinesThickness="1"
                           Grid.Row="1">
+            <grid:RadDataGrid.GroupHeaderTemplate>
+                <DataTemplate>
+                    <Grid Background="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToBackgroundConverter}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Group.Key}"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       Foreground="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0" />
+                            <TextBlock Text="-"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       Foreground="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Group.Items.Count}"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       Foreground="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </grid:RadDataGrid.GroupHeaderTemplate>
             <grid:RadDataGrid.Columns>
                 <grid:DataGridDateColumn PropertyName="StartDate"
                                          CellContentFormat="{}{0:d}"
@@ -126,55 +164,20 @@
                 Grid.Row="1" />
 
         <CommandBar Grid.Row="2"
-                    VerticalContentAlignment="Top">
+                    Background="{ThemeResource AppBarBackgroundThemeBrush}">
             <CommandBar.SecondaryCommands>
-                <AppBarButton Label="Export All Contributions" Click="{x:Bind ViewModel.ExportButton_OnClick}"/>
+                <AppBarButton Label="Export All Contributions"
+                              Click="{x:Bind ViewModel.ExportButton_OnClick}" />
             </CommandBar.SecondaryCommands>
-            <AppBarButton Label="Grid Options"
-                          Icon="Repair">
-                <AppBarButton.Flyout>
-                    <Flyout>
-                        <Grid>
-                            <StackPanel>
-                                <StackPanel Margin="10,10,10,5">
-                                    <TextBlock Text="Grouping" />
-                                    <RadioButton Content="None"
-                                                 IsChecked="True"
-                                                 GroupName="DataGridGroup"
-                                                 Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
-                                    <RadioButton Content="Date"
-                                                 GroupName="DataGridGroup"
-                                                 Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
-                                    <RadioButton Content="Contribution Type"
-                                                 GroupName="DataGridGroup"
-                                                 Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
-                                    <RadioButton Content="Award Area"
-                                                 GroupName="DataGridGroup"
-                                                 Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
-                                </StackPanel>
-
-                                <input:RadNumericBox Header="Fetch Batch Size"
-                                                     Minimum="0"
-                                                     AcceptsDecimalSeparator="False"
-                                                     Maximum="100"
-                                                     SmallChange="25"
-                                                     Value="{Binding SelectedBatchSize, Mode=TwoWay}"
-                                                     Margin="10,10,5,10" />
-                            </StackPanel>
-                        </Grid>
-                    </Flyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
-            <AppBarSeparator />
             <AppBarButton Label="clear selection"
                           Icon="ClearSelection"
                           Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
-                          IsEnabled="{Binding AreAppbarButtonsEnabled}"
+                          IsEnabled="{Binding AreAppBarButtonsEnabled}"
                           Click="{x:Bind ViewModel.ClearSelectionButton_Click}" />
             <AppBarButton Label="delete"
                           Icon="Delete"
                           Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
-                          IsEnabled="{Binding AreAppbarButtonsEnabled}"
+                          IsEnabled="{Binding AreAppBarButtonsEnabled}"
                           Click="{x:Bind ViewModel.DeleteSelectionButton_Click}" />
             <AppBarToggleButton Label="multiple selection"
                                 Icon="Bullets"
@@ -196,6 +199,3 @@
                                      Grid.Column="0" />
     </Grid>
 </Page>
-
-
-

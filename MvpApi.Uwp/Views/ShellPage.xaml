@@ -87,6 +87,7 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
+
                 <controls:HamburgerButtonInfo Tapped="LogoutButton_OnClick" >
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">

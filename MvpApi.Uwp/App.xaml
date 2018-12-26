@@ -73,6 +73,9 @@
             <converters:PrivacyLevelToBrushConverter x:Key="PrivacyLevelToBrushConverter" />
             <converters:StringToUriConverter x:Key="StringToUriConverter" />
 
+            <converters:ContributionTypeNameToBrushConverter x:Name="ContributionTypeNameToBackgroundConverter" />
+            <converters:ContributionTypeNameToBrushConverter x:Name="ContributionTypeNameToForegroundConverter" IsForegroundColor="True" />
+
             <Style x:Key="PageBusyIndicatorStyle"
                    TargetType="primitives:RadBusyIndicator">
                 <Setter Property="AnimationStyle"
