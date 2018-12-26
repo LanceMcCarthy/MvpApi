@@ -61,7 +61,7 @@
               Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
 
-            <TextBlock Text="Home Page"
+            <TextBlock Text="Home"
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
@@ -71,7 +71,7 @@
                     Margin="0,0,10,0">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
-                        <SymbolIcon Symbol="List" 
+                        <SymbolIcon Symbol="ShowBcc" 
                                     Margin="5"/>
                         <TextBlock Text="Group By"
                                    Margin="5" />
@@ -85,13 +85,13 @@
                                          IsChecked="True"
                                          GroupName="DataGridGroup"
                                          Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
-                            <RadioButton Content="Date"
-                                         GroupName="DataGridGroup"
-                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
                             <RadioButton Content="Contribution Type"
                                          GroupName="DataGridGroup"
                                          Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
                             <RadioButton Content="Award Area"
+                                         GroupName="DataGridGroup"
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                            <RadioButton Content="Date"
                                          GroupName="DataGridGroup"
                                          Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
                         </StackPanel>
@@ -164,9 +164,7 @@
                 Grid.Row="1" />
 
         <CommandBar Grid.Row="2"
-                    Background="{ThemeResource AppBarBackgroundThemeBrush}"
-                    Height="48"
-                    VerticalContentAlignment="Top">
+                    Background="{ThemeResource AppBarBackgroundThemeBrush}">
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export All Contributions"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
