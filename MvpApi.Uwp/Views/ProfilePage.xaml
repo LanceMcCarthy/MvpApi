@@ -22,7 +22,7 @@
         <Grid x:Name="HeaderGrid"
               Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
-            <TextBlock Text="Profile Page"
+            <TextBlock Text="Profile"
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />

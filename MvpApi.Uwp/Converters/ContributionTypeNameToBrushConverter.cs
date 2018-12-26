@@ -17,7 +17,7 @@ namespace MvpApi.Uwp.Converters
                 return IsForegroundColor ? GetForegroundColor(englishName) : GetBackgroundColor(englishName);
             }
 
-            return new SolidColorBrush(Colors.Black);
+            return IsForegroundColor ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(Colors.Transparent);
         }
 
         private static SolidColorBrush GetForegroundColor(string contributionTypeName)
@@ -138,7 +138,7 @@ namespace MvpApi.Uwp.Converters
                 case "Product Group Interaction (PGI)":
                     return new SolidColorBrush(PaletteHelper.ContributionTypeBackgroundColors[1]);
                 default:
-                    return new SolidColorBrush(Colors.Black);
+                    return new SolidColorBrush(Colors.Transparent);
             }
         }
 

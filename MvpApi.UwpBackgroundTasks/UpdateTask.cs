@@ -22,11 +22,11 @@ namespace MvpApi.UwpBackgroundTasks
                             },
                             new AdaptiveText
                             {
-                                Text = "Now using Rijndael encryption, login bug fixes and new acrylic accents. Profile editing coming soon!"
+                                Text = "Online identities now on your profile page! Improved DataGrid row and group styling."
                             },
                             new AdaptiveImage
                             {
-                                Source = "https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVP_Companion_1.8.1.png"
+                                Source = "https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVPCompanion_1.8.2.png"
                             }
                         }
                     }

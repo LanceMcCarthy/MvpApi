@@ -7,12 +7,21 @@ namespace MvpApi.Uwp.Converters
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is string url)
+            var uri = new Uri("https://bing.com");
+
+            try
             {
-                return new Uri(url);
+                if (value is string url)
+                {
+                    uri = new Uri(url);
+                }
+            }
+            catch
+            {
+                // ignored
             }
 
-            return new Uri("");
+            return uri;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

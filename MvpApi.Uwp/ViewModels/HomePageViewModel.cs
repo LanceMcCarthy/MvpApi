@@ -20,7 +20,6 @@ using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
-using Telerik.Core.Data;
 using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
 using Template10.Common;
@@ -31,26 +30,22 @@ namespace MvpApi.Uwp.ViewModels
     public class HomePageViewModel : PageViewModelBase
     {
         #region Fields
-
-        private int? _currentOffset = 0;
-        private string _displayTotal;
+        
         private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
         private bool _isMultipleSelectionEnabled;
-        private bool _isLoadingMoreItems;
-        private IncrementalLoadingCollection<ContributionsModel> _contributions;
+        private ObservableCollection<ContributionsModel> _contributions;
         private bool _areAppBarButtonsEnabled;
         private bool _isInternetDisabled;
-        private uint _batchSize = 50;
 
         #endregion
 
         public HomePageViewModel()
         {
-            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = SelectedBatchSize };
-            
             if (DesignMode.DesignModeEnabled)
             {
                 var designItems = DesignTimeHelpers.GenerateContributions();
+
+                Contributions = new ObservableCollection<ContributionsModel>();
 
                 foreach (var contribution in designItems)
                 {
@@ -74,25 +69,19 @@ namespace MvpApi.Uwp.ViewModels
         }
         
         #region Properties
-
-        public IncrementalLoadingCollection<ContributionsModel> Contributions
+        
+        public ObservableCollection<ContributionsModel> Contributions
         {
             get => _contributions;
             set => Set(ref _contributions, value);
         }
-        
+
         public ObservableCollection<object> SelectedContributions { get; set; }
 
         public GroupDescriptorCollection GroupDescriptors { get; set; }
         
         public DelegateCommand RefreshAfterDisconnectCommand { get; }
-
-        public string DisplayTotal
-        {
-            get => _displayTotal;
-            set => Set(ref _displayTotal, value);
-        }
-
+        
         public bool IsMultipleSelectionEnabled
         {
             get => _isMultipleSelectionEnabled;
@@ -112,49 +101,18 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _gridSelectionMode, value);
         }
 
-        public bool AreAppbarButtonsEnabled
+        public bool AreAppBarButtonsEnabled
         {
             get => _areAppBarButtonsEnabled;
             set => Set(ref _areAppBarButtonsEnabled, value);
         }
-
-        public bool IsLoadingMoreItems
-        {
-            get => _isLoadingMoreItems;
-            set => Set(ref _isLoadingMoreItems, value);
-        }
-
+        
         public bool IsInternetDisabled
         {
             get => _isInternetDisabled;
             set => Set(ref _isInternetDisabled, value);
         }
-
-        public uint SelectedBatchSize
-        {
-            get
-            {
-                if (ApplicationData.Current.LocalSettings.Values.TryGetValue("BatchSize", out object rawValue))
-                {
-                    _batchSize = Convert.ToUInt32(rawValue);
-                }
-                else
-                {
-                    ApplicationData.Current.LocalSettings.Values["BatchSize"] = _batchSize;
-                }
-
-                return _batchSize;
-            }
-            set
-            {
-                Set(ref _batchSize, value);
-
-                ApplicationData.Current.LocalSettings.Values["BatchSize"] = value;
-
-                ResetData();
-            }
-        }
-
+        
         #endregion
 
         #region Event Handlers
@@ -166,12 +124,16 @@ namespace MvpApi.Uwp.ViewModels
 
         public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
         {
-            SelectedContributions.Clear();
+            if (SelectedContributions.Any())
+                SelectedContributions.Clear();
         }
 
-        public void RefreshButton_Click(object sender, RoutedEventArgs e)
+        public async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            ResetData();
+            if(SelectedContributions.Any())
+                SelectedContributions.Clear();
+
+            await LoadContributionsAsync();
         }
 
         public async void DeleteSelectionButton_Click(object sender, RoutedEventArgs e)
@@ -194,15 +156,9 @@ namespace MvpApi.Uwp.ViewModels
 
                 SelectedContributions.Clear();
 
-                // After deleting contributions from the server, we want to start fresh.
-                // We can do this by resetting the offset and starting over
+                // After deleting contributions, we need to fetch updated list
                 IsBusyMessage = "refreshing contributions...";
-
-                _currentOffset = 0;
-
-                Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
-
-                await Contributions.LoadMoreItemsAsync(50);
+                await LoadContributionsAsync();
             }
             catch (Exception ex)
             {
@@ -217,14 +173,14 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void RadDataGrid_OnSelectionChanged(object sender, DataGridSelectionChangedEventArgs e)
         {
-            // When in multiple selection mode, enable/diable delete instead of navigating to details page
+            // When in multiple selection mode, enable/disable delete instead of navigating to details page
             if (GridSelectionMode == DataGridSelectionMode.Multiple)
             {
-                AreAppbarButtonsEnabled = e?.AddedItems.Any() == true;
+                AreAppBarButtonsEnabled = e?.AddedItems.Any() == true;
                 return;
             }
 
-            // when in single selectin mode, go to the selected item's details page
+            // When in single selection mode, go to the selected item's details page
             if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
             {
                 await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution);
@@ -310,57 +266,76 @@ namespace MvpApi.Uwp.ViewModels
 
         #region Methods
 
-        private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
+        //private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
+        //{
+        //    try
+        //    {
+        //        // Here we use a different flag when the view model is busy loading items because we don't want to cover the UI
+        //        // The IsBusy flag is used for when deleting items, when we want to block the UI
+        //        IsLoadingMoreItems = true;
+
+        //        var result = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
+
+        //        Debug.WriteLine($"** LoadMoreItems **\nPagingIndex: {result.PagingIndex}, Count: {result.Contributions.Count}, TotalContributions: {result.TotalContributions}");
+                
+        //        _currentOffset = result.PagingIndex;
+
+        //        DisplayTotal = $"{_currentOffset} of {result.TotalContributions}";
+
+        //        // If we've received all the contributions, return null to stop automatic loading
+        //        if (result.PagingIndex == result.TotalContributions)
+        //            return null;
+
+        //        return result.Contributions;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Only log this exception after the user is logged in
+        //        if (App.ShellPage?.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
+        //        {
+        //            await ex.LogExceptionAsync();
+        //            Debug.WriteLine($"LoadMoreItems Exception: {ex}");
+        //        }
+
+        //        return null;
+        //    }
+        //    finally
+        //    {
+        //        IsLoadingMoreItems = false;
+        //    }
+        //}
+
+        private async Task LoadContributionsAsync()
         {
             try
             {
-                // Here we use a different flag when the view model is busy loading items because we dont want to cover the UI
-                // The IsBusy flag is used for when deleting items, when we want to block the UI
-                IsLoadingMoreItems = true;
+                IsBusy = true;
+                IsBusyMessage = "loading contributions...";
 
-                var result = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
+                // Just load one item from the API so we can get the total number of items
+                var pingResult = await App.ApiService.GetContributionsAsync(0, 1);
 
-                if (result == null)
-                    return null;
+                // Read the total number of items
+                var itemsToFetch = Convert.ToInt32(pingResult.TotalContributions);
+                
+                // Do the complete fetch now
+                var result = await App.ApiService.GetContributionsAsync(0, itemsToFetch);
+                
+                // Load the items into the DataGrid
+                Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);
 
-                _currentOffset = result.PagingIndex;
-
-                DisplayTotal = $"{_currentOffset} of {result.TotalContributions}";
-
-                // If we've recieved all the contributions, return null to stop automatic loading
-                if (result.PagingIndex == result.TotalContributions)
-                    return null;
-
-                return result.Contributions;
+                IsBusyMessage = "";
+                IsBusy = false;
             }
             catch (Exception ex)
             {
-                // Only log this exception after the user is logged in
-                if (App.ShellPage?.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
-                {
-                    await ex.LogExceptionAsync();
-                    Debug.WriteLine($"LoadMoreItems Exception: {ex}");
-                }
-
-                return null;
+                await ex.LogExceptionWithUserMessage();
             }
             finally
             {
-                IsLoadingMoreItems = false;
+                IsBusyMessage = "";
+                IsBusy = false;
             }
-        }
-
-        private void ResetData()
-        {
-            if (SelectedContributions.Any())
-            {
-                SelectedContributions.Clear();
-            }
-
-            IsMultipleSelectionEnabled = false;
-            _currentOffset = 0;
-
-            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = SelectedBatchSize };
         }
         
         #endregion
@@ -381,21 +356,15 @@ namespace MvpApi.Uwp.ViewModels
             {
                 if (!shellVm.IsLoggedIn)
                 {
-                    IsBusy = true;
-                    IsBusyMessage = "logging in...";
-                    
                     await ShellPage.Instance.SignInAsync();
-
-                    if (shellVm.IsLoggedIn)
-                    {
-                        IsBusyMessage = "loading contributions...";
-                        ResetData();
-                    }
-
-                    IsBusyMessage = "";
-                    IsBusy = false;
                 }
 
+                // Although user should be logged in at this point, still check
+                if (shellVm.IsLoggedIn)
+                {
+                    await LoadContributionsAsync();
+                }
+                
                 if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
                 {
                     var td = new TutorialDialog
@@ -410,6 +379,12 @@ namespace MvpApi.Uwp.ViewModels
                     };
 
                     await td.ShowAsync();
+                }
+
+                if (IsBusy)
+                {
+                    IsBusy = false;
+                    IsBusyMessage = "";
                 }
             }
         }
