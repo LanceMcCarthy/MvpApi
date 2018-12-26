@@ -1,1 +1,1 @@
-C:\Users\lance\source\repos\MvpApi\MvpApi.Uwp\bin\ARM\Release\Upload\MvpApi.Uwp_1.8.1.0\MvpApi.Uwp_1.8.1.0_x86_x64_arm.appxbundle
+C:\Users\lance\source\repos\MvpApi\MvpApi.Uwp\bin\ARM\Release\Upload\MvpApi.Uwp_1.8.2.0\MvpApi.Uwp_1.8.2.0_x86_x64_arm.appxbundle
