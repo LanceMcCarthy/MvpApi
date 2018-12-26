@@ -78,7 +78,7 @@
                     </StackPanel>
                 </Button.Content>
                 <Button.Flyout>
-                    <Flyout LightDismissOverlayMode="On">
+                    <Flyout>
                         <StackPanel Margin="10,10,10,5">
                             <TextBlock Text="Grouping" />
                             <RadioButton Content="None"
@@ -102,7 +102,6 @@
 
         <grid:RadDataGrid x:Name="ContributionsGrid"
                           ItemsSource="{Binding Contributions}"
-                          IsBusyIndicatorEnabled="{Binding IsBusy}"
                           SelectionMode="{Binding GridSelectionMode}"
                           AutoGenerateColumns="False"
                           CanUserChooseColumns="False"
