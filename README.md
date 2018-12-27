@@ -2,14 +2,6 @@
 
 A client application to allow for faster contribution browsing, editing and upload to help renewing MVPs get up to date for renewal. 
 
-
-| Platform | Release  |
-|----------|-----------------------|
-| UWP | [![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/MVP%20Companion%20UWP)](https://lance.visualstudio.com/MVP%20Companion%20Ops/_build/latest?definitionId=5) |
-
-Note: Build badges are experimental. Failed builds are due to the DevOps configuration, not code quality.
-
-
 ### Installation
 - [Microsoft Store (Windows 10)](https://www.microsoft.com/store/apps/9NRXNX3WLH77) 
 
@@ -18,21 +10,34 @@ Note: Build badges are experimental. Failed builds are due to the DevOps configu
 - The new multiple "Additional Technology Areas" feature supported
 - Group and sort contributions list in an easy to navigate DataGrid
 - Fast and easy contribution editing
+- View and delete MVP Profile OnlineIdentities
 
-### Screenshots and GIFs
+## App Previews
 
-#### Fast Browsing (*Filtering, Grouping, Sorting and Load On Demand*)
+### Fast Browsing (*Filtering, Grouping, Sorting*)
 
-![image](https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVPCompGridFeatures.png)
+![Home Page Screenshot](https://user-images.githubusercontent.com/3520532/50461373-06566300-094c-11e9-881b-e449784d610b.png)
 
-#### Automatic login refresh
-
-![image](https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVP_Companion_1.7_update.gif)
-
-#### Bulk Upload
+### Bulk Upload
 
 ![image](https://content.screencast.com/users/lance.mccarthy/folders/Snagit/media/054a5bfe-3d1f-4aec-b4df-1473d662e789/03.09.2018-18.36.GIF)
 
-#### Set multiple Technology Areas
+### Set multiple Technology Areas
 
 ![image](https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MutipleTechAreas.gif)
+
+### Online Identities
+
+![Online Identities](https://user-images.githubusercontent.com/3520532/50461434-5a614780-094c-11e9-856c-14fdfc1dd5ac.png)
+
+### Automatic login refresh
+
+![image](https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVP_Companion_1.7_update.gif)
+
+## Build Status
+
+| Platform | Release  |
+|----------|-----------------------|
+| UWP | [![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/MVP%20Companion%20UWP)](https://lance.visualstudio.com/MVP%20Companion%20Ops/_build/latest?definitionId=5) |
+
+DevOps note: A failed build will be indicated until I can use a VSExtension SDK in DevOps CI/CD. Fr now, I am manually publishing the builds. 
