@@ -8,6 +8,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Toolkit.Uwp.Connectivity;
+using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Extensions;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
@@ -294,17 +295,35 @@ namespace MvpApi.Uwp.Views
             return authorizationHeader;
         }
         
-        private async void ApiService_AccessTokenExpired(object sender, EventArgs e)
+        private async void ApiService_AccessTokenExpired(object sender, ApiServiceEventArgs e)
         {
-            // If the API service returned 401 or 403, this event will fire. Try using the refresh token to get a new access token.
-            await SignInAsync();
+            if(e.IsTokenRefreshNeeded)
+            {
+                await SignInAsync();
+            }
+            else
+            {
+                // Future use
+            }
         }
 
-        private async void ApiService_RequestErrorOccurred(object sender, EventArgs e)
+        private async void ApiService_RequestErrorOccurred(object sender, ApiServiceEventArgs e)
         {
-            await new MessageDialog("There was a 500 status error making a call to the MVP Api service.\r\n\nIf this persists, try logging out manually to reset your login credentials (click your profile photo).").ShowAsync();
+            var message = "Unknown Problem. If this continues to happen, please open a GitHub Issue and we'll investigate further (find the GitHub link on the About page)";
+
+            if (e.IsBadRequest)
+            {
+                message = e.Message;
+            }
+            else if (e.IsServerError)
+            {
+                message = "There was a 500 (internal server error) making a call to the MVP Api service. This indicates a problem with the API service and is unfortunately outside the control of the app to assist." +
+                    "\r\n\nIf this continues to happen, please open a GitHub Issue and we'll investigate further (find the GitHub link on the About page).";
+            }
+            
+            await new MessageDialog(message, "MVP API Request Error").ShowAsync();
         }
+
         #endregion
-
     }
 }

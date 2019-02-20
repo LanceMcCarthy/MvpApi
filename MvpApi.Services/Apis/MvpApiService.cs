@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Models;
 using MvpApi.Services.Utilities;
 using Newtonsoft.Json;
@@ -37,15 +38,15 @@ namespace MvpApi.Services.Apis
         /// This event will fire when there is a 401 or 403 returned from an API call. This indicates that a new Access Token is needed.
         /// Use this event to use the refresh token to get a new access token automatically.
         /// </summary>
-        public event EventHandler<EventArgs> AccessTokenExpired;
+        public event EventHandler<ApiServiceEventArgs> AccessTokenExpired;
 
         /// <summary>
         /// This event fires when the API call results in a HttpStatusCode 500 result is obtained.
         /// </summary>
-        public event EventHandler<EventArgs> RequestErrorOccurred;
+        public event EventHandler<ApiServiceEventArgs> RequestErrorOccurred;
 
         #region API Endpoints
-    
+
         /// <summary>
         /// Returns the profile data of the currently signed in MVP
         /// </summary>
@@ -61,22 +62,24 @@ namespace MvpApi.Services.Apis
                         var json = await response.Content.ReadAsStringAsync();
                         return JsonConvert.DeserializeObject<ProfileViewModel>(json);
                     }
-                    else
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new EventArgs());
-                        }
+                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                    }
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the request for profile information.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                     }
                 }
             }
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
-                
+
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"GetProfileAsync HttpRequestException: {e}");
@@ -114,7 +117,7 @@ namespace MvpApi.Services.Apis
                             }
 
                             base64String = base64String.TrimStart('"').TrimEnd('"');
-                            
+
                             return Convert.FromBase64String(base64String);
                         }
                         catch (Exception e)
@@ -127,7 +130,11 @@ namespace MvpApi.Services.Apis
                     {
                         if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                         {
-                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                        }
+                        else if (response.StatusCode == HttpStatusCode.BadRequest)
+                        {
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the request for profile photo data.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                         }
                     }
                 }
@@ -135,10 +142,10 @@ namespace MvpApi.Services.Apis
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
-                
+
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"GetProfileImageAsync HttpRequestException: {e}");
@@ -206,7 +213,11 @@ namespace MvpApi.Services.Apis
                     {
                         if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                         {
-                            AccessTokenExpired?.Invoke(this, new EventArgs());
+                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                        }
+                        else if (response.StatusCode == HttpStatusCode.BadRequest)
+                        {
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the request for profile photo data.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                         }
                     }
                 }
@@ -214,10 +225,10 @@ namespace MvpApi.Services.Apis
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
-                
+
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"GetProfileImageAsync HttpRequestException: {e}");
@@ -251,12 +262,14 @@ namespace MvpApi.Services.Apis
                         var json = await response.Content.ReadAsStringAsync();
                         return JsonConvert.DeserializeObject<ContributionViewModel>(json);
                     }
-                    else
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new EventArgs());
-                        }
+                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                    }
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the request to get Contributions.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                     }
                 }
             }
@@ -266,7 +279,7 @@ namespace MvpApi.Services.Apis
 
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"GetContributionsAsync HttpRequestException: {e}");
@@ -300,19 +313,21 @@ namespace MvpApi.Services.Apis
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    using (var response = await _client.PostAsync("contributions?", content))
+                    using (var response = await _client.PostAsync("contributions", content))
                     {
                         if (response.IsSuccessStatusCode)
                         {
                             var json = await response.Content.ReadAsStringAsync();
                             return JsonConvert.DeserializeObject<ContributionsModel>(json);
                         }
-                        else
+
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                         {
-                            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                            {
-                                AccessTokenExpired?.Invoke(this, new EventArgs());
-                            }
+                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                        }
+                        else if (response.StatusCode == HttpStatusCode.BadRequest)
+                        {
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the format of the Contribution information.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                         }
                     }
                 }
@@ -323,7 +338,7 @@ namespace MvpApi.Services.Apis
 
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
@@ -363,12 +378,14 @@ namespace MvpApi.Services.Apis
                         {
                             return true;
                         }
-                        else
+
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                         {
-                            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                            {
-                                AccessTokenExpired?.Invoke(this, new EventArgs());
-                            }
+                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                        }
+                        else if (response.StatusCode == HttpStatusCode.BadRequest)
+                        {
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the format of the Contribution information.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                         }
                     }
                 }
@@ -379,7 +396,7 @@ namespace MvpApi.Services.Apis
 
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"UpdateContributionAsync HttpRequestException: {e}");
@@ -413,12 +430,14 @@ namespace MvpApi.Services.Apis
                     {
                         return true;
                     }
-                    else
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new EventArgs());
-                        }
+                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                    }
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the delete request.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                     }
                 }
             }
@@ -428,7 +447,7 @@ namespace MvpApi.Services.Apis
 
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"UpdateContributionAsync HttpRequestException: {e}");
@@ -460,12 +479,14 @@ namespace MvpApi.Services.Apis
                         var json = await response.Content.ReadAsStringAsync();
                         return JsonConvert.DeserializeObject<IReadOnlyList<ContributionTypeModel>>(json);
                     }
-                    else
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new EventArgs());
-                        }
+                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                    }
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                     }
                 }
             }
@@ -475,7 +496,7 @@ namespace MvpApi.Services.Apis
 
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"GetContributionTypesAsync HttpRequestException: {e}");
@@ -505,12 +526,14 @@ namespace MvpApi.Services.Apis
                         var json = await response.Content.ReadAsStringAsync();
                         return JsonConvert.DeserializeObject<IReadOnlyList<ContributionAreasRootItem>>(json);
                     }
-                    else
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new EventArgs());
-                        }
+                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                    }
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                     }
                 }
             }
@@ -520,7 +543,7 @@ namespace MvpApi.Services.Apis
 
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"GetContributionTechnologiesAsync HttpRequestException: {e}");
@@ -551,12 +574,14 @@ namespace MvpApi.Services.Apis
                         return JsonConvert.DeserializeObject<IReadOnlyList<VisibilityViewModel>>(json);
 
                     }
-                    else
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new EventArgs());
-                        }
+                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                    }
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                     }
                 }
             }
@@ -566,7 +591,7 @@ namespace MvpApi.Services.Apis
 
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"GetVisibilitiesAsync HttpRequestException: {e}");
@@ -592,12 +617,14 @@ namespace MvpApi.Services.Apis
                         var json = await response.Content.ReadAsStringAsync();
                         return JsonConvert.DeserializeObject<IReadOnlyList<OnlineIdentityViewModel>>(json);
                     }
-                    else
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new EventArgs());
-                        }
+                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                    }
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                     }
                 }
             }
@@ -607,7 +634,7 @@ namespace MvpApi.Services.Apis
 
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
@@ -621,63 +648,65 @@ namespace MvpApi.Services.Apis
             return null;
         }
 
-        // TODO MVP API doesn't yet have support for submitting a new Online Identity
-        //public async Task<OnlineIdentity> SubmitOnlineIdentityAsync(OnlineIdentityViewModel onlineIdentity)
-        //{
-        //    if (onlineIdentity == null)
-        //        throw new NullReferenceException("The OnlineIdentity parameter was null.");
+        // TODO MVP API recently added support for submitting a new Online Identity, will be added in 1.9.1 or later
+        public async Task<OnlineIdentity> SubmitOnlineIdentityAsync(OnlineIdentityViewModel onlineIdentity)
+        {
+            if (onlineIdentity == null)
+                throw new NullReferenceException("The OnlineIdentity parameter was null.");
 
-        //    try
-        //    {
-        //        var serializedOnlineIdentity = JsonConvert.SerializeObject(onlineIdentity);
-        //        byte[] byteData = Encoding.UTF8.GetBytes(serializedOnlineIdentity);
+            try
+            {
+                var serializedOnlineIdentity = JsonConvert.SerializeObject(onlineIdentity);
+                byte[] byteData = Encoding.UTF8.GetBytes(serializedOnlineIdentity);
 
-        //        using (var content = new ByteArrayContent(byteData))
-        //        {
-        //            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                using (var content = new ByteArrayContent(byteData))
+                {
+                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        //            using (var response = await _client.PostAsync("onlineidentities?", content))
-        //            {
-        //                if (response.IsSuccessStatusCode)
-        //                {
-        //                    var json = await response.Content.ReadAsStringAsync();
-        //                    Debug.WriteLine($"OnlineIdentity Save JSON: {json}");
+                    using (var response = await _client.PostAsync("onlineidentities?", content))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var json = await response.Content.ReadAsStringAsync();
+                            Debug.WriteLine($"OnlineIdentity Save JSON: {json}");
 
-        //                    var result = JsonConvert.DeserializeObject<OnlineIdentity>(json);
-        //                    Debug.WriteLine($"OnlineIdentity Save Result: ID {result.PrivateSiteId}");
+                            var result = JsonConvert.DeserializeObject<OnlineIdentity>(json);
+                            Debug.WriteLine($"OnlineIdentity Save Result: ID {result.PrivateSiteId}");
 
-        //                    return result;
-        //                }
-        //                else
-        //                {
-        //                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-        //                    {
-        //                        AccessTokenExpired?.Invoke(this, new EventArgs());
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (HttpRequestException e)
-        //    {
-        //        await e.LogExceptionAsync();
+                            return result;
+                        }
 
-        //        if (e.Message.Contains("500"))
-        //        {
-        //            RequestErrorOccurred?.Invoke(this, new EventArgs());
-        //        }
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                        }
+                        else if (response.StatusCode == HttpStatusCode.BadRequest)
+                        {
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - Something was wrong with the OnlineIdentity data and it was not accepted by the server.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
 
-        //        Debug.WriteLine($"SubmitOnlineIdentitiesAsync HttpRequestException: {e}");
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        await e.LogExceptionAsync();
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
 
-        //        Debug.WriteLine($"SubmitOnlineIdentitiesAsync Exception: {e}");
-        //    }
+                Debug.WriteLine($"SubmitOnlineIdentitiesAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
 
-        //    return null;
-        //}
+                Debug.WriteLine($"SubmitOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return null;
+        }
 
         public async Task<bool> DeleteOnlineIdentityAsync(OnlineIdentityViewModel onlineIdentity)
         {
@@ -692,12 +721,14 @@ namespace MvpApi.Services.Apis
                     {
                         return true;
                     }
-                    else
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new EventArgs());
-                        }
+                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                    }
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the format of the uploaded data.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
                     }
                 }
             }
@@ -707,7 +738,7 @@ namespace MvpApi.Services.Apis
 
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new EventArgs());
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
                 Debug.WriteLine($"SubmitOnlineIdentitiesAsync HttpRequestException: {e}");
