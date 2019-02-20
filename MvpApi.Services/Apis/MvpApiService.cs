@@ -28,6 +28,7 @@ namespace MvpApi.Services.Apis
                 handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
             _client = new HttpClient(handler);
+            _client.BaseAddress = new Uri("https://mvpapi.azure-api.net/api/");
             _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "3d199a7fb1c443e1985375f0572f58f8");
             _client.DefaultRequestHeaders.Add("Authorization", authorizationHeaderContent);
         }
@@ -53,7 +54,7 @@ namespace MvpApi.Services.Apis
         {
             try
             {
-                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile"))
+                using (var response = await _client.GetAsync("profile"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -160,7 +161,7 @@ namespace MvpApi.Services.Apis
             try
             {
                 // the result is Detected mime type: image/jpeg; charset=binary
-                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
+                using (var response = await _client.GetAsync("profile/photo"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -243,7 +244,7 @@ namespace MvpApi.Services.Apis
 
             try
             {
-                using (var response = await _client.GetAsync($"https://mvpapi.azure-api.net/mvp/api/contributions/{offset}/{limit}"))
+                using (var response = await _client.GetAsync($"contributions/{offset}/{limit}"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -299,7 +300,7 @@ namespace MvpApi.Services.Apis
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    using (var response = await _client.PostAsync("https://mvpapi.azure-api.net/mvp/api/contributions?", content))
+                    using (var response = await _client.PostAsync("contributions?", content))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -356,7 +357,7 @@ namespace MvpApi.Services.Apis
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    using (var response = await _client.PutAsync("https://mvpapi.azure-api.net/mvp/api/contributions", content))
+                    using (var response = await _client.PutAsync("contributions", content))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -406,7 +407,7 @@ namespace MvpApi.Services.Apis
 
             try
             {
-                using (var response = await _client.DeleteAsync($"https://mvpapi.azure-api.net/mvp/api/contributions?id={contribution.ContributionId}"))
+                using (var response = await _client.DeleteAsync($"contributions?id={contribution.ContributionId}"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -452,7 +453,7 @@ namespace MvpApi.Services.Apis
         {
             try
             {
-                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/contributiontypes"))
+                using (var response = await _client.GetAsync("contributions/contributiontypes"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -497,7 +498,7 @@ namespace MvpApi.Services.Apis
         {
             try
             {
-                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/contributionareas"))
+                using (var response = await _client.GetAsync("contributions/contributionareas"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -542,7 +543,7 @@ namespace MvpApi.Services.Apis
         {
             try
             {
-                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/contributions/sharingpreferences"))
+                using (var response = await _client.GetAsync("contributions/sharingpreferences"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -584,7 +585,7 @@ namespace MvpApi.Services.Apis
         {
             try
             {
-                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/onlineidentities"))
+                using (var response = await _client.GetAsync("onlineidentities"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -635,7 +636,7 @@ namespace MvpApi.Services.Apis
         //        {
         //            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-        //            using (var response = await _client.PostAsync("https://mvpapi.azure-api.net/mvp/api/onlineidentities?", content))
+        //            using (var response = await _client.PostAsync("onlineidentities?", content))
         //            {
         //                if (response.IsSuccessStatusCode)
         //                {
@@ -685,7 +686,7 @@ namespace MvpApi.Services.Apis
 
             try
             {
-                using (var response = await _client.DeleteAsync($"https://mvpapi.azure-api.net/mvp/api/onlineidentities?id={onlineIdentity.PrivateSiteId}"))
+                using (var response = await _client.DeleteAsync($"onlineidentities?id={onlineIdentity.PrivateSiteId}"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
