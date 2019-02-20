@@ -18,11 +18,11 @@ namespace MvpApi.UwpBackgroundTasks
                         {
                             new AdaptiveText
                             {
-                                Text = "MVP Companion Updated!"
+                                Text = "MVP Companion Updated"
                             },
                             new AdaptiveText
                             {
-                                Text = "Online identities now on your profile page! Improved DataGrid row and group styling."
+                                Text = "[Important Fix] Addressed a breaking change in the API's endpoints.\r\n[NEW] DataGrid grouping styles and Online Identities."
                             },
                             new AdaptiveImage
                             {
