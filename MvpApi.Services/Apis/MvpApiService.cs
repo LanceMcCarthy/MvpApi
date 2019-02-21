@@ -29,7 +29,7 @@ namespace MvpApi.Services.Apis
                 handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
             _client = new HttpClient(handler);
-            _client.BaseAddress = new Uri("https://mvpapi.azure-api.net/api/");
+            _client.BaseAddress = new Uri("https://mvpapi.azure-api.net/mvp/api/");
             _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "3d199a7fb1c443e1985375f0572f58f8");
             _client.DefaultRequestHeaders.Add("Authorization", authorizationHeaderContent);
         }
