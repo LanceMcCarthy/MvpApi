@@ -313,7 +313,7 @@ namespace MvpApi.Services.Apis
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    using (var response = await _client.PostAsync("contributions", content))
+                    using (var response = await _client.PostAsync("contributions?", content))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -372,7 +372,7 @@ namespace MvpApi.Services.Apis
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    using (var response = await _client.PutAsync("contributions", content))
+                    using (var response = await _client.PutAsync("contributions?", content))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -647,8 +647,7 @@ namespace MvpApi.Services.Apis
 
             return null;
         }
-
-        // TODO MVP API recently added support for submitting a new Online Identity, will be added in 1.9.1 or later
+        
         public async Task<OnlineIdentity> SubmitOnlineIdentityAsync(OnlineIdentityViewModel onlineIdentity)
         {
             if (onlineIdentity == null)
@@ -748,6 +747,213 @@ namespace MvpApi.Services.Apis
                 await e.LogExceptionAsync();
 
                 Debug.WriteLine($"SubmitOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return false;
+        }
+        
+        /// <summary>
+        /// Gets the current Award Consideration Questions list.
+        /// </summary>
+        /// <returns>The list of questions to be answered for consideration in the next award period.</returns>
+        public async Task<IReadOnlyList<AwardConsiderationQuestionModel>> GetAwardConsiderationQuestionsAsync()
+        {
+            try
+            {
+                using (var response = await _client.GetAsync("awardconsideration/getcurrentquestions"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<IReadOnlyList<AwardConsiderationQuestionModel>>(json);
+                    }
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                    }
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Debug.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+                Debug.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return null;
+        }
+        
+        /// <summary>
+        /// Gets the MVP's currently saved answers for the Award consideration questions
+        /// </summary>
+        /// <returns>The list of questions to be answered for consideration in the next award period.</returns>
+        public async Task<IReadOnlyList<AwardConsiderationAnswerModel>> GetAwardConsiderationAnswersAsync()
+        {
+            try
+            {
+                using (var response = await _client.GetAsync("awardconsideration/GetAnswers"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<IReadOnlyList<AwardConsiderationAnswerModel>>(json);
+                    }
+
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                    }
+                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    {
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Debug.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+                Debug.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Saves the MVP's answers to the Aware Consideration questions.
+        /// IMPORTANT NOTE:
+        /// This does NOT submit them for review by the MVP award team, it is intended to be used to save the answers.
+        /// To submit the questions, call SubmitAwardConsiderationAnswerAsync after saving the answers.
+        /// </summary>
+        /// <param name="answers"></param>
+        /// <returns></returns>
+        public async Task<List<AwardConsiderationAnswerModel>> SaveAwardConsiderationAnswerAsync(IEnumerable<AwardConsiderationAnswerModel> answers)
+        {
+            if (answers == null)
+                throw new NullReferenceException("The contribution parameter was null.");
+
+            try
+            {
+                var serializedContribution = JsonConvert.SerializeObject(answers);
+                byte[] byteData = Encoding.UTF8.GetBytes(serializedContribution);
+
+                using (var content = new ByteArrayContent(byteData))
+                {
+                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                    using (var response = await _client.PostAsync("awardconsideration/saveanswers?", content))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var json = await response.Content.ReadAsStringAsync();
+                            return JsonConvert.DeserializeObject<List<AwardConsiderationAnswerModel>>(json);
+                        }
+
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                        }
+                        else if (response.StatusCode == HttpStatusCode.BadRequest)
+                        {
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the format of the Contribution information.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Debug.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+                Debug.WriteLine($"SubmitContributionAsync Exception: {e}");
+            }
+
+            return null;
+        }
+        
+        /// <summary>
+        /// Submits the MVP's answers for award consideration questions.
+        /// WARNING - THIS CAN ONLY BE DONE ONCE PER AWARD PERIOD, THE ANSWERS CANNOT BE CHANGED AFTER SUBMISSION.
+        /// </summary>
+        /// <returns>If the submission was successful</returns>
+        public async Task<bool> SubmitAwardConsiderationAnswerAsync()
+        {
+            try
+            {
+                var serializedContribution = JsonConvert.SerializeObject(string.Empty);
+                byte[] byteData = Encoding.UTF8.GetBytes(serializedContribution);
+
+                using (var content = new ByteArrayContent(byteData))
+                {
+                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                    using (var response = await _client.PostAsync("awardconsideration/SubmitAnswers?", content))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            return true;
+                        }
+
+                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        {
+                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                        }
+                        else if (response.StatusCode == HttpStatusCode.BadRequest)
+                        {
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the format of the Contribution information.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Debug.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+                Debug.WriteLine($"SubmitContributionAsync Exception: {e}");
             }
 
             return false;
