@@ -195,14 +195,6 @@ namespace MvpApi.Uwp.ViewModels
         
         public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO Remove temporary navigation blocker
-            await new MessageDialog(
-                    "The MVP API has made breaking changes and the app cannot make any edits or add new contributions at this time. " +
-                    "\n\nI expect to release an update within a day or two with a fix, thank you for your patience - Lance", "Temporarily Disabled")
-                .ShowAsync();
-
-            return;
-
             var isValid = await SelectedContribution.Validate(true);
 
             if (!isValid)
