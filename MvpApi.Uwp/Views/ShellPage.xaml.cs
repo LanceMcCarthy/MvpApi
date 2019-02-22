@@ -309,7 +309,7 @@ namespace MvpApi.Uwp.Views
 
         private async void ApiService_RequestErrorOccurred(object sender, ApiServiceEventArgs e)
         {
-            var message = "Unknown Problem. If this continues to happen, please open a GitHub Issue and we'll investigate further (find the GitHub link on the About page)";
+            var message = "Unknown Server Error";
 
             if (e.IsBadRequest)
             {
@@ -317,8 +317,7 @@ namespace MvpApi.Uwp.Views
             }
             else if (e.IsServerError)
             {
-                message = "There was a 500 (internal server error) making a call to the MVP Api service. This indicates a problem with the API service and is unfortunately outside the control of the app to assist." +
-                    "\r\n\nIf this continues to happen, please open a GitHub Issue and we'll investigate further (find the GitHub link on the About page).";
+                message = e.Message + "\r\n\nIf this continues to happen, please open a GitHub Issue and we'll investigate further (find the GitHub link on the About page).";
             }
             
             await new MessageDialog(message, "MVP API Request Error").ShowAsync();

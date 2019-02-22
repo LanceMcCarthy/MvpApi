@@ -175,6 +175,58 @@
                 </ListView.ItemTemplate>
             </ListView>
 
+            <!--<Grid x:Name="OnlineIdentityEditor"
+                  Background="Bisque"
+                  Grid.Row="1"
+                  Grid.Column="1"
+                  Padding="10">
+                <ScrollViewer>
+                    <StackPanel>
+                        <ComboBox Header="Select Social Network"/>
+
+                        <ComboBox ItemsSource="{x:Bind ViewModel.Visibilities}"
+                                  SelectedItem="{Binding DraftOnlineIdentity.OnlineIdentityVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  IsTextSearchEnabled="True"
+                                  DisplayMemberPath="Description"
+                                  HorizontalAlignment="Left"
+                                  MinWidth="300"
+                                  Margin="0,10">
+                            <ComboBox.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Select Visibility"
+                                               Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                               Margin="0,0,5,0" />
+                                    <TextBlock Text="(required)"
+                                               FontStyle="Italic"
+                                               Margin="5,0"
+                                               Foreground="Red" />
+                                </StackPanel>
+                            </ComboBox.Header>
+                        </ComboBox>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding DraftOnlineIdentity.SocialNetwork.IconUrl, Converter={StaticResource MvcContentUrlConverter}}"
+                                   Width="20"
+                                   Height="20"
+                                   Margin="0,0,10,0" />
+                            <TextBlock Text="{Binding DraftOnlineIdentity.SocialNetwork.Name}"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}" />
+                        </StackPanel>
+
+                        <TextBlock Text="Social Network"/>
+
+                        <TextBox Header="SocialNetwork.Name" 
+                                 Text="{Binding DraftOnlineIdentity.SocialNetwork.Name}" />
+                        <TextBox Header="SocialNetwork"
+                                 Text="{Binding DraftOnlineIdentity.SocialNetwork.IconUrl}" />
+
+                        <TextBox Text="{Binding DraftOnlineIdentity.Url}" />
+
+                        <TextBox Text="{Binding DraftOnlineIdentity.DisplayName}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>-->
+
             <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
                                          IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                                          Style="{StaticResource PageBusyIndicatorStyle}"
@@ -186,7 +238,11 @@
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export Online Identities"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
+                <AppBarButton Label="Complete Award Questionnaire (beta)"
+                              Icon="OpenWith"
+                              Click="{x:Bind ViewModel.ShowQuestionnaireButton_Click}" />
             </CommandBar.SecondaryCommands>
+            
             <AppBarButton Label="delete identity"
                           Icon="Delete"
                           Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"

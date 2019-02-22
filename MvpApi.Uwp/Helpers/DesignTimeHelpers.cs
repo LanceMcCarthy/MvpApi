@@ -582,5 +582,68 @@ namespace MvpApi.Uwp.Helpers
                 Submitted = false
             }
         };
+
+        public static ObservableCollection<QuestionnaireItem> GenerateQuestionnaireItems()
+        {
+            var items = new ObservableCollection<QuestionnaireItem>();
+
+            items.Add(new QuestionnaireItem
+            {
+                QuestionItem = new AwardConsiderationQuestionModel
+                {
+                    AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c123",
+                    IsRequired = true,
+                    QuestionContent = "What does it mean to be an MVP for you?"
+                },
+                AnswerItem = new AwardConsiderationAnswerModel
+                {
+                    AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c123"
+                }
+            });
+
+            items.Add(new QuestionnaireItem
+            {
+                QuestionItem = new AwardConsiderationQuestionModel
+                {
+                    AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c234",
+                    IsRequired = true,
+                    QuestionContent = "What do you plan on doing for the next year as a the go-to source for helping the developer community?"
+                },
+                AnswerItem = new AwardConsiderationAnswerModel
+                {
+                    AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c234"
+                }
+            });
+
+            items.Add(new QuestionnaireItem
+            {
+                QuestionItem = new AwardConsiderationQuestionModel
+                {
+                    AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c345",
+                    IsRequired = true,
+                    QuestionContent = "How can the MVP program help better enable you to prive the best support possible?"
+                },
+                AnswerItem = new AwardConsiderationAnswerModel
+                {
+                    AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c345"
+                }
+            });
+
+            items.Add(new QuestionnaireItem
+            {
+                QuestionItem = new AwardConsiderationQuestionModel
+                {
+                    AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c456",
+                    IsRequired = true,
+                    QuestionContent = "Whatcha gonna do, whatcha gonna do, whatcha gonna do when they come for you?"
+                },
+                AnswerItem = new AwardConsiderationAnswerModel
+                {
+                    AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c456"
+                }
+            });
+
+            return items;
+        }
     }
 }

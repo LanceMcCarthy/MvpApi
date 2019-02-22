@@ -22,7 +22,7 @@ namespace MvpApi.UwpBackgroundTasks
                             },
                             new AdaptiveText
                             {
-                                Text = "[Important Fix] Addressed a breaking change in the API's endpoints.\r\n[NEW] DataGrid grouping styles and Online Identities."
+                                Text = "Fixed the Fix 😜. The broken MVP API is now unbroken, so we had to 'unfix' the app. Enjoy!"
                             },
                             new AdaptiveImage
                             {

@@ -12,8 +12,10 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
+using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -53,6 +55,10 @@ namespace MvpApi.Uwp.ViewModels
             get => _selectedOnlineIdentities ?? (_selectedOnlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
             set => Set(ref _selectedOnlineIdentities, value);
         }
+
+        //public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
+
+        //public OnlineIdentityViewModel DraftOnlineIdentity { get; set; } = new OnlineIdentityViewModel();
 
         public string ProfileImagePath
         {
@@ -140,6 +146,11 @@ namespace MvpApi.Uwp.ViewModels
         public async void RefreshOnlineIdentitiesButton_Click(object sender, RoutedEventArgs e)
         {
             await RefreshOnlineIdentitiesAsync();
+        }
+
+        public async void ShowQuestionnaireButton_Click(object sender, RoutedEventArgs e)
+        {
+            await new AwardQuestionsDialog().ShowAsync();
         }
 
         public async void DeleteOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
@@ -269,7 +280,16 @@ namespace MvpApi.Uwp.ViewModels
                 this.ProfileImagePath = shellVm.ProfileImagePath;
 
                 await RefreshOnlineIdentitiesAsync();
-                
+
+                //IsBusyMessage = "loading visibility options...";
+
+                //var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+                //visibilities.ForEach(visibility =>
+                //{
+                //    Visibilities.Add(visibility);
+                //});
+
                 IsBusyMessage = "";
                 IsBusy = false;
             }
