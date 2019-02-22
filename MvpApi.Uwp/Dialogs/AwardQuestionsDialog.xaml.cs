@@ -18,15 +18,12 @@ namespace MvpApi.Uwp.Dialogs
         {
             this.InitializeComponent();
             
-
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                ItemsListView.ItemsSource = MvpApi.Uwp.Helpers.DesignTimeHelpers.GenerateQuestionnaireItems();
+                Items = MvpApi.Uwp.Helpers.DesignTimeHelpers.GenerateQuestionnaireItems();
             }
-            else
-            {
-                ItemsListView.ItemsSource = Items;
-            }
+
+            ItemsListView.ItemsSource = Items;
 
             Loaded += AwardQuestionsDialog_Loaded;
         }
