@@ -186,7 +186,11 @@
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export Online Identities"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
+                <AppBarButton Label="Complete Award Questionnaire"
+                              Icon="OpenWith"
+                              Click="{x:Bind ViewModel.ShowQuestionnaireButton_Click}" />
             </CommandBar.SecondaryCommands>
+            
             <AppBarButton Label="delete identity"
                           Icon="Delete"
                           Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"

@@ -12,6 +12,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 
@@ -140,6 +141,11 @@ namespace MvpApi.Uwp.ViewModels
         public async void RefreshOnlineIdentitiesButton_Click(object sender, RoutedEventArgs e)
         {
             await RefreshOnlineIdentitiesAsync();
+        }
+
+        public async void ShowQuestionnaireButton_Click(object sender, RoutedEventArgs e)
+        {
+            await new AwardQuestionsDialog().ShowAsync();
         }
 
         public async void DeleteOnlineIdentityButton_Click(object sender, RoutedEventArgs e)

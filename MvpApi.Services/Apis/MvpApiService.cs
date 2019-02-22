@@ -69,7 +69,8 @@ namespace MvpApi.Services.Apis
                     }
                     else if (response.StatusCode == HttpStatusCode.BadRequest)
                     {
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the request for profile information.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        var message = await response.Content.ReadAsStringAsync();
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                     }
                 }
             }
@@ -134,7 +135,8 @@ namespace MvpApi.Services.Apis
                         }
                         else if (response.StatusCode == HttpStatusCode.BadRequest)
                         {
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the request for profile photo data.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                            var message = await response.Content.ReadAsStringAsync();
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                         }
                     }
                 }
@@ -217,7 +219,8 @@ namespace MvpApi.Services.Apis
                         }
                         else if (response.StatusCode == HttpStatusCode.BadRequest)
                         {
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the request for profile photo data.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                            var message = await response.Content.ReadAsStringAsync();
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                         }
                     }
                 }
@@ -269,7 +272,8 @@ namespace MvpApi.Services.Apis
                     }
                     else if (response.StatusCode == HttpStatusCode.BadRequest)
                     {
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the request to get Contributions.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        var message = await response.Content.ReadAsStringAsync();
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                     }
                 }
             }
@@ -327,7 +331,8 @@ namespace MvpApi.Services.Apis
                         }
                         else if (response.StatusCode == HttpStatusCode.BadRequest)
                         {
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the format of the Contribution information.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                            var message = await response.Content.ReadAsStringAsync();
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                         }
                     }
                 }
@@ -385,7 +390,8 @@ namespace MvpApi.Services.Apis
                         }
                         else if (response.StatusCode == HttpStatusCode.BadRequest)
                         {
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the format of the Contribution information.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                            var message = await response.Content.ReadAsStringAsync();
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                         }
                     }
                 }
@@ -437,7 +443,8 @@ namespace MvpApi.Services.Apis
                     }
                     else if (response.StatusCode == HttpStatusCode.BadRequest)
                     {
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the delete request.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        var message = await response.Content.ReadAsStringAsync();
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                     }
                 }
             }
@@ -486,7 +493,8 @@ namespace MvpApi.Services.Apis
                     }
                     else if (response.StatusCode == HttpStatusCode.BadRequest)
                     {
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        var message = await response.Content.ReadAsStringAsync();
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                     }
                 }
             }
@@ -533,7 +541,8 @@ namespace MvpApi.Services.Apis
                     }
                     else if (response.StatusCode == HttpStatusCode.BadRequest)
                     {
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        var message = await response.Content.ReadAsStringAsync();
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                     }
                 }
             }
@@ -624,7 +633,8 @@ namespace MvpApi.Services.Apis
                     }
                     else if (response.StatusCode == HttpStatusCode.BadRequest)
                     {
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        var message = await response.Content.ReadAsStringAsync();
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                     }
                 }
             }
@@ -681,7 +691,8 @@ namespace MvpApi.Services.Apis
                         }
                         else if (response.StatusCode == HttpStatusCode.BadRequest)
                         {
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - Something was wrong with the OnlineIdentity data and it was not accepted by the server.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                            var message = await response.Content.ReadAsStringAsync();
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                         }
                     }
                 }
@@ -727,7 +738,8 @@ namespace MvpApi.Services.Apis
                     }
                     else if (response.StatusCode == HttpStatusCode.BadRequest)
                     {
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the format of the uploaded data.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        var message = await response.Content.ReadAsStringAsync();
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                     }
                 }
             }
@@ -774,7 +786,8 @@ namespace MvpApi.Services.Apis
                     }
                     else if (response.StatusCode == HttpStatusCode.BadRequest)
                     {
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        var message = await response.Content.ReadAsStringAsync();
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                     }
                 }
             }
@@ -820,7 +833,8 @@ namespace MvpApi.Services.Apis
                     }
                     else if (response.StatusCode == HttpStatusCode.BadRequest)
                     {
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        var message = await response.Content.ReadAsStringAsync();
+                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                     }
                 }
             }
@@ -880,7 +894,8 @@ namespace MvpApi.Services.Apis
                         }
                         else if (response.StatusCode == HttpStatusCode.BadRequest)
                         {
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the format of the Contribution information.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                            var message = await response.Content.ReadAsStringAsync();
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                         }
                     }
                 }
@@ -934,7 +949,8 @@ namespace MvpApi.Services.Apis
                         }
                         else if (response.StatusCode == HttpStatusCode.BadRequest)
                         {
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - The API service didn't accept the format of the Contribution information.\n\nIf this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                            var message = await response.Content.ReadAsStringAsync();
+                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
                         }
                     }
                 }
@@ -945,7 +961,7 @@ namespace MvpApi.Services.Apis
 
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true, Message = e.Message});
                 }
 
                 Debug.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
