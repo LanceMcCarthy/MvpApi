@@ -46,29 +46,36 @@ namespace MvpApi.Uwp.Extensions
                 isValid = false;
             }
             
-            // *** ContributionType Sepcific Condition ***
+            // *** ContributionType Specific Condition ***
 
             // Gets a Tuple that contains the specific conditions of a chosen ContributionType
-            var typeRequirements = contribution.ContributionType.GetContributionTypeRequirements();
+            var typeRequirements = contribution.ContributionType.GetContributionTypeRequirements(); //contribution.ContributionType.GetContributionTypeRequirementsById();
 
             // Check Url
-            if (typeRequirements.Item1 && string.IsNullOrEmpty(contribution.ReferenceUrl))
+            if (string.IsNullOrEmpty(contribution.ReferenceUrl) && typeRequirements.Item4)
             {
                 failedFieldName = "url";
                 isValid = false;
             }
 
             // Check AnnualQuantity
-            if (typeRequirements.Item2 && contribution.AnnualQuantity == null)
+            if (contribution.AnnualQuantity == null && !string.IsNullOrEmpty(typeRequirements.Item1))
             {
-                failedFieldName = "first quantity";
+                failedFieldName = "First Quantity";
                 isValid = false;
             }
 
             // Check SecondAnnualQuantity
-            if (typeRequirements.Item3 && contribution.SecondAnnualQuantity == null)
+            if (contribution.SecondAnnualQuantity == null && !string.IsNullOrEmpty(typeRequirements.Item2))
             {
-                failedFieldName = "second quantity";
+                failedFieldName = "Second Quantity";
+                isValid = false;
+            }
+
+            // Check AnnualReach
+            if (contribution.AnnualReach == null && !string.IsNullOrEmpty(typeRequirements.Item3))
+            {
+                failedFieldName = "Annual Reach";
                 isValid = false;
             }
 
@@ -83,157 +90,208 @@ namespace MvpApi.Uwp.Extensions
 
             // If we're using this extension method for final validation and not fast validation, show error message to user
             if(!isValid && showErrorMessage)
-                await new MessageDialog($"The {failedFieldName} field is a required entry for this contribution type. is a required field").ShowAsync();
+                await new MessageDialog($"The {failedFieldName} field is a required entry for this contribution type.").ShowAsync();
 
             return isValid;
         }
+        
+        //public static Tuple<bool, bool, bool, bool> GetContributionTypeRequirementsById(this ContributionTypeModel contributionType)
+        //{
+        //    bool isUrlRequired = false;
+        //    bool isAnnualQuantityRequired = false;
+        //    bool isSecondAnnualQuantityRequired = false;
+        //    bool isAnnualReachRequired = false;
+
+        //    var guidString = contributionType.Id.ToString();
+
+        //    switch (guidString)
+        //    {
+        //        case "e36464de-179a-e411-bbc8-6c3be5a82b68": //"EnglishName": "Article"
+        //            isAnnualQuantityRequired = true;
+        //            isAnnualReachRequired = true;
+        //            break;
+        //        case "db6464de-179a-e411-bbc8-6c3be5a82b68": //"EnglishName": "Book (Author)"
+        //        case "dd6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Book (Co-Author)"
+        //        case "f16464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Conference (Staffing)"
+        //        case "0ce0dc15-0304-e911-8171-3863bb2bca60": // "EnglishName": "Docs.Microsoft.com Contribution"
+        //        case "f96464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Forum Moderator"
+        //        case "f76464de-179a-e411-bbc8-6c3be5a82b68": //  "EnglishName": "Mentorship"
+        //        case "d2d96407-0304-e911-8171-3863bb2bca60": // "EnglishName": "Microsoft Open Source Projects"
+        //        case "414bcf30-e889-e511-8110-c4346bac0abc": // "EnglishName": "Non-Microsoft Open Source Projects"
+        //        case "fd6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Organizer (User Group/Meetup/Local Events)"
+        //        case "ef6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Organizer of Conference"
+        //        case "ff6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Other"
+        //        case "016564de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Product Group Feedback (General)"
+        //        case "fb6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Site Owner"
+        //        case "d16464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Speaking (Conference)"
+        //        case "d56464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Speaking (User Group/Meetup/Local events)"
+        //        case "056564de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Translation Review, Feedback and Editing"
+        //        case "0ee0dc15-0304-e911-8171-3863bb2bca60": // "EnglishName": "Workshop/Volunteer/Proctor"
+        //            isAnnualQuantityRequired = true;
+        //            break;
+        //        case "df6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Blog/Website Post"
+        //        case "d76464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Forum Participation (Microsoft Forums)"
+        //        case "e96464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Sample Code/Projects/Tools"
+        //        case "eb6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Technical Social Media (Twitter, Facebook, LinkedIn...)"
+        //        case "e56464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Video/Webcast/Podcast"
+        //            isUrlRequired = true;
+        //            isAnnualQuantityRequired = true;
+        //            break;
+        //        case "d96464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Forum Participation (3rd Party forums)"
+        //            isUrlRequired = true;
+        //            isAnnualQuantityRequired = true;
+        //            isSecondAnnualQuantityRequired = true;
+        //            break;
+        //    }
+
+        //    return new Tuple<bool, bool, bool, bool>(isUrlRequired, isAnnualQuantityRequired, isSecondAnnualQuantityRequired, isAnnualReachRequired);
+        //}
 
         /// <summary>
-        /// Determines which fields are required for the ContributionType
+        /// Titles of the quantities. These title are used to describe what the value is being entered. For example AnnualQuantity could be for Number of Article
         /// </summary>
         /// <param name="contributionType"></param>
-        /// <returns></returns>
-        public static Tuple<bool,bool,bool> GetContributionTypeRequirements(this ContributionTypeModel contributionType)
+        /// <returns>AnnualQuantityHeader, SecondAnnualQuantityHeader, AnnualReachHeader, IsUrlRequired</returns>
+        public static Tuple<string, string, string, bool> GetContributionTypeRequirements(this ContributionTypeModel contributionType)
         {
-            bool isUrlRequired;
-            bool isAnnualQuantityRequired;
-            bool isSecondAnnualQuantityRequired;
+            var annualQuantityHeader = "";
+            var secondAnnualQuantityHeader = "";
+            var annualReachHeader = "";
+            bool isUrlRequired = false;
 
-            switch (contributionType.EnglishName)
+            var guidString = contributionType.Id.ToString();
+
+            switch (guidString)
             {
-                case "Article":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
+                case "e36464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Article"
+                    annualQuantityHeader = "Number of Articles";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Number of Views";
                     break;
-                case "Blog Site Posts":
+                case "df6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Blog/Website Post"
+                    annualQuantityHeader = "Number of Posts";
+                    secondAnnualQuantityHeader = "Number of Subscribers";
+                    annualReachHeader = "Annual Unique Visitors";
                     isUrlRequired = true;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
                     break;
-                case "Book (Author)":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
+                case "db6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Book (Author)"
+                    annualQuantityHeader = "Number of Books";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Copies Sold";
                     break;
-                case "Book (Co-Author)":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
+                case "dd6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Book (Co-Author)"
+                    annualQuantityHeader = "Number of Books";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Copies Sold";
                     break;
-                case "Code Project/Tools":
+                case "f16464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Conference (Staffing)"
+                    annualQuantityHeader = "Number of Conferences";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Number of Visitors";
+                    break;
+                case "0ce0dc15-0304-e911-8171-3863bb2bca60": // "EnglishName": "Docs.Microsoft.com Contribution"
+                    annualQuantityHeader = "Pull Requests/Issues/Submissions";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "";
+                    break;
+                case "f96464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Forum Moderator"
+                    annualQuantityHeader = "Number of Threads moderated";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "";
+                    break;
+                case "d96464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Forum Participation (3rd Party forums)"
+                    annualQuantityHeader = "Number of Answers";
+                    secondAnnualQuantityHeader = "Number of Posts";
+                    annualReachHeader = "Views of Answers";
                     isUrlRequired = true;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
                     break;
-                case "Code Samples":
+                case "d76464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Forum Participation (Microsoft Forums)"
+                    annualQuantityHeader = "Number of Answers";
+                    secondAnnualQuantityHeader = "Number of Posts";
+                    annualReachHeader = "Views of Answers";
                     isUrlRequired = true;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
                     break;
-                case "Conference (booth presenter)":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
+                case "f76464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Mentorship"
+                    annualQuantityHeader = "Number of Mentorship Activity";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Number of Mentees";
                     break;
-                case "Conference (organizer)":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
+                case "d2d96407-0304-e911-8171-3863bb2bca60": // "EnglishName": "Microsoft Open Source Projects"
+                    annualQuantityHeader = "Number of Projects";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "";
                     break;
-                case "Forum Moderator":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
+                case "414bcf30-e889-e511-8110-c4346bac0abc": // "EnglishName": "Non-Microsoft Open Source Projects"
+                    annualQuantityHeader = "Project(s)";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Contributions";
                     break;
-                case "Forum Participation (3rd Party Forums)":
+                case "fd6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Organizer (User Group/Meetup/Local Events)"
+                    annualQuantityHeader = "Meetings";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Members";
+                    break;
+                case "ef6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Organizer of Conference"
+                    annualQuantityHeader = "Number of Conferences";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Number of Attendees";
+                    break;
+                case "ff6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Other"
+                    annualQuantityHeader = "Annual Quantity";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Annual Reach";
+                    break;
+                case "016564de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Product Group Feedback (General)"
+                    annualQuantityHeader = "Number of Events Participated";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Number of Feedbacks Provided";
+                    break;
+                case "e96464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Sample Code/Projects/Tools"
+                    annualQuantityHeader = "Number of Samples";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Number of Downloads";
                     isUrlRequired = true;
-                    isAnnualQuantityRequired = false;
-                    isSecondAnnualQuantityRequired = true;
                     break;
-                case "Forum Participation (Microsoft Forums)":
+                case "fb6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Site Owner"
+                    annualQuantityHeader = "Number of Sites";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Number of Visitors";
+                    break;
+                case "d16464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Speaking (Conference)"
+                    annualQuantityHeader = "Number of Talks";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Attendees of Talks";
+                    break;
+                case "d56464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Speaking (User Group/Meetup/Local events)"
+                    annualQuantityHeader = "Number of Talks";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Attendees of Talks";
+                    break;
+                case "eb6464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Technical Social Media (Twitter, Facebook, LinkedIn...)"
+                    annualQuantityHeader = "Number of Talks";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Number of Followers";
                     isUrlRequired = true;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
                     break;
-                case "Mentorship":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
+                case "056564de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Translation Review, Feedback and Editing"
+                    annualQuantityHeader = "Annual Quantity";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "";
                     break;
-                case "Open Source Project(s)":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                case "Other":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                case "Product Group Feedback":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                case "Site Owner":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                case "Speaking (Conference)":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                case "Speaking (Local)":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                case "Speaking (User group)":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                case "Technical Social Media (Twitter, Facebook, LinkedIn...)":
+                case "e56464de-179a-e411-bbc8-6c3be5a82b68": // "EnglishName": "Video/Webcast/Podcast"
+                    annualQuantityHeader = "Number of Videos";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "Number of Views";
                     isUrlRequired = true;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
                     break;
-                case "Translation Review, Feedback and Editing":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                case "User Group Owner":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                case "Video":
-                    isUrlRequired = true;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                case "Webcast":
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                case "Website Posts":
-                    isUrlRequired = true;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
-                    break;
-                default: 
-                    isUrlRequired = false;
-                    isAnnualQuantityRequired = true;
-                    isSecondAnnualQuantityRequired = false;
+                case "0ee0dc15-0304-e911-8171-3863bb2bca60": // "EnglishName": "Workshop/Volunteer/Proctor"
+                    annualQuantityHeader = "Number of Events";
+                    secondAnnualQuantityHeader = "";
+                    annualReachHeader = "";
                     break;
             }
 
-            return new Tuple<bool, bool, bool>(isUrlRequired, isAnnualQuantityRequired, isSecondAnnualQuantityRequired);
+            return new Tuple<string, string, string, bool>(annualQuantityHeader, secondAnnualQuantityHeader, annualReachHeader, isUrlRequired);
         }
 
         /// <summary>

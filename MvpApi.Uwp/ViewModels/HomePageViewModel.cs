@@ -120,6 +120,15 @@ namespace MvpApi.Uwp.ViewModels
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
             await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage));
+
+            //var editDialog = new EditActivityDialog();
+            
+            //await editDialog.ShowAsync();
+
+            //if (editDialog.SelectedContribution != null)
+            //{
+            //    Debug.WriteLine($"Created {editDialog.SelectedContribution.ContributionTypeName}");
+            //}
         }
 
         public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)

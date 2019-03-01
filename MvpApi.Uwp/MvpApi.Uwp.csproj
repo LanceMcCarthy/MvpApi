@@ -122,6 +122,9 @@
     <Compile Include="Dialogs\AwardQuestionsDialog.xaml.cs">
       <DependentUpon>AwardQuestionsDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\EditActivityDialog.xaml.cs">
+      <DependentUpon>EditActivityDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\TutorialDialog.xaml.cs">
       <DependentUpon>TutorialDialog.xaml</DependentUpon>
     </Compile>
@@ -240,6 +243,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\AwardQuestionsDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\EditActivityDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
