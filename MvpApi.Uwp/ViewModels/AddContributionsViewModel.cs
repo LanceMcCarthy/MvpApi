@@ -559,6 +559,11 @@ namespace MvpApi.Uwp.ViewModels
 
                     if (result.Label == "yes")
                     {
+                        if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
+                        {
+                            shellVm.NeedsHomePageRefresh = false;
+                        }
+
                         if (NavigationService.CanGoBack)
                         {
                             NavigationService.GoBack();

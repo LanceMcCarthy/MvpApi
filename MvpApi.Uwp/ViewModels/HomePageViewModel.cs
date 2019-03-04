@@ -369,6 +369,7 @@ namespace MvpApi.Uwp.ViewModels
                 }
 
                 // Although user should be logged in at this point, still check
+                // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
                 if (shellVm.IsLoggedIn)
                 {
                     await LoadContributionsAsync();

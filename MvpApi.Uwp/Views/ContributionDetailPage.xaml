@@ -214,6 +214,80 @@
                 </TextBox>
 
                 <StackPanel x:Name="NumericInputStackPanel"
+                                Orientation="Horizontal">
+                    <input:RadNumericBox x:Name="AnnualQuantityNumericBox"
+                                             Value="{Binding SelectedContribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Visibility="{Binding AnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
+                                             AcceptsDecimalSeparator="False"
+                                             ValueFormat="{}{0:N0}"
+                                             SmallChange="1"
+                                             LargeChange="5"
+                                             HorizontalAlignment="Left"
+                                             Margin="10"
+                                             ValueChanged="{x:Bind ViewModel.QuantityBox_OnValueChanged}">
+                        <input:RadNumericBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding AnnualQuantityHeader}"
+                                               Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                               Margin="0,0,5,0" />
+                                <TextBlock Text="(required)"
+                                               Margin="5,0"
+                                               FontStyle="Italic"
+                                               Foreground="Red"
+                                               Visibility="{Binding IsAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </StackPanel>
+                        </input:RadNumericBox.Header>
+                    </input:RadNumericBox>
+
+                    <input:RadNumericBox x:Name="SecondAnnualQuantityNumericBox"
+                                             Value="{Binding SelectedContribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Visibility="{Binding SecondAnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
+                                             AcceptsDecimalSeparator="False"
+                                             ValueFormat="{}{0:N0}"
+                                             SmallChange="1"
+                                             LargeChange="5"
+                                             HorizontalAlignment="Left"
+                                             Margin="10"
+                                             ValueChanged="{x:Bind ViewModel.QuantityBox_OnValueChanged}">
+                        <input:RadNumericBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding SecondAnnualQuantityHeader}"
+                                               Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                               Margin="0,0,5,0" />
+                                <TextBlock Text="(required)"
+                                               Margin="5,0"
+                                               Foreground="Red"
+                                               FontStyle="Italic"
+                                               Visibility="{Binding IsSecondAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </StackPanel>
+                        </input:RadNumericBox.Header>
+                    </input:RadNumericBox>
+
+                    <input:RadNumericBox x:Name="AnnualReachNumericBox"
+                                             Value="{Binding SelectedContribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             Visibility="{Binding AnnualReachHeader, Converter={StaticResource NullToVisibilityConverter}}"
+                                             AcceptsDecimalSeparator="False"
+                                             ValueFormat="{}{0:N0}"
+                                             SmallChange="1"
+                                             LargeChange="5"
+                                             HorizontalAlignment="Left"
+                                             Margin="10"
+                                             ValueChanged="{x:Bind ViewModel.QuantityBox_OnValueChanged}">
+                        <input:RadNumericBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding AnnualReachHeader}"
+                                               Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
+                                <TextBlock Text="(required)"
+                                               Margin="5,0"
+                                               Foreground="Red"
+                                               FontStyle="Italic"
+                                               Visibility="{Binding IsAnnualReachRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </StackPanel>
+                        </input:RadNumericBox.Header>
+                    </input:RadNumericBox>
+                </StackPanel>
+
+                <!--<StackPanel x:Name="NumericInputStackPanel"
                             Orientation="Horizontal">
                     <input:RadNumericBox x:Name="AnnualQuantityNumericBox"
                                          Value="{Binding SelectedContribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -281,7 +355,7 @@
                         </input:RadNumericBox.Header>
                     </input:RadNumericBox>
 
-                </StackPanel>
+                </StackPanel>-->
                 
                 <ComboBox ItemsSource="{Binding Visibilities}"
                           SelectedItem="{Binding SelectedContribution.Visibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
