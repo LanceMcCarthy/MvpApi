@@ -9,7 +9,8 @@ namespace MvpApi.Uwp.ViewModels
         private ProfileViewModel _mvp;
         private string _profileImagePath;
         private bool _isLoggedIn;
-        
+        private bool _needsHomePageRefresh = true;
+
         public ShellPageViewModel()
         {
             if (DesignMode.DesignModeEnabled)
@@ -42,6 +43,12 @@ namespace MvpApi.Uwp.ViewModels
         {
             get => _isLoggedIn;
             set => Set(ref _isLoggedIn, value);
+        }
+
+        public bool NeedsHomePageRefresh
+        {
+            get => _needsHomePageRefresh;
+            set => Set(ref _needsHomePageRefresh, value);
         }
     }
 }

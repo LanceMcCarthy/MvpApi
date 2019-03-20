@@ -22,11 +22,11 @@ namespace MvpApi.UwpBackgroundTasks
                             },
                             new AdaptiveText
                             {
-                                Text = "Fixed the Fix 😜. The broken MVP API is now unbroken, so we had to 'unfix' the app. Enjoy!"
+                                Text = "Ready for the rush? We've updated to meet the new MVP contribution submission requirements."
                             },
                             new AdaptiveImage
                             {
-                                Source = "https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVPCompanion_1.8.2.png"
+                                Source = "https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVPCompanion_1.9.2.png"
                             }
                         }
                     }

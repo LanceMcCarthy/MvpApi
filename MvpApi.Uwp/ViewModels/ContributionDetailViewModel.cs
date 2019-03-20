@@ -39,6 +39,7 @@ namespace MvpApi.Uwp.ViewModels
         private bool _isUrlRequired;
         private bool _isAnnualQuantityRequired;
         private bool _isSecondAnnualQuantityRequired;
+        private bool _isAnnualReachRequired;
         private bool _canSave;
         private string _warningMessage;
 
@@ -117,6 +118,12 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _isSecondAnnualQuantityRequired, value);
         }
 
+        public bool IsAnnualReachRequired
+        {
+            get => _isAnnualReachRequired;
+            set => Set(ref _isAnnualReachRequired, value);
+        }
+
         public bool CanSave
         {
             get => _canSave;
@@ -171,12 +178,7 @@ namespace MvpApi.Uwp.ViewModels
             Compare();
         }
 
-        public void AnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
-        {
-            Compare();
-        }
-
-        public void SecondAnnualQuantityBox_OnValueChanged(object sender, EventArgs e)
+        public void QuantityBox_OnValueChanged(object sender, EventArgs e)
         {
             Compare();
         }
@@ -297,6 +299,7 @@ namespace MvpApi.Uwp.ViewModels
                 var isDateDifferent = SelectedContribution.StartDate.Value.Date != _originalContribution.StartDate.Value.Date;
                 var isAnnualQuantityDifferent = SelectedContribution.AnnualQuantity != _originalContribution.AnnualQuantity;
                 var isSecondAnnualQuantityDifferent = SelectedContribution.SecondAnnualQuantity != _originalContribution.SecondAnnualQuantity;
+                var isAnnualReachDifferent = SelectedContribution.AnnualReach != _originalContribution.AnnualReach;
 
                 if (isTitleDifferent
                     || isDescriptionDifferent
@@ -304,7 +307,8 @@ namespace MvpApi.Uwp.ViewModels
                     || isTechnologyDifferent
                     || isDateDifferent
                     || isAnnualQuantityDifferent
-                    || isSecondAnnualQuantityDifferent)
+                    || isSecondAnnualQuantityDifferent
+                    || isAnnualReachDifferent)
                 {
                     IsSelectedContributionDirty = true;
                     SelectedContribution.UploadStatus = UploadStatus.Pending;
@@ -321,219 +325,22 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        public void DetermineCategoryTechnologyRequirements(ContributionTypeModel contributionType)
+        public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
         {
-            switch (contributionType.EnglishName)
-            {
-                case "Article":
-                    AnnualQuantityHeader = "Number of Articles";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Number of Views";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Blog Site Posts":
-                    AnnualQuantityHeader = "Number of Posts";
-                    SecondAnnualQuantityHeader = "Number of Subscribers";
-                    AnnualReachHeader = "Annual Unique Visitors";
-                    IsUrlRequired = true;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Book (Author)":
-                    AnnualQuantityHeader = "Number of Books";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Copies Sold";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Book (Co-Author)":
-                    AnnualQuantityHeader = "Number of Books";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Copies Sold";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Code Project/Tools":
-                    AnnualQuantityHeader = "Number of Projects";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Number of Downloads";
-                    IsUrlRequired = true;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Code Samples":
-                    AnnualQuantityHeader = "Number of Samples";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Number of Downloads";
-                    IsUrlRequired = true;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Conference (booth presenter)":
-                    AnnualQuantityHeader = "Number of Conferences";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Number of Visitors";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Conference (organizer)":
-                    AnnualQuantityHeader = "Number of Conferences";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Number of Visitors";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Forum Moderator":
-                    AnnualQuantityHeader = "Number of Threads Moderated";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Annual Reach";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Forum Participation (3rd Party Forums)":
-                    AnnualQuantityHeader = "Number of Answers";
-                    SecondAnnualQuantityHeader = "Number of Posts";
-                    AnnualReachHeader = "Views of Answers";
-                    IsUrlRequired = true;
-                    IsAnnualQuantityRequired = false;
-                    IsSecondAnnualQuantityRequired = true;
-                    break;
-                case "Forum Participation (Microsoft Forums)":
-                    AnnualQuantityHeader = "Number of Answers";
-                    SecondAnnualQuantityHeader = "Number of Posts";
-                    AnnualReachHeader = "Views of Answers";
-                    IsUrlRequired = true;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Mentorship":
-                    AnnualQuantityHeader = "Number of Mentees";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Annual Reach";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Open Source Project(s)":
-                    AnnualQuantityHeader = "Project(s)";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Commits";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Other":
-                    AnnualQuantityHeader = "Annual Quantity";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Annual Reach";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Product Group Feedback":
-                    AnnualQuantityHeader = "Number of Events provided";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Number of Feedbacks provided";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Site Owner":
-                    AnnualQuantityHeader = "Posts";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Visitors";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Speaking (Conference)":
-                    AnnualQuantityHeader = "Talks";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Attendees of talks";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Speaking (Local)":
-                    AnnualQuantityHeader = "Talks";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Attendees of talks";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Speaking (User group)":
-                    AnnualQuantityHeader = "Talks";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Attendees of talks";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Technical Social Media (Twitter, Facebook, LinkedIn...)":
-                    AnnualQuantityHeader = "Number of Posts";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Number of Followers";
-                    IsUrlRequired = true;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Translation Review, Feedback and Editing":
-                    AnnualQuantityHeader = "Annual Quantity";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Annual Reach";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "User Group Owner":
-                    AnnualQuantityHeader = "Meetings";
-                    SecondAnnualQuantityHeader = "Members";
-                    AnnualReachHeader = "";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Video":
-                    AnnualQuantityHeader = "Number of Videos";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Number of Views";
-                    IsUrlRequired = true;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Webcast":
-                    AnnualQuantityHeader = "Number of Videos";
-                    SecondAnnualQuantityHeader = "Number of Views";
-                    AnnualReachHeader = "";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                case "Website Posts":
-                    AnnualQuantityHeader = "Number of Posts";
-                    SecondAnnualQuantityHeader = "Number of Subscribers";
-                    AnnualReachHeader = "Annual Unique Visitors";
-                    IsUrlRequired = true;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-                default: // Fall back on 'other'
-                    AnnualQuantityHeader = "Annual Quantity";
-                    SecondAnnualQuantityHeader = "";
-                    AnnualReachHeader = "Annual Reach";
-                    IsUrlRequired = false;
-                    IsAnnualQuantityRequired = true;
-                    IsSecondAnnualQuantityRequired = false;
-                    break;
-            }
+            // Each activity type has a unique set of field names and which ones are required.
+            // This extension method will parse it and return a Tuple of the unqie requirements.
+            var contributionTypeRequirements = contributionType.GetContributionTypeRequirements();
+
+            // Set the headers of the input boxes
+            AnnualQuantityHeader = contributionTypeRequirements.Item1;
+            SecondAnnualQuantityHeader = contributionTypeRequirements.Item2;
+            AnnualReachHeader = contributionTypeRequirements.Item3;
+
+            // Determine the required fields for upload.
+            IsUrlRequired = contributionTypeRequirements.Item4;
+            IsAnnualQuantityRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item1);
+            IsSecondAnnualQuantityRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item2);
+            IsAnnualReachRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item3);
         }
 
         #endregion
@@ -626,7 +433,7 @@ namespace MvpApi.Uwp.ViewModels
                             SelectedContribution.UploadStatus = UploadStatus.None;
 
                             // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
-                            DetermineCategoryTechnologyRequirements(SelectedContribution.ContributionType);
+                            DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
 
                             // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
                             _originalContribution = SelectedContribution.Clone();
@@ -700,6 +507,11 @@ namespace MvpApi.Uwp.ViewModels
 
                 if (result.Label == "yes")
                 {
+                    if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
+                    {
+                        shellVm.NeedsHomePageRefresh = false;
+                    }
+
                     if (NavigationService.CanGoBack)
                     {
                         NavigationService.GoBack();

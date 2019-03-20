@@ -122,6 +122,9 @@
     <Compile Include="Dialogs\AwardQuestionsDialog.xaml.cs">
       <DependentUpon>AwardQuestionsDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\EditActivityDialog.xaml.cs">
+      <DependentUpon>EditActivityDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\TutorialDialog.xaml.cs">
       <DependentUpon>TutorialDialog.xaml</DependentUpon>
     </Compile>
@@ -243,6 +246,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dialogs\EditActivityDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\TutorialDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -311,7 +318,7 @@
       <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
-      <Version>1.0.1.3</Version>
+      <Version>1.0.1.4</Version>
     </PackageReference>
     <PackageReference Include="Template10">
       <Version>1.1.12</Version>
