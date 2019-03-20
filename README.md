@@ -2,10 +2,11 @@
 
 A client application to allow for faster contribution browsing, editing and upload to help renewing MVPs get up to date for renewal.
 ## Build Status
-
 | Platform | Master | Release |
 |----------|-----------------------|-----------------------|
-| UWP | ![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/MVP%20Companion%20UWP%20Master?branchName=master) |  ![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/MVP%20Companion%20UWP%20Release?branchName=release) |
+| UWP | [![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/MVP%20Companion%20UWP%20Master)](https://lance.visualstudio.com/MVP%20Companion%20Ops/_build/latest?definitionId=6) |  [![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/MVP%20Companion%20UWP%20Release)](https://lance.visualstudio.com/MVP%20Companion%20Ops/_build/latest?definitionId=5) |
+
+Click either badge to directly view the Azure DevOps Build Pipelines
 
 ### Installation
 - [Microsoft Store (Windows 10)](https://www.microsoft.com/store/apps/9NRXNX3WLH77) 
