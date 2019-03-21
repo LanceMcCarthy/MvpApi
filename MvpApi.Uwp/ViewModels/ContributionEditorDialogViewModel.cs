@@ -196,8 +196,6 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
         
-        
-
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
         {
             // Each activity type has a unique set of field names and which ones are required.
@@ -231,7 +229,6 @@ namespace MvpApi.Uwp.ViewModels
                 SelectedContribution.AdditionalTechnologies.Remove(area);
             }
         }
-        
         
         public async Task OnDialogLoadedAsync()
         {
