@@ -122,8 +122,8 @@
     <Compile Include="Dialogs\AwardQuestionsDialog.xaml.cs">
       <DependentUpon>AwardQuestionsDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\EditActivityDialog.xaml.cs">
-      <DependentUpon>EditActivityDialog.xaml</DependentUpon>
+    <Compile Include="Dialogs\ContributionEditorDialog.xaml.cs">
+      <DependentUpon>ContributionEditorDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\TutorialDialog.xaml.cs">
       <DependentUpon>TutorialDialog.xaml</DependentUpon>
@@ -141,6 +141,7 @@
     <Compile Include="ViewModels\AboutViewModel.cs" />
     <Compile Include="ViewModels\AddContributionsViewModel.cs" />
     <Compile Include="ViewModels\ContributionDetailViewModel.cs" />
+    <Compile Include="ViewModels\ContributionEditorDialogViewModel.cs" />
     <Compile Include="ViewModels\HomePageViewModel.cs" />
     <Compile Include="ViewModels\KudosViewModel.cs" />
     <Compile Include="ViewModels\PageViewModelBase.cs" />
@@ -246,7 +247,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\EditActivityDialog.xaml">
+    <Page Include="Dialogs\ContributionEditorDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
