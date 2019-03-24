@@ -123,7 +123,29 @@
                 </StackPanel>
 
                 <TextBlock Text="Copyright 2018, Lancelot Software, LLC " />
-                
+
+                <primitives:RadExpanderControl IsExpanded="True"
+                                               HorizontalAlignment="Left"
+                                               MinWidth="350"
+                                               HeaderBackground="{ThemeResource AppBarBackgroundThemeBrush}"
+                                               Margin="0,10,0,0">
+                    <primitives:RadExpanderControl.Content>
+                        <Grid>
+                            <TextBlock Text="Experimental Features"
+                                       Margin="10,0,0,0" />
+                        </Grid>
+                    </primitives:RadExpanderControl.Content>
+                    <primitives:RadExpanderControl.ExpandableContent>
+                        <Grid BorderBrush="{ThemeResource AppBarBackgroundThemeBrush}"
+                              BorderThickness="4,0,4,4">
+                            <StackPanel Padding="10">
+                                <ToggleSwitch Header="Use preview Contribution editor"
+                                              IsOn="{Binding UseBetaEditor, Mode=TwoWay}"/>
+                            </StackPanel>
+                        </Grid>
+                    </primitives:RadExpanderControl.ExpandableContent>
+                </primitives:RadExpanderControl>
+
                 <primitives:RadExpanderControl IsExpanded="False"
                                                HorizontalAlignment="Left"
                                                MinWidth="350"
