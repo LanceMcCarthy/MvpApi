@@ -257,27 +257,47 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void UploadQueue_Click(object sender, RoutedEventArgs e)
         {
+            bool refreshNeeded = false;
+
             foreach (var contribution in UploadQueue)
             {
                 contribution.UploadStatus = UploadStatus.InProgress;
 
                 var success = await UploadContributionAsync(contribution);
+
+                if (success && !refreshNeeded)
+                {
+                    refreshNeeded = true;
+                }
             
                 contribution.UploadStatus = success
                     ? UploadStatus.Success
                     : UploadStatus.Failed;
             }
 
+            // remove successfully uploaded items form the queue
             UploadQueue.Remove(c => c.UploadStatus == UploadStatus.Success);
+
+            // Update the Contributions list cache from the API if there were any uploads.
+            if (refreshNeeded)
+            {
+                IsBusy = true;
+                IsBusyMessage = "refreshing contributions...";
+
+                await App.ApiService.GetAllContributionsAsync(true);
+
+                IsBusyMessage = string.Empty;
+                IsBusy = false;
+            }
             
             if (UploadQueue.Any())
             {
-                await new MessageDialog("Not all contributions were saved, view the queue for remaining items and try again", "Incomplete Upload").ShowAsync();
-
+                // If there was a failure, there will still be items in the Queue, select the last one in the list
                 SelectedContribution = UploadQueue.LastOrDefault();
             }
             else
             {
+                // If everything was uploaded, navigate away.
                 if (BootStrapper.Current.NavigationService.CanGoBack)
                     BootStrapper.Current.NavigationService.GoBack();
             }
@@ -559,11 +579,6 @@ namespace MvpApi.Uwp.ViewModels
 
                     if (result.Label == "yes")
                     {
-                        if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
-                        {
-                            shellVm.NeedsHomePageRefresh = false;
-                        }
-
                         if (NavigationService.CanGoBack)
                         {
                             NavigationService.GoBack();

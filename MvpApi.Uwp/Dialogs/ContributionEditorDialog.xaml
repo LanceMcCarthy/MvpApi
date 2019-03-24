@@ -14,7 +14,8 @@
     PrimaryButtonText="Save"
     SecondaryButtonText="Cancel"
     PrimaryButtonClick="SaveButton_OnClick"
-    SecondaryButtonClick="CancelButton_OnClick">
+    SecondaryButtonClick="CancelButton_OnClick"
+    MinWidth="400">
 
     <ContentDialog.DataContext>
         <viewModels:ContributionEditorDialogViewModel x:Name="ViewModel"/>
@@ -36,7 +37,7 @@
                               IsSourceGrouped="True" />
     </ContentDialog.Resources>
 
-    <Grid>
+    <Grid MinWidth="400">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
@@ -106,7 +107,7 @@
                                 Background="DarkGreen"
                                 Margin="0,0,0,0">
                             <Button.Flyout>
-                                <Flyout>
+                                <Flyout x:Name="AdditionalTechAreaFlyout">
                                     <ListView x:Name="AdditionalTechnologiesListView"
                                               DataContext="{x:Bind ViewModel}"
                                               ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"

@@ -1,28 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
-using Windows.Foundation.Metadata;
-using Windows.Storage;
 using Windows.UI.Popups;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
-using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
+using Microsoft.Toolkit.Uwp.UI.Extensions;
 using MvpApi.Common.Models;
-using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Mvvm;
-using Template10.Services.NavigationService;
 using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels
@@ -194,6 +185,10 @@ namespace MvpApi.Uwp.ViewModels
             {
                 await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
             }
+
+            var lv = sender as ListView;
+            var button = lv.FindAscendant<Button>();
+            button.Flyout?.Hide();
         }
         
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)

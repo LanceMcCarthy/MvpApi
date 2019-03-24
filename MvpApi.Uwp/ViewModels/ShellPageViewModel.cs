@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Windows.ApplicationModel;
+﻿using Windows.ApplicationModel;
 using Windows.Storage;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
@@ -11,7 +10,6 @@ namespace MvpApi.Uwp.ViewModels
         private ProfileViewModel _mvp;
         private string _profileImagePath;
         private bool _isLoggedIn;
-        private bool _needsHomePageRefresh = true;
         private bool _useBetaEditor;
 
         public ShellPageViewModel()
@@ -31,7 +29,7 @@ namespace MvpApi.Uwp.ViewModels
             {
                 _profileImagePath = value;
 
-                // The file path may be the same, but we still want the image to be reloaded whenever this is set
+                // Manually invoke PropertyChanged to ensure image is reloaded, even if the file path is the same.
                 RaisePropertyChanged();
             }
         }
@@ -46,12 +44,6 @@ namespace MvpApi.Uwp.ViewModels
         {
             get => _isLoggedIn;
             set => Set(ref _isLoggedIn, value);
-        }
-
-        public bool NeedsHomePageRefresh
-        {
-            get => _needsHomePageRefresh;
-            set => Set(ref _needsHomePageRefresh, value);
         }
         
         public bool UseBetaEditor

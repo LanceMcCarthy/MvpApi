@@ -119,7 +119,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            if ((App.ShellPage.DataContext as ShellPageViewModel).UseBetaEditor)
+            if (ShellPage.Instance.DataContext is ShellPageViewModel vm && vm.UseBetaEditor)
             {
                 var editDialog = new ContributionEditorDialog();
 
@@ -197,7 +197,7 @@ namespace MvpApi.Uwp.ViewModels
             // When in single selection mode, go to the selected item's details page
             if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
             {
-                if ((App.ShellPage.DataContext as ShellPageViewModel).UseBetaEditor)
+                if(ShellPage.Instance.DataContext is ShellPageViewModel vm && vm.UseBetaEditor)
                 {
                     var editDialog = new ContributionEditorDialog();
                     editDialog.CurrentContribution = contribution;
@@ -340,15 +340,9 @@ namespace MvpApi.Uwp.ViewModels
             {
                 IsBusy = true;
                 IsBusyMessage = "loading contributions...";
-
-                // Just load one item from the API so we can get the total number of items
-                var pingResult = await App.ApiService.GetContributionsAsync(0, 1);
-
-                // Read the total number of items
-                var itemsToFetch = Convert.ToInt32(pingResult.TotalContributions);
-
-                // Do the complete fetch now
-                var result = await App.ApiService.GetContributionsAsync(0, itemsToFetch);
+                
+                // Get all the contributions for the currently signed in MVP.
+                var result = await App.ApiService.GetAllContributionsAsync();
 
                 // Load the items into the DataGrid
                 Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);

@@ -9,6 +9,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
+using MvpApi.Uwp.Views;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -68,8 +69,8 @@ namespace MvpApi.Uwp.ViewModels
 
         public bool UseBetaEditor
         {
-            get => (App.ShellPage.DataContext as ShellPageViewModel).UseBetaEditor;
-            set => (App.ShellPage.DataContext as ShellPageViewModel).UseBetaEditor = value;
+            get => (ShellPage.Instance.DataContext as ShellPageViewModel).UseBetaEditor;
+            set => (ShellPage.Instance.DataContext as ShellPageViewModel).UseBetaEditor = value;
         }
 
         // Methods
