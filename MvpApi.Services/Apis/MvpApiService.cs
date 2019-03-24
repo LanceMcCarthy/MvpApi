@@ -272,29 +272,32 @@ namespace MvpApi.Services.Apis
                 }
 
                 // Using the total count, we can now fetch all the items and cache them
-                using (var response = await _client.GetAsync($"contributions/0/{totalCount}"))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var json = await response.Content.ReadAsStringAsync();
-                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
+                return await GetContributionsAsync(0, totalCount, true);
 
-                        // Update the cached result.
-                        _contributionsCachedResult = deserializedResult;
+                //// Using the total count, we can now fetch all the items and cache them
+                //using (var response = await _client.GetAsync($"contributions/0/{totalCount}"))
+                //{
+                //    if (response.IsSuccessStatusCode)
+                //    {
+                //        var json = await response.Content.ReadAsStringAsync();
+                //        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
 
-                        return _contributionsCachedResult;
-                    }
+                //        // Update the cached result.
+                //        _contributionsCachedResult = deserializedResult;
 
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                    {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
-                    }
-                }
+                //        return _contributionsCachedResult;
+                //    }
+
+                //    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                //    {
+                //        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                //    }
+                //    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                //    {
+                //        var message = await response.Content.ReadAsStringAsync();
+                //        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                //    }
+                //}
             }
             catch (HttpRequestException e)
             {
@@ -339,23 +342,6 @@ namespace MvpApi.Services.Apis
 
             try
             {
-                int totalCount = 0;
-
-                if (_contributionsCachedResult == null)
-                {
-                    using (var response = await _client.GetAsync($"contributions/0/1"))
-                    {
-                        if (response.IsSuccessStatusCode)
-                        {
-                            var json = await response.Content.ReadAsStringAsync();
-                            var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
-
-                            // Update the cached result.
-                            totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
-                        }
-                    }
-                }
-
                 using (var response = await _client.GetAsync($"contributions/{offset}/{limit}"))
                 {
                     if (response.IsSuccessStatusCode)
