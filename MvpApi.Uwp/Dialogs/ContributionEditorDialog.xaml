@@ -56,6 +56,7 @@
         <ScrollViewer Grid.Row="1">
             <StackPanel>
                 <ComboBox ItemsSource="{Binding Types}"
+                          Visibility="{Binding EditingExistingContribution, Converter={StaticResource InvertedBoolToVisibilityConverter}}"
                           SelectedItem="{Binding SelectedContribution.ContributionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           SelectionChanged="{x:Bind ViewModel.ActivityType_SelectionChanged}"
                           DisplayMemberPath="Name"
@@ -99,7 +100,7 @@
                         </Style>
                     </ListView.ItemContainerStyle>
                     <ListView.Footer>
-                        <Button Visibility="{Binding SelectedContribution.AdditionalTechnologies.Count, Converter={StaticResource CountToVisibilityConverter}}"
+                        <!--<Button Visibility="{Binding SelectedContribution.AdditionalTechnologies.Count, Converter={StaticResource CountToVisibilityConverter}}"
                                 Content="+"
                                 FontWeight="Bold"
                                 VerticalAlignment="Center"
@@ -119,7 +120,12 @@
                                               VerticalAlignment="Stretch" />
                                 </Flyout>
                             </Button.Flyout>
-                        </Button>
+                        </Button>-->
+                        <ComboBox ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                                  SelectionChanged="{x:Bind ViewModel.AdditionalAreaComboBox_OnSelectionChanged}"
+                                  Style="{StaticResource AdditionalTechnologyAreaComboBoxStyle}"
+                                  Visibility="{Binding SelectedContribution.AdditionalTechnologies.Count, Converter={StaticResource CountToVisibilityConverter}}"
+                                  Margin="0,5,0,0" />
                     </ListView.Footer>
                     <ListView.ItemTemplate>
                         <DataTemplate>
