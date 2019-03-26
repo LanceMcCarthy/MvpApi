@@ -125,9 +125,9 @@ namespace MvpApi.Uwp.ViewModels
 
                 await editDialog.ShowAsync();
 
-                if (editDialog.CurrentContribution != null)
+                if (editDialog.ContributionResult != null)
                 {
-                    Debug.WriteLine($"Created {editDialog.CurrentContribution.ContributionTypeName}");
+                    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
                 }
             }
             else
@@ -199,14 +199,13 @@ namespace MvpApi.Uwp.ViewModels
             {
                 if(ShellPage.Instance.DataContext is ShellPageViewModel vm && vm.UseBetaEditor)
                 {
-                    var editDialog = new ContributionEditorDialog();
-                    editDialog.CurrentContribution = contribution;
+                    var editDialog = new ContributionEditorDialog(contribution);
 
                     await editDialog.ShowAsync();
 
-                    if (editDialog.CurrentContribution != null)
+                    if (editDialog.ContributionResult != null)
                     {
-                        Debug.WriteLine($"Created {editDialog.CurrentContribution.ContributionTypeName}");
+                        Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
                     }
                 }
                 else

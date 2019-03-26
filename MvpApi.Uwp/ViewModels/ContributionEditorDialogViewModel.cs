@@ -36,6 +36,7 @@ namespace MvpApi.Uwp.ViewModels
         private string _warningMessage;
         private bool _isBusy;
         private string _isBusyMessage;
+        private bool _editingExistingContribution;
 
         #endregion
 
@@ -143,9 +144,15 @@ namespace MvpApi.Uwp.ViewModels
             get => _isBusyMessage;
             set => Set(ref _isBusyMessage, value);
         }
+        
+        public bool EditingExistingContribution
+        {
+            get => _editingExistingContribution;
+            set => Set(ref _editingExistingContribution, value);
+        }
 
         // Commands
-        
+
         public DelegateCommand<ContributionTechnologyModel> RemoveAdditionalTechAreaCommand { get; set; }
         
         // Methods
@@ -174,22 +181,38 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
-        {
-            if (SelectedContribution.AdditionalTechnologies.Count < 2)
-            {
-                AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
-            }
-            else
-            {
-                await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
-            }
+        //public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
+        //{
+        //    if (SelectedContribution.AdditionalTechnologies.Count < 2)
+        //    {
+        //        AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
+        //    }
+        //    else
+        //    {
+        //        await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
+        //    }
 
-            var lv = sender as ListView;
-            var button = lv.FindAscendant<Button>();
-            button.Flyout?.Hide();
+        //    // TODO find Flyout ancestor so it can be closed after a selection is made
+        //    //var lv = sender as ListView;
+        //    //var button = lv.FindAscendant<Button>();
+        //    //button.Flyout?.Hide();
+        //}
+
+        public async void AdditionalAreaComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems?.Count > 0)
+            {
+                if (SelectedContribution.AdditionalTechnologies.Count < 2)
+                {
+                    AddAdditionalArea(e.AddedItems.FirstOrDefault() as ContributionTechnologyModel);
+                }
+                else
+                {
+                    await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
+                }
+            }
         }
-        
+
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
         {
             // Each activity type has a unique set of field names and which ones are required.
