@@ -93,7 +93,7 @@ namespace MvpApi.Uwp.Dialogs
             }
         }
 
-        private async void CancelButton_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private void CancelButton_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             var match = ViewModel.SelectedContribution.Compare(CurrentContribution);
 
@@ -104,23 +104,23 @@ namespace MvpApi.Uwp.Dialogs
             }
             else
             {
-                var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
-                md.Commands.Add(new UICommand("yes"));
-                md.Commands.Add(new UICommand("no"));
-                md.CancelCommandIndex = 1;
-                md.DefaultCommandIndex = 1;
+                //var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
+                //md.Commands.Add(new UICommand("yes"));
+                //md.Commands.Add(new UICommand("no"));
+                //md.CancelCommandIndex = 1;
+                //md.DefaultCommandIndex = 1;
 
-                var result = await md.ShowAsync();
+                //var result = await md.ShowAsync();
 
-                if (result.Label == "yes")
-                {
-                    CurrentContribution = null;
-                    Hide();
-                }
-                else
-                {
-                    args.Cancel = true;
-                }
+                //if (result.Label == "yes")
+                //{
+                //    CurrentContribution = null;
+                //    Hide();
+                //}
+                //else
+                //{
+                //    args.Cancel = true;
+                //}
             }
         }
     }
