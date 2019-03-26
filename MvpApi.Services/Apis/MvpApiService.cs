@@ -273,31 +273,6 @@ namespace MvpApi.Services.Apis
 
                 // Using the total count, we can now fetch all the items and cache them
                 return await GetContributionsAsync(0, totalCount, true);
-
-                //// Using the total count, we can now fetch all the items and cache them
-                //using (var response = await _client.GetAsync($"contributions/0/{totalCount}"))
-                //{
-                //    if (response.IsSuccessStatusCode)
-                //    {
-                //        var json = await response.Content.ReadAsStringAsync();
-                //        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
-
-                //        // Update the cached result.
-                //        _contributionsCachedResult = deserializedResult;
-
-                //        return _contributionsCachedResult;
-                //    }
-
-                //    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                //    {
-                //        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                //    }
-                //    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                //    {
-                //        var message = await response.Content.ReadAsStringAsync();
-                //        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
-                //    }
-                //}
             }
             catch (HttpRequestException e)
             {
@@ -799,6 +774,11 @@ namespace MvpApi.Services.Apis
             return null;
         }
         
+        /// <summary>
+        /// Saves an OnlineIdentity
+        /// </summary>
+        /// <param name="onlineIdentity"></param>
+        /// <returns></returns>
         public async Task<OnlineIdentity> SubmitOnlineIdentityAsync(OnlineIdentityViewModel onlineIdentity)
         {
             if (onlineIdentity == null)
