@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Microsoft.Toolkit.Uwp.Connectivity;
-using Microsoft.Toolkit.Uwp.UI.Extensions;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Mvvm;
+using Template10.Services.PopupService;
 using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels
@@ -181,36 +182,22 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        //public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
-        //{
-        //    if (SelectedContribution.AdditionalTechnologies.Count < 2)
-        //    {
-        //        AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
-        //    }
-        //    else
-        //    {
-        //        await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
-        //    }
-
-        //    // TODO find Flyout ancestor so it can be closed after a selection is made
-        //    //var lv = sender as ListView;
-        //    //var button = lv.FindAscendant<Button>();
-        //    //button.Flyout?.Hide();
-        //}
-
-        public async void AdditionalAreaComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
         {
-            if (e.AddedItems?.Count > 0)
+            if (SelectedContribution.AdditionalTechnologies.Count < 2)
             {
-                if (SelectedContribution.AdditionalTechnologies.Count < 2)
-                {
-                    AddAdditionalArea(e.AddedItems.FirstOrDefault() as ContributionTechnologyModel);
-                }
-                else
-                {
-                    await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
-                }
+                AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
             }
+            else
+            {
+                await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
+            }
+            
+            // Manually find the flyout's popup to close it
+            var lv = sender as ListView;
+            var foPresenter = lv?.Parent as FlyoutPresenter;
+            var popup = foPresenter?.Parent as Popup;
+            popup?.Hide();
         }
 
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
