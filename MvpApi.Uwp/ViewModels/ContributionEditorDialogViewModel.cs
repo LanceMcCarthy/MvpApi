@@ -22,6 +22,7 @@ namespace MvpApi.Uwp.ViewModels
     {
         #region Fields
 
+        private ContributionsModel _originalContribution;
         private ContributionsModel _selectedContribution;
         private string _urlHeader = "Url";
         private string _annualQuantityHeader = "Annual Quantity";
@@ -154,12 +155,10 @@ namespace MvpApi.Uwp.ViewModels
             if (e.NewDate < new DateTime(2016, 10, 1) || e.NewDate > new DateTime(2019, 4, 1))
             {
                 WarningMessage = "The contribution date must be after the start of your current award period and before March 31, 2019 in order for it to count towards your evaluation";
-                CanSave = false;
             }
             else
             {
                 WarningMessage = "";
-                CanSave = true;
             }
         }
 
@@ -324,14 +323,28 @@ namespace MvpApi.Uwp.ViewModels
             {
                 BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacade_BackRequested;
             }
-            
         }
 
-        private void FrameFacade_BackRequested(object sender, HandledEventArgs e)
+        private async void FrameFacade_BackRequested(object sender, HandledEventArgs e)
         {
+            try
+            {
+                var md = new MessageDialog("Navigating away will lose any pending edits, continue?", "Close Editor?");
+                md.Commands.Add(new UICommand("yes"));
+                md.Commands.Add(new UICommand("no"));
+                md.CancelCommandIndex = 1;
+                md.DefaultCommandIndex = 1;
 
+                var result = await md.ShowAsync();
+
+                // If the user clicked no, then make the back request as handled to prevent closure of dialog
+                e.Handled = result.Label != "yes";
+            }
+            catch (Exception ex)
+            {
+                await ex.LogExceptionAsync();
+            }
         }
-
         
         #endregion
     }

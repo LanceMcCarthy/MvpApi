@@ -1,8 +1,11 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Extensions;
+using MvpApi.Uwp.Helpers;
 
 namespace MvpApi.Uwp.Dialogs
 {
@@ -27,7 +30,7 @@ namespace MvpApi.Uwp.Dialogs
             get => (ContributionsModel)GetValue(CurrentContributionProperty);
             set => SetValue(CurrentContributionProperty, value);
         }
-
+        
         public ContributionEditorDialog()
         {
             InitializeComponent();
@@ -90,10 +93,35 @@ namespace MvpApi.Uwp.Dialogs
             }
         }
 
-        private void CancelButton_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private async void CancelButton_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            CurrentContribution = null;
-            Hide();
+            var match = ViewModel.SelectedContribution.Compare(CurrentContribution);
+
+            if (match)
+            {
+                CurrentContribution = null;
+                Hide();
+            }
+            else
+            {
+                var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
+                md.Commands.Add(new UICommand("yes"));
+                md.Commands.Add(new UICommand("no"));
+                md.CancelCommandIndex = 1;
+                md.DefaultCommandIndex = 1;
+
+                var result = await md.ShowAsync();
+
+                if (result.Label == "yes")
+                {
+                    CurrentContribution = null;
+                    Hide();
+                }
+                else
+                {
+                    args.Cancel = true;
+                }
+            }
         }
     }
 }
