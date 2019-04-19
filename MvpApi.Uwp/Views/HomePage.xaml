@@ -192,6 +192,7 @@
 
         <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
                                      IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                     Visibility="{Binding IsBusy}"
                                      Style="{StaticResource PageBusyIndicatorStyle}"
                                      Grid.Row="1"
                                      Grid.RowSpan="2"

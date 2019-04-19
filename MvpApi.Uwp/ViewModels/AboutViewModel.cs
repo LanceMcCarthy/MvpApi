@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Email;
@@ -8,6 +9,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
+using MvpApi.Uwp.Views;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -17,6 +19,7 @@ namespace MvpApi.Uwp.ViewModels
 
         private Visibility _feedbackHubButtonVisibility;
         private int _daysToKeepErrorLogs = 5;
+        private bool _useBetaEditor;
 
         public AboutViewModel()
         {
@@ -63,6 +66,14 @@ namespace MvpApi.Uwp.ViewModels
             get => _feedbackHubButtonVisibility;
             set => Set(ref _feedbackHubButtonVisibility, value);
         }
+
+        public bool UseBetaEditor
+        {
+            get => (ShellPage.Instance.DataContext as ShellPageViewModel).UseBetaEditor;
+            set => (ShellPage.Instance.DataContext as ShellPageViewModel).UseBetaEditor = value;
+        }
+
+        // Methods
 
         public async void EmailButton_Click(object sender, RoutedEventArgs e)
         {

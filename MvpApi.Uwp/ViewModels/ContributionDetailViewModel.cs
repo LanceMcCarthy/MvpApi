@@ -205,17 +205,28 @@ namespace MvpApi.Uwp.ViewModels
             SelectedContribution.UploadStatus = UploadStatus.InProgress;
             
             var success = await UploadContributionAsync(SelectedContribution);
-
+            
             // Mark success or failure
             SelectedContribution.UploadStatus = success ? UploadStatus.Success : UploadStatus.Failed;
 
             // Quality assurance, only logs a successful or failed upload.
             if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+            {
                 StoreServicesCustomEventLogger.GetDefault().Log($"EditContribution{SelectedContribution.UploadStatus}");
+            }
 
             if (SelectedContribution.UploadStatus == UploadStatus.Success)
             {
                 IsSelectedContributionDirty = false;
+
+                // Refresh the main cached contributions list because the details for this item has changed
+                IsBusy = true;
+                IsBusyMessage = "refreshing contributions...";
+
+                await App.ApiService.GetAllContributionsAsync(true);
+
+                IsBusyMessage = string.Empty;
+                IsBusy = false;
 
                 if (BootStrapper.Current.NavigationService.CanGoBack)
                     BootStrapper.Current.NavigationService.GoBack();
@@ -242,7 +253,16 @@ namespace MvpApi.Uwp.ViewModels
                     // Quality assurance, only logs a successful delete.
                     if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
                         StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionSuccess");
-                    
+
+                    // Refresh the main cached contributions list because the details for this item has changed
+                    IsBusy = true;
+                    IsBusyMessage = "refreshing contributions...";
+
+                    await App.ApiService.GetAllContributionsAsync(true);
+
+                    IsBusyMessage = string.Empty;
+                    IsBusy = false;
+
                     if (BootStrapper.Current.NavigationService.CanGoBack)
                         BootStrapper.Current.NavigationService.GoBack();
                 }
@@ -252,7 +272,7 @@ namespace MvpApi.Uwp.ViewModels
                     if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
                         StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
 
-                    await new MessageDialog("The contribution was not deleted, check your internet connection and try again.").ShowAsync();
+                    await new MessageDialog("The contribution was not deleted.").ShowAsync();
                 }
             }
             catch (Exception ex)
@@ -287,42 +307,55 @@ namespace MvpApi.Uwp.ViewModels
 
         private void Compare()
         {
-            try
+            var match = _originalContribution.Compare(SelectedContribution);
+
+            if (match)
             {
-                if (_originalContribution == null)
-                    return;
-
-                var isTitleDifferent = SelectedContribution.Title != _originalContribution.Title;
-                var isDescriptionDifferent = SelectedContribution.Description != _originalContribution.Description;
-                var isUrlDifferent = SelectedContribution.ReferenceUrl != _originalContribution.ReferenceUrl;
-                var isTechnologyDifferent = SelectedContribution.ContributionTechnology.Id != _originalContribution.ContributionTechnology.Id;
-                var isDateDifferent = SelectedContribution.StartDate.Value.Date != _originalContribution.StartDate.Value.Date;
-                var isAnnualQuantityDifferent = SelectedContribution.AnnualQuantity != _originalContribution.AnnualQuantity;
-                var isSecondAnnualQuantityDifferent = SelectedContribution.SecondAnnualQuantity != _originalContribution.SecondAnnualQuantity;
-                var isAnnualReachDifferent = SelectedContribution.AnnualReach != _originalContribution.AnnualReach;
-
-                if (isTitleDifferent
-                    || isDescriptionDifferent
-                    || isUrlDifferent
-                    || isTechnologyDifferent
-                    || isDateDifferent
-                    || isAnnualQuantityDifferent
-                    || isSecondAnnualQuantityDifferent
-                    || isAnnualReachDifferent)
-                {
-                    IsSelectedContributionDirty = true;
-                    SelectedContribution.UploadStatus = UploadStatus.Pending;
-                }
-                else
-                {
-                    IsSelectedContributionDirty = false;
-                    SelectedContribution.UploadStatus = UploadStatus.None;
-                }
+                IsSelectedContributionDirty = false;
+                SelectedContribution.UploadStatus = UploadStatus.None;
             }
-            catch
+            else
             {
+                IsSelectedContributionDirty = true;
+                SelectedContribution.UploadStatus = UploadStatus.Pending;
+            }
+
+            //try
+            //{
+            //    if (_originalContribution == null)
+            //        return;
+
+            //    var isTitleDifferent = SelectedContribution.Title != _originalContribution.Title;
+            //    var isDescriptionDifferent = SelectedContribution.Description != _originalContribution.Description;
+            //    var isUrlDifferent = SelectedContribution.ReferenceUrl != _originalContribution.ReferenceUrl;
+            //    var isTechnologyDifferent = SelectedContribution.ContributionTechnology.Id != _originalContribution.ContributionTechnology.Id;
+            //    var isDateDifferent = SelectedContribution.StartDate.Value.Date != _originalContribution.StartDate.Value.Date;
+            //    var isAnnualQuantityDifferent = SelectedContribution.AnnualQuantity != _originalContribution.AnnualQuantity;
+            //    var isSecondAnnualQuantityDifferent = SelectedContribution.SecondAnnualQuantity != _originalContribution.SecondAnnualQuantity;
+            //    var isAnnualReachDifferent = SelectedContribution.AnnualReach != _originalContribution.AnnualReach;
+
+            //    if (isTitleDifferent
+            //        || isDescriptionDifferent
+            //        || isUrlDifferent
+            //        || isTechnologyDifferent
+            //        || isDateDifferent
+            //        || isAnnualQuantityDifferent
+            //        || isSecondAnnualQuantityDifferent
+            //        || isAnnualReachDifferent)
+            //    {
+            //        IsSelectedContributionDirty = true;
+            //        SelectedContribution.UploadStatus = UploadStatus.Pending;
+            //    }
+            //    else
+            //    {
+            //        IsSelectedContributionDirty = false;
+            //        SelectedContribution.UploadStatus = UploadStatus.None;
+            //    }
+            //}
+            //catch
+            //{
                 
-            }
+            //}
         }
 
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
@@ -507,11 +540,6 @@ namespace MvpApi.Uwp.ViewModels
 
                 if (result.Label == "yes")
                 {
-                    if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
-                    {
-                        shellVm.NeedsHomePageRefresh = false;
-                    }
-
                     if (NavigationService.CanGoBack)
                     {
                         NavigationService.GoBack();

@@ -12,10 +12,8 @@ using MvpApi.Services.Apis;
 
 namespace MvpApi.Uwp
 {
-    sealed partial class App : BootStrapper
+    public sealed partial class App : BootStrapper
     {
-        public static ShellPage ShellPage { get; private set; }
-        
         public static MvpApiService ApiService { get; set; }
         
         public App()
@@ -28,7 +26,7 @@ namespace MvpApi.Uwp
         {
             var service = NavigationServiceFactory(BackButton.Attach, ExistingContent.Exclude);
 
-            ShellPage = new ShellPage(service);
+            var ShellPage = new ShellPage(service);
 
             return new ModalDialog
             {

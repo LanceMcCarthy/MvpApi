@@ -30,7 +30,7 @@ namespace MvpApi.Uwp.ViewModels
     public class HomePageViewModel : PageViewModelBase
     {
         #region Fields
-        
+
         private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
         private bool _isMultipleSelectionEnabled;
         private ObservableCollection<ContributionsModel> _contributions;
@@ -67,9 +67,9 @@ namespace MvpApi.Uwp.ViewModels
                 }
             });
         }
-        
+
         #region Properties
-        
+
         public ObservableCollection<ContributionsModel> Contributions
         {
             get => _contributions;
@@ -79,9 +79,9 @@ namespace MvpApi.Uwp.ViewModels
         public ObservableCollection<object> SelectedContributions { get; set; }
 
         public GroupDescriptorCollection GroupDescriptors { get; set; }
-        
+
         public DelegateCommand RefreshAfterDisconnectCommand { get; }
-        
+
         public bool IsMultipleSelectionEnabled
         {
             get => _isMultipleSelectionEnabled;
@@ -106,29 +106,34 @@ namespace MvpApi.Uwp.ViewModels
             get => _areAppBarButtonsEnabled;
             set => Set(ref _areAppBarButtonsEnabled, value);
         }
-        
+
         public bool IsInternetDisabled
         {
             get => _isInternetDisabled;
             set => Set(ref _isInternetDisabled, value);
         }
-        
+
         #endregion
 
         #region Event Handlers
-        
+
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage));
+            if (ShellPage.Instance.DataContext is ShellPageViewModel vm && vm.UseBetaEditor)
+            {
+                var editDialog = new ContributionEditorDialog();
 
-            //var editDialog = new EditActivityDialog();
-            
-            //await editDialog.ShowAsync();
+                await editDialog.ShowAsync();
 
-            //if (editDialog.SelectedContribution != null)
-            //{
-            //    Debug.WriteLine($"Created {editDialog.SelectedContribution.ContributionTypeName}");
-            //}
+                if (editDialog.ContributionResult != null)
+                {
+                    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
+                }
+            }
+            else
+            {
+                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage));
+            }
         }
 
         public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
@@ -139,7 +144,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            if(SelectedContributions.Any())
+            if (SelectedContributions.Any())
                 SelectedContributions.Clear();
 
             await LoadContributionsAsync();
@@ -192,18 +197,32 @@ namespace MvpApi.Uwp.ViewModels
             // When in single selection mode, go to the selected item's details page
             if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
             {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution);
+                if(ShellPage.Instance.DataContext is ShellPageViewModel vm && vm.UseBetaEditor)
+                {
+                    var editDialog = new ContributionEditorDialog(contribution);
+
+                    await editDialog.ShowAsync();
+
+                    if (editDialog.ContributionResult != null)
+                    {
+                        Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
+                    }
+                }
+                else
+                {
+                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution);
+                }
             }
         }
 
         public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
             if (!(sender is RadioButton rb) || rb.Content == null || GroupDescriptors == null) return;
-            
+
             GroupDescriptors.Clear();
-            
+
             var groupName = rb.Content.ToString();
-                
+
             switch (groupName)
             {
                 case "None":
@@ -242,7 +261,7 @@ namespace MvpApi.Uwp.ViewModels
             savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
 
             var file = await savePicker.PickSaveFileAsync();
-            
+
             if (file != null)
             {
                 IsBusyMessage = "saving file...";
@@ -286,7 +305,7 @@ namespace MvpApi.Uwp.ViewModels
         //        var result = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
 
         //        Debug.WriteLine($"** LoadMoreItems **\nPagingIndex: {result.PagingIndex}, Count: {result.Contributions.Count}, TotalContributions: {result.TotalContributions}");
-                
+
         //        _currentOffset = result.PagingIndex;
 
         //        DisplayTotal = $"{_currentOffset} of {result.TotalContributions}";
@@ -320,16 +339,10 @@ namespace MvpApi.Uwp.ViewModels
             {
                 IsBusy = true;
                 IsBusyMessage = "loading contributions...";
-
-                // Just load one item from the API so we can get the total number of items
-                var pingResult = await App.ApiService.GetContributionsAsync(0, 1);
-
-                // Read the total number of items
-                var itemsToFetch = Convert.ToInt32(pingResult.TotalContributions);
                 
-                // Do the complete fetch now
-                var result = await App.ApiService.GetContributionsAsync(0, itemsToFetch);
-                
+                // Get all the contributions for the currently signed in MVP.
+                var result = await App.ApiService.GetAllContributionsAsync();
+
                 // Load the items into the DataGrid
                 Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);
 
@@ -346,7 +359,7 @@ namespace MvpApi.Uwp.ViewModels
                 IsBusy = false;
             }
         }
-        
+
         #endregion
 
         #region Navigation
@@ -374,7 +387,7 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     await LoadContributionsAsync();
                 }
-                
+
                 if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
                 {
                     var td = new TutorialDialog

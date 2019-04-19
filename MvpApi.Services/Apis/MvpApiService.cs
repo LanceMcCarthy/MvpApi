@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -16,6 +18,11 @@ namespace MvpApi.Services.Apis
     public class MvpApiService : IDisposable
     {
         private readonly HttpClient _client;
+        private ContributionViewModel _contributionsCachedResult;
+        private IReadOnlyList<ContributionTypeModel> _contributionTypesCachedResult;
+        private IReadOnlyList<ContributionAreasRootItem> _contributionAreasCachedResult;
+        private IReadOnlyList<VisibilityViewModel> _visibilitiesCachedResult;
+        private IReadOnlyList<OnlineIdentityViewModel> _onlineIdentitiesCachedResult;
 
         /// <summary>
         /// Service that interacts with the MVP API
@@ -33,18 +40,7 @@ namespace MvpApi.Services.Apis
             _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "3d199a7fb1c443e1985375f0572f58f8");
             _client.DefaultRequestHeaders.Add("Authorization", authorizationHeaderContent);
         }
-
-        /// <summary>
-        /// This event will fire when there is a 401 or 403 returned from an API call. This indicates that a new Access Token is needed.
-        /// Use this event to use the refresh token to get a new access token automatically.
-        /// </summary>
-        public event EventHandler<ApiServiceEventArgs> AccessTokenExpired;
-
-        /// <summary>
-        /// This event fires when the API call results in a HttpStatusCode 500 result is obtained.
-        /// </summary>
-        public event EventHandler<ApiServiceEventArgs> RequestErrorOccurred;
-
+        
         #region API Endpoints
 
         /// <summary>
@@ -246,15 +242,78 @@ namespace MvpApi.Services.Apis
         }
 
         /// <summary>
+        /// Gets all the MVP's activities.
+        /// </summary>
+        /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
+        /// <returns>A list of the MVP's contributions</returns>
+        public async Task<ContributionViewModel> GetAllContributionsAsync(bool forceRefresh = false)
+        {
+            if (_contributionsCachedResult != null && !forceRefresh)
+            {
+                // Return the cached result by default.
+                return _contributionsCachedResult;
+            }
+            
+            try
+            {
+                int totalCount = 0;
+
+                // The first fetch gets the total count, which we need to do the full fetch
+                using (var response = await _client.GetAsync($"contributions/0/0"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
+
+                        // Read the total
+                        totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+                    }
+                }
+
+                // Using the total count, we can now fetch all the items and cache them
+                return await GetContributionsAsync(0, totalCount, true);
+            }
+            catch (HttpRequestException e)
+            {
+                await e.LogExceptionAsync();
+
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Debug.WriteLine($"GetContributionsAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Debug.WriteLine($"GetContributionsAsync Exception: {e}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Gets the MVPs activities, depending on the offset (page) and the limit (number of items per-page)
         /// </summary>
         /// <param name="offset">page to return</param>
         /// <param name="limit">number of items for the page</param>
-        /// <returns></returns>
-        public async Task<ContributionViewModel> GetContributionsAsync(int? offset, int limit)
+        /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
+        /// <returns>A list of the MVP's contributions</returns>
+        public async Task<ContributionViewModel> GetContributionsAsync(int? offset, int limit, bool forceRefresh = false)
         {
+            if (_contributionsCachedResult != null && !forceRefresh)
+            {
+                // Return the cached result by default.
+                return _contributionsCachedResult;
+            }
+            
             if (offset == null)
+            {
                 offset = 0;
+            }
 
             try
             {
@@ -263,7 +322,12 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<ContributionViewModel>(json);
+                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
+
+                        // Update the cached result.
+                        _contributionsCachedResult = deserializedResult;
+
+                        return _contributionsCachedResult;
                     }
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
@@ -474,9 +538,16 @@ namespace MvpApi.Services.Apis
         /// <summary>
         /// This gets a list if the different contributions types
         /// </summary>
+        /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
         /// <returns>List of contributions types</returns>
-        public async Task<IReadOnlyList<ContributionTypeModel>> GetContributionTypesAsync()
+        public async Task<IReadOnlyList<ContributionTypeModel>> GetContributionTypesAsync(bool forceRefresh = false)
         {
+            if (_contributionTypesCachedResult?.Count == 0 && !forceRefresh)
+            {
+                // Return the cached result by default.
+                return _contributionTypesCachedResult;
+            }
+
             try
             {
                 using (var response = await _client.GetAsync("contributions/contributiontypes"))
@@ -484,7 +555,12 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<IReadOnlyList<ContributionTypeModel>>(json);
+                        var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<ContributionTypeModel>>(json);
+
+                        // Update the cached result.
+                        _contributionTypesCachedResult = new List<ContributionTypeModel>(deserializedResult);
+                        
+                        return _contributionTypesCachedResult;
                     }
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
@@ -520,11 +596,18 @@ namespace MvpApi.Services.Apis
         }
 
         /// <summary>
-        /// Gets a list of the Contibution Technologies (aka Contribution Areas)
+        /// Gets a list of the Contribution Technologies (aka Contribution Areas)
         /// </summary>
+        /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
         /// <returns>A list of available contribution areas</returns>
-        public async Task<IReadOnlyList<ContributionAreasRootItem>> GetContributionAreasAsync()
+        public async Task<IReadOnlyList<ContributionAreasRootItem>> GetContributionAreasAsync(bool forceRefresh = false)
         {
+            if (_contributionAreasCachedResult?.Count == 0 && !forceRefresh)
+            {
+                // Return the cached result by default.
+                return _contributionAreasCachedResult;
+            }
+
             try
             {
                 using (var response = await _client.GetAsync("contributions/contributionareas"))
@@ -532,7 +615,12 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<IReadOnlyList<ContributionAreasRootItem>>(json);
+                        var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<ContributionAreasRootItem>>(json);
+
+                        // Update the cached result.
+                        _contributionAreasCachedResult = new List<ContributionAreasRootItem>(deserializedResult);
+
+                        return _contributionAreasCachedResult;
                     }
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
@@ -570,9 +658,16 @@ namespace MvpApi.Services.Apis
         /// <summary>
         /// Gets a list of contribution visibility options (aka Sharing Preferences). The traditional results are "Microsoft Only", "MVP Community" and "Everyone"
         /// </summary>
+        /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
         /// <returns>A list of available visibilities</returns>
-        public async Task<IReadOnlyList<VisibilityViewModel>> GetVisibilitiesAsync()
+        public async Task<IReadOnlyList<VisibilityViewModel>> GetVisibilitiesAsync(bool forceRefresh = false)
         {
+            if (_visibilitiesCachedResult?.Count == 0 && !forceRefresh)
+            {
+                // Return the cached result by default.
+                return _visibilitiesCachedResult;
+            }
+
             try
             {
                 using (var response = await _client.GetAsync("contributions/sharingpreferences"))
@@ -580,8 +675,13 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<IReadOnlyList<VisibilityViewModel>>(json);
 
+                        var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<VisibilityViewModel>>(json);
+
+                        // Update the cached result.
+                        _visibilitiesCachedResult = new List<VisibilityViewModel>(deserializedResult);
+
+                        return _visibilitiesCachedResult;
                     }
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
@@ -615,8 +715,19 @@ namespace MvpApi.Services.Apis
             return null;
         }
 
-        public async Task<IReadOnlyList<OnlineIdentityViewModel>> GetOnlineIdentitiesAsync()
+        /// <summary>
+        /// Returns a list of the MVP's OnlineIdentities (social media accounts and other identities)
+        /// </summary>
+        /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
+        /// <returns></returns>
+        public async Task<IReadOnlyList<OnlineIdentityViewModel>> GetOnlineIdentitiesAsync(bool forceRefresh = false)
         {
+            if (_contributionTypesCachedResult?.Count == 0 && !forceRefresh)
+            {
+                // Return the cached result by default.
+                return _onlineIdentitiesCachedResult;
+            }
+
             try
             {
                 using (var response = await _client.GetAsync("onlineidentities"))
@@ -624,7 +735,12 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<IReadOnlyList<OnlineIdentityViewModel>>(json);
+                        var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<OnlineIdentityViewModel>>(json);
+
+                        // Update the cached result.
+                        _onlineIdentitiesCachedResult = new List<OnlineIdentityViewModel>(deserializedResult);
+
+                        return _onlineIdentitiesCachedResult;
                     }
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
@@ -658,6 +774,11 @@ namespace MvpApi.Services.Apis
             return null;
         }
         
+        /// <summary>
+        /// Saves an OnlineIdentity
+        /// </summary>
+        /// <param name="onlineIdentity"></param>
+        /// <returns></returns>
         public async Task<OnlineIdentity> SubmitOnlineIdentityAsync(OnlineIdentityViewModel onlineIdentity)
         {
             if (onlineIdentity == null)
@@ -1016,6 +1137,21 @@ namespace MvpApi.Services.Apis
                 return "";
             }
         }
+
+        #endregion
+
+        #region events
+
+        /// <summary>
+        /// This event will fire when there is a 401 or 403 returned from an API call. This indicates that a new Access Token is needed.
+        /// Use this event to use the refresh token to get a new access token automatically.
+        /// </summary>
+        public event EventHandler<ApiServiceEventArgs> AccessTokenExpired;
+
+        /// <summary>
+        /// This event fires when the API call results in a HttpStatusCode 500 result is obtained.
+        /// </summary>
+        public event EventHandler<ApiServiceEventArgs> RequestErrorOccurred;
 
         #endregion
 

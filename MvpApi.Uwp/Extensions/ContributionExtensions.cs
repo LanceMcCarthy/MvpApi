@@ -324,5 +324,45 @@ namespace MvpApi.Uwp.Extensions
 
             return itemsToRemove.Count;
         }
+
+        public static bool Compare(this ContributionsModel original, ContributionsModel selected)
+        {
+            try
+            {
+                if (original == null || selected == null)
+                    return false;
+
+                if (selected.Title != original.Title)
+                    return false;
+
+                if (selected.Description != original.Description)
+                    return false;
+
+                if (selected.ReferenceUrl != original.ReferenceUrl)
+                    return false;
+
+                if (selected.ContributionTechnology.Id != original.ContributionTechnology.Id)
+                    return false;
+
+                if (selected.StartDate.Value.Date != original.StartDate.Value.Date)
+                    return false;
+
+                if (selected.AnnualQuantity != original.AnnualQuantity)
+                    return false;
+
+                if (selected.SecondAnnualQuantity != original.SecondAnnualQuantity)
+                    return false;
+
+                if (selected.AnnualReach != original.AnnualReach)
+                    return false;
+            }
+            catch
+            {
+                return false;
+            }
+
+            // If all comparisons pass, true to signify a perfect match
+            return true;
+        }
     }
 }

@@ -123,7 +123,56 @@
                 </StackPanel>
 
                 <TextBlock Text="Copyright 2018, Lancelot Software, LLC " />
-                
+
+                <primitives:RadExpanderControl IsExpanded="True"
+                                               HorizontalAlignment="Left"
+                                               MinWidth="350"
+                                               HeaderBackground="{ThemeResource AppBarBackgroundThemeBrush}"
+                                               Margin="0,10,0,0">
+                    <primitives:RadExpanderControl.Content>
+                        <Grid>
+                            <TextBlock Text="Experimental Features"
+                                       Margin="10,0,0,0" />
+                        </Grid>
+                    </primitives:RadExpanderControl.Content>
+                    <primitives:RadExpanderControl.ExpandableContent>
+                        <Grid BorderBrush="{ThemeResource AppBarBackgroundThemeBrush}"
+                              BorderThickness="4,0,4,4">
+                            <StackPanel Padding="10">
+                                <ToggleSwitch Header="Use preview Contribution editor"
+                                              IsOn="{Binding UseBetaEditor, Mode=TwoWay}"/>
+                            </StackPanel>
+                        </Grid>
+                    </primitives:RadExpanderControl.ExpandableContent>
+                </primitives:RadExpanderControl>
+
+                <primitives:RadExpanderControl IsExpanded="True"
+                                               HorizontalAlignment="Left"
+                                               MinWidth="350"
+                                               HeaderBackground="{ThemeResource AppBarBackgroundThemeBrush}"
+                                               Margin="0,10,0,0">
+                    <primitives:RadExpanderControl.Content>
+                        <Grid>
+                            <TextBlock Text="Questions, problems or feature request?"
+                                       Margin="10,0,0,0" />
+                        </Grid>
+                    </primitives:RadExpanderControl.Content>
+                    <primitives:RadExpanderControl.ExpandableContent>
+                        <Grid BorderBrush="{ThemeResource AppBarBackgroundThemeBrush}"
+                              BorderThickness="4,0,4,4">
+                            <StackPanel Padding="10">
+                                <HyperlinkButton Content="Open a GitHub issue"
+                                                 NavigateUri="https://github.com/LanceMcCarthy/MvpApi/issues" />
+                                <HyperlinkButton Content="Open Feedback Hub"
+                                                 Visibility="{Binding FeedbackHubButtonVisibility}"
+                                                 Click="{x:Bind ViewModel.FeedbackButton_Click}" />
+                                <HyperlinkButton Content="Send an Email"
+                                                 Click="{x:Bind ViewModel.EmailButton_Click}" />
+                            </StackPanel>
+                        </Grid>
+                    </primitives:RadExpanderControl.ExpandableContent>
+                </primitives:RadExpanderControl>
+
                 <primitives:RadExpanderControl IsExpanded="False"
                                                HorizontalAlignment="Left"
                                                MinWidth="350"
@@ -160,33 +209,6 @@
                                     <LineBreak/>
                                     <Run Text="You can see the full source code and our privacy policy using the links above."/>
                                 </TextBlock>
-                            </StackPanel>
-                        </Grid>
-                    </primitives:RadExpanderControl.ExpandableContent>
-                </primitives:RadExpanderControl>
-
-                <primitives:RadExpanderControl IsExpanded="False"
-                                               HorizontalAlignment="Left"
-                                               MinWidth="350"
-                                               HeaderBackground="{ThemeResource AppBarBackgroundThemeBrush}"
-                                               Margin="0,10,0,0">
-                    <primitives:RadExpanderControl.Content>
-                        <Grid>
-                            <TextBlock Text="Questions, problems or feature request?"
-                                       Margin="10,0,0,0" />
-                        </Grid>
-                    </primitives:RadExpanderControl.Content>
-                    <primitives:RadExpanderControl.ExpandableContent>
-                        <Grid BorderBrush="{ThemeResource AppBarBackgroundThemeBrush}"
-                              BorderThickness="4,0,4,4">
-                            <StackPanel Padding="10">
-                                <HyperlinkButton Content="Open a GitHub issue"
-                                                 NavigateUri="https://github.com/LanceMcCarthy/MvpApi/issues" />
-                                <HyperlinkButton Content="Open Feedback Hub"
-                                                 Visibility="{Binding FeedbackHubButtonVisibility}"
-                                                 Click="{x:Bind ViewModel.FeedbackButton_Click}" />
-                                <HyperlinkButton Content="Send an Email"
-                                                 Click="{x:Bind ViewModel.EmailButton_Click}" />
                             </StackPanel>
                         </Grid>
                     </primitives:RadExpanderControl.ExpandableContent>

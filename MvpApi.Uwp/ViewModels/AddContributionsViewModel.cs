@@ -168,19 +168,20 @@ namespace MvpApi.Uwp.ViewModels
             CanUpload = UploadQueue.Any();
         }
         
-        public async void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
+        public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
             if (e.NewDate < new DateTime(2016, 10, 1) || e.NewDate > new DateTime(2019, 4, 1))
             {
-                await new MessageDialog("The contribution date must be after the start of your current award period and before April 1st, 2019 in order for it to count towards your evaluation", "Notice: Out of range").ShowAsync();
-                WarningMessage = "The contribution date must be after the start of your current award period and before March 31, 2019 in order for it to count towards your evaluation";
+                WarningMessage = "The date must be after the start of your current award period and before March 31st of the next award year.";
+
+                //await new MessageDialog(WarningMessage, "Notice: Out of range").ShowAsync();
 
                 CanUpload = false;
             }
             else
             {
                 WarningMessage = "";
-                CanUpload = true;
+                //CanUpload = true;
             }
         }
         
@@ -257,27 +258,47 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void UploadQueue_Click(object sender, RoutedEventArgs e)
         {
+            bool refreshNeeded = false;
+
             foreach (var contribution in UploadQueue)
             {
                 contribution.UploadStatus = UploadStatus.InProgress;
 
                 var success = await UploadContributionAsync(contribution);
+
+                if (success && !refreshNeeded)
+                {
+                    refreshNeeded = true;
+                }
             
                 contribution.UploadStatus = success
                     ? UploadStatus.Success
                     : UploadStatus.Failed;
             }
 
+            // remove successfully uploaded items form the queue
             UploadQueue.Remove(c => c.UploadStatus == UploadStatus.Success);
+
+            // Update the Contributions list cache from the API if there were any uploads.
+            if (refreshNeeded)
+            {
+                IsBusy = true;
+                IsBusyMessage = "refreshing contributions...";
+
+                await App.ApiService.GetAllContributionsAsync(true);
+
+                IsBusyMessage = string.Empty;
+                IsBusy = false;
+            }
             
             if (UploadQueue.Any())
             {
-                await new MessageDialog("Not all contributions were saved, view the queue for remaining items and try again", "Incomplete Upload").ShowAsync();
-
+                // If there was a failure, there will still be items in the Queue, select the last one in the list
                 SelectedContribution = UploadQueue.LastOrDefault();
             }
             else
             {
+                // If everything was uploaded, navigate away.
                 if (BootStrapper.Current.NavigationService.CanGoBack)
                     BootStrapper.Current.NavigationService.GoBack();
             }
@@ -545,9 +566,11 @@ namespace MvpApi.Uwp.ViewModels
         {
             try
             {
-                e.Handled = CanUpload;
+                var itemsQueued = UploadQueue.Any();
 
-                if (CanUpload)
+                e.Handled = itemsQueued;
+
+                if (itemsQueued)
                 {
                     var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
                     md.Commands.Add(new UICommand("yes"));
@@ -559,11 +582,6 @@ namespace MvpApi.Uwp.ViewModels
 
                     if (result.Label == "yes")
                     {
-                        if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
-                        {
-                            shellVm.NeedsHomePageRefresh = false;
-                        }
-
                         if (NavigationService.CanGoBack)
                         {
                             NavigationService.GoBack();
