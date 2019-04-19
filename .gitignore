@@ -6,6 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.DotSettings.user
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -241,3 +242,5 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 MvpApi.Uwp/Package.StoreAssociation.xml
+
+*.DotSettings
