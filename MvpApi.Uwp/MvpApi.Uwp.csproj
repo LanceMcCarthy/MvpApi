@@ -286,7 +286,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommonHelpers">
-      <Version>1.0.9</Version>
+      <Version>1.0.12</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Advertising.XAML">
       <Version>10.1811.22001</Version>
@@ -313,13 +313,13 @@
       <Version>5.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
-      <Version>2.1.190405004.1</Version>
+      <Version>2.1.190405004.2</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.1</Version>
+      <Version>12.0.2</Version>
     </PackageReference>
     <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
-      <Version>1.0.1.4</Version>
+      <Version>1.0.1.5</Version>
     </PackageReference>
     <PackageReference Include="Template10">
       <Version>1.1.12</Version>
