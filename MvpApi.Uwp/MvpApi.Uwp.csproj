@@ -288,14 +288,8 @@
     <PackageReference Include="CommonHelpers">
       <Version>1.0.12</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.Advertising.XAML">
-      <Version>10.1811.22001</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.8</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Services.Store.Engagement">
-      <Version>10.1901.28001</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp">
       <Version>5.1.1</Version>
