@@ -12,6 +12,9 @@ A client application to allow for faster contribution browsing, editing and uplo
 | Platform | Dev | Master | Release |
 |----------|-----|--------|---------|
 | UWP | [![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/MVP%20Companion%20-%20Dev)](https://lance.visualstudio.com/MVP%20Companion%20Ops/_build/latest?definitionId=8) | [![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/MVP%20Companion%20UWP%20Master)](https://lance.visualstudio.com/MVP%20Companion%20Ops/_build/latest?definitionId=6) |  [![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/MVP%20Companion%20UWP%20Release)](https://lance.visualstudio.com/MVP%20Companion%20Ops/_build/latest?definitionId=5) |
+| Xamarin.iOS | [![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/XF%20iOS)](https://lance.visualstudio.com/MVP%20Companion%20Ops/_build/latest?definitionId=7)  |  no pipeline | no pipeline |
+| Xamarin.Android | [![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/XF%20Android)](https://lance.visualstudio.com/MVP%20Companion%20Ops/_build/latest?definitionId=13)  |  no pipeline | no pipeline |
+| Xamarin UWP | [![Build status](https://lance.visualstudio.com/MVP%20Companion%20Ops/_apis/build/status/XF%20iOS)](https://lance.visualstudio.com/MVP%20Companion%20Ops/_build/latest?definitionId=7)  |  no pipeline | no pipeline |
 
 Click either badge to directly view the Azure DevOps Build Pipelines
 
