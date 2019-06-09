@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29001.49
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Common", "..\MvpApi.Common\MvpApi.Common.csproj", "{3159AE84-B479-420C-BA42-E328D4159144}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Common", "MvpApi.Common\MvpApi.Common.csproj", "{3159AE84-B479-420C-BA42-E328D4159144}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Services", "..\MvpApi.Services\MvpApi.Services.csproj", "{EDC2D11B-FE53-454B-A7E5-6C74E89FA479}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Services", "MvpApi.Services\MvpApi.Services.csproj", "{EDC2D11B-FE53-454B-A7E5-6C74E89FA479}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvpApi.Forms.Android", "..\MvpApi.Forms\Android\MvpApi.Forms.Android.csproj", "{BB729307-B10A-4E20-8C31-6153AE69CC0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvpApi.Forms.Android", "MvpApi.Forms\Android\MvpApi.Forms.Android.csproj", "{BB729307-B10A-4E20-8C31-6153AE69CC0B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Forms.Portable", "..\MvpApi.Forms\Portable\MvpApi.Forms.Portable.csproj", "{784A1169-BD7B-4B7B-9F11-4DDF4093FE48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Forms.Portable", "MvpApi.Forms\Portable\MvpApi.Forms.Portable.csproj", "{784A1169-BD7B-4B7B-9F11-4DDF4093FE48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

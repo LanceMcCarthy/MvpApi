@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvpApi.Uwp", "..\MvpApi.Uwp\MvpApi.Uwp.csproj", "{FA6C2B8C-C185-4152-ACE1-A65A815A518E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvpApi.Uwp", "MvpApi.Uwp\MvpApi.Uwp.csproj", "{FA6C2B8C-C185-4152-ACE1-A65A815A518E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Common", "..\MvpApi.Common\MvpApi.Common.csproj", "{3159AE84-B479-420C-BA42-E328D4159144}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Common", "MvpApi.Common\MvpApi.Common.csproj", "{3159AE84-B479-420C-BA42-E328D4159144}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvpApi.UwpBackgroundTasks", "..\MvpApi.UwpBackgroundTasks\MvpApi.UwpBackgroundTasks.csproj", "{9D7FF5EA-20D9-40E3-9704-E3E7B5E2DC25}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Services", "..\MvpApi.Services\MvpApi.Services.csproj", "{EDC2D11B-FE53-454B-A7E5-6C74E89FA479}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Services", "MvpApi.Services\MvpApi.Services.csproj", "{EDC2D11B-FE53-454B-A7E5-6C74E89FA479}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Tests", "..\MvpApi.Tests\MvpApi.Tests.csproj", "{468F41A8-B885-48C3-B369-49A704148311}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Tests", "MvpApi.Tests\MvpApi.Tests.csproj", "{468F41A8-B885-48C3-B369-49A704148311}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

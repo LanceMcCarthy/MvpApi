@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Common", "..\MvpApi.Common\MvpApi.Common.csproj", "{3159AE84-B479-420C-BA42-E328D4159144}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Common", "MvpApi.Common\MvpApi.Common.csproj", "{3159AE84-B479-420C-BA42-E328D4159144}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Services", "..\MvpApi.Services\MvpApi.Services.csproj", "{EDC2D11B-FE53-454B-A7E5-6C74E89FA479}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Services", "MvpApi.Services\MvpApi.Services.csproj", "{EDC2D11B-FE53-454B-A7E5-6C74E89FA479}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Tests", "..\MvpApi.Tests\MvpApi.Tests.csproj", "{468F41A8-B885-48C3-B369-49A704148311}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Tests", "MvpApi.Tests\MvpApi.Tests.csproj", "{468F41A8-B885-48C3-B369-49A704148311}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
