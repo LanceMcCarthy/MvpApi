@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
@@ -7,15 +7,15 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="ec0cc741-fd3e-485c-81be-68815c480690"
-    Publisher="CN=Telerik"
-    Version="1.0.0.0" />
+    Name="61469LanceLotSoftware.MVPCompanion"
+    Publisher="CN=51B5A8B2-5D86-4826-BBE2-C92E963A4C02"
+    Version="2.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="06739f53-8bfc-4de3-94c5-066beada1ba4" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <mp:PhoneIdentity PhoneProductId="a30961c9-c460-464e-ad64-8d0d0825454f" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>MvpApi.Forms.UWP</DisplayName>
-    <PublisherDisplayName>lance</PublisherDisplayName>
+    <DisplayName>MVP Companion</DisplayName>
+    <PublisherDisplayName>Lancelot Software</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -32,7 +32,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="MvpApi.Forms.UWP.App">
       <uap:VisualElements
-        DisplayName="MvpApi.Forms.UWP"
+        DisplayName="MVP Companion"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="MvpApi.Forms.UWP"
