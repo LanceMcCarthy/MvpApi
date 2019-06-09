@@ -1,3 +1,5 @@
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
+
 $script:ns = 'http://schemas.microsoft.com/developer/msbuild/2003'
 
 $ErrorActionPreference = 'Stop'
