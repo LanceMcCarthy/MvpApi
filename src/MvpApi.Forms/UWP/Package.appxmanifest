@@ -9,7 +9,7 @@
   <Identity
     Name="61469LanceLotSoftware.MVPCompanion"
     Publisher="CN=51B5A8B2-5D86-4826-BBE2-C92E963A4C02"
-    Version="1.9.3.0" />
+    Version="2.0.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="a30961c9-c460-464e-ad64-8d0d0825454f" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
