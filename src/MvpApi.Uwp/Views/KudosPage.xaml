@@ -6,6 +6,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+      xmlns:controls="using:Telerik.UI.Xaml.Controls"
       mc:Ignorable="d">
 
     <Page.DataContext>
