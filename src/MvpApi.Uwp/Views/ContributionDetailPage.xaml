@@ -7,6 +7,7 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+      xmlns:controls="using:Telerik.UI.Xaml.Controls"
       mc:Ignorable="d">
 
     <Page.DataContext>
