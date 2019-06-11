@@ -6,6 +6,7 @@
                      xmlns:selectors="using:MvpApi.Uwp.Selectors"
                      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
                      xmlns:template10Converter="using:Template10.Converters"
+                     xmlns:controls="using:Telerik.UI.Xaml.Controls"
                      RequestedTheme="Light">
 
     <common:BootStrapper.Resources>
