@@ -10,6 +10,8 @@
       xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
       xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
+      xmlns:winui="using:Microsoft.UI.Xaml.Controls"
+      xmlns:customControls="using:MvpApi.Uwp.Controls"
       mc:Ignorable="d">
 
     <Page.DataContext>

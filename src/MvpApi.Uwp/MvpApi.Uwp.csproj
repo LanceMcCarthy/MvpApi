@@ -127,6 +127,9 @@
     <Compile Include="Common\DateTimeMonthKeyLookup.cs" />
     <Compile Include="Common\LoginChangedEventArgs.cs" />
     <Compile Include="Common\TechnologyKeyLookup.cs" />
+    <Compile Include="Controls\LottieBusyIndicator.xaml.cs">
+      <DependentUpon>LottieBusyIndicator.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TechnologyAreasListView.cs" />
     <Compile Include="Converters\BoolToIconConverter.cs" />
     <Compile Include="Converters\ContributionTypeNameToBrushConverter.cs" />
@@ -197,18 +200,11 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Include="Assets\LottieFiles\AlienIdScan.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\LottieFiles\ChartLoading.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\LottieFiles\DevicesLoadingStand.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\LottieFiles\FingerprintScan.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Assets\AnimationFiles\AlienIdScan.json" />
+    <Content Include="Assets\AnimationFiles\ChartLoading.json" />
+    <Content Include="Assets\AnimationFiles\DevicesLoadingStand.json" />
+    <Content Include="Assets\AnimationFiles\FingerprintScan.json" />
+    <Content Include="Assets\AnimationFiles\PaperPlane.json" />
     <None Include="MvpApi.Uwp_StoreKey.pfx" />
     <None Include="MvpApi.Uwp_TemporaryKey.pfx" />
     <None Include="ViewModels\readme.md" />
@@ -275,6 +271,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\LottieBusyIndicator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\AdditionalTechnologyAreasPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -340,6 +340,9 @@
       <Version>5.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
+      <Version>5.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Lottie">
       <Version>5.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">

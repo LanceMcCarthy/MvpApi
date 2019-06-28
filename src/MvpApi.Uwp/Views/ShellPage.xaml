@@ -8,6 +8,7 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
+      xmlns:cc="using:MvpApi.Uwp.Controls"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -170,8 +171,14 @@
             </Button>
         </Grid>
 
-        <primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+        <cc:LottieBusyIndicator x:Name="Indicator"
+                                IsActive="True"
+                                LottieFilePath="ms-appx:///Assets/AnimationFiles/AlienIdScan.json"
+                                BusyMessage="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                                Background="{ThemeResource SystemControlChromeMediumAcrylicElementMediumBrush}" />
+
+        <!--<primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                                      Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                                     Style="{StaticResource PageBusyIndicatorStyle}"/>
+                                     Style="{StaticResource PageBusyIndicatorStyle}"/>-->
     </Grid>
 </Page>
