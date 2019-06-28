@@ -197,6 +197,18 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="Assets\LottieFiles\AlienIdScan.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\LottieFiles\ChartLoading.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\LottieFiles\DevicesLoadingStand.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\LottieFiles\FingerprintScan.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="MvpApi.Uwp_StoreKey.pfx" />
     <None Include="MvpApi.Uwp_TemporaryKey.pfx" />
     <None Include="ViewModels\readme.md" />
@@ -334,7 +346,7 @@
       <Version>2.1.190606001</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.2</Version>
+      <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
       <Version>2019.2.618.1</Version>

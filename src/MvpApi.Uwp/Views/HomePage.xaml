@@ -7,6 +7,9 @@
       xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:controls="using:Telerik.UI.Xaml.Controls"
+      xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
+      xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
+      xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       mc:Ignorable="d">
 
     <Page.DataContext>
