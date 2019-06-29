@@ -127,6 +127,9 @@
     <Compile Include="Common\DateTimeMonthKeyLookup.cs" />
     <Compile Include="Common\LoginChangedEventArgs.cs" />
     <Compile Include="Common\TechnologyKeyLookup.cs" />
+    <Compile Include="Controls\LottieBusyIndicator.xaml.cs">
+      <DependentUpon>LottieBusyIndicator.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\TechnologyAreasListView.cs" />
     <Compile Include="Converters\BoolToIconConverter.cs" />
     <Compile Include="Converters\ContributionTypeNameToBrushConverter.cs" />
@@ -197,6 +200,11 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="Assets\AnimationFiles\AlienIdScan.json" />
+    <Content Include="Assets\AnimationFiles\ChartLoading.json" />
+    <Content Include="Assets\AnimationFiles\DevicesLoadingStand.json" />
+    <Content Include="Assets\AnimationFiles\FingerprintScan.json" />
+    <Content Include="Assets\AnimationFiles\PaperPlane.json" />
     <None Include="MvpApi.Uwp_StoreKey.pfx" />
     <None Include="MvpApi.Uwp_TemporaryKey.pfx" />
     <None Include="ViewModels\readme.md" />
@@ -263,6 +271,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\LottieBusyIndicator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\AdditionalTechnologyAreasPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -330,14 +342,17 @@
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
       <Version>5.1.1</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Lottie">
+      <Version>5.1.1</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
-      <Version>2.1.190405004.2</Version>
+      <Version>2.1.190606001</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.2</Version>
+      <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
-      <Version>1.0.1.5</Version>
+      <Version>2019.2.618.1</Version>
     </PackageReference>
     <PackageReference Include="Template10">
       <Version>1.1.12</Version>
