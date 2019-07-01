@@ -15,7 +15,6 @@ using MvpApi.Common.Models;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
-using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels
 {

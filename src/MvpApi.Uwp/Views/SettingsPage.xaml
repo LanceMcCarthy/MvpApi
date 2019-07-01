@@ -7,6 +7,9 @@
       xmlns:controls="using:Telerik.UI.Xaml.Controls"
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:toolkitControls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+      xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
+      xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
+      xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       mc:Ignorable="d"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
@@ -337,7 +340,6 @@
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
-
         </Grid>
 
         <StackPanel Grid.Row="1">
@@ -346,39 +348,110 @@
                                       HeaderStyle="{StaticResource MyHeaderToggleButtonStyle}"
                                       HorizontalContentAlignment="Stretch">
                 <toolkitControls:Expander.Header>
-                    <TextBlock Text="Editor Settings"
+                    <TextBlock Text="Editor"
                                Style="{ThemeResource SubtitleTextBlockStyle}" />
                 </toolkitControls:Expander.Header>
-                <Grid RowSpacing="5"
-                      ColumnSpacing="10"
-                      Margin="10">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
 
-                    <TextBlock Text="Use Experimental Editor"
-                               Style="{ThemeResource BodyTextBlockStyle}"
-                               VerticalAlignment="Center" />
+                <StackPanel Margin="20">
+                    <TextBlock Text="Enables the new experimental popup editor instead of navigating to a separate page."
+                               Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,5">
+                        <animations:Implicit.ShowAnimations>
+                            <animations:ScaleAnimation From="0.8"
+                                                       To="1"
+                                                       Duration="0:0:0.4" />
+                            <animations:OpacityAnimation From="0"
+                                                         To="1"
+                                                         Duration="0:0:0.4" />
+                        </animations:Implicit.ShowAnimations>
+                        <animations:Implicit.HideAnimations>
+                            <animations:ScaleAnimation From="1"
+                                                       To="0.8"
+                                                       Duration="0:0:0.6" />
+                            <animations:OpacityAnimation From="1"
+                                                         To="0"
+                                                         Duration="0:0:0.6" />
+                        </animations:Implicit.HideAnimations>
+                    </TextBlock>
 
                     <ToggleSwitch IsOn="{Binding UseBetaEditor, Mode=TwoWay}"
+                                  Header="Use Experimental Editor"
                                   VerticalAlignment="Center"
-                                  Grid.Row="0"
-                                  Grid.Column="1" />
+                                  animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}"
+                                  animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}" />
+                </StackPanel>
+            </toolkitControls:Expander>
 
-                    <TextBlock VerticalAlignment="Center"
-                               Grid.Column="2">
-                        <Run Text="Enable the new " />
-                        <Run Text="experimental" 
-                             FontStyle="Italic"/>
-                        <Run Text=" popup editor instead of navigating to a separate page." />
+            <toolkitControls:Expander IsExpanded="True"
+                                      Background="Transparent"
+                                      HeaderStyle="{StaticResource MyHeaderToggleButtonStyle}"
+                                      HorizontalContentAlignment="Stretch">
+                <toolkitControls:Expander.Header>
+                    <TextBlock Text="Contribution Uploads"
+                               Style="{ThemeResource SubtitleTextBlockStyle}" />
+                </toolkitControls:Expander.Header>
+
+                <StackPanel Margin="20">
+                    <TextBlock Text="If you have any issue submitting contributions, this value will override the earliest date you can set for a contribution."
+                               Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,5">
+                        <animations:Implicit.ShowAnimations>
+                            <animations:ScaleAnimation From="0.8"
+                                                       To="1"
+                                                       Duration="0:0:0.8" />
+                            <animations:OpacityAnimation From="0"
+                                                         To="1"
+                                                         Duration="0:0:0.8" />
+                        </animations:Implicit.ShowAnimations>
+                        <animations:Implicit.HideAnimations>
+                            <animations:ScaleAnimation From="1"
+                                                       To="0.8"
+                                                       Duration="0:0:0.6" />
+                            <animations:OpacityAnimation From="1"
+                                                         To="0"
+                                                         Duration="0:0:0.6" />
+                        </animations:Implicit.HideAnimations>
                     </TextBlock>
-                </Grid>
+
+                    <input:RadDatePicker Header="Submissions Start Override"
+                                         Value="{Binding SubmissionStartDate, Mode=TwoWay}"
+                                         HorizontalAlignment="Left"
+                                         animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}"
+                                         animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}" />
+
+                    <TextBlock Text="Changing this value will temporarily override the deadline date for uploading activities (this does not guarantee that the API will accept it)."
+                               Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Margin="0,20,0,5">
+                        <animations:Implicit.ShowAnimations>
+                            <animations:ScaleAnimation From="0.8"
+                                                       To="1"
+                                                       Duration="0:0:1.2" />
+                            <animations:OpacityAnimation From="0"
+                                                         To="1"
+                                                         Duration="0:0:1.2" />
+                        </animations:Implicit.ShowAnimations>
+                        <animations:Implicit.HideAnimations>
+                            <animations:ScaleAnimation From="1"
+                                                       To="0.8"
+                                                       Duration="0:0:0.6" />
+                            <animations:OpacityAnimation From="1"
+                                                         To="0"
+                                                         Duration="0:0:0.6" />
+                        </animations:Implicit.HideAnimations>
+                    </TextBlock>
+
+                    <input:RadDatePicker Header="Submissions Deadline Override"
+                                         Value="{Binding SubmissionDeadline, Mode=TwoWay}"
+                                         HorizontalAlignment="Left"
+                                         animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}"
+                                         animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}" />
+                </StackPanel>
             </toolkitControls:Expander>
         </StackPanel>
     </Grid>

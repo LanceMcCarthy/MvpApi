@@ -12,6 +12,7 @@ using Windows.Storage.Provider;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
@@ -132,7 +133,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage));
+                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
             }
         }
 
@@ -210,7 +211,7 @@ namespace MvpApi.Uwp.ViewModels
                 }
                 else
                 {
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution);
+                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
                 }
             }
         }

@@ -6,6 +6,8 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:controls="using:Telerik.UI.Xaml.Controls"
+      xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
+      xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -40,7 +42,24 @@
                      Stroke="{ThemeResource ApplicationForegroundThemeBrush}"
                      Margin="20"
                      Width="220"
-                     Height="220">
+                     Height="220"
+                     extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0">
+                <animations:Implicit.ShowAnimations>
+                    <animations:ScaleAnimation From="0.6"
+                                               To="1"
+                                               Duration="0:0:1" />
+                    <animations:OpacityAnimation From="0"
+                                                 To="1"
+                                                 Duration="0:0:1" />
+                </animations:Implicit.ShowAnimations>
+                <animations:Implicit.HideAnimations>
+                    <animations:ScaleAnimation From="1"
+                                               To="0.8"
+                                               Duration="0:0:0.6" />
+                    <animations:OpacityAnimation From="1"
+                                                 To="0"
+                                                 Duration="0:0:0.6" />
+                </animations:Implicit.HideAnimations>
                 <Ellipse.Fill>
                     <ImageBrush x:Name="ProfileImageBrush"
                                 ImageSource="{Binding ProfileImagePath}" />
@@ -52,6 +71,26 @@
                 <StackPanel Margin="20"
                             Grid.Row="0"
                             VerticalAlignment="Top">
+                    <animations:Implicit.ShowAnimations>
+                        <animations:TranslationAnimation Delay="0:0:0.3"
+                                                         SetInitialValueBeforeDelay="True"
+                                                         From="40,0,0"
+                                                         To="0,0,0"
+                                                         Duration="0:0:0.8" />
+                        <animations:OpacityAnimation Delay="0:0:0.2"
+                                                     SetInitialValueBeforeDelay="True"
+                                                     From="0"
+                                                     To="1"
+                                                     Duration="0:0:1" />
+                    </animations:Implicit.ShowAnimations>
+                    <animations:Implicit.HideAnimations>
+                        <animations:TranslationAnimation From="0,0,0"
+                                                         To="0,40,0"
+                                                         Duration="0:0:0.6" />
+                        <animations:OpacityAnimation From="1"
+                                                     To="0"
+                                                     Duration="0:0:0.6" />
+                    </animations:Implicit.HideAnimations>
                     <TextBlock Text="{Binding Mvp.FullName}"
                                Style="{ThemeResource HeaderTextBlockStyle}"
                                TextWrapping="Wrap" />
@@ -62,6 +101,26 @@
                 <StackPanel Margin="20"
                             Grid.Row="0"
                             VerticalAlignment="Bottom">
+                    <animations:Implicit.ShowAnimations>
+                        <animations:TranslationAnimation Delay="0:0:0.3"
+                                                         SetInitialValueBeforeDelay="True"
+                                                         From="20,0,0"
+                                                         To="0,0,0"
+                                                         Duration="0:0:0.8" />
+                        <animations:OpacityAnimation Delay="0:0:0.2"
+                                                     SetInitialValueBeforeDelay="True"
+                                                     From="0"
+                                                     To="1"
+                                                     Duration="0:0:0.8" />
+                    </animations:Implicit.ShowAnimations>
+                    <animations:Implicit.HideAnimations>
+                        <animations:TranslationAnimation From="0,0,0"
+                                                         To="0,40,0"
+                                                         Duration="0:0:0.6" />
+                        <animations:OpacityAnimation From="1"
+                                                     To="0"
+                                                     Duration="0:0:0.6" />
+                    </animations:Implicit.HideAnimations>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="First MVP award in:"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -123,7 +182,24 @@
                           Grid.Column="0">
                 <TextBlock Text="{Binding Mvp.Biography}"
                            TextWrapping="Wrap"
-                           Margin="10,10,10,0" />
+                           Margin="10,10,10,0">
+                    <animations:Implicit.ShowAnimations>
+                        <animations:ScaleAnimation From="0.6"
+                                                   To="1"
+                                                   Duration="0:0:1" />
+                        <animations:OpacityAnimation From="0"
+                                                     To="1"
+                                                     Duration="0:0:1" />
+                    </animations:Implicit.ShowAnimations>
+                    <animations:Implicit.HideAnimations>
+                        <animations:ScaleAnimation From="1"
+                                                   To="0.8"
+                                                   Duration="0:0:0.6" />
+                        <animations:OpacityAnimation From="1"
+                                                     To="0"
+                                                     Duration="0:0:0.6" />
+                    </animations:Implicit.HideAnimations>
+                </TextBlock>
             </ScrollViewer>
 
             <ListView x:Name="OnlineIdentitiesListView"
@@ -132,6 +208,34 @@
                       SelectionMode="{Binding ListViewSelectionMode}"
                       Grid.Row="1"
                       Grid.Column="1">
+                <animations:Implicit.ShowAnimations>
+                    <animations:ScaleAnimation Delay="0:0:0.3"
+                                               SetInitialValueBeforeDelay="True"
+                                               From="0.8"
+                                               To="1"
+                                               Duration="0:0:1.2" />
+                    <animations:TranslationAnimation Delay="0:0:0.3"
+                                                     SetInitialValueBeforeDelay="True"
+                                                     From="0,80,0"
+                                                     To="0,0,0"
+                                                     Duration="0:0:1.2" />
+                    <animations:OpacityAnimation Delay="0:0:0.3"
+                                                 SetInitialValueBeforeDelay="True"
+                                                 From="0"
+                                                 To="1"
+                                                 Duration="0:0:1.2" />
+                    </animations:Implicit.ShowAnimations>
+                    <animations:Implicit.HideAnimations>
+                        <animations:ScaleAnimation From="1"
+                                               To="0.8"
+                                               Duration="0:0:0.6" />
+                    <animations:TranslationAnimation From="0,0,0"
+                                                     To="0,80,0"
+                                                     Duration="0:0:0.6" />
+                    <animations:OpacityAnimation From="1"
+                                                 To="0"
+                                                 Duration="0:0:0.6" />
+                </animations:Implicit.HideAnimations>
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
                         <Setter Property="VerticalContentAlignment"

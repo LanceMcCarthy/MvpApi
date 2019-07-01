@@ -71,11 +71,11 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _feedbackHubButtonVisibility, value);
         }
 
-        public bool UseBetaEditor
-        {
-            get => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor;
-            set => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor = value;
-        }
+        //public bool UseBetaEditor
+        //{
+        //    get => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor;
+        //    set => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor = value;
+        //}
 
         // Methods
 

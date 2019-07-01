@@ -1,6 +1,5 @@
 ﻿using Windows.ApplicationModel;
 using Windows.Storage;
-using MvpApi.Common.Models;
 using MvpApi.Uwp.Helpers;
 
 namespace MvpApi.Uwp.ViewModels
@@ -50,13 +49,13 @@ namespace MvpApi.Uwp.ViewModels
         {
             get
             {
-                if (ApplicationData.Current.RoamingSettings.Values.TryGetValue("UseBetaEditor", out object rawValue))
+                if (ApplicationData.Current.RoamingSettings.Values.TryGetValue(nameof(UseBetaEditor), out object rawValue))
                 {
                     _useBetaEditor = (bool)rawValue;
                 }
                 else
                 {
-                    ApplicationData.Current.RoamingSettings.Values["UseBetaEditor"] = _useBetaEditor;
+                    ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
                 }
                 
                 return _useBetaEditor;
@@ -65,7 +64,7 @@ namespace MvpApi.Uwp.ViewModels
             {
                 if (Set(ref _useBetaEditor, value))
                 {
-                    ApplicationData.Current.RoamingSettings.Values["UseBetaEditor"] = _useBetaEditor;
+                    ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
                 }
             }
         }

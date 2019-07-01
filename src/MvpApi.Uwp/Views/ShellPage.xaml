@@ -31,6 +31,9 @@
             <controls:HamburgerMenu.PrimaryButtons>
                 <controls:HamburgerButtonInfo PageType="local:HomePage"
                                               ClearHistory="True">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo />
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <SymbolIcon Symbol="Home"
@@ -43,6 +46,9 @@
                 </controls:HamburgerButtonInfo>
                 <controls:HamburgerButtonInfo PageType="local:ProfilePage"
                                               ClearHistory="True">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo/>
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <SymbolIcon Symbol="ContactInfo"
@@ -55,6 +61,9 @@
                 </controls:HamburgerButtonInfo>
                 <controls:HamburgerButtonInfo PageType="local:SettingsPage"
                                               ClearHistory="True">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo />
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <SymbolIcon Symbol="Setting"
@@ -69,6 +78,9 @@
 
             <controls:HamburgerMenu.SecondaryButtons>
                 <controls:HamburgerButtonInfo PageType="local:KudosPage">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo />
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <Grid>
@@ -90,6 +102,9 @@
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
                 <controls:HamburgerButtonInfo PageType="local:AboutPage">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo />
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <FontIcon FontFamily="Segoe MDL2 Assets"
@@ -101,8 +116,10 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
-
-                <controls:HamburgerButtonInfo Tapped="LogoutButton_OnClick" >
+                <controls:HamburgerButtonInfo Tapped="LogoutButton_OnClick">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo />
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <Grid>

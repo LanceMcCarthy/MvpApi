@@ -7,6 +7,7 @@
                      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
                      xmlns:template10Converter="using:Template10.Converters"
                      xmlns:controls="using:Telerik.UI.Xaml.Controls"
+                     xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
                      RequestedTheme="Light">
 
     <common:BootStrapper.Resources>
@@ -76,6 +77,27 @@
 
             <converters:ContributionTypeNameToBrushConverter x:Name="ContributionTypeNameToBackgroundConverter" />
             <converters:ContributionTypeNameToBrushConverter x:Name="ContributionTypeNameToForegroundConverter" IsForegroundColor="True" />
+
+            <animations:AnimationCollection x:Key="CommonShowAnimations">
+                <animations:ScaleAnimation From="0.7"
+                                           To="1"
+                                           Delay="0:0:0.2"
+                                           Duration="0:0:0.8"
+                                           SetInitialValueBeforeDelay="True" />
+                <animations:OpacityAnimation From="0"
+                                             To="1"
+                                             Delay="0:0:0.2"
+                                             Duration="0:0:0.8"
+                                             SetInitialValueBeforeDelay="True" />
+            </animations:AnimationCollection>
+            <animations:AnimationCollection x:Key="CommonHideAnimations">
+                <animations:ScaleAnimation From="1"
+                                           To="0.7"
+                                           Duration="0:0:1.0" />
+                <animations:OpacityAnimation From="1"
+                                             To="0"
+                                             Duration="0:0:1.0" />
+            </animations:AnimationCollection>
 
             <Style x:Key="PageBusyIndicatorStyle"
                    TargetType="primitives:RadBusyIndicator">
