@@ -218,6 +218,29 @@
                                      Style="{StaticResource PageBusyIndicatorStyle}"
                                      Grid.Row="1"
                                      Grid.RowSpan="2"
-                                     Grid.Column="0" />
+                                     Grid.Column="0">
+            <animations:Implicit.ShowAnimations>
+                <animations:ScaleAnimation From="0.8"
+                                           To="1"
+                                           Duration="0:0:1" />
+                <animations:OpacityAnimation From="0"
+                                             To="1"
+                                             Duration="0:0:1" />
+                <animations:TranslationAnimation From="0,40,0"
+                                                 To="0,0,0"
+                                                 Duration="0:0:0.8" />
+            </animations:Implicit.ShowAnimations>
+            <animations:Implicit.HideAnimations>
+                <animations:ScaleAnimation From="1"
+                                           To="0.8"
+                                           Duration="0:0:0.6" />
+                <animations:OpacityAnimation From="1"
+                                             To="0"
+                                             Duration="0:0:0.6" />
+                <animations:TranslationAnimation From="0,0,0"
+                                                 To="0,-40,0"
+                                                 Duration="0:0:0.6" />
+            </animations:Implicit.HideAnimations>
+        </primitives:RadBusyIndicator>
     </Grid>
 </Page>

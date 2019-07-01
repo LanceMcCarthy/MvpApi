@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
-using Windows.Storage;
 using Windows.UI.Xaml.Navigation;
-using MvpApi.Services.Utilities;
 using MvpApi.Uwp.Views;
 
 namespace MvpApi.Uwp.ViewModels
@@ -16,8 +14,6 @@ namespace MvpApi.Uwp.ViewModels
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
                 UseBetaEditor = true;
-                SubmissionStartDate = ServiceConstants.SubmissionStartDate;
-                SubmissionDeadline = ServiceConstants.SubmissionDeadline;
             }
         }
 
@@ -29,14 +25,14 @@ namespace MvpApi.Uwp.ViewModels
 
         public DateTime SubmissionStartDate
         {
-            get => ServiceConstants.SubmissionStartDate;
-            set => ServiceConstants.SubmissionStartDate = value;
+            get => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate;
+            set => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate = value;
         }
 
         public DateTime SubmissionDeadline
         {
-            get => ServiceConstants.SubmissionDeadline;
-            set => ServiceConstants.SubmissionDeadline = value;
+            get => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline;
+            set => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline = value;
         }
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)

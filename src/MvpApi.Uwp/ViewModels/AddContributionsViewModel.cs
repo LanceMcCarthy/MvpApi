@@ -172,7 +172,7 @@ namespace MvpApi.Uwp.ViewModels
         
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            if (e.NewDate < ServiceConstants.SubmissionStartDate || e.NewDate > ServiceConstants.SubmissionDeadline)
+            if (e.NewDate < (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline)
             {
                 WarningMessage = "The date must be after the start of your current award period and before March 31st of the next award year.";
 

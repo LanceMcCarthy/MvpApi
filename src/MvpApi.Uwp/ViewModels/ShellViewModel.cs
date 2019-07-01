@@ -1,5 +1,7 @@
-﻿using Windows.ApplicationModel;
+﻿using System;
+using Windows.ApplicationModel;
 using Windows.Storage;
+using MvpApi.Services.Utilities;
 using MvpApi.Uwp.Helpers;
 
 namespace MvpApi.Uwp.ViewModels
@@ -10,6 +12,8 @@ namespace MvpApi.Uwp.ViewModels
         private string _profileImagePath;
         private bool _isLoggedIn;
         private bool _useBetaEditor;
+        private DateTime _submissionStartDate = ServiceConstants.SubmissionStartDate;
+        private DateTime _submissionDeadline = ServiceConstants.SubmissionDeadline;
 
         public ShellViewModel()
         {
@@ -67,6 +71,18 @@ namespace MvpApi.Uwp.ViewModels
                     ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
                 }
             }
+        }
+
+        public DateTime SubmissionStartDate
+        {
+            get => _submissionStartDate;
+            set => Set(ref _submissionStartDate, value);
+        }
+
+        public DateTime SubmissionDeadline
+        {
+            get => _submissionDeadline;
+            set => Set(ref _submissionDeadline, value);
         }
     }
 }
