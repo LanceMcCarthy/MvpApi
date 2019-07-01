@@ -244,7 +244,7 @@ namespace MvpApi.Uwp.ViewModels
                 return;
             }
 
-            if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
+            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
             {
                 // Verify the user is logged in
                 if (!shellVm.IsLoggedIn)

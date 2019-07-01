@@ -27,7 +27,7 @@ using Template10.Mvvm;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class HomePageViewModel : PageViewModelBase
+    public class HomeViewModel : PageViewModelBase
     {
         #region Fields
 
@@ -39,7 +39,7 @@ namespace MvpApi.Uwp.ViewModels
 
         #endregion
 
-        public HomePageViewModel()
+        public HomeViewModel()
         {
             if (DesignMode.DesignModeEnabled)
             {
@@ -119,7 +119,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ShellPage.Instance.DataContext is ShellPageViewModel vm && vm.UseBetaEditor)
+            if (ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
             {
                 var editDialog = new ContributionEditorDialog();
 
@@ -197,7 +197,7 @@ namespace MvpApi.Uwp.ViewModels
             // When in single selection mode, go to the selected item's details page
             if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
             {
-                if(ShellPage.Instance.DataContext is ShellPageViewModel vm && vm.UseBetaEditor)
+                if(ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
                 {
                     var editDialog = new ContributionEditorDialog(contribution);
 
@@ -374,7 +374,7 @@ namespace MvpApi.Uwp.ViewModels
                 return;
             }
 
-            if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
+            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
             {
                 if (!shellVm.IsLoggedIn)
                 {

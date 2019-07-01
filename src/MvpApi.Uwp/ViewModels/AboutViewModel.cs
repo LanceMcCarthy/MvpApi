@@ -19,7 +19,6 @@ namespace MvpApi.Uwp.ViewModels
 
         private Visibility _feedbackHubButtonVisibility;
         private int _daysToKeepErrorLogs = 5;
-        private bool _useBetaEditor;
 
         public AboutViewModel()
         {
@@ -69,8 +68,8 @@ namespace MvpApi.Uwp.ViewModels
 
         public bool UseBetaEditor
         {
-            get => (ShellPage.Instance.DataContext as ShellPageViewModel).UseBetaEditor;
-            set => (ShellPage.Instance.DataContext as ShellPageViewModel).UseBetaEditor = value;
+            get => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor;
+            set => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor = value;
         }
 
         // Methods

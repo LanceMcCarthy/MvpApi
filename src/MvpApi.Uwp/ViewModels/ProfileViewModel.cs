@@ -19,9 +19,9 @@ using Template10.Utils;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class ProfilePageViewModel : PageViewModelBase
+    public class ProfileViewModel : PageViewModelBase
     {
-        private ProfileViewModel _mvp;
+        private MvpApi.Common.Models.ProfileViewModel _mvp;
         private string _profileImagePath;
         private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
         private ListViewSelectionMode _listViewSelectionMode = ListViewSelectionMode.Single;
@@ -29,7 +29,7 @@ namespace MvpApi.Uwp.ViewModels
         private bool _areAppBarButtonsEnabled;
         private ObservableCollection<OnlineIdentityViewModel> _selectedOnlineIdentities;
 
-        public ProfilePageViewModel()
+        public ProfileViewModel()
         {
             if (DesignMode.DesignModeEnabled)
             {
@@ -38,7 +38,7 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        public ProfileViewModel Mvp
+        public MvpApi.Common.Models.ProfileViewModel Mvp
         {
             get => _mvp;
             set => Set(ref _mvp, value);
@@ -266,7 +266,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
+            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
             {
                 if (!shellVm.IsLoggedIn)
                 {

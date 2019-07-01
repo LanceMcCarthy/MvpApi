@@ -5,14 +5,14 @@ using MvpApi.Uwp.Helpers;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class ShellPageViewModel : PageViewModelBase
+    public class ShellViewModel : PageViewModelBase
     {
-        private ProfileViewModel _mvp;
+        private MvpApi.Common.Models.ProfileViewModel _mvp;
         private string _profileImagePath;
         private bool _isLoggedIn;
         private bool _useBetaEditor;
 
-        public ShellPageViewModel()
+        public ShellViewModel()
         {
             if (DesignMode.DesignModeEnabled)
             {
@@ -34,7 +34,7 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        public ProfileViewModel Mvp
+        public MvpApi.Common.Models.ProfileViewModel Mvp
         {
             get => _mvp;
             set => Set(ref _mvp, value);

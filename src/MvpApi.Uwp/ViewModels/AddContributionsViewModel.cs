@@ -493,7 +493,7 @@ namespace MvpApi.Uwp.ViewModels
                     BootStrapper.Current.NavigationService.GoBack();
             }
 
-            if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
+            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
             {
                 // Verify the user is logged in
                 if (!shellVm.IsLoggedIn)

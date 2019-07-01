@@ -12,7 +12,7 @@
       mc:Ignorable="d">
 
     <Page.DataContext>
-        <viewModels:ShellPageViewModel x:Name="ViewModel" />
+        <viewModels:ShellViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
