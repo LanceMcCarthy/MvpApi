@@ -31,7 +31,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public ProfileViewModel()
         {
-            if (DesignMode.DesignModeEnabled)
+            if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
                 Mvp = DesignTimeHelpers.GenerateSampleMvp();
                 OnlineIdentities = DesignTimeHelpers.GenerateOnlineIdentities();

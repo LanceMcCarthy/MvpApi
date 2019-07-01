@@ -14,7 +14,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public ShellViewModel()
         {
-            if (DesignMode.DesignModeEnabled)
+            if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
                 Mvp = DesignTimeHelpers.GenerateSampleMvp();
                 IsLoggedIn = true;

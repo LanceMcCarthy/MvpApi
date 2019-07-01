@@ -41,7 +41,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public HomeViewModel()
         {
-            if (DesignMode.DesignModeEnabled)
+            if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
                 var designItems = DesignTimeHelpers.GenerateContributions();
 
