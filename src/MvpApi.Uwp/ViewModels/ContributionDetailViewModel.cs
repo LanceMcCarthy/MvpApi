@@ -15,7 +15,6 @@ using CommonHelpers.Mvvm;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpApi.Services.Utilities;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
@@ -272,8 +271,6 @@ namespace MvpApi.Uwp.ViewModels
                     // Quality assurance, only logs a failed delete.
                     if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
                         StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
-
-                    await new MessageDialog("The contribution was not deleted.").ShowAsync();
                 }
             }
             catch (Exception ex)
@@ -282,7 +279,7 @@ namespace MvpApi.Uwp.ViewModels
                 if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
                     StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
 
-                await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
+                await ex.LogExceptionAsync();
             }
         }
 
