@@ -127,9 +127,7 @@
     <Compile Include="Common\DateTimeMonthKeyLookup.cs" />
     <Compile Include="Common\LoginChangedEventArgs.cs" />
     <Compile Include="Common\TechnologyKeyLookup.cs" />
-    <Compile Include="Controls\LottieBusyIndicator.xaml.cs">
-      <DependentUpon>LottieBusyIndicator.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Controls\AnimatedBusyIndicator.cs" />
     <Compile Include="Controls\TechnologyAreasListView.cs" />
     <Compile Include="Converters\BoolToIconConverter.cs" />
     <Compile Include="Converters\ContributionTypeNameToBrushConverter.cs" />
@@ -204,11 +202,15 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Include="Assets\AnimationFiles\AlienIdScan.json" />
-    <Content Include="Assets\AnimationFiles\ChartLoading.json" />
-    <Content Include="Assets\AnimationFiles\DevicesLoadingStand.json" />
-    <Content Include="Assets\AnimationFiles\FingerprintScan.json" />
-    <Content Include="Assets\AnimationFiles\PaperPlane.json" />
+    <Content Include="Assets\LottieFiles\AlienIdScan.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\LottieFiles\ChartLoading.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\LottieFiles\PaperPlane.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="MvpApi.Uwp_StoreKey.pfx" />
     <None Include="MvpApi.Uwp_TemporaryKey.pfx" />
     <None Include="ViewModels\readme.md" />
@@ -275,10 +277,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Controls\LottieBusyIndicator.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Dialogs\AdditionalTechnologyAreasPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -292,6 +290,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\TutorialDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\DefaultTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

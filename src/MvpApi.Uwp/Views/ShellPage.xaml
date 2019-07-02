@@ -9,6 +9,7 @@
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
       xmlns:cc="using:MvpApi.Uwp.Controls"
+      xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -47,7 +48,7 @@
                 <controls:HamburgerButtonInfo PageType="local:ProfilePage"
                                               ClearHistory="True">
                     <controls:HamburgerButtonInfo.NavigationTransitionInfo>
-                        <SuppressNavigationTransitionInfo/>
+                        <SuppressNavigationTransitionInfo />
                     </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
@@ -200,14 +201,19 @@
             </Button>
         </Grid>
 
-        <cc:LottieBusyIndicator x:Name="Indicator"
-                                IsActive="True"
-                                LottieFilePath="ms-appx:///Assets/AnimationFiles/AlienIdScan.json"
-                                BusyMessage="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                                Background="{ThemeResource SystemControlChromeMediumAcrylicElementMediumBrush}" />
+        <!--<cc:AnimatedBusyIndicator IsActive="{Binding IsBusy}"
+                                  Background="{ThemeResource SystemControlChromeMediumAcrylicElementMediumBrush}">
+            <cc:AnimatedBusyIndicator.BusyContent>
+                <TextBlock Text="{Binding IsBusyMessage}"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"/>
+            </cc:AnimatedBusyIndicator.BusyContent>
+            <cc:AnimatedBusyIndicator.AnimationContent>
+                <lottie:LottieVisualSource UriSource="ms-appx:///Assets/LottieFiles/PaperPlane.json" />
+            </cc:AnimatedBusyIndicator.AnimationContent>
+        </cc:AnimatedBusyIndicator>-->
 
-        <!--<primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+        <primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                                      Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                                     Style="{StaticResource PageBusyIndicatorStyle}"/>-->
+                                     Style="{StaticResource PageBusyIndicatorStyle}"/>
     </Grid>
 </Page>
