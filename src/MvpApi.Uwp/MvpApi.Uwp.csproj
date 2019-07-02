@@ -127,7 +127,6 @@
     <Compile Include="Common\DateTimeMonthKeyLookup.cs" />
     <Compile Include="Common\LoginChangedEventArgs.cs" />
     <Compile Include="Common\TechnologyKeyLookup.cs" />
-    <Compile Include="Controls\AnimatedBusyIndicator.cs" />
     <Compile Include="Controls\TechnologyAreasListView.cs" />
     <Compile Include="Converters\BoolToIconConverter.cs" />
     <Compile Include="Converters\ContributionTypeNameToBrushConverter.cs" />
@@ -293,10 +292,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Themes\DefaultTheme.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\AboutPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -350,9 +345,6 @@
       <Version>5.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
-      <Version>5.1.1</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Lottie">
       <Version>5.1.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
