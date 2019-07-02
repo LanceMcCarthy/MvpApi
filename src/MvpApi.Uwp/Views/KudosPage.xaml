@@ -7,6 +7,8 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:controls="using:Telerik.UI.Xaml.Controls"
+      xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
+      xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -66,7 +68,10 @@
                   ItemClick="{x:Bind ViewModel.KudosGridView_OnItemClick}"
                   VerticalAlignment="Top"
                   Margin="20,10"
-                  Grid.Row="1">
+                  Grid.Row="1"
+                  extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0"
+                  animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}"
+                  animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}">
             <GridView.Header>
                 <TextBlock Text="Available Kudos"
                            Style="{ThemeResource TitleTextBlockStyle}" />
