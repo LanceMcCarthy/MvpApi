@@ -114,7 +114,8 @@
                           UserGroupMode="Disabled"
                           SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
                           GridLinesThickness="1"
-                          Grid.Row="1">
+                          Grid.Row="1"
+                          extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0">
             <animations:Implicit.ShowAnimations>
                 <animations:ScaleAnimation From="0.8"
                                            To="1"
@@ -219,6 +220,7 @@
                                      Grid.Row="1"
                                      Grid.RowSpan="2"
                                      Grid.Column="0"
+                                     extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0"
                                      animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}"
                                      animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}"/>
     </Grid>

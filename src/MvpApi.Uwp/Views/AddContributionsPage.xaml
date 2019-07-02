@@ -8,6 +8,8 @@
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:converters="using:MvpApi.Uwp.Converters"
+      xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
+      xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -55,7 +57,10 @@
 
         <Grid x:Name="FormGrid"
               Grid.Row="1"
-              Grid.Column="0">
+              Grid.Column="0"
+              extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0"
+              animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}"
+              animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -344,7 +349,10 @@
 
         <Grid x:Name="QueueGrid"
               Grid.Row="1"
-              Grid.Column="2">
+              Grid.Column="2"
+              extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0"
+              animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}"
+              animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
