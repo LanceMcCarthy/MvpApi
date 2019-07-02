@@ -7,6 +7,7 @@ using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Animation;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Extensions;
@@ -173,7 +174,7 @@ namespace MvpApi.Uwp.Views
             ViewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
             
             //Navigate to the home page
-            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(HomePage));
+            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(HomePage), null, new SuppressNavigationTransitionInfo());
 
             ViewModel.IsBusy = false;
             ViewModel.IsBusyMessage = "";

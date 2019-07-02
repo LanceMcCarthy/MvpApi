@@ -9,10 +9,11 @@
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
       xmlns:cc="using:MvpApi.Uwp.Controls"
+      xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
       mc:Ignorable="d">
 
     <Page.DataContext>
-        <viewModels:ShellPageViewModel x:Name="ViewModel" />
+        <viewModels:ShellViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -31,6 +32,9 @@
             <controls:HamburgerMenu.PrimaryButtons>
                 <controls:HamburgerButtonInfo PageType="local:HomePage"
                                               ClearHistory="True">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo />
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <SymbolIcon Symbol="Home"
@@ -43,6 +47,9 @@
                 </controls:HamburgerButtonInfo>
                 <controls:HamburgerButtonInfo PageType="local:ProfilePage"
                                               ClearHistory="True">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo />
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <SymbolIcon Symbol="ContactInfo"
@@ -53,10 +60,28 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
+                <controls:HamburgerButtonInfo PageType="local:SettingsPage"
+                                              ClearHistory="True">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo />
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                    <StackPanel Orientation="Horizontal"
+                                VerticalAlignment="Center">
+                        <SymbolIcon Symbol="Setting"
+                                    Width="48"
+                                    Height="48" />
+                        <TextBlock Text="Settings"
+                                   Margin="12,0,0,0"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </controls:HamburgerButtonInfo>
             </controls:HamburgerMenu.PrimaryButtons>
 
             <controls:HamburgerMenu.SecondaryButtons>
                 <controls:HamburgerButtonInfo PageType="local:KudosPage">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo />
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <Grid>
@@ -78,6 +103,9 @@
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
                 <controls:HamburgerButtonInfo PageType="local:AboutPage">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo />
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <FontIcon FontFamily="Segoe MDL2 Assets"
@@ -89,8 +117,10 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
-
-                <controls:HamburgerButtonInfo Tapped="LogoutButton_OnClick" >
+                <controls:HamburgerButtonInfo Tapped="LogoutButton_OnClick">
+                    <controls:HamburgerButtonInfo.NavigationTransitionInfo>
+                        <SuppressNavigationTransitionInfo />
+                    </controls:HamburgerButtonInfo.NavigationTransitionInfo>
                     <StackPanel Orientation="Horizontal"
                                 VerticalAlignment="Center">
                         <Grid>
@@ -171,14 +201,19 @@
             </Button>
         </Grid>
 
-        <cc:LottieBusyIndicator x:Name="Indicator"
-                                IsActive="True"
-                                LottieFilePath="ms-appx:///Assets/AnimationFiles/AlienIdScan.json"
-                                BusyMessage="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                                Background="{ThemeResource SystemControlChromeMediumAcrylicElementMediumBrush}" />
+        <!--<cc:AnimatedBusyIndicator IsActive="{Binding IsBusy}"
+                                  Background="{ThemeResource SystemControlChromeMediumAcrylicElementMediumBrush}">
+            <cc:AnimatedBusyIndicator.BusyContent>
+                <TextBlock Text="{Binding IsBusyMessage}"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"/>
+            </cc:AnimatedBusyIndicator.BusyContent>
+            <cc:AnimatedBusyIndicator.AnimationContent>
+                <lottie:LottieVisualSource UriSource="ms-appx:///Assets/LottieFiles/PaperPlane.json" />
+            </cc:AnimatedBusyIndicator.AnimationContent>
+        </cc:AnimatedBusyIndicator>-->
 
-        <!--<primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+        <primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                                      Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                                     Style="{StaticResource PageBusyIndicatorStyle}"/>-->
+                                     Style="{StaticResource PageBusyIndicatorStyle}"/>
     </Grid>
 </Page>

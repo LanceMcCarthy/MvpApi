@@ -1,20 +1,23 @@
-﻿using Windows.ApplicationModel;
+﻿using System;
+using Windows.ApplicationModel;
 using Windows.Storage;
-using MvpApi.Common.Models;
+using MvpApi.Services.Utilities;
 using MvpApi.Uwp.Helpers;
 
 namespace MvpApi.Uwp.ViewModels
 {
-    public class ShellPageViewModel : PageViewModelBase
+    public class ShellViewModel : PageViewModelBase
     {
-        private ProfileViewModel _mvp;
+        private MvpApi.Common.Models.ProfileViewModel _mvp;
         private string _profileImagePath;
         private bool _isLoggedIn;
         private bool _useBetaEditor;
+        private DateTime _submissionStartDate = ServiceConstants.SubmissionStartDate;
+        private DateTime _submissionDeadline = ServiceConstants.SubmissionDeadline;
 
-        public ShellPageViewModel()
+        public ShellViewModel()
         {
-            if (DesignMode.DesignModeEnabled)
+            if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
                 Mvp = DesignTimeHelpers.GenerateSampleMvp();
                 IsLoggedIn = true;
@@ -34,7 +37,7 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        public ProfileViewModel Mvp
+        public MvpApi.Common.Models.ProfileViewModel Mvp
         {
             get => _mvp;
             set => Set(ref _mvp, value);
@@ -50,13 +53,13 @@ namespace MvpApi.Uwp.ViewModels
         {
             get
             {
-                if (ApplicationData.Current.RoamingSettings.Values.TryGetValue("UseBetaEditor", out object rawValue))
+                if (ApplicationData.Current.RoamingSettings.Values.TryGetValue(nameof(UseBetaEditor), out object rawValue))
                 {
                     _useBetaEditor = (bool)rawValue;
                 }
                 else
                 {
-                    ApplicationData.Current.RoamingSettings.Values["UseBetaEditor"] = _useBetaEditor;
+                    ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
                 }
                 
                 return _useBetaEditor;
@@ -65,9 +68,21 @@ namespace MvpApi.Uwp.ViewModels
             {
                 if (Set(ref _useBetaEditor, value))
                 {
-                    ApplicationData.Current.RoamingSettings.Values["UseBetaEditor"] = _useBetaEditor;
+                    ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
                 }
             }
+        }
+
+        public DateTime SubmissionStartDate
+        {
+            get => _submissionStartDate;
+            set => Set(ref _submissionStartDate, value);
+        }
+
+        public DateTime SubmissionDeadline
+        {
+            get => _submissionDeadline;
+            set => Set(ref _submissionDeadline, value);
         }
     }
 }

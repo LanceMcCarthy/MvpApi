@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Email;
@@ -16,26 +15,31 @@ namespace MvpApi.Uwp.ViewModels
     public class AboutViewModel : PageViewModelBase
     {
         private readonly ApplicationDataContainer _roamingSettings;
-
+        private string _appVersion;
         private Visibility _feedbackHubButtonVisibility;
         private int _daysToKeepErrorLogs = 5;
-        private bool _useBetaEditor;
 
         public AboutViewModel()
         {
-            _roamingSettings = ApplicationData.Current.RoamingSettings;
+            if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
+            {
+                AppVersion = "1.0.1";
+            }
+            else
+            {
+                _roamingSettings = ApplicationData.Current.RoamingSettings;
+            }
         }
 
         public string AppVersion
         {
             get
             {
-                if (DesignMode.DesignModeEnabled)
-                    return "1.0";
+                _appVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
 
-                var nameHelper = Package.Current.Id;
-                return nameHelper.Version.Major + "." + nameHelper.Version.Minor + "." + nameHelper.Version.Build;
+                return _appVersion;
             }
+            set => Set(ref _appVersion, value);
         }
 
         public int DaysToKeepErrorLogs
@@ -67,11 +71,11 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _feedbackHubButtonVisibility, value);
         }
 
-        public bool UseBetaEditor
-        {
-            get => (ShellPage.Instance.DataContext as ShellPageViewModel).UseBetaEditor;
-            set => (ShellPage.Instance.DataContext as ShellPageViewModel).UseBetaEditor = value;
-        }
+        //public bool UseBetaEditor
+        //{
+        //    get => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor;
+        //    set => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor = value;
+        //}
 
         // Methods
 
