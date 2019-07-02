@@ -15,7 +15,7 @@
       mc:Ignorable="d">
 
     <Page.DataContext>
-        <viewModels:HomePageViewModel x:Name="ViewModel" />
+        <viewModels:HomeViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
     <Page.Resources>
@@ -114,7 +114,24 @@
                           UserGroupMode="Disabled"
                           SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
                           GridLinesThickness="1"
-                          Grid.Row="1">
+                          Grid.Row="1"
+                          extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0">
+            <animations:Implicit.ShowAnimations>
+                <animations:ScaleAnimation From="0.8"
+                                           To="1"
+                                           Duration="0:0:1" />
+                <animations:OpacityAnimation From="0"
+                                             To="1"
+                                             Duration="0:0:1" />
+            </animations:Implicit.ShowAnimations>
+            <animations:Implicit.HideAnimations>
+                <animations:ScaleAnimation From="1"
+                                           To="0.8"
+                                           Duration="0:0:0.6" />
+                <animations:OpacityAnimation From="1"
+                                             To="0"
+                                             Duration="0:0:0.6" />
+            </animations:Implicit.HideAnimations>
             <grid:RadDataGrid.GroupHeaderTemplate>
                 <DataTemplate>
                     <Grid Background="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToBackgroundConverter}}">
@@ -202,6 +219,9 @@
                                      Style="{StaticResource PageBusyIndicatorStyle}"
                                      Grid.Row="1"
                                      Grid.RowSpan="2"
-                                     Grid.Column="0" />
+                                     Grid.Column="0"
+                                     extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0"
+                                     animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}"
+                                     animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}"/>
     </Grid>
 </Page>

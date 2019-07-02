@@ -12,7 +12,7 @@ namespace MvpApi.Uwp.Helpers
             DisplayName = "Lance",
             FullName = "Lance McCarthy",
             AwardCategoryDisplay = "Windows Development",
-            YearsAsMvp = 4,
+            YearsAsMvp = 6,
             Headline = "Mvp stuffs here",
             Certifications = GenerateCertifications(),
             CommunityAwards = GenerateAwards(),

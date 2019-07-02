@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
+using MvpApi.Services.Utilities;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
@@ -23,6 +24,7 @@ using Template10.Common;
 using Template10.Mvvm;
 using Template10.Services.NavigationService;
 using Template10.Utils;
+using ExceptionLogger = MvpApi.Uwp.Helpers.ExceptionLogger;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -170,7 +172,7 @@ namespace MvpApi.Uwp.ViewModels
         
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            if (e.NewDate < new DateTime(2016, 10, 1) || e.NewDate > new DateTime(2019, 4, 1))
+            if (e.NewDate < (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline)
             {
                 WarningMessage = "The date must be after the start of your current award period and before March 31st of the next award year.";
 
@@ -491,7 +493,7 @@ namespace MvpApi.Uwp.ViewModels
                     BootStrapper.Current.NavigationService.GoBack();
             }
 
-            if (ShellPage.Instance.DataContext is ShellPageViewModel shellVm)
+            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
             {
                 // Verify the user is logged in
                 if (!shellVm.IsLoggedIn)
@@ -591,7 +593,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
-                await ex.LogExceptionAsync();
+                await ExceptionLogger.LogExceptionAsync(ex);
             }
         }
 
