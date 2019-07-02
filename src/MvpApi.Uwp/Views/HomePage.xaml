@@ -6,12 +6,10 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:controls="using:Telerik.UI.Xaml.Controls"
+      xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
       xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
-      xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
-      xmlns:winui="using:Microsoft.UI.Xaml.Controls"
-      xmlns:customControls="using:MvpApi.Uwp.Controls"
+      xmlns:controls="using:Microsoft.UI.Xaml.Controls"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -77,8 +75,8 @@
                     Margin="0,0,10,0">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
-                        <SymbolIcon Symbol="ShowBcc" 
-                                    Margin="5"/>
+                        <SymbolIcon Symbol="ShowBcc"
+                                    Margin="5" />
                         <TextBlock Text="Group By"
                                    Margin="5" />
                     </StackPanel>
@@ -222,6 +220,6 @@
                                      Grid.Column="0"
                                      extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0"
                                      animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}"
-                                     animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}"/>
+                                     animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}" />
     </Grid>
 </Page>

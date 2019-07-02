@@ -9,7 +9,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpApi.Services.Utilities;
 using MvpApi.Uwp.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
@@ -17,7 +16,6 @@ using Template10.Common;
 using Template10.Mvvm;
 using Template10.Services.PopupService;
 using Template10.Utils;
-using ExceptionLogger = MvpApi.Uwp.Helpers.ExceptionLogger;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -319,6 +317,7 @@ namespace MvpApi.Uwp.ViewModels
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
+                        await ex.LogExceptionAsync();
                     }
                     finally
                     {
@@ -354,7 +353,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
-                await ExceptionLogger.LogExceptionAsync(ex);
+                await ex.LogExceptionAsync();
             }
         }
         

@@ -8,8 +8,6 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
-      xmlns:cc="using:MvpApi.Uwp.Controls"
-      xmlns:lottie="using:Microsoft.Toolkit.Uwp.UI.Lottie"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -201,18 +199,8 @@
             </Button>
         </Grid>
 
-        <!--<cc:AnimatedBusyIndicator IsActive="{Binding IsBusy}"
-                                  Background="{ThemeResource SystemControlChromeMediumAcrylicElementMediumBrush}">
-            <cc:AnimatedBusyIndicator.BusyContent>
-                <TextBlock Text="{Binding IsBusyMessage}"
-                           Style="{ThemeResource SubtitleTextBlockStyle}"/>
-            </cc:AnimatedBusyIndicator.BusyContent>
-            <cc:AnimatedBusyIndicator.AnimationContent>
-                <lottie:LottieVisualSource UriSource="ms-appx:///Assets/LottieFiles/PaperPlane.json" />
-            </cc:AnimatedBusyIndicator.AnimationContent>
-        </cc:AnimatedBusyIndicator>-->
-
         <primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                     Visibility="{Binding IsBusy}"
                                      Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
                                      Style="{StaticResource PageBusyIndicatorStyle}"/>
     </Grid>

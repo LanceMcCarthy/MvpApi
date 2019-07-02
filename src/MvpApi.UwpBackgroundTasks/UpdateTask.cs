@@ -22,7 +22,7 @@ namespace MvpApi.UwpBackgroundTasks
                             },
                             new AdaptiveText
                             {
-                                Text = "Ready for the rush? We've updated to meet the new MVP contribution submission requirements."
+                                Text = "Welcome to the 2019-2020 MVP year! The MVP Companion is here to help keep your contributions updated."
                             },
                             new AdaptiveImage
                             {
