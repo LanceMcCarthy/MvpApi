@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Extensions;
 using MvpApi.Forms.Portable.Common;
 using MvpApi.Forms.Portable.Models;
@@ -23,76 +25,22 @@ namespace MvpApi.Forms.Portable
 
             ViewModel.NavigationHandler = this;
 
-            this._webView = new WebView();
-            this._webView.Navigated += WebView_OnNavigated;
-        }
-        
-        private async void SignOutButton_OnClicked(object sender, EventArgs e)
-        {
-            try
-            {
-                this.SideDrawer.MainContent = this._webView;
-                this._webView.Source = _signOutUri;
-
-                StorageHelpers.Instance.DeleteToken("access_token");
-                StorageHelpers.Instance.DeleteToken("refresh_token");
-            }
-            catch (Exception ex)
-            {
-                await ex.LogExceptionAsync();
-                await this.DisplayAlert("Error", "something went wrong signing you out, try again.", "ok");
-            }
+            _webView = new WebView();
+            _webView.Navigated += WebView_OnNavigated;
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
 
-            ViewModel.IsBusy = true;
-            ViewModel.IsBusyMessage = "authenticating...";
-
-            var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
-
-            if (!string.IsNullOrEmpty(refreshToken))
-            {
-                // there is a token stored, let's try to use it and not even have to show UI
-                var authorization = await this.RequestAuthorizationAsync(refreshToken, true);
-
-                if (string.IsNullOrEmpty(authorization))
-                {
-                    // no token available, show dialog to get user to signin and accept
-                    SideDrawer.MainContent = _webView;
-                    this._webView.Source = _signInUrl;
-                }
-                else
-                {
-                    App.ApiService = new MvpApiService(authorization);
-
-                    ViewModel.IsLoggedIn = true;
-
-                    ViewModel.IsBusyMessage = "downloading profile info...";
-                    ViewModel.Mvp = await App.ApiService.GetProfileAsync();
-
-                    ViewModel.IsBusyMessage = "downloading profile image...";
-                    ViewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
-                    
-                    // Using ViewModel method in order to trigger appropriate data downloads for that view
-                    this.ViewModel.LoadView(ViewType.Home);
-                }
-            }
-            else
-            {
-                // no token available, show dialog to get user to signin and accept
-                SideDrawer.MainContent = _webView;
-                this._webView.Source = _signInUrl;
-            }
-
-            ViewModel.IsBusyMessage = "";
-            ViewModel.IsBusy = false;
+            await SignInAsync();
         }
 
-        #region Global Navigation
-        
+        private async void SignOutButton_OnClicked(object sender, EventArgs e)
+        {
+            await SignOutAsync();
+        }
+
         public void LoadView(ViewType viewType)
         {
             switch (viewType)
@@ -123,9 +71,7 @@ namespace MvpApi.Forms.Portable
             return base.OnBackButtonPressed();
         }
 
-        #endregion
-        
-        #region Global Authentication
+        #region Authentication
 
         private static readonly string _scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
         private static readonly string _clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
@@ -133,7 +79,150 @@ namespace MvpApi.Forms.Portable
         private readonly string _accessTokenUrl = "https://login.live.com/oauth20_token.srf";
         private readonly Uri _signInUrl = new Uri($"https://login.live.com/oauth20_authorize.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={_scope}");
         private readonly Uri _signOutUri = new Uri($"https://login.live.com/oauth20_logout.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf");
-        
+
+        public async Task SignInAsync()
+        {
+            var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
+
+            // If refresh token is available, the user has previously been logged in and we can get a refreshed access token immediately
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                ViewModel.IsBusy = true;
+                ViewModel.IsBusyMessage = "refreshing session...";
+
+                var authorizationHeader = await RequestAuthorizationAsync(refreshToken, true);
+
+                if (string.IsNullOrEmpty(authorizationHeader))
+                {
+                    // something went wrong using refresh token, use WebView to login
+                    LoginUsingWebView();
+                }
+                else
+                {
+                    await InitializeMvpApiAsync(authorizationHeader);
+                }
+
+                ViewModel.IsBusy = false;
+                ViewModel.IsBusyMessage = "";
+            }
+            else
+            {
+                // No stored credentials, use WebView workflow
+                LoginUsingWebView();
+            }
+        }
+
+        public async Task SignOutAsync()
+        {
+            try
+            {
+                // Indicate to user we are signing out
+                ViewModel.IsBusy = true;
+                ViewModel.IsBusyMessage = "logging out...";
+
+                // Erase cached tokens
+                ViewModel.IsBusyMessage = "deleting cache files...";
+                StorageHelpers.Instance.DeleteToken("access_token");
+                StorageHelpers.Instance.DeleteToken("refresh_token");
+
+                // Delete profile photo file
+                if (File.Exists(ViewModel.ProfileImagePath))
+                {
+                    ViewModel.IsBusyMessage = "deleting profile photo file...";
+                    File.Delete(ViewModel.ProfileImagePath);
+                }
+
+                // Clean up profile objects
+                ViewModel.IsBusyMessage = "resetting profile...";
+                ViewModel.Mvp = null;
+                ViewModel.ProfileImagePath = "";
+            }
+            catch (Exception ex)
+            {
+                await ex.LogExceptionAsync();
+                await DisplayAlert("Sign out Error", ex.Message, "ok");
+            }
+            finally
+            {
+                // Hide busy indicator
+                ViewModel.IsBusy = false;
+                ViewModel.IsBusyMessage = "";
+
+                // Toggle flag
+                ViewModel.IsLoggedIn = false;
+
+                LoginUsingWebView();
+            }
+        }
+
+        private void LoginUsingWebView()
+        {
+            SideDrawer.MainContent = _webView;
+            _webView.Source = _signInUrl;
+        }
+
+        private async Task InitializeMvpApiAsync(string authorizationHeader)
+        {
+            ViewModel.IsBusy = true;
+            ViewModel.IsBusyMessage = "authenticating...";
+
+            // remove any previously wired up event handlers
+            if (App.ApiService != null)
+            {
+                App.ApiService.AccessTokenExpired -= ApiService_AccessTokenExpired;
+                App.ApiService.RequestErrorOccurred -= ApiService_RequestErrorOccurred;
+            }
+
+            App.ApiService = new MvpApiService(authorizationHeader);
+
+            App.ApiService.AccessTokenExpired += ApiService_AccessTokenExpired;
+            App.ApiService.RequestErrorOccurred += ApiService_RequestErrorOccurred;
+
+            ViewModel.IsLoggedIn = true;
+
+            ViewModel.IsBusyMessage = "downloading profile info...";
+            ViewModel.Mvp = await App.ApiService.GetProfileAsync();
+
+            ViewModel.IsBusyMessage = "downloading profile image...";
+            ViewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+
+            // Using ViewModel method in order to trigger appropriate data downloads for that view
+            ViewModel.LoadView(ViewType.Home);
+
+            ViewModel.IsBusyMessage = "";
+            ViewModel.IsBusy = false;
+        }
+
+        private async void ApiService_AccessTokenExpired(object sender, ApiServiceEventArgs e)
+        {
+            if (e.IsTokenRefreshNeeded)
+            {
+                await SignInAsync();
+            }
+            else
+            {
+                // Future use
+            }
+        }
+
+        private async void ApiService_RequestErrorOccurred(object sender, ApiServiceEventArgs e)
+        {
+            var message = "Unknown Server Error";
+
+            if (e.IsBadRequest)
+            {
+                message = e.Message;
+            }
+            else if (e.IsServerError)
+            {
+                message = e.Message + "\r\n\nIf this continues to happen, please open a GitHub Issue and we'll investigate further (find the GitHub link on the About page).";
+            }
+
+            await DisplayAlert("MVP API Request Error", message, "ok");
+        }
+
+        // WebView logic
+
         private async void WebView_OnNavigated(object sender, WebNavigatedEventArgs e)
         {
             switch (e.Result)
@@ -145,12 +234,12 @@ namespace MvpApi.Forms.Portable
 
                         var authCode = myUri.ExtractQueryValue("code");
 
-                        await this.RequestAuthorizationAsync(authCode);
+                        await RequestAuthorizationAsync(authCode);
                     }
                     else if (e.Url.Contains("lc="))
                     {
                         // Redirect to signin page if there's a bounce
-                        this._webView.Source = _signInUrl;
+                        _webView.Source = _signInUrl;
                     }
                     break;
                 case WebNavigationResult.Failure:
@@ -164,7 +253,7 @@ namespace MvpApi.Forms.Portable
             }
 
         }
-        
+
         private async Task<string> RequestAuthorizationAsync(string authCode, bool isRefresh = false)
         {
             try
@@ -211,12 +300,12 @@ namespace MvpApi.Forms.Portable
             catch (HttpRequestException e)
             {
                 await e.LogExceptionAsync();
-                await this.DisplayAlert("Error", $"Something went wrong signing you in, try again. {e.Message}", "ok");
+                await DisplayAlert("Error", $"Something went wrong signing you in, try again. {e.Message}", "ok");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
-                await this.DisplayAlert("Error", $"Something went wrong signing you in, try again. {e.Message}", "ok");
+                await DisplayAlert("Error", $"Something went wrong signing you in, try again. {e.Message}", "ok");
             }
 
             return null;
