@@ -52,5 +52,9 @@
 	<true/>
 	<key>CFBundleShortVersionString</key>
 	<string>0.1</string>
+  <key>UIAppFonts</key>
+  <array>
+    <string>Fonts/telerikfontexamples.ttf</string>
+  </array>
 </dict>
 </plist>

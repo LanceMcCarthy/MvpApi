@@ -8,23 +8,23 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackLayout>
-            <Label Text="{Binding SelectedContribution.ContributionTypeName}"
+        <StackLayout BindingContext="{Binding SelectedContribution}">
+            <Label Text="{Binding ContributionTypeName}"
                    HorizontalTextAlignment="Center"
                    LineBreakMode="WordWrap"
                    FontSize="Large" />
-            <Label Text="{Binding SelectedContribution.Title}" 
+            <Label Text="{Binding Title}" 
                    FontSize="Medium"/>
-            <Label Text="{Binding SelectedContribution.Description}"
+            <Label Text="{Binding Description}"
                    LineBreakMode="WordWrap"
                    FontSize="Medium" />
-            <Label Text="{Binding SelectedContribution.StartDate, StringFormat='Start Date: {0:g}'}"
+            <Label Text="{Binding StartDate, StringFormat='Start Date: {0:g}'}"
                    FontSize="Medium" />
-            <Label Text="{Binding SelectedContribution.ReferenceUrl}"
+            <Label Text="{Binding ReferenceUrl}"
                    FontSize="Small" />
-            <Label Text="{Binding SelectedContribution.AnnualQuantity, StringFormat='Annual Quantity {0:N0}'}"
+            <Label Text="{Binding AnnualQuantity, StringFormat='Annual Quantity {0:N0}'}"
                    FontSize="Medium" />
-            <Label Text="{Binding SelectedContribution.SecondAnnualQuantity, StringFormat='Second Annual Quantity {0:N0}'}"
+            <Label Text="{Binding SecondAnnualQuantity, StringFormat='Second Annual Quantity {0:N0}'}"
                    FontSize="Medium" />
         </StackLayout>
 

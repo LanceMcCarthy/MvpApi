@@ -134,6 +134,9 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <Content Include="Assets\Fonts\telerikfontexamples.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Windows_XF_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

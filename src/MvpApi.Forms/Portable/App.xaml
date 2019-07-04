@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:MvpApi.Forms.Portable.Converters;assembly=MvpApi.Forms.Portable"
              xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.XamarinForms.Primitives"
+             xmlns:input="clr-namespace:Telerik.XamarinForms.Input;assembly=Telerik.XamarinForms.Input"
              x:Class="MvpApi.Forms.Portable.App">
 
     <Application.Resources>
@@ -43,6 +44,46 @@
             <RowDefinition Height="2*" />
         </RowDefinitionCollection>
 
+        <!-- Full icon list here - https://docs.telerik.com/devtools/xamarin/styling-and-appearance/telerik-font-icons -->
+        <x:String x:Key="StarIcon">&#xE805;</x:String>
+        <x:String x:Key="MenuIcon">&#xE808;</x:String>
+
+        <OnPlatform x:Key="TelerikIconsFont"
+                    x:TypeArguments="x:String">
+            <On Platform="iOS">telerikfontexamples</On>
+            <On Platform="Android">Fonts/telerikfontexamples.ttf#telerikfontexamples</On>
+            <On Platform="UWP">/Assets/Fonts/telerikfontexamples.ttf#telerikfontexamples</On>
+        </OnPlatform>
+
+        <Style x:Key="IconRadButtonStyle"
+               TargetType="input:RadButton">
+            <Setter Property="BackgroundColor"
+                    Value="{StaticResource LightBlueColor}"/>
+            <Setter Property="BorderColor"
+                    Value="{StaticResource DarkBlueColor}" />
+            <Setter Property="TextColor"
+                    Value="{StaticResource MediumBlueColor}" />
+            <Setter Property="BorderThickness"
+                    Value="2" />
+            <Setter Property="BorderRadius"
+                    Value="25" />
+            <Setter Property="CornerRadius"
+                    Value="25" />
+            <Setter Property="Margin"
+                    Value="10" />
+            <Setter Property="FontFamily"
+                    Value="{StaticResource TelerikIconsFont}" />
+            <Setter Property="FontSize">
+                <Setter.Value>
+                    <OnPlatform x:TypeArguments="x:Double">
+                        <On Platform="iOS">16</On>
+                        <On Platform="Android">16</On>
+                        <On Platform="UWP">18</On>
+                    </OnPlatform>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="TopPageBusyIndicatorStyle"
                TargetType="primitives:RadBusyIndicator">
             <Setter Property="AnimationType"
@@ -54,7 +95,7 @@
             <Setter Property="BackgroundColor"
                     Value="Transparent" />
             <Setter Property="AnimationContentColor"
-                    Value="{StaticResource MediumBlueColor}" />
+                    Value="{StaticResource DarkBlueColor}" />
             <Setter Property="BusyContentTemplate">
                 <Setter.Value>
                     <ControlTemplate>
@@ -86,7 +127,7 @@
             <Setter Property="BackgroundColor"
                     Value="{StaticResource LightTranslucentBackgroundColor}" />
             <Setter Property="AnimationContentColor"
-                    Value="{StaticResource MediumBlueColor}" />
+                    Value="{StaticResource DarkBlueColor}" />
             <Setter Property="BusyContentTemplate">
                 <Setter.Value>
                     <ControlTemplate>

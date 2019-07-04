@@ -1,9 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using CommonHelpers.Common;
 using MvpApi.Common.Models;
 using MvpApi.Forms.Portable.Common;
 using MvpApi.Forms.Portable.Models;
+using MvpApi.Services.Utilities;
+using Telerik.XamarinForms.Common;
+using Telerik.XamarinForms.DataControls.ListView;
+using Telerik.XamarinForms.DataControls.ListView.Commands;
 using Xamarin.Forms;
 
 namespace MvpApi.Forms.Portable.ViewModels
@@ -14,10 +21,9 @@ namespace MvpApi.Forms.Portable.ViewModels
         private ObservableCollection<ContributionsModel> _contributions;
         private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
         private ContributionsModel _selectedContribution;
-
+        private int _selectedSegmentIndex;
         private string _profileImagePath;
         private bool _isLoggedIn;
-
         private bool _isDrawerOpen;
         private string _status;
 
@@ -25,9 +31,8 @@ namespace MvpApi.Forms.Portable.ViewModels
         {
             GoToViewCommand = new Command(LoadView);
             ToggleDrawerCommand = new Command(ToggleDrawer);
+            SelectedSegmentIndex = 1;
         }
-
-        #region MVP Profile Properties
 
         /// <summary>
         /// File path to locally saved MVP profile image
@@ -72,14 +77,21 @@ namespace MvpApi.Forms.Portable.ViewModels
                 }
             }
         }
-        
+        public int SelectedSegmentIndex
+        {
+            get => _selectedSegmentIndex;
+            set
+            {
+                SetProperty(ref _selectedSegmentIndex, value);
+                SetGrouping(value);
+            }
+        }
+
         public bool IsLoggedIn
         {
             get => _isLoggedIn;
             set => SetProperty(ref _isLoggedIn, value);
         }
-
-        #endregion
 
         public bool IsDrawerOpen
         {
@@ -92,12 +104,19 @@ namespace MvpApi.Forms.Portable.ViewModels
             get => _status;
             set => SetProperty(ref _status, value);
         }
-        
+
+        public List<string> GroupingOptions { get; } = new List<string> { "None", "Visibility", "Social" };
+
+        public ObservableCollection<GroupDescriptorBase> GroupDescriptors { get; set; }
+
+        public Command ItemTapCommand { get; set; }
+
         public Command GoToViewCommand { get; set; }
 
         public Command ToggleDrawerCommand { get; set; }
 
         public INavigationHandler NavigationHandler { private get; set; }
+
 
         public async void LoadView(object viewType)
         {
@@ -179,6 +198,60 @@ namespace MvpApi.Forms.Portable.ViewModels
         private void ToggleDrawer()
         {
             IsDrawerOpen = !IsDrawerOpen;
+        }
+
+        private void SetGrouping(int groupOptionIndex)
+        {
+            try
+            {
+                if (GroupDescriptors == null)
+                {
+                    return;
+                }
+
+                GroupDescriptors.Clear();
+
+                var propertyToGroupBy = GroupingOptions[groupOptionIndex];
+
+                if (string.IsNullOrEmpty(propertyToGroupBy))
+                {
+                    return;
+                }
+
+                switch (propertyToGroupBy)
+                {
+                    case "Visibility":
+                        GroupDescriptors.Add(new DelegateGroupDescriptor
+                        {
+                            KeyExtractor = (arg) => (arg as OnlineIdentityViewModel)?.OnlineIdentityVisibility?.Description,
+                            SortOrder = SortOrder.Descending
+                        });
+                        break;
+                    case "Social":
+                        GroupDescriptors.Add(new DelegateGroupDescriptor
+                        {
+                            KeyExtractor = (arg) => (arg as OnlineIdentityViewModel)?.SocialNetwork.Name,
+                            SortOrder = SortOrder.Descending
+                        });
+                        break;
+                    default:
+                        GroupDescriptors.Clear();
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.LogException();
+            }
+        }
+
+        private void ItemTapped(ItemTapCommandContext context)
+        {
+            if (context.Item is OnlineIdentityViewModel item)
+            {
+                // TODO Show popup or modal page for editing/deleting identities
+                Debug.WriteLine($"{item.SocialNetwork.Name} Tapped");
+            }
         }
     }
 }
