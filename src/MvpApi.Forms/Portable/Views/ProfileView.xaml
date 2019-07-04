@@ -5,7 +5,6 @@
              xmlns:dataControls="clr-namespace:Telerik.XamarinForms.DataControls;assembly=Telerik.XamarinForms.DataControls"
              xmlns:listView="clr-namespace:Telerik.XamarinForms.DataControls.ListView;assembly=Telerik.XamarinForms.DataControls"
              xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.XamarinForms.Primitives"
-             xmlns:viewModels="clr-namespace:MvpApi.Forms.Portable.ViewModels;assembly=MvpApi.Forms.Portable"
              xmlns:input="clr-namespace:Telerik.XamarinForms.Input;assembly=Telerik.XamarinForms.Input"
              xmlns:commands="clr-namespace:Telerik.XamarinForms.DataControls.ListView.Commands;assembly=Telerik.XamarinForms.DataControls"
              x:Class="MvpApi.Forms.Portable.Views.ProfileView">
@@ -20,7 +19,7 @@
 
         <primitives:RadBorder BackgroundColor="{StaticResource LightBlueColor}"
                               Grid.Row="0">
-            <Label Text="Profile Bio"
+            <Label Text="Biography"
                    FontSize="Medium"
                    HorizontalOptions="Center"
                    Margin="10" />
@@ -59,7 +58,7 @@
                                   Margin="10,0"
                                   Grid.Row="3">
             <dataControls:RadListView.LayoutDefinition>
-                <listView:ListViewGridLayout Orientation="Vertical" SpanCount="2" VerticalItemSpacing="5" HorizontalItemSpacing="5"/>
+                <listView:ListViewLinearLayout VerticalItemSpacing="5" />
             </dataControls:RadListView.LayoutDefinition>
             <dataControls:RadListView.Commands>
                 <commands:ListViewUserCommand Id="ItemTap"
@@ -76,7 +75,7 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
-                            <Label Text="&#xF0FE;"
+                            <Label Text="{StaticResource PlusIcon}"
                                    Margin="10,12,10,10"
                                    FontFamily="{StaticResource TelerikIconsFont}"
                                    TextColor="{StaticResource LightBlueColor}"
@@ -86,7 +85,7 @@
                                                  Binding="{Binding IsExpanded}"
                                                  Value="True">
                                         <Setter Property="Text"
-                                                Value="&#xF146;" />
+                                                Value="{StaticResource MinusIcon}" />
                                     </DataTrigger>
                                 </Label.Triggers>
                             </Label>
@@ -113,7 +112,8 @@
                                        HeightRequest="20"
                                        Margin="0,0,10,0" />
                                 <Label Text="{Binding SocialNetwork.Name}"
-                                       FontSize="Medium" />
+                                       FontSize="Medium" 
+                                       FontAttributes="Bold"/>
                             </StackLayout>
 
                             <!--<HyperlinkButton Content="Open in browser..."
@@ -121,7 +121,6 @@
 
                             <StackLayout Orientation="Horizontal">
                                 <Label Text="Identity visible to:"
-                                       Margin="0,0,5,0"
                                        VerticalOptions="Center" />
                                 <Label Text="{Binding OnlineIdentityVisibility.Description}"
                                        TextColor="{Binding OnlineIdentityVisibility, Converter={StaticResource PrivacyLevelToColorConverter}}"

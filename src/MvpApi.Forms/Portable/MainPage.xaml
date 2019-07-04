@@ -80,7 +80,7 @@
                                          CornerRadius="15"
                                          BorderThickness="0"
                                          Margin="5" />
-                        <input:RadButton Text="Signout"
+                        <input:RadButton Text="Sign out"
                                          TextColor="{StaticResource LightBlueColor}"
                                          BackgroundColor="{StaticResource DarkTextColor}"
                                          CornerRadius="15"
@@ -94,12 +94,19 @@
 
         <input:RadButton x:Name="MenuButton"
                          Command="{Binding ToggleDrawerCommand}"
-                         Text="{StaticResource MenuIcon}"
-                         Style="{StaticResource IconRadButtonStyle}"
-                         HeightRequest="50"
-                         WidthRequest="50"
+                         Text="{StaticResource RightArrowEnclosedIcon}"
+                         Style="{StaticResource LargeIconRadButtonStyle}"
                          HorizontalOptions="Start"
-                         VerticalOptions="End" />
+                         VerticalOptions="End">
+            <input:RadButton.Triggers>
+                <DataTrigger TargetType="input:RadButton"
+                             Binding="{Binding IsDrawerOpen}"
+                             Value="True">
+                    <Setter Property="Text"
+                            Value="{StaticResource LeftArrowEnclosedIcon}" />
+                </DataTrigger>
+            </input:RadButton.Triggers>
+        </input:RadButton>
 
         <primitives:RadBusyIndicator x:Name="BusyIndicator"
                                      IsVisible="{Binding IsBusy}"

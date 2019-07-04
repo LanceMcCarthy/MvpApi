@@ -54,6 +54,9 @@ namespace MvpApi.Forms.Portable
                 case ViewType.Detail:
                     SideDrawer.MainContent = new DetailView();
                     break;
+                case ViewType.Add:
+                    SideDrawer.MainContent = new AddView();
+                    break;
                 case ViewType.About:
                     SideDrawer.MainContent = new AboutView();
                     break;

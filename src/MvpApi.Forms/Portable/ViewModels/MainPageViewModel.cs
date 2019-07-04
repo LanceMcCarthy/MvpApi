@@ -26,23 +26,22 @@ namespace MvpApi.Forms.Portable.ViewModels
         private bool _isLoggedIn;
         private bool _isDrawerOpen;
         private string _status;
+        private bool _isInEditMode;
 
         public MainPageViewModel()
         {
             GoToViewCommand = new Command(LoadView);
-            ToggleDrawerCommand = new Command(ToggleDrawer);
-            SelectedSegmentIndex = 1;
+            ToggleDrawerCommand = new Command(() => IsDrawerOpen = !IsDrawerOpen);
+            ToggleEditModeCommand = new Command(() => IsInEditMode = !IsInEditMode);
+            ItemTapCommand = new Command<ItemTapCommandContext>(ItemTapped);
         }
 
-        /// <summary>
-        /// File path to locally saved MVP profile image
-        /// </summary>
         public string ProfileImagePath
         {
             get => _profileImagePath;
             set
             {
-                //enforcing propChanged because path will be the same, but image is different
+                // Always trigger PropertyChanged. Image may update, but file path doesn't.
                 _profileImagePath = value;
                 OnPropertyChanged();
             }
@@ -99,6 +98,12 @@ namespace MvpApi.Forms.Portable.ViewModels
             set => SetProperty(ref _isDrawerOpen, value);
         }
 
+        public bool IsInEditMode
+        {
+            get => _isInEditMode;
+            set => SetProperty(ref _isInEditMode, value);
+        }
+
         public string Status
         {
             get => _status;
@@ -109,26 +114,32 @@ namespace MvpApi.Forms.Portable.ViewModels
 
         public ObservableCollection<GroupDescriptorBase> GroupDescriptors { get; set; }
 
-        public Command ItemTapCommand { get; set; }
+        public Command<ItemTapCommandContext> ItemTapCommand { get; set; }
 
         public Command GoToViewCommand { get; set; }
 
         public Command ToggleDrawerCommand { get; set; }
+
+        public Command ToggleEditModeCommand { get; set; }
 
         public INavigationHandler NavigationHandler { private get; set; }
 
 
         public async void LoadView(object viewType)
         {
-            // Work before view appears
+            // Pre-navigation work
             if ((ViewType)viewType == ViewType.Home)
             {
             }
-
-            // Invoke View change in
+            else if ((ViewType)viewType == ViewType.Add)
+            {
+                SelectedContribution = new ContributionsModel();
+            }
+            
+            // Invoke View change
             NavigationHandler.LoadView((ViewType)viewType);
 
-            // Work after view appears
+            // Post-navigation work
             if ((ViewType)viewType == ViewType.Home)
             {
                 if (!IsBusy)
@@ -137,11 +148,11 @@ namespace MvpApi.Forms.Portable.ViewModels
                 }
 
                 IsBusyMessage = "refreshing contributions...";
-                
-                await RefreshContributionsAsync();// TODO This is a temporary test, replace with incremental loading collection
-            }
 
-            if ((ViewType)viewType == ViewType.Profile)
+                // TODO temporary, replace with incremental loading collection
+                await RefreshContributionsAsync();
+            }
+            else if ((ViewType)viewType == ViewType.Profile)
             {
                 if (!IsBusy)
                 {
@@ -195,11 +206,6 @@ namespace MvpApi.Forms.Portable.ViewModels
             }
         }
         
-        private void ToggleDrawer()
-        {
-            IsDrawerOpen = !IsDrawerOpen;
-        }
-
         private void SetGrouping(int groupOptionIndex)
         {
             try

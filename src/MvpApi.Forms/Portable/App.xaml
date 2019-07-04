@@ -47,6 +47,23 @@
         <!-- Full icon list here - https://docs.telerik.com/devtools/xamarin/styling-and-appearance/telerik-font-icons -->
         <x:String x:Key="StarIcon">&#xE805;</x:String>
         <x:String x:Key="MenuIcon">&#xE808;</x:String>
+        <x:String x:Key="PlusIcon">&#xF0FE;</x:String>
+        <x:String x:Key="MinusIcon">&#xF146;</x:String>
+        <x:String x:Key="RightArrowEnclosedIcon">&#xF138;</x:String>
+        <x:String x:Key="LeftArrowEnclosedIcon">&#xF137;</x:String>
+        <x:String x:Key="CancelEnclosedIcon">&#xE851;</x:String>
+        <x:String x:Key="InfoEnclosedIcon">&#xE815;</x:String>
+        <x:String x:Key="TrashIcon">&#xE827;</x:String>
+        <x:String x:Key="CheckMarkIcon">&#xE809;</x:String>
+        <x:String x:Key="GearSolidIcon">&#xE80F;</x:String>
+        <x:String x:Key="GearOutlinedIcon">&#xE822;</x:String>
+        <x:String x:Key="StarSolidIcon">&#xE805;</x:String>
+        <x:String x:Key="StarOutlinedIcon">&#xE801;</x:String>
+        <x:String x:Key="DraftIcon">&#xE828;</x:String>
+        <x:String x:Key="GaugeIcon">&#xE84F;</x:String>
+        <x:String x:Key="CancelIcon">&#xE80A;</x:String>
+        <x:String x:Key="ArrowsUpIcon">&#xE800;</x:String>
+        <x:String x:Key="ArrowsDownIcon">&#xE803;</x:String>
 
         <OnPlatform x:Key="TelerikIconsFont"
                     x:TypeArguments="x:String">
@@ -55,28 +72,46 @@
             <On Platform="UWP">/Assets/Fonts/telerikfontexamples.ttf#telerikfontexamples</On>
         </OnPlatform>
 
-        <Style x:Key="IconRadButtonStyle"
+        <Style x:Key="LargeIconRadButtonStyle"
                TargetType="input:RadButton">
             <Setter Property="BackgroundColor"
                     Value="{StaticResource LightBlueColor}"/>
             <Setter Property="BorderColor"
-                    Value="{StaticResource DarkBlueColor}" />
+                    Value="Transparent" />
             <Setter Property="TextColor"
-                    Value="{StaticResource MediumBlueColor}" />
+                    Value="{StaticResource DarkBlueColor}" />
             <Setter Property="BorderThickness"
-                    Value="2" />
+                    Value="0" />
             <Setter Property="BorderRadius"
                     Value="25" />
             <Setter Property="CornerRadius"
                     Value="25" />
             <Setter Property="Margin"
                     Value="10" />
+            <Setter Property="WidthRequest"
+                    Value="50" />
+            <Setter Property="HeightRequest"
+                    Value="50" />
             <Setter Property="FontFamily"
                     Value="{StaticResource TelerikIconsFont}" />
             <Setter Property="FontSize">
                 <Setter.Value>
                     <OnPlatform x:TypeArguments="x:Double">
-                        <On Platform="iOS">16</On>
+                        <On Platform="iOS">28</On>
+                        <On Platform="Android">26</On>
+                        <On Platform="UWP">28</On>
+                    </OnPlatform>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MediumIconRadButtonStyle"
+               TargetType="input:RadButton"
+               BasedOn="{StaticResource LargeIconRadButtonStyle}">
+            <Setter Property="FontSize">
+                <Setter.Value>
+                    <OnPlatform x:TypeArguments="x:Double">
+                        <On Platform="iOS">18</On>
                         <On Platform="Android">16</On>
                         <On Platform="UWP">18</On>
                     </OnPlatform>
@@ -117,35 +152,10 @@
         </Style>
 
         <Style x:Key="BusyIndicatorStyle"
-               TargetType="primitives:RadBusyIndicator">
-            <Setter Property="AnimationType"
-                    Value="Animation6" />
-            <Setter Property="AnimationContentHeightRequest"
-                    Value="100" />
-            <Setter Property="AnimationContentWidthRequest"
-                    Value="100" />
+               TargetType="primitives:RadBusyIndicator"
+               BasedOn="{StaticResource TopPageBusyIndicatorStyle}">
             <Setter Property="BackgroundColor"
                     Value="{StaticResource LightTranslucentBackgroundColor}" />
-            <Setter Property="AnimationContentColor"
-                    Value="{StaticResource DarkBlueColor}" />
-            <Setter Property="BusyContentTemplate">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <ContentPresenter Content="{TemplateBinding Path=AnimationContent}"
-                                              Grid.Row="1" />
-                            <ContentPresenter Content="{TemplateBinding Path=BusyContent}"
-                                              Grid.Row="2" />
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
         </Style>
 
         <Style x:Key="PageHeaderGridStyle"
@@ -155,7 +165,7 @@
         </Style>
 
         <Style x:Key="PageHeaderStackLayoutStyle"
-               TargetType="Grid">
+               TargetType="StackLayout">
             <Setter Property="BackgroundColor"
                     Value="{StaticResource LightBlueColor}" />
         </Style>
