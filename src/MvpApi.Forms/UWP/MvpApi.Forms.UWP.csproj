@@ -185,6 +185,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.UI.Xaml">
+      <Version>2.3.200213001</Version>
+    </PackageReference>
     <PackageReference Include="Telerik.UI.for.Xamarin">
       <Version>2020.1.218.1</Version>
     </PackageReference>
