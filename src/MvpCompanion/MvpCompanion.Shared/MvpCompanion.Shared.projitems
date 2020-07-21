@@ -18,20 +18,148 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Common\DateTimeMonthKeyLookup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\LoginChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Common\TechnologyKeyLookup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\BoolToIconConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\ContributionTypeNameToBrushConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\DateTimeToDateTimeOffsetConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\DoubleToIntConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\MvcContentUrlConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\PathToBitmapImageConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\PrivacyLevelToBrushConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\StringToUriConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\ThresholdConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\UploadStatusToBoolConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\UploadStatusToBrushConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\AdditionalTechnologyAreasPicker.xaml.cs">
+      <DependentUpon>AdditionalTechnologyAreasPicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\AwardQuestionsDialog.xaml.cs">
+      <DependentUpon>AwardQuestionsDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\ContributionEditorDialog.xaml.cs">
+      <DependentUpon>ContributionEditorDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Dialogs\TutorialDialog.xaml.cs">
+      <DependentUpon>TutorialDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\ContributionExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions\UriExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DesignTimeHelpers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DiagnosticsHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ExceptionLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\FeedbackHelpers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PaletteHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TaskUtilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Selectors\ContributionTypeNameCellStyleSelector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Selectors\TechAreaGroupStyleSelector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AddContributionsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ContributionDetailViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ContributionEditorDialogViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\HomeViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\KudosViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\PageViewModelBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProfileViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\SettingsViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ShellViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\AddContributionsPage.xaml.cs">
+      <DependentUpon>AddContributionsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\ContributionDetailPage.xaml.cs">
+      <DependentUpon>ContributionDetailPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\HomePage.xaml.cs">
+      <DependentUpon>HomePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\KudosPage.xaml.cs">
+      <DependentUpon>KudosPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\ProfilePage.xaml.cs">
+      <DependentUpon>ProfilePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\SettingsPage.xaml.cs">
+      <DependentUpon>SettingsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Views\ShellPage.xaml.cs">
+      <DependentUpon>ShellPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Dialogs\AdditionalTechnologyAreasPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Dialogs\AwardQuestionsDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Dialogs\ContributionEditorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Dialogs\TutorialDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\AddContributionsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\ContributionDetailPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\KudosPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\ProfilePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\SettingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\ShellPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
-	<ItemGroup>
-		<Content Include="$(MSBuildThisFileDirectory)Assets\SharedAssets.md" />
-	</ItemGroup>
-	<ItemGroup>
-		<PRIResource Include="$(MSBuildThisFileDirectory)Strings\en\Resources.resw" />
-	</ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Assets\SharedAssets.md" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\4starStar.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\CoffeeKudo.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\DinnerKudo.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\LunchKudo.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\MvpIcon.png" />
+    <Content Include="$(MSBuildThisFileDirectory)Images\VideoAd.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Include="$(MSBuildThisFileDirectory)Strings\en\Resources.resw" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)ViewModels\readme.md" />
+  </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
-    <ProjectGuid>233a940c-423a-4017-a908-ddf35507c4b5</ProjectGuid>
+    <ProjectGuid>{233A940C-423A-4017-A908-DDF35507C4B5}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>MvpCompanion</RootNamespace>
@@ -115,10 +115,10 @@
     <BundleResource Include="Resources\Fonts\winjs-symbols.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Uno.UI" Version="2.4.0" />
-    <PackageReference Include="Uno.UI.RemoteControl" Version="2.4.0" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Filter" Version="1.1.1" />
+    <PackageReference Include="Uno.UI" Version="3.0.0-dev.899" />
+    <PackageReference Include="Uno.UI.RemoteControl" Version="3.0.0-dev.899" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Filter" Version="1.1.2" />
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Media.xcassets\AppIcons.appiconset\Contents.json">
@@ -149,10 +149,16 @@
       <Visible>false</Visible>
     </ImageAsset>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Media" Visible="false" />
-    <Folder Include="Media\AppIcons" Visible="false" />
-    <Folder Include="Media\LaunchImages" Visible="false" />
+    <ProjectReference Include="..\..\MvpApi.Common\MvpApi.Common.csproj">
+      <Project>{3159ae84-b479-420c-ba42-e328d4159144}</Project>
+      <Name>MvpApi.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MvpApi.Services\MvpApi.Services.csproj">
+      <Project>{edc2d11b-fe53-454b-a7e5-6c74e89fa479}</Project>
+      <Name>MvpApi.Services</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\MvpCompanion.Shared\MvpCompanion.Shared.projitems" Label="Shared" Condition="Exists('..\MvpCompanion.Shared\MvpCompanion.Shared.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
