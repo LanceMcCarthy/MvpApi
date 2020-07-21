@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>MvpApi.Wpf</RootNamespace>
+    <EnableDefaultItems>False</EnableDefaultItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommonHelpers" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Toolkit.Wpf.UI.Controls" Version="6.1.1" />
+    <PackageReference Include="Microsoft.Toolkit.Wpf.UI.Controls.WebView" Version="6.1.1" />
+    <PackageReference Include="Microsoft.Toolkit.Wpf.UI.XamlHost" Version="6.1.1" />
+    <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1" />
+    <PackageReference Include="Telerik.UI.for.Wpf.NetCore" Version="2020.2.617" />
+  </ItemGroup>
+  
+  <ItemGroup>
+  <ApplicationDefinition Include="App.xaml">
+    <Generator>MSBuild:Compile</Generator>
+    <SubType>Designer</SubType>
+  </ApplicationDefinition>
+  <Page Include="ShellWindow.xaml">
+    <Generator>MSBuild:Compile</Generator>
+    <SubType>Designer</SubType>
+  </Page>
+  <Compile Include="App.xaml.cs">
+    <DependentUpon>App.xaml</DependentUpon>
+    <SubType>Code</SubType>
+  </Compile>
+  <Compile Include="Helpers\DesignTimeHelpers.cs" />
+  <Compile Include="Helpers\DiagnosticsHelper.cs" />
+  <Compile Include="Helpers\ExceptionLogger.cs" />
+  <Compile Include="Helpers\FeedbackHelpers.cs" />
+  <Compile Include="Helpers\NetworkHelper.cs" />
+  <Compile Include="Helpers\PaletteHelper.cs" />
+  <Compile Include="Helpers\TaskUtilities.cs" />
+  <Compile Include="ShellWindow.xaml.cs">
+    <DependentUpon>ShellWindow.xaml</DependentUpon>
+    <SubType>Code</SubType>
+  </Compile>
+  <Compile Include="ViewModels\AboutViewModel.cs" />
+  <Compile Include="ViewModels\AddContributionsViewModel.cs" />
+  <Compile Include="ViewModels\ContributionDetailViewModel.cs" />
+  <Compile Include="ViewModels\ContributionEditorDialogViewModel.cs" />
+  <Compile Include="ViewModels\HomeViewModel.cs" />
+  <Compile Include="ViewModels\KudosViewModel.cs" />
+  <Compile Include="ViewModels\ProfileViewModel.cs" />
+  <Compile Include="ViewModels\SettingsViewModel.cs" />
+  <Compile Include="ViewModels\ShellViewModel.cs" />
+</ItemGroup>
+  
+  <ItemGroup>
+    <None Include="ViewModels\readme.md" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj" />
+    <ProjectReference Include="..\MvpApi.Services\MvpApi.Services.csproj" />
+  </ItemGroup>
+
+</Project>
