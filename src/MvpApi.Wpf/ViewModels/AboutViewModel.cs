@@ -2,19 +2,23 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO.Packaging;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
+using Windows.ApplicationModel.Email;
+using Windows.Storage;
+using Windows.UI.Popups;
 using CommonHelpers.Common;
 
 namespace MvpApi.Wpf.ViewModels
 {
     public class AboutViewModel : ViewModelBase
     {
-        private readonly ApplicationDataContainer _roamingSettings;
-        private string _appVersion;
-        private Visibility _feedbackHubButtonVisibility;
-        private int _daysToKeepErrorLogs = 5;
+        private readonly ApplicationDataContainer localSettings;
+        private string appVersion;
+        private Visibility feedbackHubButtonVisibility;
+        private int daysToKeepErrorLogs = 5;
 
         public AboutViewModel()
         {
@@ -24,7 +28,7 @@ namespace MvpApi.Wpf.ViewModels
             }
             else
             {
-                _roamingSettings = ApplicationData.Current.RoamingSettings;
+                localSettings = ApplicationData.Current.LocalSettings;
             }
         }
 
@@ -32,40 +36,40 @@ namespace MvpApi.Wpf.ViewModels
         {
             get
             {
-                _appVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
+                appVersion = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString();
 
-                return _appVersion;
+                return appVersion;
             }
-            set => SetProperty(ref _appVersion, value);
+            set => SetProperty(ref appVersion, value);
         }
 
         public int DaysToKeepErrorLogs
         {
             get
             {
-                if (_roamingSettings.Values.TryGetValue("DaysToKeepErrorLogs", out object rawValue))
+                if (localSettings.Values.TryGetValue("DaysToKeepErrorLogs", out object rawValue))
                 {
-                    _daysToKeepErrorLogs = Convert.ToInt32(rawValue);
+                    daysToKeepErrorLogs = Convert.ToInt32(rawValue);
                 }
                 else
                 {
-                    _roamingSettings.Values["DaysToKeepErrorLogs"] = _daysToKeepErrorLogs;
+                    localSettings.Values["DaysToKeepErrorLogs"] = daysToKeepErrorLogs;
                 }
 
-                return _daysToKeepErrorLogs;
+                return daysToKeepErrorLogs;
             }
             set
             {
-                SetProperty(ref _daysToKeepErrorLogs, value);
+                SetProperty(ref daysToKeepErrorLogs, value);
 
-                _roamingSettings.Values["DaysToKeepErrorLogs"] = value;
+                localSettings.Values["DaysToKeepErrorLogs"] = value;
             }
         }
         
         public Visibility FeedbackHubButtonVisibility
         {
-            get => _feedbackHubButtonVisibility;
-            set => SetProperty(ref _feedbackHubButtonVisibility, value);
+            get => feedbackHubButtonVisibility;
+            set => SetProperty(ref feedbackHubButtonVisibility, value);
         }
 
         //public bool UseBetaEditor
@@ -83,7 +87,7 @@ namespace MvpApi.Wpf.ViewModels
 
         public async void FeedbackButton_Click(object sender, RoutedEventArgs e)
         {
-            await StoreServicesFeedbackLauncher.GetDefault().LaunchAsync();
+            //await StoreServicesFeedbackLauncher.GetDefault().LaunchAsync();
         }
         
         private async Task CreateEmailAsync()
@@ -114,18 +118,17 @@ namespace MvpApi.Wpf.ViewModels
         
         #region Navigation
 
-        public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        public void OnLoadedAsync()
         {
-            FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
-                ? Visibility.Visible 
-                : Visibility.Collapsed;
+            //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
+            //    ? Visibility.Visible 
+            //    : Visibility.Collapsed;
             
-            return base.OnNavigatedToAsync(parameter, mode, state);
         }
 
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+        public void OnUnloaded()
         {
-            return base.OnNavigatedFromAsync(pageState, suspending);
+
         }
 
         #endregion

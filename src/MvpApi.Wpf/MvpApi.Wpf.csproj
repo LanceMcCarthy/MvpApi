@@ -10,8 +10,6 @@
   <ItemGroup>
     <PackageReference Include="CommonHelpers" Version="1.1.1" />
     <PackageReference Include="Microsoft.Toolkit.Wpf.UI.Controls" Version="6.1.1" />
-    <PackageReference Include="Microsoft.Toolkit.Wpf.UI.Controls.WebView" Version="6.1.1" />
-    <PackageReference Include="Microsoft.Toolkit.Wpf.UI.XamlHost" Version="6.1.1" />
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.19041.1" />
     <PackageReference Include="Telerik.UI.for.Wpf.NetCore" Version="2020.2.617" />
   </ItemGroup>
@@ -24,6 +22,9 @@
   <Page Include="ShellWindow.xaml">
     <Generator>MSBuild:Compile</Generator>
     <SubType>Designer</SubType>
+  </Page>
+  <Page Include="Views\HomeView.xaml">
+    <Generator>MSBuild:Compile</Generator>
   </Page>
   <Compile Include="App.xaml.cs">
     <DependentUpon>App.xaml</DependentUpon>
@@ -49,6 +50,7 @@
   <Compile Include="ViewModels\ProfileViewModel.cs" />
   <Compile Include="ViewModels\SettingsViewModel.cs" />
   <Compile Include="ViewModels\ShellViewModel.cs" />
+  <Compile Include="Views\HomeView.xaml.cs" />
 </ItemGroup>
   
   <ItemGroup>

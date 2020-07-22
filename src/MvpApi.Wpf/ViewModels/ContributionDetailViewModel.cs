@@ -6,8 +6,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Navigation;
+using Windows.Foundation.Metadata;
+using Windows.Storage;
+using Windows.UI.Popups;
+using Windows.UI.Xaml.Controls;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using MvpApi.Common.Extensions;
@@ -15,6 +18,8 @@ using MvpApi.Common.Models;
 using MvpApi.Wpf.Helpers;
 using Telerik.Windows.Diagrams.Core;
 using ExceptionLogger = MvpApi.Services.Utilities.ExceptionLogger;
+using SelectionChangedEventArgs = System.Windows.Controls.SelectionChangedEventArgs;
+using TextChangedEventArgs = System.Windows.Controls.TextChangedEventArgs;
 
 namespace MvpApi.Wpf.ViewModels
 {
@@ -51,6 +56,19 @@ namespace MvpApi.Wpf.ViewModels
             RemoveAdditionalTechAreaCommand = new DelegateCommand<ContributionTechnologyModel>(RemoveAdditionalArea);
         }
 
+        public ContributionDetailViewModel(ContributionsModel contribution)
+        {
+            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            {
+                Visibilities = DesignTimeHelpers.GenerateVisibilities();
+                SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
+            }
+
+            SelectedContribution = contribution;
+
+            RemoveAdditionalTechAreaCommand = new DelegateCommand<ContributionTechnologyModel>(RemoveAdditionalArea);
+        }
+
         #region Properties
 
         public ContributionsModel SelectedContribution
@@ -58,11 +76,11 @@ namespace MvpApi.Wpf.ViewModels
             get => _selectedContribution;
             set => SetProperty(ref _selectedContribution, value);
         }
-        
+
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
 
         public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
-        
+
         public bool IsSelectedContributionDirty
         {
             get => _isSelectedContributionDirty;
@@ -134,9 +152,9 @@ namespace MvpApi.Wpf.ViewModels
         public DelegateCommand<ContributionTechnologyModel> RemoveAdditionalTechAreaCommand { get; set; }
 
         #endregion
-        
+
         #region Event handlers
-        
+
         public void TitleTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             Compare();
@@ -156,10 +174,10 @@ namespace MvpApi.Wpf.ViewModels
         {
             Compare();
         }
-        
+
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            if (e.NewDate < (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline)
+            if (e.NewDate < (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionStartDate || e.NewDate > (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionDeadline)
             {
                 WarningMessage = "The contribution date must be after the start of your current award period and before March 31, 2019 in order for it to count towards your evaluation";
             }
@@ -187,26 +205,28 @@ namespace MvpApi.Wpf.ViewModels
                 await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
             }
         }
-        
+
         public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
         {
-            var isValid = await SelectedContribution.Validate(true);
+            var validationResult = SelectedContribution.Validate();
 
-            if (!isValid)
+            if (!validationResult.Item1)
+            {
                 return;
+            }
 
             SelectedContribution.UploadStatus = UploadStatus.InProgress;
-            
+
             var success = await UploadContributionAsync(SelectedContribution);
-            
+
             // Mark success or failure
             SelectedContribution.UploadStatus = success ? UploadStatus.Success : UploadStatus.Failed;
 
             // Quality assurance, only logs a successful or failed upload.
-            if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-            {
-                StoreServicesCustomEventLogger.GetDefault().Log($"EditContribution{SelectedContribution.UploadStatus}");
-            }
+            //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+            //{
+            //    StoreServicesCustomEventLogger.GetDefault().Log($"EditContribution{SelectedContribution.UploadStatus}");
+            //}
 
             if (SelectedContribution.UploadStatus == UploadStatus.Success)
             {
@@ -221,8 +241,8 @@ namespace MvpApi.Wpf.ViewModels
                 IsBusyMessage = string.Empty;
                 IsBusy = false;
 
-                if (BootStrapper.Current.NavigationService.CanGoBack)
-                    BootStrapper.Current.NavigationService.GoBack();
+                //if (BootStrapper.Current.NavigationService.CanGoBack)
+                //    BootStrapper.Current.NavigationService.GoBack();
             }
         }
 
@@ -244,8 +264,8 @@ namespace MvpApi.Wpf.ViewModels
                 if (result == true)
                 {
                     // Quality assurance, only logs a successful delete.
-                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                        StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionSuccess");
+                    //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionSuccess");
 
                     // Refresh the main cached contributions list because the details for this item has changed
                     IsBusy = true;
@@ -256,21 +276,21 @@ namespace MvpApi.Wpf.ViewModels
                     IsBusyMessage = string.Empty;
                     IsBusy = false;
 
-                    if (BootStrapper.Current.NavigationService.CanGoBack)
-                        BootStrapper.Current.NavigationService.GoBack();
+                    //if (BootStrapper.Current.NavigationService.CanGoBack)
+                    //    BootStrapper.Current.NavigationService.GoBack();
                 }
                 else
                 {
                     // Quality assurance, only logs a failed delete.
-                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                        StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
+                    //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
                 }
             }
             catch (Exception ex)
             {
                 // Quality assurance, only logs a failed delete.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
+                //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
 
                 await ExceptionLogger.LogExceptionAsync(ex);
             }
@@ -279,7 +299,7 @@ namespace MvpApi.Wpf.ViewModels
         #endregion
 
         #region Methods
-        
+
         private void AddAdditionalArea(ContributionTechnologyModel area)
         {
             if (!SelectedContribution.AdditionalTechnologies.Contains(area))
@@ -345,7 +365,7 @@ namespace MvpApi.Wpf.ViewModels
             //}
             //catch
             //{
-                
+
             //}
         }
 
@@ -418,107 +438,84 @@ namespace MvpApi.Wpf.ViewModels
 
         #region Navigation
 
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        public async Task OnLoadedAsync()
         {
-            if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+            if (!NetworkHelper.Current.CheckInternetConnection())
             {
-                if (BootStrapper.Current.NavigationService.CanGoBack)
-                    BootStrapper.Current.NavigationService.GoBack();
+
             }
 
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+            // Verify the user is logged in
+            if (!(App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
             {
-                // Verify the user is logged in
-                if (!shellVm.IsLoggedIn)
+                IsBusy = true;
+                IsBusyMessage = "logging in...";
+
+                await (App.Current.MainWindow as ShellWindow).SignInAsync();
+
+                IsBusyMessage = "";
+                IsBusy = false;
+            }
+
+            if ((App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
+            {
+                try
                 {
                     IsBusy = true;
-                    IsBusyMessage = "logging in...";
 
-                    await ShellPage.Instance.SignInAsync();
-                    
+                    // Get the associated lists from the API
+                    await LoadSupportingDataAsync();
+
+                    // Read the passed contribution parameter
+                    if (SelectedContribution != null)
+                    {
+                        SelectedContribution.UploadStatus = UploadStatus.None;
+
+                        // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
+                        DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
+
+                        // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
+                        _originalContribution = SelectedContribution.Clone();
+
+                        if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                        {
+                            //var td = new TutorialDialog
+                            //{
+                            //    SettingsKey = "ContributionDetailPageTutorialShown",
+                            //    MessageTitle = "Contribution Details",
+                            //    Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
+                            //              "- Click 'Save' button to save changes.\r\n" +
+                            //              "- Click 'Delete' button to permanently delete the contribution.\r\n" +
+                            //              "- Click the back button to leave and cancel any changes.\r\n\n" +
+                            //              "Note: Pay attention to how the 'required' fields change depending on the technology selection."
+                            //};
+
+                            //await td.ShowAsync();
+                        }
+                    }
+                    else
+                    {
+                        await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"LoadDataAsync Exception {ex}");
+                }
+                finally
+                {
                     IsBusyMessage = "";
                     IsBusy = false;
                 }
-
-                if (shellVm.IsLoggedIn)
-                {
-                    try
-                    {
-                        IsBusy = true;
-
-                        // Get the associated lists from the API
-                        await LoadSupportingDataAsync();
-
-                        // Read the passed contribution parameter
-                        if (parameter is ContributionsModel param)
-                        {
-                            SelectedContribution = param;
-
-                            SelectedContribution.UploadStatus = UploadStatus.None;
-
-                            // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
-                            DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
-
-                            // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-                            _originalContribution = SelectedContribution.Clone();
-
-                            if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                            {
-                                var td = new TutorialDialog
-                                {
-                                    SettingsKey = "ContributionDetailPageTutorialShown",
-                                    MessageTitle = "Contribution Details",
-                                    Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
-                                              "- Click 'Save' button to save changes.\r\n" +
-                                              "- Click 'Delete' button to permanently delete the contribution.\r\n" +
-                                              "- Click the back button to leave and cancel any changes.\r\n\n" +
-                                              "Note: Pay attention to how the 'required' fields change depending on the technology selection."
-                                };
-
-                                await td.ShowAsync();
-                            }
-                        }
-                        else
-                        {
-                            await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
-
-                            if (BootStrapper.Current.NavigationService.CanGoBack)
-                                BootStrapper.Current.NavigationService.GoBack();
-                        }
-
-                        // To prevent accidental back navigation
-                        NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"LoadDataAsync Exception {ex}");
-                    }
-                    finally
-                    {
-                        IsBusyMessage = "";
-                        IsBusy = false;
-                    }
-                }
             }
-        }
-
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            return base.OnNavigatedFromAsync(pageState, suspending);
-        }
-
-        public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
-        {
-            NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
-
-            return base.OnNavigatingFromAsync(args);
         }
 
         // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
         private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
         {
             e.Handled = IsSelectedContributionDirty;
-            
+
             if (IsSelectedContributionDirty)
             {
                 var md = new MessageDialog("Navigating away now will lose your changes, continue?", "Warning: Unsaved Changes");
@@ -531,10 +528,7 @@ namespace MvpApi.Wpf.ViewModels
 
                 if (result.Label == "yes")
                 {
-                    if (NavigationService.CanGoBack)
-                    {
-                        NavigationService.GoBack();
-                    }
+                    
                 }
             }
         }

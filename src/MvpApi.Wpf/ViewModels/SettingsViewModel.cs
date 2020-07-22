@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Navigation;
 using CommonHelpers.Common;
 
 namespace MvpApi.Wpf.ViewModels
@@ -20,29 +18,29 @@ namespace MvpApi.Wpf.ViewModels
 
         public bool UseBetaEditor
         {
-            get => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor;
-            set => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor = value;
+            get => (App.Current.MainWindow as ShellWindow).ViewModel.UseBetaEditor;
+            set => (App.Current.MainWindow as ShellWindow).ViewModel.UseBetaEditor = value;
         }
 
         public DateTime SubmissionStartDate
         {
-            get => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate;
-            set => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate = value;
+            get => (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionStartDate;
+            set => (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionStartDate = value;
         }
 
         public DateTime SubmissionDeadline
         {
-            get => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline;
-            set => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline = value;
+            get => (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionDeadline;
+            set => (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionDeadline = value;
         }
 
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        public async Task OnLoadedAsync()
         {
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+            if ((App.Current.MainWindow as ShellWindow).DataContext is ShellViewModel shellVm)
             {
                 if (!shellVm.IsLoggedIn)
                 {
-                    await ShellPage.Instance.SignInAsync();
+                    await (App.Current.MainWindow as ShellWindow).SignInAsync();
                 }
 
                 if (IsBusy)

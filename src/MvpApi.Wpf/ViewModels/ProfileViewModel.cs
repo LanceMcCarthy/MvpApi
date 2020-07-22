@@ -264,14 +264,14 @@ namespace MvpApi.Wpf.ViewModels
 
         public async Task OnLoadedAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            if (ShellWindow.Instance.DataContext is ShellViewModel shellVm)
+            if ((App.Current.MainWindow as ShellWindow).DataContext is ShellViewModel shellVm)
             {
                 if (!shellVm.IsLoggedIn)
                 {
                     IsBusy = true;
                     IsBusyMessage = "signing in...";
 
-                    await ShellWindow.Instance.SignInAsync();
+                    await (App.Current.MainWindow as ShellWindow).SignInAsync();
                 }
 
                 this.Mvp = shellVm.Mvp;

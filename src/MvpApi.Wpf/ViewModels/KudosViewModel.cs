@@ -179,7 +179,7 @@ namespace MvpApi.Wpf.ViewModels
                 IsBusyMessage = "";
             }
         }
-        
+
         //private void MyInterstitialAd_AdReady(object sender, object e)
         //{
         //    var kudo = KudosCollection.FirstOrDefault(a => a.Title == "Video Ad");
@@ -214,32 +214,30 @@ namespace MvpApi.Wpf.ViewModels
 
         #region Navigation
 
-        //public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
-        //{
-        //    FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
-        //        ? Visibility.Visible
-        //        : Visibility.Collapsed;
+        public async Task OnLoadedAsync()
+        {
+            //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
+            //    ? Visibility.Visible
+            //    : Visibility.Collapsed;
 
-        //    _myInterstitialAd = new InterstitialAd();
-        //    _myInterstitialAd.AdReady += MyInterstitialAd_AdReady;
-        //    _myInterstitialAd.ErrorOccurred += MyInterstitialAd_ErrorOccurred;
-        //    _myInterstitialAd.Completed += MyInterstitialAd_Completed;
-        //    _myInterstitialAd.Cancelled += MyInterstitialAd_Cancelled;
+            //_myInterstitialAd = new InterstitialAd();
+            //_myInterstitialAd.AdReady += MyInterstitialAd_AdReady;
+            //_myInterstitialAd.ErrorOccurred += MyInterstitialAd_ErrorOccurred;
+            //_myInterstitialAd.Completed += MyInterstitialAd_Completed;
+            //_myInterstitialAd.Cancelled += MyInterstitialAd_Cancelled;
 
-        //    RefreshAd();
+            //RefreshAd();
 
-        //    return base.OnNavigatedToAsync(parameter, mode, state);
-        //}
+        }
 
-        //public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        //{
-        //    _myInterstitialAd.AdReady -= MyInterstitialAd_AdReady;
-        //    _myInterstitialAd.ErrorOccurred -= MyInterstitialAd_ErrorOccurred;
-        //    _myInterstitialAd.Completed -= MyInterstitialAd_Completed;
-        //    _myInterstitialAd.Cancelled -= MyInterstitialAd_Cancelled;
+        public async Task OnUnloadedAsync()
+        {
+            //_myInterstitialAd.AdReady -= MyInterstitialAd_AdReady;
+            //_myInterstitialAd.ErrorOccurred -= MyInterstitialAd_ErrorOccurred;
+            //_myInterstitialAd.Completed -= MyInterstitialAd_Completed;
+            //_myInterstitialAd.Cancelled -= MyInterstitialAd_Cancelled;
 
-        //    return base.OnNavigatedFromAsync(pageState, suspending);
-        //}
+        }
 
         #endregion
     }

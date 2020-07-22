@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.UI.Popups;
 
 namespace MvpApi.Wpf.Helpers
 {

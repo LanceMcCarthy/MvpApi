@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+//using Windows.Storage;
+//using Windows.Storage.Pickers;
+//using Windows.Storage.Provider;
+using Windows.UI.Popups;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using MvpApi.Common.Models;
@@ -108,21 +112,7 @@ namespace MvpApi.Wpf.ViewModels
 
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-            {
-                var editDialog = new ContributionEditorDialog();
-
-                await editDialog.ShowAsync();
-
-                if (editDialog.ContributionResult != null)
-                {
-                    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-                }
-            }
-            else
-            {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
-            }
+            //(App.Current.MainWindow as ShellWindow).RootNavigationView.Content = new AddContributionView();
         }
 
         public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
@@ -153,8 +143,8 @@ namespace MvpApi.Wpf.ViewModels
                     var success = await App.ApiService.DeleteContributionAsync(contribution);
 
                     // Quality assurance, only logs a successful or failed delete.
-                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                        StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
+                    //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    //    StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
                 }
 
                 SelectedContributions.Clear();
@@ -174,36 +164,6 @@ namespace MvpApi.Wpf.ViewModels
             }
         }
 
-        public async void RadDataGrid_OnSelectionChanged(object sender, GridViewSelectionChangedEventArgs e)
-        {
-            // When in multiple selection mode, enable/disable delete instead of navigating to details page
-            if (GridSelectionMode == DataGridSelectionMode.Extended)
-            {
-                AreAppBarButtonsEnabled = e?.AddedItems.Any() == true;
-                return;
-            }
-
-            // When in single selection mode, go to the selected item's details page
-            if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
-            {
-                if(ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-                {
-                    var editDialog = new ContributionEditorDialog(contribution);
-
-                    await editDialog.ShowAsync();
-
-                    if (editDialog.ContributionResult != null)
-                    {
-                        Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-                    }
-                }
-                else
-                {
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
-                }
-            }
-        }
-
         public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
             if (!(sender is RadioButton rb) || rb.Content == null || GroupDescriptors == null) return;
@@ -215,18 +175,16 @@ namespace MvpApi.Wpf.ViewModels
             switch (groupName)
             {
                 case "None":
-                    // do nothing because we've already cleared the GroupDescriptors
+                    GroupDescriptors.Clear();
                     break;
                 case "Date":
-                    // Custom group descriptor to group by DateTime.Date  
-                    GroupDescriptors.Add(new DelegateGroupDescriptor { DisplayContent = "Start Date", KeyLookup = new DateTimeMonthKeyLookup() });
+                    GroupDescriptors.Add(new GroupDescriptor { DisplayContent = "Start Date", Member = "StartDate.Date" });
                     break;
                 case "Award Area":
-                    // Need a custom descriptor to group by ContributionTechnology.Name
-                    GroupDescriptors.Add(new DelegateGroupDescriptor { DisplayContent = "Award Name", KeyLookup = new TechnologyKeyLookup() });
+                    GroupDescriptors.Add(new GroupDescriptor { DisplayContent = "Award Name", Member = "ContributionTechnology.Name",  });
                     break;
                 case "Contribution Type":
-                    GroupDescriptors.Add(new PropertyGroupDescriptor { DisplayContent = "Contribution Type", PropertyName = nameof(ContributionsModel.ContributionTypeName) });
+                    GroupDescriptors.Add(new GroupDescriptor { DisplayContent = "Contribution Type", Member = "ContributionTypeName" });
                     break;
             }
         }
@@ -241,39 +199,39 @@ namespace MvpApi.Wpf.ViewModels
             if (string.IsNullOrEmpty(jsonData))
                 return;
 
-            var savePicker = new FileSavePicker
-            {
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
-                SuggestedFileName = $"MVP Contributions {DateTime.Now:yyyy-dd-M--HH-mm-ss}"
-            };
+            //var savePicker = new FileSavePicker
+            //{
+            //    SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+            //    SuggestedFileName = $"MVP Contributions {DateTime.Now:yyyy-dd-M--HH-mm-ss}"
+            //};
 
-            savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
+            //savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
 
-            var file = await savePicker.PickSaveFileAsync();
+            //var file = await savePicker.PickSaveFileAsync();
 
-            if (file != null)
-            {
-                IsBusyMessage = "saving file...";
+            //if (file != null)
+            //{
+            //    IsBusyMessage = "saving file...";
 
-                // prevents file changes by syncing services like OneDrive
-                CachedFileManager.DeferUpdates(file);
+            //    // prevents file changes by syncing services like OneDrive
+            //    CachedFileManager.DeferUpdates(file);
 
-                await FileIO.WriteTextAsync(file, jsonData);
+            //    await FileIO.WriteTextAsync(file, jsonData);
 
-                // releases the hold on the file so syncing services can make changes
-                var status = await CachedFileManager.CompleteUpdatesAsync(file);
+            //    // releases the hold on the file so syncing services can make changes
+            //    var status = await CachedFileManager.CompleteUpdatesAsync(file);
 
-                if (status == FileUpdateStatus.Complete)
-                {
-                    var message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
-                                  "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
-                                  "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
-                                  "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
-                                  "4. Now you can us 'Save As' to xlsx file or csv.";
+            //    if (status == FileUpdateStatus.Complete)
+            //    {
+            //        var message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
+            //                      "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
+            //                      "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
+            //                      "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
+            //                      "4. Now you can us 'Save As' to xlsx file or csv.";
 
-                    await new MessageDialog(message, "Export Saved").ShowAsync();
-                }
-            }
+            //        await new MessageDialog(message, "Export Saved").ShowAsync();
+            //    }
+            //}
 
             IsBusyMessage = "";
             IsBusy = false;
@@ -353,7 +311,7 @@ namespace MvpApi.Wpf.ViewModels
 
         #region Navigation
 
-        public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        public async Task OnLoadedAsync()
         {
             IsInternetDisabled = !NetworkHelper.Current.CheckInternetConnection();
 
@@ -363,11 +321,11 @@ namespace MvpApi.Wpf.ViewModels
                 return;
             }
 
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+            if ((App.Current.MainWindow as ShellWindow).DataContext is ShellViewModel shellVm)
             {
                 if (!shellVm.IsLoggedIn)
                 {
-                    await ShellPage.Instance.SignInAsync();
+                    await (App.Current.MainWindow as ShellWindow).SignInAsync();
                 }
 
                 // Although user should be logged in at this point, still check
@@ -377,21 +335,21 @@ namespace MvpApi.Wpf.ViewModels
                     await LoadContributionsAsync();
                 }
 
-                if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                {
-                    var td = new TutorialDialog
-                    {
-                        SettingsKey = "HomePageTutorialShown",
-                        MessageTitle = "Home Page",
-                        Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
-                                  "- Group or sort the contributions by any column.\r\n" +
-                                  "- Select a contribution to view its details or edit it.\r\n" +
-                                  "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
-                                  "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
-                    };
+                //if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                //{
+                    //var td = new TutorialDialog
+                    //{
+                    //    SettingsKey = "HomePageTutorialShown",
+                    //    MessageTitle = "Home Page",
+                    //    Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
+                    //              "- Group or sort the contributions by any column.\r\n" +
+                    //              "- Select a contribution to view its details or edit it.\r\n" +
+                    //              "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
+                    //              "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
+                    //};
 
-                    await td.ShowAsync();
-                }
+                    //await td.ShowAsync();
+                //}
 
                 if (IsBusy)
                 {

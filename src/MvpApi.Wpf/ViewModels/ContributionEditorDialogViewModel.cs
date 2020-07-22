@@ -5,8 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
+using Windows.UI.Popups;
+using Windows.UI.Xaml.Controls;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using MvpApi.Common.Extensions;
@@ -47,7 +47,7 @@ namespace MvpApi.Wpf.ViewModels
                 UploadQueue = DesignTimeHelpers.GenerateContributions();
                 SelectedContribution = UploadQueue.FirstOrDefault();
             }
-            
+
             RemoveAdditionalTechAreaCommand = new DelegateCommand<ContributionTechnologyModel>(RemoveAdditionalArea);
         }
 
@@ -131,7 +131,7 @@ namespace MvpApi.Wpf.ViewModels
             set => SetProperty(ref _warningMessage, value);
         }
 
-        
+
         public bool EditingExistingContribution
         {
             get => _editingExistingContribution;
@@ -141,12 +141,12 @@ namespace MvpApi.Wpf.ViewModels
         // Commands
 
         public DelegateCommand<ContributionTechnologyModel> RemoveAdditionalTechAreaCommand { get; set; }
-        
+
         // Methods
 
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            if (e.NewDate < (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline)
+            if (e.NewDate < (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionStartDate || e.NewDate > (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionDeadline)
             {
                 WarningMessage = "The contribution date must be after the start of your current award period and before March 31st in order for it to count towards your evaluation";
             }
@@ -158,7 +158,7 @@ namespace MvpApi.Wpf.ViewModels
 
         public void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.FirstOrDefault() is ContributionTypeModel type)
+            if (e.AddedItems != null && e.AddedItems[0] is ContributionTypeModel type)
             {
                 // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
                 DetermineContributionTypeRequirements(type);
@@ -178,12 +178,12 @@ namespace MvpApi.Wpf.ViewModels
             {
                 await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
             }
-            
+
             // Manually find the flyout's popup to close it
-            var lv = sender as ListView;
-            var foPresenter = lv?.Parent as FlyoutPresenter;
-            var popup = foPresenter?.Parent as Popup;
-            popup?.Hide();
+            //var lv = sender as ListView;
+            //var foPresenter = lv?.Parent as FlyoutPresenter;
+            //var popup = foPresenter?.Parent as Popup;
+            //popup?.Hide();
         }
 
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
@@ -219,106 +219,89 @@ namespace MvpApi.Wpf.ViewModels
                 SelectedContribution.AdditionalTechnologies.Remove(area);
             }
         }
-        
+
         public async Task OnDialogLoadedAsync()
         {
-            if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+            //if (!NetworkHelper.Current.CheckInternetConnection())
+            //{
+
+            //}
+
+            // Verify the user is logged in
+            if (!(App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
             {
-                WarningMessage = "No Internet Available";
-                return;
+                IsBusy = true;
+                IsBusyMessage = "logging in...";
+
+                await (App.Current.MainWindow as ShellWindow).SignInAsync();
+
+                IsBusyMessage = "";
+                IsBusy = false;
             }
 
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+            if ((App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
             {
-                // Verify the user is logged in
-                if (!shellVm.IsLoggedIn)
+                try
                 {
                     IsBusy = true;
-                    IsBusyMessage = "logging in...";
+                    IsBusyMessage = "loading types...";
 
-                    await ShellPage.Instance.SignInAsync();
+                    var types = await App.ApiService.GetContributionTypesAsync();
 
+                    types.ForEach(type =>
+                    {
+                        Types.Add(type);
+                    });
+
+                    IsBusyMessage = "loading technologies...";
+
+                    var areaRoots = await App.ApiService.GetContributionAreasAsync();
+
+                    // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
+                    var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+
+                    areas.ForEach(area =>
+                    {
+                        CategoryAreas.Add(area);
+                    });
+
+                    // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
+
+                    IsBusyMessage = "loading visibility options...";
+
+                    var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+                    visibilities.ForEach(visibility =>
+                    {
+                        Visibilities.Add(visibility);
+                    });
+
+                    // If the contribution object wasn't passed during Dialog creation, setup a blank one.
+                    if (SelectedContribution == null)
+                    {
+                        SelectedContribution = new ContributionsModel
+                        {
+                            ContributionId = 0,
+                            StartDate = DateTime.Now,
+                            Visibility = Visibilities.FirstOrDefault(),
+                            ContributionType = Types.FirstOrDefault(),
+                            ContributionTypeName = SelectedContribution?.ContributionType?.Name,
+                            ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas.FirstOrDefault(),
+                            AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
+                        };
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
+                    await ex.LogExceptionAsync();
+                }
+                finally
+                {
                     IsBusyMessage = "";
                     IsBusy = false;
                 }
-
-                if (shellVm.IsLoggedIn)
-                {
-                    try
-                    {
-                        IsBusy = true;
-                        IsBusyMessage = "loading types...";
-
-                        var types = await App.ApiService.GetContributionTypesAsync();
-
-                        types.ForEach(type =>
-                        {
-                            Types.Add(type);
-                        });
-
-                        IsBusyMessage = "loading technologies...";
-
-                        var areaRoots = await App.ApiService.GetContributionAreasAsync();
-
-                        // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-                        var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-
-                        areas.ForEach(area =>
-                        {
-                            CategoryAreas.Add(area);
-                        });
-
-                        // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
-
-                        IsBusyMessage = "loading visibility options...";
-
-                        var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-                        visibilities.ForEach(visibility =>
-                        {
-                            Visibilities.Add(visibility);
-                        });
-
-                        // If the contribution object wasn't passed during Dialog creation, setup a blank one.
-                        if (SelectedContribution == null)
-                        {
-                            SelectedContribution = new ContributionsModel
-                            {
-                                ContributionId = 0,
-                                StartDate = DateTime.Now,
-                                Visibility = Visibilities.FirstOrDefault(),
-                                ContributionType = Types.FirstOrDefault(),
-                                ContributionTypeName = SelectedContribution?.ContributionType?.Name,
-                                ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas.FirstOrDefault(),
-                                AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
-                            };
-                        }
-                        
-                        // TODO prevent accidental back navigation
-                        if (BootStrapper.Current.NavigationService.FrameFacade != null)
-                        {
-                            BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacade_BackRequested;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
-                        await ex.LogExceptionAsync();
-                    }
-                    finally
-                    {
-                        IsBusyMessage = "";
-                        IsBusy = false;
-                    }
-                }
-            }
-        }
-
-        public void OnDialogClosingAsync()
-        {
-            if (BootStrapper.Current.NavigationService.FrameFacade != null)
-            {
-                BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacade_BackRequested;
             }
         }
 
@@ -342,7 +325,7 @@ namespace MvpApi.Wpf.ViewModels
                 await ex.LogExceptionAsync();
             }
         }
-        
+
         #endregion
     }
 }

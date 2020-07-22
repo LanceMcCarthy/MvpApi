@@ -7,8 +7,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Navigation;
+using Windows.Foundation.Metadata;
+using Windows.Storage;
+using Windows.UI.Xaml.Controls;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using MvpApi.Common.Extensions;
@@ -16,13 +18,14 @@ using MvpApi.Common.Models;
 using MvpApi.Wpf.Helpers;
 using Telerik.Windows.Diagrams.Core;
 using ExceptionLogger = MvpApi.Services.Utilities.ExceptionLogger;
+using SelectionChangedEventArgs = System.Windows.Controls.SelectionChangedEventArgs;
 
 namespace MvpApi.Wpf.ViewModels
 {
     public class AddContributionsViewModel : ViewModelBase
     {
         #region Fields
-        
+
         private ContributionsModel selectedContribution;
         private string urlHeader = "Url";
         private string annualQuantityHeader = "Annual Quantity";
@@ -67,7 +70,7 @@ namespace MvpApi.Wpf.ViewModels
         public ObservableCollection<ContributionTypeModel> Types { get; } = new ObservableCollection<ContributionTypeModel>();
 
         public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
-        
+
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
 
         public ContributionsModel SelectedContribution
@@ -75,9 +78,9 @@ namespace MvpApi.Wpf.ViewModels
             get => selectedContribution;
             set => SetProperty(ref selectedContribution, value);
         }
-        
+
         // Data entry control headers, using VM properties to alert validation violations
-        
+
         public string AnnualQuantityHeader
         {
             get => annualQuantityHeader;
@@ -151,19 +154,19 @@ namespace MvpApi.Wpf.ViewModels
         public DelegateCommand<ContributionsModel> RemoveQueuedContributionCommand { get; set; }
 
         public DelegateCommand<ContributionTechnologyModel> RemoveAdditionalTechAreaCommand { get; set; }
-        
+
         #endregion
-        
+
         #region Event handlers
 
         private void UploadQueue_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             CanUpload = UploadQueue.Any();
         }
-        
+
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            if (e.NewDate < (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline)
+            if (e.NewDate < (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionStartDate || e.NewDate > (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionDeadline)
             {
                 WarningMessage = "The date must be after the start of your current award period and before March 31st of the next award year.";
 
@@ -177,10 +180,10 @@ namespace MvpApi.Wpf.ViewModels
                 //CanUpload = true;
             }
         }
-        
+
         public void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems.FirstOrDefault() is ContributionTypeModel type)
+            if (e.AddedItems != null && e.AddedItems[0] is ContributionTypeModel type)
             {
                 // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
                 DetermineContributionTypeRequirements(type);
@@ -213,17 +216,17 @@ namespace MvpApi.Wpf.ViewModels
 
                 return;
             }
-            
+
             if (IsEditingQueuedItem)
             {
                 IsEditingQueuedItem = false;
             }
             else
             {
-                if(!UploadQueue.Contains(SelectedContribution))
+                if (!UploadQueue.Contains(SelectedContribution))
                     UploadQueue.Add(SelectedContribution);
             }
-            
+
             SetupNextEntry();
         }
 
@@ -238,12 +241,12 @@ namespace MvpApi.Wpf.ViewModels
             {
                 var result = MessageBox.Show(
                     "You are about to clear all of the contributions in the upload queue, are you sure?",
-                    "CLEAR", 
-                    MessageBoxButton.OKCancel, 
-                    MessageBoxImage.Warning, 
+                    "CLEAR",
+                    MessageBoxButton.OKCancel,
+                    MessageBoxImage.Warning,
                     MessageBoxResult.Cancel);
 
-                if(result != MessageBoxResult.OK)
+                if (result != MessageBoxResult.OK)
                     return;
 
                 UploadQueue.Clear();
@@ -270,7 +273,7 @@ namespace MvpApi.Wpf.ViewModels
                 {
                     refreshNeeded = true;
                 }
-            
+
                 contribution.UploadStatus = success
                     ? UploadStatus.Success
                     : UploadStatus.Failed;
@@ -290,7 +293,7 @@ namespace MvpApi.Wpf.ViewModels
                 IsBusyMessage = string.Empty;
                 IsBusy = false;
             }
-            
+
             if (UploadQueue.Any())
             {
                 // If there was a failure, there will still be items in the Queue, select the last one in the list
@@ -298,12 +301,11 @@ namespace MvpApi.Wpf.ViewModels
             }
             else
             {
-                // If everything was uploaded, navigate away.
-                if (BootStrapper.Current.NavigationService.CanGoBack)
-                    BootStrapper.Current.NavigationService.GoBack();
+                // If everything was uploaded, go back to home view
+                (App.Current.MainWindow as ShellWindow).RootNavigationView.SelectedIndex = 0;
             }
         }
-        
+
         #endregion
 
         #region Methods
@@ -323,7 +325,7 @@ namespace MvpApi.Wpf.ViewModels
                 AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
             };
         }
-        
+
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
         {
             // Each activity type has a unique set of field names and which ones are required.
@@ -430,8 +432,8 @@ namespace MvpApi.Wpf.ViewModels
                 contribution.ContributionId = submissionResult.ContributionId;
 
                 // Quality assurance, only logs a successful upload.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
+                //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                //    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
 
                 return true;
             }
@@ -439,8 +441,8 @@ namespace MvpApi.Wpf.ViewModels
             {
 
                 // Quality assurance, only logs a failed upload.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
+                //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                //    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
 
                 //await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
                 return false;
@@ -471,7 +473,7 @@ namespace MvpApi.Wpf.ViewModels
             });
 
             // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
-            
+
             IsBusyMessage = "loading visibility options...";
 
             var visibilities = await App.ApiService.GetVisibilitiesAsync();
@@ -486,114 +488,65 @@ namespace MvpApi.Wpf.ViewModels
 
         #region Navigation
 
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        public async Task OnLoadedAsync()
         {
-            if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+            //if (!NetworkHelper.Current.CheckInternetConnection())
+            //{
+
+            //}
+
+            // Verify the user is logged in
+            if (!(App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
             {
-                if (BootStrapper.Current.NavigationService.CanGoBack)
-                    BootStrapper.Current.NavigationService.GoBack();
+                IsBusy = true;
+                IsBusyMessage = "logging in...";
+
+                await (App.Current.MainWindow as ShellWindow).SignInAsync();
+
+                IsBusyMessage = "";
+                IsBusy = false;
             }
 
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+            if ((App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
             {
-                // Verify the user is logged in
-                if (!shellVm.IsLoggedIn)
+                try
                 {
                     IsBusy = true;
-                    IsBusyMessage = "logging in...";
 
-                    await ShellPage.Instance.SignInAsync();
+                    // ** Get the necessary associated data from the API **
 
+                    await LoadSupportingDataAsync();
+
+                    // Note: The Category Areas will not be loaded until the CollectionViewSource is does it's initially loading.
+                    SetupNextEntry();
+
+                    if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                    {
+                        //var td = new TutorialDialog
+                        //{
+                        //    SettingsKey = "AddContributionPageTutorialShown",
+                        //    MessageTitle = "Add Contribution Page",
+                        //    Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
+                        //              "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
+                        //              "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
+                        //              "- Click 'Upload' to save the queue to your profile.\r\n" +
+                        //              "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
+                        //              "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
+                        //};
+
+                        //await td.ShowAsync();
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
+                }
+                finally
+                {
                     IsBusyMessage = "";
                     IsBusy = false;
                 }
-
-                if (shellVm.IsLoggedIn)
-                {
-                    try
-                    {
-                        IsBusy = true;
-
-                        // ** Get the necessary associated data from the API **
-
-                        await LoadSupportingDataAsync();
-
-                        // Note: The Category Areas will not be loaded until the CollectionViewSource is does it's initially loading.
-                        SetupNextEntry();
-
-                        if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                        {
-                            var td = new TutorialDialog
-                            {
-                                SettingsKey = "AddContributionPageTutorialShown",
-                                MessageTitle = "Add Contribution Page",
-                                Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
-                                          "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
-                                          "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
-                                          "- Click 'Upload' to save the queue to your profile.\r\n" +
-                                          "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
-                                          "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
-                            };
-
-                            await td.ShowAsync();
-                        }
-
-                        // To prevent accidental back navigation
-                        if (BootStrapper.Current.NavigationService.FrameFacade != null)
-                            BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
-                    }
-                    finally
-                    {
-                        IsBusyMessage = "";
-                        IsBusy = false;
-                    }
-                }
-            }
-        }
-        
-
-        public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
-        {
-            if (BootStrapper.Current.NavigationService.FrameFacade != null)
-                BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
-            
-            return base.OnNavigatingFromAsync(args);
-        }
-
-        // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
-        private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
-        {
-            try
-            {
-                var itemsQueued = UploadQueue.Any();
-
-                e.Handled = itemsQueued;
-
-                if (itemsQueued)
-                {
-                    var result = MessageBox.Show(
-                        "You have pending uploads. Navigating away now will discard them, do you want to continue?",
-                        "Leave page?",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Warning,
-                        MessageBoxResult.No);
-
-                    if (result != MessageBoxResult.Yes)
-                        return;
-
-                    if (NavigationService.CanGoBack)
-                    {
-                        NavigationService.GoBack();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                await ExceptionLogger.LogExceptionAsync(ex);
             }
         }
 

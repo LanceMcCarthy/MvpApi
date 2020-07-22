@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using Windows.Storage;
 using CommonHelpers.Common;
 using MvpApi.Services.Utilities;
 using MvpApi.Wpf.Helpers;
@@ -9,12 +10,12 @@ namespace MvpApi.Wpf.ViewModels
 {
     public class ShellViewModel : ViewModelBase
     {
-        private MvpApi.Common.Models.ProfileViewModel _mvp;
-        private string _profileImagePath;
-        private bool _isLoggedIn;
-        private bool _useBetaEditor;
-        private DateTime _submissionStartDate = ServiceConstants.SubmissionStartDate;
-        private DateTime _submissionDeadline = ServiceConstants.SubmissionDeadline;
+        private MvpApi.Common.Models.ProfileViewModel mvp;
+        private string profileImagePath;
+        private bool isLoggedIn;
+        private bool useBetaEditor;
+        private DateTime submissionStartDate = ServiceConstants.SubmissionStartDate;
+        private DateTime submissionDeadline = ServiceConstants.SubmissionDeadline;
 
         public ShellViewModel()
         {
@@ -28,10 +29,10 @@ namespace MvpApi.Wpf.ViewModels
 
         public string ProfileImagePath
         {
-            get => _profileImagePath;
+            get => profileImagePath;
             set
             {
-                _profileImagePath = value;
+                profileImagePath = value;
 
                 // Manually invoke PropertyChanged to ensure image is reloaded, even if the file path is the same.
                 OnPropertyChanged();
@@ -40,50 +41,50 @@ namespace MvpApi.Wpf.ViewModels
 
         public MvpApi.Common.Models.ProfileViewModel Mvp
         {
-            get => _mvp;
-            set => SetProperty(ref _mvp, value);
+            get => mvp;
+            set => SetProperty(ref mvp, value);
         }
 
         public bool IsLoggedIn
         {
-            get => _isLoggedIn;
-            set => SetProperty(ref _isLoggedIn, value);
+            get => isLoggedIn;
+            set => SetProperty(ref isLoggedIn, value);
         }
         
         public bool UseBetaEditor
         {
             get
             {
-                if (ApplicationData.Current.RoamingSettings.Values.TryGetValue(nameof(UseBetaEditor), out object rawValue))
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(UseBetaEditor), out object rawValue))
                 {
-                    _useBetaEditor = (bool)rawValue;
+                    useBetaEditor = (bool)rawValue;
                 }
                 else
                 {
-                    ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
+                    ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = useBetaEditor;
                 }
                 
-                return _useBetaEditor;
+                return useBetaEditor;
             }
             set
             {
-                if (SetProperty(ref _useBetaEditor, value))
+                if (SetProperty(ref useBetaEditor, value))
                 {
-                    ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
+                    ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = useBetaEditor;
                 }
             }
         }
 
         public DateTime SubmissionStartDate
         {
-            get => _submissionStartDate;
-            set => SetProperty(ref _submissionStartDate, value);
+            get => submissionStartDate;
+            set => SetProperty(ref submissionStartDate, value);
         }
 
         public DateTime SubmissionDeadline
         {
-            get => _submissionDeadline;
-            set => SetProperty(ref _submissionDeadline, value);
+            get => submissionDeadline;
+            set => SetProperty(ref submissionDeadline, value);
         }
     }
 }
