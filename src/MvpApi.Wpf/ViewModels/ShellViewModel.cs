@@ -15,6 +15,7 @@ namespace MvpApi.Wpf.ViewModels
         private bool useBetaEditor;
         private DateTime submissionStartDate = ServiceConstants.SubmissionStartDate;
         private DateTime submissionDeadline = ServiceConstants.SubmissionDeadline;
+        private string _selectedTheme = "Fluent";
 
         public ShellViewModel()
         {
@@ -24,6 +25,11 @@ namespace MvpApi.Wpf.ViewModels
             //    IsLoggedIn = true;
             //    ProfileImagePath = "/Images/MvpIcon.png";
             //}
+
+            if (Properties.Settings.Default.PreferredTheme != SelectedTheme)
+            {
+                SelectedTheme = Properties.Settings.Default.PreferredTheme;
+            }
         }
 
         public string ProfileImagePath
@@ -86,5 +92,67 @@ namespace MvpApi.Wpf.ViewModels
             set => SetProperty(ref submissionDeadline, value);
         }
 
+        public List<string> Themes { get; } = new List<string>
+        {
+            "Crystal",
+            "Expression_Dark",
+            "Fluent",
+            "Green",
+            "Material",
+            "Office_Black",
+            "Office_Blue",
+            "Office_Silver",
+            "Office2013",
+            "Office2016",
+            "Office2016_Touch",
+            "Summer",
+            "Transparent",
+            "Vista",
+            "VisualStudio2013",
+            "VisualStudio2019",
+            "Windows7",
+            "Windows8",
+            "Windows8Touch"
+        };
+
+        public string SelectedTheme
+        {
+            get => _selectedTheme;
+            set
+            {
+                if (SetProperty(ref _selectedTheme, value))
+                {
+                    UpdateTheme(_selectedTheme);
+                }
+            }
+        }
+
+        public static void UpdateTheme(string assemblyName)
+        {
+            Application.Current.Resources.MergedDictionaries.Clear();
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/System.Windows.xaml", UriKind.RelativeOrAbsolute)
+            });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.xaml", UriKind.RelativeOrAbsolute)
+            });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Input.xaml", UriKind.RelativeOrAbsolute)
+            });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.GridView.xaml", UriKind.RelativeOrAbsolute)
+            });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Navigation.xaml", UriKind.RelativeOrAbsolute)
+            });
+
+            Properties.Settings.Default.PreferredTheme = assemblyName;
+        }
     }
 }

@@ -25,33 +25,6 @@ namespace MvpApi.Wpf
         {
             InitializeComponent();
 
-            ThemeComboBox.ItemsSource = new List<string>
-            {
-                "Crystal",
-                "Expression_Dark",
-                "Fluent",
-                "Green",
-                "Material",
-                "Office_Black",
-                "Office_Blue",
-                "Office_Silver",
-                "Office2013",
-                "Office2016",
-                "Office2016_Touch",
-                "Summer",
-                "Transparent",
-                "Vista",
-                "VisualStudio2013",
-                "VisualStudio2019",
-                "Windows7",
-                "Windows8",
-                "Windows8Touch"
-            };
-
-            ThemeComboBox.SelectedItem = Properties.Settings.Default.PreferredTheme;
-
-            ThemeComboBox.SelectionChanged += ThemeComboBox_SelectionChanged;
-
             Loaded += ShellWindow_Loaded;
         }
 
@@ -95,14 +68,6 @@ namespace MvpApi.Wpf
             //lastView = (UserControl)RootNavigationView.Content;
         }
 
-        private void ThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems != null)
-            {
-                UpdateTheme((string)e.AddedItems[0]);
-            }
-        }
-
         private async void LogoutButton_OnClick(object sender, RoutedEventArgs e)
         {
             var md = new MessageDialog("Do you wish to sign out?");
@@ -115,30 +80,6 @@ namespace MvpApi.Wpf
             {
                 await SignOutAsync();
             }
-        }
-
-        public static void UpdateTheme(string assemblyName)
-        {
-            Application.Current.Resources.MergedDictionaries.Clear();
-
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/System.Windows.xaml", UriKind.RelativeOrAbsolute)
-            });
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.xaml", UriKind.RelativeOrAbsolute)
-            });
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Input.xaml", UriKind.RelativeOrAbsolute)
-            });
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Navigation.xaml", UriKind.RelativeOrAbsolute)
-            });
-
-            Properties.Settings.Default.PreferredTheme = assemblyName;
         }
 
         #region Authentication and WebView

@@ -76,7 +76,8 @@
                                 Margin="10,0,5,5">
                         <TextBlock Text="Theme"
                                    Margin="0,0,0,5" />
-                        <telerik:RadComboBox x:Name="ThemeComboBox" />
+                        <telerik:RadComboBox ItemsSource="{Binding Themes}"
+                                             SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"/>
                     </StackPanel>
 
                     <Button Click="LogoutButton_OnClick"
