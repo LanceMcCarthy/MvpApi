@@ -4,8 +4,8 @@
         xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
         xmlns:viewModels="clr-namespace:MvpApi.Wpf.ViewModels"
         Title="MVP Companion"
-        Height="350"
-        Width="525">
+        Height="600"
+        Width="900">
 
     <Window.DataContext>
         <viewModels:ShellViewModel x:Name="ViewModel" />
@@ -13,35 +13,84 @@
 
     <Grid>
         <telerik:RadNavigationView x:Name="RootNavigationView"
-                                   PaneHeader="Header">
+                                   AutoChangeDisplayMode="False"
+                                   DisplayMode="Compact"
+                                   PaneHeader="Menu"
+                                   SelectionChanged="RootNavigationView_OnSelectionChanged">
             <telerik:RadNavigationView.Items>
-                <telerik:RadNavigationViewItem Content="Home">
+                <telerik:RadNavigationViewItem Content="Contributions" 
+                                               Tag="Contributions">
                     <telerik:RadNavigationViewItem.Icon>
-                        <telerik:RadGlyph Glyph="&#xe303;"
+                        <telerik:RadGlyph Glyph="&#xe022;"
                                           FontSize="16" />
                     </telerik:RadNavigationViewItem.Icon>
                 </telerik:RadNavigationViewItem>
-                <telerik:RadNavigationViewItem Content="Settings">
+                <telerik:RadNavigationViewItem Content="Settings" 
+                                               Tag="Settings">
+                    <telerik:RadNavigationViewItem.Icon>
+                        <telerik:RadGlyph Glyph="&#xe13b;"
+                                          FontSize="16" />
+                    </telerik:RadNavigationViewItem.Icon>
+                </telerik:RadNavigationViewItem>
+                <telerik:RadNavigationViewItem Content="Kudos" 
+                                               Tag="Kudos">
                     <telerik:RadNavigationViewItem.Icon>
                         <telerik:RadGlyph Glyph="&#xe301;"
                                           FontSize="16" />
                     </telerik:RadNavigationViewItem.Icon>
                 </telerik:RadNavigationViewItem>
-                <telerik:RadNavigationViewItem Content="Kudos">
-                    <telerik:RadNavigationViewItem.Icon>
-                        <telerik:RadGlyph Glyph="&#xe901;"
-                                          FontSize="16" />
-                    </telerik:RadNavigationViewItem.Icon>
-                </telerik:RadNavigationViewItem>
             </telerik:RadNavigationView.Items>
+            <telerik:RadNavigationView.PaneFooter>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-            <!--<telerik:RadNavigationView.Content>
-                <TextBlock Text="Content"
-                           Foreground="Black"
-                           Margin="5" />
-            </telerik:RadNavigationView.Content>-->
+                    <StackPanel Orientation="Horizontal"
+                                Margin="1,0,0,1">
+                        <Button Padding="0"
+                                Width="38"
+                                Height="38"
+                                Click="ProfileButton_Click"
+                                VerticalAlignment="Bottom">
+                            <Grid>
+                                <telerik:RadGlyph Glyph="&#xe801;"
+                                                  FontSize="16" />
+                                <Ellipse Visibility="{Binding ProfileImagePath, Converter={StaticResource NullToVisibilityConv}, Mode=OneWay}"
+                                         Width="32"
+                                         Height="32"
+                                         VerticalAlignment="Center"
+                                         HorizontalAlignment="Center">
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="{Binding ProfileImagePath, Converter={StaticResource BitmapImageConv}, Mode=OneWay}" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                            </Grid>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel VerticalAlignment="Bottom"
+                                Grid.Column="1"
+                                Margin="10,0,5,5">
+                        <TextBlock Text="Theme"
+                                   Margin="0,0,0,5" />
+                        <telerik:RadComboBox x:Name="ThemeComboBox" />
+                    </StackPanel>
+
+                    <Button Click="LogoutButton_OnClick"
+                            Content="Logout"
+                            Background="Red"
+                            BorderBrush="DarkRed"
+                            Foreground="White"
+                            Margin="5,0,5,5"
+                            VerticalAlignment="Bottom"
+                            BorderThickness="1"
+                            Grid.Column="2" />
+                </Grid>
+            </telerik:RadNavigationView.PaneFooter>
         </telerik:RadNavigationView>
-
 
         <Grid x:Name="LoginOverlay"
               Visibility="Collapsed"
@@ -54,47 +103,45 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center" />
 
-            <Button Content="Why so many permissions?"
-                    Foreground="Black"
-                    HorizontalAlignment="Right"
+            <Border HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Margin="10">
-                <!--<Button.Flyout>
-                    <Flyout>
-                        <Grid Width="400">
-                            <StackPanel>
-                                <TextBlock Text="The permissions list you see is the smallest scope available by the Microsoft Account login service and app does not use anything from your Microsoft account directly."
-                                           TextWrapping="Wrap"
-                                           Margin="0,0,0,10" />
-                                <TextBlock Text="When you login, MVP Companion gets an access token and a refresh token from Microsoft Live, this token is then used to authenticate every call to the MVP portal API."
-                                           TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Grid>
-                    </Flyout>
-                </Button.Flyout>-->
-            </Button>
-
-            <ToggleButton Content="Problems?"
-                    Foreground="Black"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Margin="10">
-                <!--<Button.Flyout>
-                    <Flyout>
-                        <StackPanel Width="300">
-                            <TextBlock Text="If you're having trouble signing in, or staying signed in, there might be a problem with the token cache. Click the button below to get a fresh start."
+                <TextBlock Text="Why so many permissions?"/>
+                <telerik:RadToolTipService.ToolTipContent>
+                    <Grid Width="400">
+                        <StackPanel>
+                            <TextBlock Text="The permissions list you see is the smallest scope available by the Microsoft Account login service and app does not use anything from your Microsoft account directly."
                                        TextWrapping="Wrap"
-                                       Margin="5" />
-                            <Button Content="Reset Cache"
-                                    Background="DarkRed"
-                                    Foreground="White"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="5"
-                                    Click="LogoutButton_OnClick" />
+                                       Margin="0,0,0,10" />
+                            <TextBlock Text="When you login, MVP Companion gets an access token and a refresh token from Microsoft Live, this token is then used to authenticate every call to the MVP portal API."
+                                       TextWrapping="Wrap" />
                         </StackPanel>
-                    </Flyout>
-                </Button.Flyout>-->
-            </ToggleButton>
+                    </Grid>
+                </telerik:RadToolTipService.ToolTipContent>
+            </Border>
+
+            <Border HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="10">
+                <TextBlock Text="Problems?" />
+                <telerik:RadToolTipService.ToolTipContent>
+                    <StackPanel Width="300">
+                        <TextBlock Text="If you're having trouble signing in, or staying signed in, there might be a problem with the token cache. Click the button below to get a fresh start."
+                                   TextWrapping="Wrap"
+                                   Margin="5" />
+                        <Button Content="Reset Cache"
+                                Background="DarkRed"
+                                Foreground="White"
+                                HorizontalAlignment="Stretch"
+                                Margin="5"
+                                Click="LogoutButton_OnClick" />
+                    </StackPanel>
+                </telerik:RadToolTipService.ToolTipContent>
+            </Border>
         </Grid>
+
+        <telerik:RadBusyIndicator IsBusy="{Binding IsBusy}"
+                                  BusyContent="{Binding IsBusyMessage}"
+                                  Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConv}}"/>
     </Grid>
 </Window>

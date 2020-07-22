@@ -10,13 +10,11 @@ using System.Windows;
 using System.Windows.Navigation;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
-using Windows.UI.Xaml.Controls;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using MvpApi.Common.Extensions;
 using MvpApi.Common.Models;
 using MvpApi.Wpf.Helpers;
-using Telerik.Windows.Diagrams.Core;
 using ExceptionLogger = MvpApi.Services.Utilities.ExceptionLogger;
 using SelectionChangedEventArgs = System.Windows.Controls.SelectionChangedEventArgs;
 
@@ -43,15 +41,15 @@ namespace MvpApi.Wpf.ViewModels
 
         public AddContributionsViewModel()
         {
-            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            {
-                Types = DesignTimeHelpers.GenerateContributionTypes();
-                Visibilities = DesignTimeHelpers.GenerateVisibilities();
-                UploadQueue = DesignTimeHelpers.GenerateContributions();
-                SelectedContribution = UploadQueue.FirstOrDefault();
+            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            //{
+            //    Types = DesignTimeHelpers.GenerateContributionTypes();
+            //    Visibilities = DesignTimeHelpers.GenerateVisibilities();
+            //    UploadQueue = DesignTimeHelpers.GenerateContributions();
+            //    SelectedContribution = UploadQueue.FirstOrDefault();
 
-                return;
-            }
+            //    return;
+            //}
 
             EditQueuedContributionCommand = new DelegateCommand<ContributionsModel>(async cont => await EditContribution(cont));
             RemoveQueuedContributionCommand = new DelegateCommand<ContributionsModel>(async cont => await RemoveContribution(cont));
@@ -164,22 +162,22 @@ namespace MvpApi.Wpf.ViewModels
             CanUpload = UploadQueue.Any();
         }
 
-        public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
-        {
-            if (e.NewDate < (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionStartDate || e.NewDate > (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionDeadline)
-            {
-                WarningMessage = "The date must be after the start of your current award period and before March 31st of the next award year.";
+        //public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
+        //{
+        //    if (e.NewDate < (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionStartDate || e.NewDate > (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionDeadline)
+        //    {
+        //        WarningMessage = "The date must be after the start of your current award period and before March 31st of the next award year.";
 
-                //await new MessageDialog(WarningMessage, "Notice: Out of range").ShowAsync();
+        //        //await new MessageDialog(WarningMessage, "Notice: Out of range").ShowAsync();
 
-                CanUpload = false;
-            }
-            else
-            {
-                WarningMessage = "";
-                //CanUpload = true;
-            }
-        }
+        //        CanUpload = false;
+        //    }
+        //    else
+        //    {
+        //        WarningMessage = "";
+        //        //CanUpload = true;
+        //    }
+        //}
 
         public void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -193,17 +191,17 @@ namespace MvpApi.Wpf.ViewModels
             }
         }
 
-        public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
-        {
-            if (SelectedContribution.AdditionalTechnologies.Count < 2)
-            {
-                AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
-            }
-            else
-            {
-                MessageBox.Show("You can only have two additional areas selected, remove one and try again.");
-            }
-        }
+        //public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
+        //{
+        //    if (SelectedContribution.AdditionalTechnologies.Count < 2)
+        //    {
+        //        AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("You can only have two additional areas selected, remove one and try again.");
+        //    }
+        //}
 
         // Button click handlers
         public async void AddCurrentItemButton_Click(object sender, RoutedEventArgs e)
@@ -455,10 +453,10 @@ namespace MvpApi.Wpf.ViewModels
 
             var types = await App.ApiService.GetContributionTypesAsync();
 
-            types.ForEach(type =>
+            foreach (var contributionTypeModel in types)
             {
-                Types.Add(type);
-            });
+                Types.Add(contributionTypeModel);
+            }
 
             IsBusyMessage = "loading technologies...";
 
@@ -467,10 +465,10 @@ namespace MvpApi.Wpf.ViewModels
             // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
             var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
 
-            areas.ForEach(area =>
+            foreach (var contributionAreaContributionModel in areas)
             {
-                CategoryAreas.Add(area);
-            });
+                CategoryAreas.Add(contributionAreaContributionModel);
+            }
 
             // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
 
@@ -478,10 +476,10 @@ namespace MvpApi.Wpf.ViewModels
 
             var visibilities = await App.ApiService.GetVisibilitiesAsync();
 
-            visibilities.ForEach(visibility =>
+            foreach (var visibilityViewModel in visibilities)
             {
-                Visibilities.Add(visibility);
-            });
+                Visibilities.Add(visibilityViewModel);
+            }
         }
 
         #endregion

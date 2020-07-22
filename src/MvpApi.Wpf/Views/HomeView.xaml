@@ -11,7 +11,7 @@
              d:DesignWidth="800">
 
     <UserControl.DataContext>
-        <viewModels:HomeViewModel x:Name="ViewModel"/>
+        <viewModels:HomeViewModel x:Name="ViewModel" />
     </UserControl.DataContext>
 
     <Grid>
@@ -28,5 +28,14 @@
                 <telerik:GridViewDataColumn DataMemberBinding="{Binding ContributionTechnology.Name}" />
             </telerik:RadGridView.Columns>
         </telerik:RadGridView>
+
+        <telerik:RadBusyIndicator IsBusy="{Binding IsBusy}"
+                                  Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <telerik:RadBusyIndicator.BusyContent>
+                <TextBlock Text="{Binding IsBusyMessage}"
+                           HorizontalAlignment="Center"
+                           Margin="10" />
+            </telerik:RadBusyIndicator.BusyContent>
+        </telerik:RadBusyIndicator>
     </Grid>
 </UserControl>

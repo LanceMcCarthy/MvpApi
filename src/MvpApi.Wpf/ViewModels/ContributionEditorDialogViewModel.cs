@@ -6,13 +6,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Windows.UI.Popups;
-using Windows.UI.Xaml.Controls;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using MvpApi.Common.Extensions;
 using MvpApi.Common.Models;
 using MvpApi.Wpf.Helpers;
-using Telerik.Windows.Diagrams.Core;
 
 namespace MvpApi.Wpf.ViewModels
 {
@@ -32,21 +30,19 @@ namespace MvpApi.Wpf.ViewModels
         private bool _isAnnualReachRequired;
         private bool _canSave = true;
         private string _warningMessage;
-        private bool _isBusy;
-        private string _isBusyMessage;
         private bool _editingExistingContribution;
 
         #endregion
 
         public ContributionEditorDialogViewModel()
         {
-            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            {
-                Types = DesignTimeHelpers.GenerateContributionTypes();
-                Visibilities = DesignTimeHelpers.GenerateVisibilities();
-                UploadQueue = DesignTimeHelpers.GenerateContributions();
-                SelectedContribution = UploadQueue.FirstOrDefault();
-            }
+            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            //{
+            //    Types = DesignTimeHelpers.GenerateContributionTypes();
+            //    Visibilities = DesignTimeHelpers.GenerateVisibilities();
+            //    UploadQueue = DesignTimeHelpers.GenerateContributions();
+            //    SelectedContribution = UploadQueue.FirstOrDefault();
+            //}
 
             RemoveAdditionalTechAreaCommand = new DelegateCommand<ContributionTechnologyModel>(RemoveAdditionalArea);
         }
@@ -144,47 +140,47 @@ namespace MvpApi.Wpf.ViewModels
 
         // Methods
 
-        public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
-        {
-            if (e.NewDate < (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionStartDate || e.NewDate > (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionDeadline)
-            {
-                WarningMessage = "The contribution date must be after the start of your current award period and before March 31st in order for it to count towards your evaluation";
-            }
-            else
-            {
-                WarningMessage = "";
-            }
-        }
+        //public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
+        //{
+        //    if (e.NewDate < (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionStartDate || e.NewDate > (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionDeadline)
+        //    {
+        //        WarningMessage = "The contribution date must be after the start of your current award period and before March 31st in order for it to count towards your evaluation";
+        //    }
+        //    else
+        //    {
+        //        WarningMessage = "";
+        //    }
+        //}
 
-        public void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems != null && e.AddedItems[0] is ContributionTypeModel type)
-            {
-                // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
-                DetermineContributionTypeRequirements(type);
+        //public void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (e.AddedItems != null && e.AddedItems[0] is ContributionTypeModel type)
+        //    {
+        //        // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
+        //        DetermineContributionTypeRequirements(type);
 
-                // Also need set the type name
-                SelectedContribution.ContributionTypeName = type.EnglishName;
-            }
-        }
+        //        // Also need set the type name
+        //        SelectedContribution.ContributionTypeName = type.EnglishName;
+        //    }
+        //}
 
-        public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
-        {
-            if (SelectedContribution.AdditionalTechnologies.Count < 2)
-            {
-                AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
-            }
-            else
-            {
-                await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
-            }
+        //public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
+        //{
+        //    if (SelectedContribution.AdditionalTechnologies.Count < 2)
+        //    {
+        //        AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
+        //    }
+        //    else
+        //    {
+        //        await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
+        //    }
 
-            // Manually find the flyout's popup to close it
-            //var lv = sender as ListView;
-            //var foPresenter = lv?.Parent as FlyoutPresenter;
-            //var popup = foPresenter?.Parent as Popup;
-            //popup?.Hide();
-        }
+        //    // Manually find the flyout's popup to close it
+        //    var lv = sender as ListView;
+        //    var foPresenter = lv?.Parent as FlyoutPresenter;
+        //    var popup = foPresenter?.Parent as Popup;
+        //    popup?.Hide();
+        //}
 
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
         {
@@ -248,10 +244,10 @@ namespace MvpApi.Wpf.ViewModels
 
                     var types = await App.ApiService.GetContributionTypesAsync();
 
-                    types.ForEach(type =>
+                    foreach (var contributionTypeModel in types)
                     {
-                        Types.Add(type);
-                    });
+                        Types.Add(contributionTypeModel);
+                    }
 
                     IsBusyMessage = "loading technologies...";
 
@@ -260,10 +256,10 @@ namespace MvpApi.Wpf.ViewModels
                     // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
                     var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
 
-                    areas.ForEach(area =>
+                    foreach (var contributionAreaContributionModel in areas)
                     {
-                        CategoryAreas.Add(area);
-                    });
+                        CategoryAreas.Add(contributionAreaContributionModel);
+                    }
 
                     // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
 
@@ -271,10 +267,10 @@ namespace MvpApi.Wpf.ViewModels
 
                     var visibilities = await App.ApiService.GetVisibilitiesAsync();
 
-                    visibilities.ForEach(visibility =>
+                    foreach (var visibilityViewModel in visibilities)
                     {
-                        Visibilities.Add(visibility);
-                    });
+                        Visibilities.Add(visibilityViewModel);
+                    }
 
                     // If the contribution object wasn't passed during Dialog creation, setup a blank one.
                     if (SelectedContribution == null)

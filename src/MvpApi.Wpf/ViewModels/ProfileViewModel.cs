@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.UI.Popups;
 using CommonHelpers.Common;
+using CommonHelpers.Mvvm;
 using MvpApi.Common.Models;
-using MvpApi.Wpf.Helpers;
 
 namespace MvpApi.Wpf.ViewModels
 {
@@ -22,18 +18,24 @@ namespace MvpApi.Wpf.ViewModels
         private MvpApi.Common.Models.ProfileViewModel _mvp;
         private string _profileImagePath;
         private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
-        //private ListViewSelectionMode _listViewSelectionMode = ListViewSelectionMode.Single;
+        private SelectionMode _listViewSelectionMode = SelectionMode.Single;
         private bool _isMultipleSelectionEnabled;
         private bool _areAppBarButtonsEnabled;
         private ObservableCollection<OnlineIdentityViewModel> _selectedOnlineIdentities;
 
         public ProfileViewModel()
         {
-            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            {
-                Mvp = DesignTimeHelpers.GenerateSampleMvp();
-                OnlineIdentities = DesignTimeHelpers.GenerateOnlineIdentities();
-            }
+            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            //{
+            //    Mvp = DesignTimeHelpers.GenerateSampleMvp();
+            //    OnlineIdentities = DesignTimeHelpers.GenerateOnlineIdentities();
+            //}
+
+            ClearSelectionCommand = new DelegateCommand(ClearSelection);
+            RefreshOnlineIdentitiesCommand = new DelegateCommand(async ()=> await RefreshOnlineIdentitiesAsync());
+            ShowQuestionnaireCommand = new DelegateCommand(ShowQuestionnaire);
+            DeleteOnlineIdentityCommand = new DelegateCommand(DeleteOnlineIdentity);
+            ExportOnlineIdentitiesCommand = new DelegateCommand(ExportOnlineIdentities);
         }
 
         public MvpApi.Common.Models.ProfileViewModel Mvp
@@ -70,24 +72,34 @@ namespace MvpApi.Wpf.ViewModels
             set
             {
                 SetProperty(ref _isMultipleSelectionEnabled, value);
-                
-                //ListViewSelectionMode = value
-                //    ? ListViewSelectionMode.Multiple
-                //    : ListViewSelectionMode.Single;
+
+                ListViewSelectionMode = value
+                    ? SelectionMode.Multiple
+                    : SelectionMode.Single;
             }
         }
 
-        //public ListViewSelectionMode ListViewSelectionMode
-        //{
-        //    get => _listViewSelectionMode;
-        //    set => SetProperty(ref _listViewSelectionMode, value);
-        //}
+        public SelectionMode ListViewSelectionMode
+        {
+            get => _listViewSelectionMode;
+            set => SetProperty(ref _listViewSelectionMode, value);
+        }
 
         public bool AreAppBarButtonsEnabled
         {
             get => _areAppBarButtonsEnabled;
             set => SetProperty(ref _areAppBarButtonsEnabled, value);
         }
+
+        public DelegateCommand ClearSelectionCommand { get; set; }
+
+        public DelegateCommand RefreshOnlineIdentitiesCommand { get; set; }
+
+        public DelegateCommand ShowQuestionnaireCommand { get; set; }
+
+        public DelegateCommand DeleteOnlineIdentityCommand { get; set; }
+
+        public DelegateCommand ExportOnlineIdentitiesCommand { get; set; }
 
         // Methods
 
@@ -112,46 +124,17 @@ namespace MvpApi.Wpf.ViewModels
             IsBusy = false;
         }
 
-        public void OnlineIdentitiesListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            // Add any selected items to the SelectedItems collection
-            if (e.AddedItems != null)
-            {
-                foreach (OnlineIdentityViewModel identity in e.AddedItems)
-                {
-                    SelectedOnlineIdentities.Add(identity);
-                }
-            }
-
-            // Remove any selected items from the SelectedItems collection
-            if (e.RemovedItems != null)
-            {
-                foreach (OnlineIdentityViewModel identity in e.RemovedItems)
-                {
-                    SelectedOnlineIdentities.Remove(identity);
-                }
-            }
-
-            // Enable or Disable the ClearSelection and Delete buttons according to the selected items collection's count
-            AreAppBarButtonsEnabled = SelectedOnlineIdentities.Any();
-        }
-
-        public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
+        public void ClearSelection()
         {
             SelectedOnlineIdentities.Clear();
         }
 
-        public async void RefreshOnlineIdentitiesButton_Click(object sender, RoutedEventArgs e)
-        {
-            await RefreshOnlineIdentitiesAsync();
-        }
-
-        public async void ShowQuestionnaireButton_Click(object sender, RoutedEventArgs e)
+        public async void ShowQuestionnaire()
         {
             //await new AwardQuestionsDialog().ShowAsync();
         }
 
-        public async void DeleteOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
+        public async void DeleteOnlineIdentity()
         {
             IsBusy = true;
             IsBusyMessage = "requesting permission to delete Online Identities...";
@@ -191,7 +174,7 @@ namespace MvpApi.Wpf.ViewModels
             IsBusy = false;
         }
 
-        public async void ExportButton_OnClick(object sender, RoutedEventArgs e)
+        public async void ExportOnlineIdentities()
         {
             IsBusy = true;
             IsBusyMessage = "exporting all Online Identities...";
@@ -239,30 +222,7 @@ namespace MvpApi.Wpf.ViewModels
             IsBusy = false;
         }
 
-        // TODO API does not have API endpoint to add an identity yet.
-        //public async void AddOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var md = new MessageDialog("What type of online identity would you like to add?\r\n'Linked Identity' is an MSDN property (e.g. MSDN or Microsoft Community Forum), these can be used to automatically create contributions based on your activity.\r\n'Other Identity' for everything else, like social networks, GitHub and StackOverflow. ", "Add Online Identity");
-
-        //    md.Commands.Add(new UICommand("Linked Identity"));
-        //    md.Commands.Add(new UICommand("Other Identity"));
-
-        //    var result = await md.ShowAsync();
-
-        //    if (result.Label == "Linked")
-        //    {
-
-        //    }
-
-        //    if (result.Label == "Other")
-        //    {
-
-        //    }
-        //}
-
-        #region Navigation
-
-        public async Task OnLoadedAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        public async Task OnLoadedAsync()
         {
             if ((App.Current.MainWindow as ShellWindow).DataContext is ShellViewModel shellVm)
             {
@@ -294,7 +254,25 @@ namespace MvpApi.Wpf.ViewModels
             }
         }
 
+        // TODO API does not have API endpoint to add an identity yet.
+        //public async void AddOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var md = new MessageDialog("What type of online identity would you like to add?\r\n'Linked Identity' is an MSDN property (e.g. MSDN or Microsoft Community Forum), these can be used to automatically create contributions based on your activity.\r\n'Other Identity' for everything else, like social networks, GitHub and StackOverflow. ", "Add Online Identity");
 
-        #endregion
+        //    md.Commands.Add(new UICommand("Linked Identity"));
+        //    md.Commands.Add(new UICommand("Other Identity"));
+
+        //    var result = await md.ShowAsync();
+
+        //    if (result.Label == "Linked")
+        //    {
+
+        //    }
+
+        //    if (result.Label == "Other")
+        //    {
+
+        //    }
+        //}
     }
 }

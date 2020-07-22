@@ -1,10 +1,9 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 using System.Windows;
 using Windows.Storage;
 using CommonHelpers.Common;
 using MvpApi.Services.Utilities;
-using MvpApi.Wpf.Helpers;
 
 namespace MvpApi.Wpf.ViewModels
 {
@@ -19,12 +18,12 @@ namespace MvpApi.Wpf.ViewModels
 
         public ShellViewModel()
         {
-            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            {
-                Mvp = DesignTimeHelpers.GenerateSampleMvp();
-                IsLoggedIn = true;
-                ProfileImagePath = "/Images/MvpIcon.png";
-            }
+            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            //{
+            //    Mvp = DesignTimeHelpers.GenerateSampleMvp();
+            //    IsLoggedIn = true;
+            //    ProfileImagePath = "/Images/MvpIcon.png";
+            //}
         }
 
         public string ProfileImagePath
@@ -86,5 +85,6 @@ namespace MvpApi.Wpf.ViewModels
             get => submissionDeadline;
             set => SetProperty(ref submissionDeadline, value);
         }
+
     }
 }

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using Windows.Services.Store;
 using Windows.UI.Popups;
-using Windows.UI.Xaml.Controls;
 using CommonHelpers.Common;
 using MvpApi.Common.Models;
 using MvpApi.Wpf.Helpers;
@@ -35,39 +34,39 @@ namespace MvpApi.Wpf.ViewModels
             set => SetProperty(ref _feedbackHubButtonVisibility, value);
         }
 
-        public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
-        {
-            if (!(e.ClickedItem is Kudos kudo)) return;
+        //public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
+        //{
+        //    if (!(e.ClickedItem is Kudos kudo)) return;
 
-            //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-            //    StoreServicesCustomEventLogger.GetDefault().Log($"{kudo.Title} Kudos Item Selected");
+        //    //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+        //    //    StoreServicesCustomEventLogger.GetDefault().Log($"{kudo.Title} Kudos Item Selected");
 
-            if (!string.IsNullOrEmpty(kudo.StoreId))
-            {
-                await PurchaseKudosAsync(kudo.StoreId);
-            }
+        //    if (!string.IsNullOrEmpty(kudo.StoreId))
+        //    {
+        //        await PurchaseKudosAsync(kudo.StoreId);
+        //    }
 
-            if (kudo.Title == "Store Rating")
-            {
-                await ShowRatingReviewDialog();
-            }
+        //    if (kudo.Title == "Store Rating")
+        //    {
+        //        await ShowRatingReviewDialog();
+        //    }
 
-            if (kudo.Title == "Video Ad")
-            {
-                // Wait for ad to be ready
-                //if (kudo.IsBusy)
-                //{
-                //    await new MessageDialog("Ad is being fetched right now, wait for busy indicator disappear and try again.").ShowAsync();
-                //    return;
-                //}
+        //    if (kudo.Title == "Video Ad")
+        //    {
+        //        // Wait for ad to be ready
+        //        //if (kudo.IsBusy)
+        //        //{
+        //        //    await new MessageDialog("Ad is being fetched right now, wait for busy indicator disappear and try again.").ShowAsync();
+        //        //    return;
+        //        //}
 
-                //// double check the ad is ready using the State value
-                //if (_myInterstitialAd.State == InterstitialAdState.Ready)
-                //{
-                //    _myInterstitialAd.Show();
-                //}
-            }
-        }
+        //        //// double check the ad is ready using the State value
+        //        //if (_myInterstitialAd.State == InterstitialAdState.Ready)
+        //        //{
+        //        //    _myInterstitialAd.Show();
+        //        //}
+        //    }
+        //}
 
         public async Task ShowRatingReviewDialog()
         {

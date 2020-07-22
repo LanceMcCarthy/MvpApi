@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows.Controls;
 using MvpApi.Common.Models;
+using MvpApi.Wpf.ViewModels;
 using Telerik.Windows.Controls;
 
 namespace MvpApi.Wpf.Views
@@ -20,10 +21,10 @@ namespace MvpApi.Wpf.Views
 
         private void DataControl_OnSelectionChanged(object sender, SelectionChangeEventArgs e)
         {
-            //if (ViewModel.GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
-            //{
+            if (ViewModel.GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
+            {
 
-            //}
+            }
         }
     }
 }

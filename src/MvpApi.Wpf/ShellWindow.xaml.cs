@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Navigation;
 using Windows.Storage;
 using Windows.UI.Popups;
@@ -20,16 +21,36 @@ namespace MvpApi.Wpf
 {
     public partial class ShellWindow : Window
     {
-        private static readonly string _scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
-        private static readonly string _clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
-        private readonly string _redirectUrl = "https://login.live.com/oauth20_desktop.srf";
-        private readonly string _accessTokenUrl = "https://login.live.com/oauth20_token.srf";
-        private readonly Uri _signInUri = new Uri($"https://login.live.com/oauth20_authorize.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={_scope}");
-        private readonly Uri _signOutUri = new Uri($"https://login.live.com/oauth20_logout.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf");
-
         public ShellWindow()
         {
             InitializeComponent();
+
+            ThemeComboBox.ItemsSource = new List<string>
+            {
+                "Crystal",
+                "Expression_Dark",
+                "Fluent",
+                "Green",
+                "Material",
+                "Office_Black",
+                "Office_Blue",
+                "Office_Silver",
+                "Office2013",
+                "Office2016",
+                "Office2016_Touch",
+                "Summer",
+                "Transparent",
+                "Vista",
+                "VisualStudio2013",
+                "VisualStudio2019",
+                "Windows7",
+                "Windows8",
+                "Windows8Touch"
+            };
+
+            ThemeComboBox.SelectedItem = Properties.Settings.Default.PreferredTheme;
+
+            ThemeComboBox.SelectionChanged += ThemeComboBox_SelectionChanged;
 
             Loaded += ShellWindow_Loaded;
         }
@@ -45,6 +66,90 @@ namespace MvpApi.Wpf
                 await new MessageDialog("This application requires an internet connection. Please check your connection and launch the app again.", "No Internet").ShowAsync();
             }
         }
+
+        private void RootNavigationView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems != null && e.AddedItems[0] is RadNavigationViewItem menuItem)
+            {
+                ChangeView(menuItem.Tag.ToString());
+            }
+        }
+
+        private void ProfileButton_Click(object sender, RoutedEventArgs e)
+        {
+            ChangeView("Profile");
+        }
+
+        private void ChangeView(string viewName)
+        {
+            RootNavigationView.Content = viewName switch
+            {
+                "Contributions" => new HomeView(),
+                "Kudos" => new KudosView(),
+                "Settings" => new SettingsView(),
+                "Profile" => new ProfileView(),
+                _ => RootNavigationView.Content
+            };
+
+            // TODO think about caching for drill-down nav
+            //lastView = (UserControl)RootNavigationView.Content;
+        }
+
+        private void ThemeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems != null)
+            {
+                UpdateTheme((string)e.AddedItems[0]);
+            }
+        }
+
+        private async void LogoutButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var md = new MessageDialog("Do you wish to sign out?");
+            md.Commands.Add(new UICommand("Logout"));
+            md.Commands.Add(new UICommand("Cancel"));
+
+            var result = await md.ShowAsync();
+
+            if (result.Label == "Logout")
+            {
+                await SignOutAsync();
+            }
+        }
+
+        public static void UpdateTheme(string assemblyName)
+        {
+            Application.Current.Resources.MergedDictionaries.Clear();
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/System.Windows.xaml", UriKind.RelativeOrAbsolute)
+            });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.xaml", UriKind.RelativeOrAbsolute)
+            });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Input.xaml", UriKind.RelativeOrAbsolute)
+            });
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Navigation.xaml", UriKind.RelativeOrAbsolute)
+            });
+
+            Properties.Settings.Default.PreferredTheme = assemblyName;
+        }
+
+        #region Authentication and WebView
+
+        private static readonly string _scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
+        private static readonly string _clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
+        private readonly string _redirectUrl = "https://login.live.com/oauth20_desktop.srf";
+        private readonly string _accessTokenUrl = "https://login.live.com/oauth20_token.srf";
+        private readonly Uri _signInUri = new Uri($"https://login.live.com/oauth20_authorize.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={_scope}");
+        private readonly Uri _signOutUri = new Uri($"https://login.live.com/oauth20_logout.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf");
+
 
         private async void WebBrowser_OnNavigated(object sender, NavigationEventArgs e)
         {
@@ -63,9 +168,6 @@ namespace MvpApi.Wpf
                 AuthWebView.Source = _signInUri;
             }
         }
-
-
-        #region Authentication
 
         public async Task SignInAsync()
         {
@@ -147,7 +249,7 @@ namespace MvpApi.Wpf
             ViewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
 
             //Navigate to the home page
-            RootNavigationView.Content = new HomeView();
+            ChangeView("Contributions");
 
             ViewModel.IsBusy = false;
             ViewModel.IsBusyMessage = "";
@@ -298,7 +400,5 @@ namespace MvpApi.Wpf
         }
 
         #endregion
-
-        
     }
 }

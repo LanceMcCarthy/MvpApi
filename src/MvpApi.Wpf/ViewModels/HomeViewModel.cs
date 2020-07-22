@@ -34,30 +34,30 @@ namespace MvpApi.Wpf.ViewModels
 
         public HomeViewModel()
         {
-            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            {
-                var designItems = DesignTimeHelpers.GenerateContributions();
+            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            //{
+            //    var designItems = DesignTimeHelpers.GenerateContributions();
 
-                Contributions = new ObservableCollection<ContributionsModel>();
+            //    Contributions = new ObservableCollection<ContributionsModel>();
 
-                foreach (var contribution in designItems)
-                {
-                    Contributions.Add(contribution);
-                }
-            }
+            //    foreach (var contribution in designItems)
+            //    {
+            //        Contributions.Add(contribution);
+            //    }
+            //}
 
             RefreshAfterDisconnectCommand = new DelegateCommand(async () =>
             {
-                IsInternetDisabled = !NetworkHelper.Current.CheckInternetConnection();
+                //IsInternetDisabled = !NetworkHelper.Current.CheckInternetConnection();
 
-                if (IsInternetDisabled)
-                {
-                    await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
-                }
-                else
-                {
+                //if (IsInternetDisabled)
+                //{
+                //    await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
+                //}
+                //else
+                //{
 
-                }
+                //}
             });
         }
 
@@ -313,13 +313,13 @@ namespace MvpApi.Wpf.ViewModels
 
         public async Task OnLoadedAsync()
         {
-            IsInternetDisabled = !NetworkHelper.Current.CheckInternetConnection();
+            //IsInternetDisabled = !NetworkHelper.Current.CheckInternetConnection();
 
-            if (IsInternetDisabled)
-            {
-                await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
-                return;
-            }
+            //if (IsInternetDisabled)
+            //{
+            //    await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+            //    return;
+            //}
 
             if ((App.Current.MainWindow as ShellWindow).DataContext is ShellViewModel shellVm)
             {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
+using Color = System.Windows.Media.Color;
 
 namespace MvpApi.Wpf.Helpers
 {

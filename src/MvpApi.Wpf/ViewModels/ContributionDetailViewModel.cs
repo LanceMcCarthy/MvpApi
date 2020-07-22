@@ -10,13 +10,11 @@ using System.Windows.Navigation;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.UI.Popups;
-using Windows.UI.Xaml.Controls;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using MvpApi.Common.Extensions;
 using MvpApi.Common.Models;
 using MvpApi.Wpf.Helpers;
-using Telerik.Windows.Diagrams.Core;
 using ExceptionLogger = MvpApi.Services.Utilities.ExceptionLogger;
 using SelectionChangedEventArgs = System.Windows.Controls.SelectionChangedEventArgs;
 using TextChangedEventArgs = System.Windows.Controls.TextChangedEventArgs;
@@ -47,11 +45,11 @@ namespace MvpApi.Wpf.ViewModels
 
         public ContributionDetailViewModel()
         {
-            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            {
-                Visibilities = DesignTimeHelpers.GenerateVisibilities();
-                SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
-            }
+            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            //{
+            //    Visibilities = DesignTimeHelpers.GenerateVisibilities();
+            //    SelectedContribution = DesignTimeHelpers.GenerateContributions().FirstOrDefault();
+            //}
 
             RemoveAdditionalTechAreaCommand = new DelegateCommand<ContributionTechnologyModel>(RemoveAdditionalArea);
         }
@@ -175,36 +173,36 @@ namespace MvpApi.Wpf.ViewModels
             Compare();
         }
 
-        public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
-        {
-            if (e.NewDate < (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionStartDate || e.NewDate > (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionDeadline)
-            {
-                WarningMessage = "The contribution date must be after the start of your current award period and before March 31, 2019 in order for it to count towards your evaluation";
-            }
-            else
-            {
-                WarningMessage = "";
-            }
+        //public void DatePicker_OnDateChanged(object sender, EventArgs e)
+        //{
+        //    if (e.NewDate < (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionStartDate || e.NewDate > (App.Current.MainWindow as ShellWindow).ViewModel.SubmissionDeadline)
+        //    {
+        //        WarningMessage = "The contribution date must be after the start of your current award period and before March 31, 2019 in order for it to count towards your evaluation";
+        //    }
+        //    else
+        //    {
+        //        WarningMessage = "";
+        //    }
 
-            Compare();
-        }
+        //    Compare();
+        //}
 
         public void QuantityBox_OnValueChanged(object sender, EventArgs e)
         {
             Compare();
         }
 
-        public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
-        {
-            if (SelectedContribution.AdditionalTechnologies.Count < 2)
-            {
-                AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
-            }
-            else
-            {
-                await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
-            }
-        }
+        //public async void AdditionalTechnologiesListView_OnItemClick(object sender, EventArgs e)
+        //{
+        //    if (SelectedContribution.AdditionalTechnologies.Count < 2)
+        //    {
+        //        AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
+        //    }
+        //    else
+        //    {
+        //        await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
+        //    }
+        //}
 
         public async void UploadContributionButton_Click(object sender, RoutedEventArgs e)
         {
@@ -400,20 +398,19 @@ namespace MvpApi.Wpf.ViewModels
             // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
             var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
 
-            areas.ForEach(area =>
+            foreach (var contributionAreaContributionModel in areas)
             {
-                CategoryAreas.Add(area);
-            });
-
+                CategoryAreas.Add(contributionAreaContributionModel);
+            }
 
             IsBusyMessage = "loading visibility options...";
 
             var visibilities = await App.ApiService.GetVisibilitiesAsync();
 
-            visibilities.ForEach(visibility =>
+            foreach (var visibilityViewModel in visibilities)
             {
-                Visibilities.Add(visibility);
-            });
+                Visibilities.Add(visibilityViewModel);
+            }
         }
 
         public async Task<bool> UploadContributionAsync(ContributionsModel contribution)

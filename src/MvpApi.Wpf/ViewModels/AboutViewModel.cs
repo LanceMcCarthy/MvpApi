@@ -22,14 +22,14 @@ namespace MvpApi.Wpf.ViewModels
 
         public AboutViewModel()
         {
-            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            {
-                AppVersion = "1.0.1";
-            }
-            else
-            {
-                localSettings = ApplicationData.Current.LocalSettings;
-            }
+            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            //{
+            //    AppVersion = "1.0.1";
+            //}
+            //else
+            //{
+            //    localSettings = ApplicationData.Current.LocalSettings;
+            //}
         }
 
         public string AppVersion

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Windows;
 using CommonHelpers.Common;
 
 namespace MvpApi.Wpf.ViewModels
@@ -10,10 +8,10 @@ namespace MvpApi.Wpf.ViewModels
     {
         public SettingsViewModel()
         {
-            if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            {
-                UseBetaEditor = true;
-            }
+            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            //{
+
+            //}
         }
 
         public bool UseBetaEditor
@@ -36,19 +34,18 @@ namespace MvpApi.Wpf.ViewModels
 
         public async Task OnLoadedAsync()
         {
-            if ((App.Current.MainWindow as ShellWindow).DataContext is ShellViewModel shellVm)
+            if (!(App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
             {
-                if (!shellVm.IsLoggedIn)
-                {
-                    await (App.Current.MainWindow as ShellWindow).SignInAsync();
-                }
+                await (App.Current.MainWindow as ShellWindow).SignInAsync();
+            }
 
-                if (IsBusy)
-                {
-                    IsBusy = false;
-                    IsBusyMessage = "";
-                }
+            if (IsBusy)
+            {
+                IsBusy = false;
+                IsBusyMessage = "";
             }
         }
+
+        
     }
 }
