@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="MvpApi.Wpf.Views.AuthenticationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:MvpApi.Wpf.Views"
+             xmlns:viewModels="clr-namespace:MvpApi.Wpf.ViewModels"
+             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800">
+
+    <UserControl.DataContext>
+        <viewModels:AuthenticationViewModel/>
+    </UserControl.DataContext>
+
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="/Images/HeroBackground.png" 
+                        Stretch="UniformToFill"/>
+        </Grid.Background>
+
+        <telerik:RadExpander Header="Help"
+                             Foreground="White"
+                             Margin="10">
+            <Grid Background="#88000000">
+                <StackPanel Margin="5"
+                            VerticalAlignment="Bottom">
+                    <TextBlock Text="If you are experiencing authentication issues, sign out and sign back in. This will refresh your authentication tokens."
+                               HorizontalAlignment="Center"
+                               Margin="5,0,5,3"
+                               Foreground="White" />
+
+                    <Button Click="LoginButton_OnClick"
+                            Content="Show Login Screen"
+                            Foreground="White"
+                            Background="DarkRed"
+                            HorizontalAlignment="Center"
+                            Margin="0,3,0,0" />
+
+                </StackPanel>
+            </Grid>
+        </telerik:RadExpander>
+    </Grid>
+</UserControl>

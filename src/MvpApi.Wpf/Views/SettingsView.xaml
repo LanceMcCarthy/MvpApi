@@ -11,12 +11,67 @@
              d:DesignWidth="800">
 
     <UserControl.DataContext>
-        <viewModels:SettingsViewModel x:Name="ViewModel" />
+        <viewModels:SettingsViewModel />
     </UserControl.DataContext>
 
     <Grid>
+        <StackPanel>
+            <telerik:RadExpander Header="Dates" 
+                                 IsExpanded="True">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="Override Submissions Start Date"
+                               VerticalAlignment="Center"
+                               Margin="0,0,0,0" />
+
+                    <telerik:RadDatePicker SelectedValue="{Binding SubmissionStartDate, Mode=TwoWay}"
+                                           DateTimeWatermarkContent="Snter Start Date"
+                                           Grid.Column="0"
+                                           Grid.Row="1"
+                                           Width="200"
+                                           Margin="0,0,20,0" />
+
+                    <TextBlock Text="Override Submissions Deadline"
+                               VerticalAlignment="Center"
+                               Grid.Column="1"
+                               Margin="0,0,0,0" />
+
+                    <telerik:RadDatePicker SelectedValue="{Binding SubmissionDeadline, Mode=TwoWay}"
+                                           DateTimeWatermarkContent="Enter End Date"
+                                           Grid.Column="1"
+                                           Grid.Row="1"
+                                           Width="200"
+                                           HorizontalAlignment="Left"
+                                           Margin="0,0,0,0" />
+
+                </Grid>
+            </telerik:RadExpander>
+            <telerik:RadExpander Header="Appearance" 
+                                 IsExpanded="True">
+                <StackPanel Margin="10,10">
+
+                    <TextBlock Text="Theme"
+                               Margin="0,0,8,10"/>
+
+                    <telerik:RadComboBox ItemsSource="{Binding Themes}"
+                                         SelectedItem="{Binding SelectedTheme, Mode=TwoWay}"
+                                         HorizontalAlignment="Left" />
+                </StackPanel>
+            </telerik:RadExpander>
+        </StackPanel>
+        
+       
+
         <telerik:RadBusyIndicator IsBusy="{Binding IsBusy}"
                                   BusyContent="{Binding IsBusyMessage}"
-                                  Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConv}}" />
+                                  Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConv}}"/>
     </Grid>
 </UserControl>

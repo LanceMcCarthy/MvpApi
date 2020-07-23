@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using MvpApi.Wpf.ViewModels;
 
 namespace MvpApi.Wpf.Views
 {
@@ -13,7 +14,10 @@ namespace MvpApi.Wpf.Views
 
         private async void SettingsView_Loaded(object sender, RoutedEventArgs e)
         {
-            await ViewModel.OnLoadedAsync();
+            if (DataContext is SettingsViewModel vm)
+            {
+                await vm.OnLoadedAsync();
+            }
         }
     }
 }

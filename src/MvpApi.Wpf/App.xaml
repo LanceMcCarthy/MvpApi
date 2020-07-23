@@ -15,7 +15,10 @@
                 <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Input.xaml" />
                 <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.GridView.xaml" />
                 <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Navigation.xaml" />
+                <ResourceDictionary Source="Styles/GeneralStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <telerik:StringToGlyphConverter x:Key="StringToGlyphConverter" />
 
             <converters:ValueWhenConverter x:Key="InvertBoolConv">
                 <converters:ValueWhenConverter.When>
@@ -80,6 +83,14 @@
             <converters:ContributionTypeNameToBrushConverter x:Key="ContributionTypeNameToBackgroundConv" />
             <converters:ContributionTypeNameToBrushConverter x:Key="ContributionTypeNameToForegroundConv"
                                                              IsForegroundColor="True" />
+
+            <!--<Style TargetType="telerik:RadBusyIndicator" 
+                   BasedOn="{StaticResource RadBusyIndicatorStyle}">
+                <Setter Property="Background"
+                        Value="#99000000"/>
+                <Setter Property="Foreground"
+                        Value="#DDFFFFFF" />
+            </Style>-->
 
             <!--<Style x:Key="TechnologyAreaComboBoxStyle"
                    TargetType="ComboBox">

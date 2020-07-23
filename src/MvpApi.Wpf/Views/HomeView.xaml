@@ -11,31 +11,53 @@
              d:DesignWidth="800">
 
     <UserControl.DataContext>
-        <viewModels:HomeViewModel x:Name="ViewModel" />
+        <viewModels:HomeViewModel />
     </UserControl.DataContext>
 
     <Grid>
         <telerik:RadGridView ItemsSource="{Binding Contributions}"
                              SelectionChanged="DataControl_OnSelectionChanged"
+                             RowDetailsVisibilityMode="VisibleWhenSelected"
                              AutoGenerateColumns="False">
+            <telerik:RadGridView.RowDetailsTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <StackPanel Margin="10">
+                            <TextBlock Text="{Binding Description}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,10" />
+                            <TextBlock Text="{Binding AnnualQuantity, StringFormat='Annual Quantity: {0}'}"
+                                       Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding AnnualReach, StringFormat='Annual Reach: {0}'}"
+                                       Margin="0,0,0,5" />
+                            <TextBlock Text="{Binding ReferenceUrl, StringFormat='Link: {0}'}" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </telerik:RadGridView.RowDetailsTemplate>
             <telerik:RadGridView.Columns>
-                <telerik:GridViewDataColumn DataMemberBinding="{Binding StartDate}" />
-                <telerik:GridViewDataColumn DataMemberBinding="{Binding Title}" />
-                <telerik:GridViewDataColumn DataMemberBinding="{Binding Description}" />
-                <telerik:GridViewDataColumn DataMemberBinding="{Binding AnnualQuantity}" />
-                <telerik:GridViewDataColumn DataMemberBinding="{Binding AnnualReach}" />
-                <telerik:GridViewDataColumn DataMemberBinding="{Binding ReferenceUrl}" />
-                <telerik:GridViewDataColumn DataMemberBinding="{Binding ContributionTechnology.Name}" />
+                <telerik:GridViewDataColumn Header="Date"
+                                            DataMemberBinding="{Binding StartDate}"
+                                            DataFormatString="{}{0:d}"/>
+                <telerik:GridViewDataColumn Header="Category Name"
+                                            DataMemberBinding="{Binding ContributionTechnology.Name}" />
+                <telerik:GridViewDataColumn Header="Title"
+                                            DataMemberBinding="{Binding Title}"
+                                            TextWrapping="Wrap"/>
+                <!--<telerik:GridViewDataColumn Header="Description"
+                                            DataMemberBinding="{Binding Description}"
+                                            Width="300" />
+                <telerik:GridViewDataColumn Header="Quantity"
+                                            DataMemberBinding="{Binding AnnualQuantity}" />
+                <telerik:GridViewDataColumn Header="Reach"
+                                            DataMemberBinding="{Binding AnnualReach}" />
+                <telerik:GridViewDataColumn Header="Url"
+                                            DataMemberBinding="{Binding ReferenceUrl}" />-->
             </telerik:RadGridView.Columns>
         </telerik:RadGridView>
 
         <telerik:RadBusyIndicator IsBusy="{Binding IsBusy}"
-                                  Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <telerik:RadBusyIndicator.BusyContent>
-                <TextBlock Text="{Binding IsBusyMessage}"
-                           HorizontalAlignment="Center"
-                           Margin="10" />
-            </telerik:RadBusyIndicator.BusyContent>
-        </telerik:RadBusyIndicator>
+                                  BusyContent="{Binding IsBusyMessage}"
+                                  Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
     </Grid>
 </UserControl>

@@ -16,15 +16,21 @@ namespace MvpApi.Wpf.Views
 
         private async void HomeView_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            await ViewModel.OnLoadedAsync();
+            if (DataContext is HomeViewModel vm)
+            {
+                await vm.OnLoadedAsync();
+            }
         }
 
         private void DataControl_OnSelectionChanged(object sender, SelectionChangeEventArgs e)
         {
-            if (ViewModel.GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
+            if (DataContext is HomeViewModel vm)
             {
+                if (vm.GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
+                {
 
-            }
+                }
+            }  
         }
     }
 }

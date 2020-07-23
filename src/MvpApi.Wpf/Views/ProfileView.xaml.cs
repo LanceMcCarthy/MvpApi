@@ -15,31 +15,38 @@ namespace MvpApi.Wpf.Views
 
         private async void ProfileView_Loaded(object sender, RoutedEventArgs e)
         {
-            await ViewModel.OnLoadedAsync();
+            if (DataContext is MvpApi.Wpf.ViewModels.ProfileViewModel vm)
+            {
+                await vm.OnLoadedAsync();
+            }
         }
 
         private void OnlineIdentitiesListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Add any selected items to the SelectedItems collection
-            if (e.AddedItems != null)
+            if (DataContext is MvpApi.Wpf.ViewModels.ProfileViewModel vm)
             {
-                foreach (OnlineIdentityViewModel identity in e.AddedItems)
+                // Add any selected items to the SelectedItems collection
+                if (e.AddedItems != null)
                 {
-                    ViewModel.SelectedOnlineIdentities.Add(identity);
+                    foreach (OnlineIdentityViewModel identity in e.AddedItems)
+                    {
+                        vm.SelectedOnlineIdentities.Add(identity);
+                    }
                 }
-            }
 
-            // Remove any selected items from the SelectedItems collection
-            if (e.RemovedItems != null)
-            {
-                foreach (OnlineIdentityViewModel identity in e.RemovedItems)
+                // Remove any selected items from the SelectedItems collection
+                if (e.RemovedItems != null)
                 {
-                    ViewModel.SelectedOnlineIdentities.Remove(identity);
+                    foreach (OnlineIdentityViewModel identity in e.RemovedItems)
+                    {
+                        vm.SelectedOnlineIdentities.Remove(identity);
+                    }
                 }
-            }
 
-            // Enable or Disable the ClearSelection and Delete buttons according to the selected items collection's count
-            ViewModel.AreAppBarButtonsEnabled = ViewModel.SelectedOnlineIdentities.Any();
+                // Enable or Disable the ClearSelection and Delete buttons according to the selected items collection's count
+                vm.AreAppBarButtonsEnabled = vm.SelectedOnlineIdentities.Any();
+            }
+            
         }
     }
 }

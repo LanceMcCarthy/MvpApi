@@ -13,9 +13,8 @@ using MvpApi.Common.Extensions;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
 using MvpApi.Wpf.Helpers;
-using MvpApi.Wpf.Views;
+using MvpApi.Wpf.Models;
 using Newtonsoft.Json;
-using Telerik.Windows.Controls;
 
 namespace MvpApi.Wpf
 {
@@ -23,6 +22,11 @@ namespace MvpApi.Wpf
     {
         public ShellWindow()
         {
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.PreferredTheme))
+            {
+                UpdateTheme(Properties.Settings.Default.PreferredTheme);
+            }
+
             InitializeComponent();
 
             Loaded += ShellWindow_Loaded;
@@ -42,30 +46,15 @@ namespace MvpApi.Wpf
 
         private void RootNavigationView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.AddedItems != null && e.AddedItems[0] is RadNavigationViewItem menuItem)
-            {
-                ChangeView(menuItem.Tag.ToString());
-            }
+            //if (e.AddedItems != null && e.AddedItems[0] is RadNavigationViewItem menuItem)
+            //{
+            //    ChangeView(menuItem.Tag.ToString());
+            //}
         }
 
-        private void ProfileButton_Click(object sender, RoutedEventArgs e)
+        private void ChangeView(ViewName viewName)
         {
-            ChangeView("Profile");
-        }
-
-        private void ChangeView(string viewName)
-        {
-            RootNavigationView.Content = viewName switch
-            {
-                "Contributions" => new HomeView(),
-                "Kudos" => new KudosView(),
-                "Settings" => new SettingsView(),
-                "Profile" => new ProfileView(),
-                _ => RootNavigationView.Content
-            };
-
-            // TODO think about caching for drill-down nav
-            //lastView = (UserControl)RootNavigationView.Content;
+            RootNavigationView.SelectedIndex = (int)viewName;
         }
 
         private async void LogoutButton_OnClick(object sender, RoutedEventArgs e)
@@ -190,7 +179,7 @@ namespace MvpApi.Wpf
             ViewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
 
             //Navigate to the home page
-            ChangeView("Contributions");
+            ChangeView(ViewName.Home);
 
             ViewModel.IsBusy = false;
             ViewModel.IsBusyMessage = "";
@@ -341,5 +330,45 @@ namespace MvpApi.Wpf
         }
 
         #endregion
+
+        public void UpdateTheme(string assemblyName)
+        {
+            Application.Current.Resources.MergedDictionaries.Clear();
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/System.Windows.xaml", UriKind.RelativeOrAbsolute)
+            });
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.xaml", UriKind.RelativeOrAbsolute)
+            });
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Data.xaml", UriKind.RelativeOrAbsolute)
+            });
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.GridView.xaml", UriKind.RelativeOrAbsolute)
+            });
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Input.xaml", UriKind.RelativeOrAbsolute)
+            });
+
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Navigation.xaml", UriKind.RelativeOrAbsolute)
+            });
+            
+            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            {
+                Source = new Uri("Styles/GeneralStyles.xaml", UriKind.RelativeOrAbsolute)
+            });
+        }
     }
 }

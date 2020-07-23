@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using Windows.ApplicationModel;
 //using Windows.Storage;
 //using Windows.Storage.Pickers;
 //using Windows.Storage.Provider;
@@ -34,6 +35,7 @@ namespace MvpApi.Wpf.ViewModels
 
         public HomeViewModel()
         {
+            // Crashes designer
             //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             //{
             //    var designItems = DesignTimeHelpers.GenerateContributions();
@@ -46,18 +48,34 @@ namespace MvpApi.Wpf.ViewModels
             //    }
             //}
 
+            // UWP way doesn't work in .NET5 (yet)
+            //if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
+            //{
+
+            //}
+
+            //var designItems = DesignTimeHelpers.GenerateContributions();
+
+            //Contributions = new ObservableCollection<ContributionsModel>();
+
+            //foreach (var contribution in designItems)
+            //{
+            //    Contributions.Add(contribution);
+            //}
+
+
             RefreshAfterDisconnectCommand = new DelegateCommand(async () =>
             {
-                //IsInternetDisabled = !NetworkHelper.Current.CheckInternetConnection();
+                IsInternetDisabled = !NetworkHelper.Current.CheckInternetConnection();
 
-                //if (IsInternetDisabled)
-                //{
-                //    await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
-                //}
-                //else
-                //{
+                if (IsInternetDisabled)
+                {
+                    await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
+                }
+                else
+                {
 
-                //}
+                }
             });
         }
 

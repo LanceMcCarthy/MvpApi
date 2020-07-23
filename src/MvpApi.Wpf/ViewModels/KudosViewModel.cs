@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using Windows.Services.Store;
 using Windows.UI.Popups;
 using CommonHelpers.Common;
+using CommonHelpers.Mvvm;
 using MvpApi.Common.Models;
 using MvpApi.Wpf.Helpers;
 using Newtonsoft.Json.Linq;
@@ -24,6 +26,13 @@ namespace MvpApi.Wpf.ViewModels
             KudosCollection.Add(new Kudos { Title = "Small Coffee", ProductId = "MvpCompanion_SmallCoffee", StoreId = "9NJ9NKHQF7C4", Price = "$1.49", ImageUrl = "/Images/CoffeeKudo.png" });
             KudosCollection.Add(new Kudos { Title = "Lunch", ProductId = "MvpCompanion_Lunch", StoreId = "9N999Z3H3GPK", Price = "$4.89", ImageUrl = "/Images/LunchKudo.png" });
             KudosCollection.Add(new Kudos { Title = "Dinner", ProductId = "MvpCompanion_Dinner", StoreId = "9NB8SR731DM6", Price = "$9.49", ImageUrl = "/Images/DinnerKudo.png" });
+
+            GetKudoCommand = new DelegateCommand<Kudos>(GetKudo);
+        }
+
+        private void GetKudo(Kudos kudo)
+        {
+            Debug.WriteLine($"Ordered Kudo : {kudo.Title}");
         }
 
         public ObservableCollection<Kudos> KudosCollection { get; set; } = new ObservableCollection<Kudos>();
@@ -33,6 +42,8 @@ namespace MvpApi.Wpf.ViewModels
             get => _feedbackHubButtonVisibility;
             set => SetProperty(ref _feedbackHubButtonVisibility, value);
         }
+
+        public DelegateCommand<Kudos> GetKudoCommand { get; set; }
 
         //public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
         //{

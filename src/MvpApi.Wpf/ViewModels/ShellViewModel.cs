@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Windows;
-using Windows.Storage;
+using System.Collections.ObjectModel;
 using CommonHelpers.Common;
 using MvpApi.Services.Utilities;
+using MvpApi.Wpf.Models;
 
 namespace MvpApi.Wpf.ViewModels
 {
@@ -12,10 +11,8 @@ namespace MvpApi.Wpf.ViewModels
         private MvpApi.Common.Models.ProfileViewModel mvp;
         private string profileImagePath;
         private bool isLoggedIn;
-        private bool useBetaEditor;
         private DateTime submissionStartDate = ServiceConstants.SubmissionStartDate;
         private DateTime submissionDeadline = ServiceConstants.SubmissionDeadline;
-        private string _selectedTheme = "Fluent";
 
         public ShellViewModel()
         {
@@ -26,11 +23,17 @@ namespace MvpApi.Wpf.ViewModels
             //    ProfileImagePath = "/Images/MvpIcon.png";
             //}
 
-            if (Properties.Settings.Default.PreferredTheme != SelectedTheme)
+            NavigationMenuItems = new ObservableCollection<NavItemModel>
             {
-                SelectedTheme = Properties.Settings.Default.PreferredTheme;
-            }
+                new NavItemModel{Title = "Profile", Name = ViewName.Profile, IconGlyph = "&#xe801;"},
+                new NavItemModel{Title = "Home", Name = ViewName.Home, IconGlyph = "&#xe022;"},
+                new NavItemModel{Title = "Kudos", Name = ViewName.Kudos, IconGlyph = "&#xe301;"},
+                new NavItemModel{Title = "Settings", Name = ViewName.Settings, IconGlyph = "&#xe13b;"},
+                new NavItemModel{Title = "Authentication", Name = ViewName.Auth, IconGlyph = "&#xe130;"},
+            };
         }
+
+        public ObservableCollection<NavItemModel> NavigationMenuItems { get; set; }
 
         public string ProfileImagePath
         {
@@ -39,7 +42,8 @@ namespace MvpApi.Wpf.ViewModels
             {
                 profileImagePath = value;
 
-                // Manually invoke PropertyChanged to ensure image is reloaded, even if the file path is the same.
+                // Always invoke PropertyChanged to ensure image is reloaded,
+                // even if the file path is the same.
                 OnPropertyChanged();
             }
         }
@@ -56,30 +60,6 @@ namespace MvpApi.Wpf.ViewModels
             set => SetProperty(ref isLoggedIn, value);
         }
         
-        public bool UseBetaEditor
-        {
-            get
-            {
-                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(UseBetaEditor), out object rawValue))
-                {
-                    useBetaEditor = (bool)rawValue;
-                }
-                else
-                {
-                    ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = useBetaEditor;
-                }
-                
-                return useBetaEditor;
-            }
-            set
-            {
-                if (SetProperty(ref useBetaEditor, value))
-                {
-                    ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = useBetaEditor;
-                }
-            }
-        }
-
         public DateTime SubmissionStartDate
         {
             get => submissionStartDate;
@@ -90,69 +70,6 @@ namespace MvpApi.Wpf.ViewModels
         {
             get => submissionDeadline;
             set => SetProperty(ref submissionDeadline, value);
-        }
-
-        public List<string> Themes { get; } = new List<string>
-        {
-            "Crystal",
-            "Expression_Dark",
-            "Fluent",
-            "Green",
-            "Material",
-            "Office_Black",
-            "Office_Blue",
-            "Office_Silver",
-            "Office2013",
-            "Office2016",
-            "Office2016_Touch",
-            "Summer",
-            "Transparent",
-            "Vista",
-            "VisualStudio2013",
-            "VisualStudio2019",
-            "Windows7",
-            "Windows8",
-            "Windows8Touch"
-        };
-
-        public string SelectedTheme
-        {
-            get => _selectedTheme;
-            set
-            {
-                if (SetProperty(ref _selectedTheme, value))
-                {
-                    UpdateTheme(_selectedTheme);
-                }
-            }
-        }
-
-        public static void UpdateTheme(string assemblyName)
-        {
-            Application.Current.Resources.MergedDictionaries.Clear();
-
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/System.Windows.xaml", UriKind.RelativeOrAbsolute)
-            });
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.xaml", UriKind.RelativeOrAbsolute)
-            });
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Input.xaml", UriKind.RelativeOrAbsolute)
-            });
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.GridView.xaml", UriKind.RelativeOrAbsolute)
-            });
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Navigation.xaml", UriKind.RelativeOrAbsolute)
-            });
-
-            Properties.Settings.Default.PreferredTheme = assemblyName;
         }
     }
 }

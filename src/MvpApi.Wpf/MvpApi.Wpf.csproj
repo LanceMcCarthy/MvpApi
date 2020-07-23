@@ -22,6 +22,12 @@
     <Generator>MSBuild:Compile</Generator>
     <SubType>Designer</SubType>
   </Page>
+  <Page Include="Styles\GeneralStyles.xaml">
+    <Generator>MSBuild:Compile</Generator>
+  </Page>
+  <Page Include="Views\AuthenticationView.xaml">
+    <Generator>MSBuild:Compile</Generator>
+  </Page>
   <Page Include="Views\HomeView.xaml">
     <Generator>MSBuild:Compile</Generator>
   </Page>
@@ -58,6 +64,8 @@
   <Compile Include="Helpers\NetworkHelper.cs" />
   <Compile Include="Helpers\PaletteHelper.cs" />
   <Compile Include="Helpers\TaskUtilities.cs" />
+  <Compile Include="Models\NavItemModel.cs" />
+  <Compile Include="Models\ViewName.cs" />
   <Compile Include="Properties\Settings.Designer.cs">
     <DesignTimeSharedInput>True</DesignTimeSharedInput>
     <AutoGen>True</AutoGen>
@@ -65,12 +73,14 @@
   </Compile>
   <Compile Include="Selectors\ContributionTypeNameCellStyleSelector.cs" />
   <Compile Include="Selectors\TechAreaGroupStyleSelector.cs" />
+  <Compile Include="Selectors\ViewContentTemplateSelector.cs" />
   <Compile Include="ShellWindow.xaml.cs">
     <DependentUpon>ShellWindow.xaml</DependentUpon>
     <SubType>Code</SubType>
   </Compile>
   <Compile Include="ViewModels\AboutViewModel.cs" />
   <Compile Include="ViewModels\AddContributionsViewModel.cs" />
+  <Compile Include="ViewModels\AuthenticationViewModel.cs" />
   <Compile Include="ViewModels\ContributionDetailViewModel.cs" />
   <Compile Include="ViewModels\ContributionEditorDialogViewModel.cs" />
   <Compile Include="ViewModels\HomeViewModel.cs" />
@@ -78,6 +88,7 @@
   <Compile Include="ViewModels\ProfileViewModel.cs" />
   <Compile Include="ViewModels\SettingsViewModel.cs" />
   <Compile Include="ViewModels\ShellViewModel.cs" />
+  <Compile Include="Views\AuthenticationView.xaml.cs" />
   <Compile Include="Views\HomeView.xaml.cs" />
   <Compile Include="Views\KudosView.xaml.cs" />
   <Compile Include="Views\ProfileView.xaml.cs" />
@@ -95,6 +106,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\LunchKudo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\HeroBackground.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\MvpIcon.png">

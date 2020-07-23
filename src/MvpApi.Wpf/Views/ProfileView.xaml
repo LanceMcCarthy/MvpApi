@@ -10,7 +10,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.DataContext>
-        <viewModels:ProfileViewModel x:Name="ViewModel"/>
+        <viewModels:ProfileViewModel />
     </UserControl.DataContext>
 
     <Grid>
@@ -251,7 +251,7 @@
 
         <telerik:RadBusyIndicator IsBusy="{Binding IsBusy}"
                                   BusyContent="{Binding IsBusyMessage}"
-                                  Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConv}}" 
+                                  Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConv}}"
                                   Grid.Row="0"
                                   Grid.RowSpan="3"/>
     </Grid>
