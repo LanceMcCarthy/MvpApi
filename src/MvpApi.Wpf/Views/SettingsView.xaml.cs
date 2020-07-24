@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using MvpApi.Wpf.ViewModels;
 
@@ -18,6 +19,23 @@ namespace MvpApi.Wpf.Views
             {
                 await vm.OnLoadedAsync();
             }
+        }
+
+        private void UrlButton_Click(object sender, RoutedEventArgs e)
+        {
+            var url = (sender as Button)?.Tag.ToString();
+
+            Process.Start(url);
+        }
+
+        private void FeedbackButton_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void EmailButton_Click(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
 }

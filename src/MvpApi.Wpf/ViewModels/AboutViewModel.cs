@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO.Packaging;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
+using Windows.ApplicationModel;
 using Windows.ApplicationModel.Email;
 using Windows.Storage;
 using Windows.UI.Popups;
@@ -30,13 +30,16 @@ namespace MvpApi.Wpf.ViewModels
             //{
             //    localSettings = ApplicationData.Current.LocalSettings;
             //}
+
+            localSettings = ApplicationData.Current.LocalSettings;
         }
 
         public string AppVersion
         {
             get
             {
-                appVersion = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString();
+                appVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
+                //appVersion = Assembly.GetExecutingAssembly()?.GetName()?.Version?.ToString();
 
                 return appVersion;
             }
@@ -120,10 +123,8 @@ namespace MvpApi.Wpf.ViewModels
 
         public void OnLoadedAsync()
         {
-            //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
-            //    ? Visibility.Visible 
-            //    : Visibility.Collapsed;
             
+
         }
 
         public void OnUnloaded()

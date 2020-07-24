@@ -8,6 +8,8 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using Windows.Storage;
 using Windows.UI.Popups;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Extensions;
 using MvpApi.Services.Apis;
@@ -55,6 +57,11 @@ namespace MvpApi.Wpf
         private void ChangeView(ViewName viewName)
         {
             RootNavigationView.SelectedIndex = (int)viewName;
+
+            Analytics.TrackEvent("View Changed", new Dictionary<string, string>
+            {
+                {"ViewName", $"{viewName}"}
+            });
         }
 
         private async void LogoutButton_OnClick(object sender, RoutedEventArgs e)
@@ -118,6 +125,8 @@ namespace MvpApi.Wpf
                 }
                 else
                 {
+                    Analytics.TrackEvent("Refreshed Session");
+
                     await InitializeMvpApiAsync(authorizationHeader);
                 }
 
@@ -133,6 +142,8 @@ namespace MvpApi.Wpf
 
         private void LoginUsingWebView()
         {
+            Analytics.TrackEvent("WebView Login Required");
+
             // Make sure the overlay is visible
             if (LoginOverlay.Visibility == Visibility.Collapsed)
             {
@@ -187,6 +198,8 @@ namespace MvpApi.Wpf
 
         public async Task SignOutAsync()
         {
+            Analytics.TrackEvent("Manual Logout");
+
             try
             {
                 // Indicate to user we are signing out
@@ -210,6 +223,7 @@ namespace MvpApi.Wpf
             }
             catch (Exception ex)
             {
+                Crashes.TrackError(ex);
                 await ex.LogExceptionWithUserMessage();
             }
             finally
@@ -220,6 +234,8 @@ namespace MvpApi.Wpf
 
                 // Toggle flag
                 ViewModel.IsLoggedIn = false;
+
+                
 
                 // Make sure the overlay is visible
                 if (LoginOverlay.Visibility == Visibility.Collapsed)
@@ -238,64 +254,68 @@ namespace MvpApi.Wpf
 
             try
             {
-                using (var client = new HttpClient())
+                using var client = new HttpClient();
+
+                // Construct the Form content
+                var postContent = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
                 {
-                    // Construct the Form content
-                    var postContent = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
-                    {
-                        new KeyValuePair<string, string>("client_id", _clientId),
-                        new KeyValuePair<string, string>("grant_type", isRefresh ? "refresh_token" : "authorization_code"),
-                        new KeyValuePair<string, string>(isRefresh ? "refresh_token" : "code", authCode.Split('&')[0]),
-                        new KeyValuePair<string, string>("redirect_uri", _redirectUrl)
-                    });
+                    new KeyValuePair<string, string>("client_id", _clientId),
+                    new KeyValuePair<string, string>("grant_type", isRefresh ? "refresh_token" : "authorization_code"),
+                    new KeyValuePair<string, string>(isRefresh ? "refresh_token" : "code", authCode.Split('&')[0]),
+                    new KeyValuePair<string, string>("redirect_uri", _redirectUrl)
+                });
 
-                    // Variable to hold the response data
-                    var responseTxt = "";
+                // Variable to hold the response data
+                var responseTxt = "";
 
-                    // Post the Form data
-                    using (var response = await client.PostAsync(new Uri(_accessTokenUrl), postContent))
-                    {
-                        // Read the response
-                        responseTxt = await response.Content.ReadAsStringAsync();
-                    }
+                // Post the Form data
+                using (var response = await client.PostAsync(new Uri(_accessTokenUrl), postContent))
+                {
+                    // Read the response
+                    responseTxt = await response.Content.ReadAsStringAsync();
+                }
 
-                    // Deserialize the parameters from the response
-                    var tokenData = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseTxt);
+                // Deserialize the parameters from the response
+                var tokenData = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseTxt);
 
-                    // Ensure response has access token
-                    if (tokenData.ContainsKey("access_token"))
-                    {
-                        // Store the expiration time of the token, currently 3600 seconds (an hour)
-                        StorageHelpers.Instance.SaveSetting("expires_in", tokenData["expires_in"]);
+                // Ensure response has access token
+                if (tokenData.ContainsKey("access_token"))
+                {
+                    // Store the expiration time of the token, currently 3600 seconds (an hour)
+                    StorageHelpers.Instance.SaveSetting("expires_in", tokenData["expires_in"]);
 
-                        // Store tokens (NOTE: The tokens are encrypted with Rijindel before storing in LocalFolder)
-                        StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
-                        StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
+                    // Store tokens (NOTE: The tokens are encrypted with Rijindel before storing in LocalFolder)
+                    StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
+                    StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
 
-                        // We need to prefix the access token with the token type for the auth header. 
-                        // Currently this is always "bearer", doing this to be more future proof
-                        var tokenType = tokenData["token_type"];
-                        var cleanedAccessToken = tokenData["access_token"].Split('&')[0];
+                    // We need to prefix the access token with the token type for the auth header. 
+                    // Currently this is always "bearer", doing this to be more future proof
+                    var tokenType = tokenData["token_type"];
+                    var cleanedAccessToken = tokenData["access_token"].Split('&')[0];
 
-                        // Build the Bearer authorization header
-                        authorizationHeader = $"{tokenType} {cleanedAccessToken}";
-                    }
+                    // Build the Bearer authorization header
+                    authorizationHeader = $"{tokenType} {cleanedAccessToken}";
                 }
             }
-            catch (HttpRequestException e)
+            catch (HttpRequestException ex)
             {
-                await e.LogExceptionWithUserMessage();
+                Crashes.TrackError(ex);
 
-                if (e.Message.Contains("401"))
+                await ex.LogExceptionWithUserMessage();
+
+                if (ex.Message.Contains("401"))
                 {
                     //TODO consider another message HTTP specific errors
                 }
 
-                Debug.WriteLine($"LoginDialog HttpRequestException: {e}");
+                Debug.WriteLine($"LoginDialog HttpRequestException: {ex}");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                await e.LogExceptionWithUserMessage();
+
+                Crashes.TrackError(ex);
+
+                await ex.LogExceptionWithUserMessage();
             }
 
             return authorizationHeader;

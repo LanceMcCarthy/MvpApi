@@ -12,6 +12,7 @@ using Windows.Storage;
 using Windows.UI.Popups;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
+using Microsoft.AppCenter.Crashes;
 using MvpApi.Common.Extensions;
 using MvpApi.Common.Models;
 using MvpApi.Wpf.Helpers;
@@ -290,6 +291,7 @@ namespace MvpApi.Wpf.ViewModels
                 //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
                 //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
 
+                Crashes.TrackError(ex);
                 await ExceptionLogger.LogExceptionAsync(ex);
             }
         }
@@ -426,6 +428,7 @@ namespace MvpApi.Wpf.ViewModels
             }
             catch (Exception ex)
             {
+                Crashes.TrackError(ex);
                 await new MessageDialog($"Something went wrong saving the item, please try again. Error: {ex.Message}").ShowAsync();
                 return false;
             }
@@ -493,39 +496,17 @@ namespace MvpApi.Wpf.ViewModels
                     else
                     {
                         await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
-
                     }
                 }
                 catch (Exception ex)
                 {
+                    Crashes.TrackError(ex);
                     Debug.WriteLine($"LoadDataAsync Exception {ex}");
                 }
                 finally
                 {
                     IsBusyMessage = "";
                     IsBusy = false;
-                }
-            }
-        }
-
-        // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
-        private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
-        {
-            e.Handled = IsSelectedContributionDirty;
-
-            if (IsSelectedContributionDirty)
-            {
-                var md = new MessageDialog("Navigating away now will lose your changes, continue?", "Warning: Unsaved Changes");
-                md.Commands.Add(new UICommand("yes"));
-                md.Commands.Add(new UICommand("no"));
-                md.CancelCommandIndex = 1;
-                md.DefaultCommandIndex = 1;
-
-                var result = await md.ShowAsync();
-
-                if (result.Label == "yes")
-                {
-                    
                 }
             }
         }

@@ -9,6 +9,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using Windows.ApplicationModel;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.Storage.Provider;
 //using Windows.Storage;
 //using Windows.Storage.Pickers;
 //using Windows.Storage.Provider;
@@ -131,7 +134,7 @@ namespace MvpApi.Wpf.ViewModels
 
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            //(App.Current.MainWindow as ShellWindow).RootNavigationView.Content = new AddContributionView();
+            //(App.Current.MainWindow as ShellWindow).Vi;
         }
 
         public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
@@ -218,39 +221,39 @@ namespace MvpApi.Wpf.ViewModels
             if (string.IsNullOrEmpty(jsonData))
                 return;
 
-            //var savePicker = new FileSavePicker
-            //{
-            //    SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
-            //    SuggestedFileName = $"MVP Contributions {DateTime.Now:yyyy-dd-M--HH-mm-ss}"
-            //};
+            var savePicker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                SuggestedFileName = $"MVP Contributions {DateTime.Now:yyyy-dd-M--HH-mm-ss}"
+            };
 
-            //savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
+            savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
 
-            //var file = await savePicker.PickSaveFileAsync();
+            var file = await savePicker.PickSaveFileAsync();
 
-            //if (file != null)
-            //{
-            //    IsBusyMessage = "saving file...";
+            if (file != null)
+            {
+                IsBusyMessage = "saving file...";
 
-            //    // prevents file changes by syncing services like OneDrive
-            //    CachedFileManager.DeferUpdates(file);
+                // prevents file changes by syncing services like OneDrive
+                CachedFileManager.DeferUpdates(file);
 
-            //    await FileIO.WriteTextAsync(file, jsonData);
+                await FileIO.WriteTextAsync(file, jsonData);
 
-            //    // releases the hold on the file so syncing services can make changes
-            //    var status = await CachedFileManager.CompleteUpdatesAsync(file);
+                // releases the hold on the file so syncing services can make changes
+                var status = await CachedFileManager.CompleteUpdatesAsync(file);
 
-            //    if (status == FileUpdateStatus.Complete)
-            //    {
-            //        var message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
-            //                      "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
-            //                      "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
-            //                      "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
-            //                      "4. Now you can us 'Save As' to xlsx file or csv.";
+                if (status == FileUpdateStatus.Complete)
+                {
+                    var message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
+                                  "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
+                                  "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
+                                  "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
+                                  "4. Now you can us 'Save As' to xlsx file or csv.";
 
-            //        await new MessageDialog(message, "Export Saved").ShowAsync();
-            //    }
-            //}
+                    await new MessageDialog(message, "Export Saved").ShowAsync();
+                }
+            }
 
             IsBusyMessage = "";
             IsBusy = false;
@@ -356,11 +359,6 @@ namespace MvpApi.Wpf.ViewModels
 
                 if (!Settings.Default.HomeTutorialShown)
                 {
-
-                }
-
-                //if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                //{
                     //var td = new TutorialDialog
                     //{
                     //    SettingsKey = "HomePageTutorialShown",
@@ -373,7 +371,7 @@ namespace MvpApi.Wpf.ViewModels
                     //};
 
                     //await td.ShowAsync();
-                //}
+                }
 
                 if (IsBusy)
                 {

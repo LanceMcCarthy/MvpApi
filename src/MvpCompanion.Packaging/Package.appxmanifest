@@ -9,7 +9,7 @@
   <Identity
     Name="61469LanceLotSoftware.MVPCompanion"
     Publisher="CN=51B5A8B2-5D86-4826-BBE2-C92E963A4C02"
-    Version="1.9.6.0" />
+    Version="2.0.0.0" />
 
   <Properties>
     <DisplayName>MVP Companion</DisplayName>

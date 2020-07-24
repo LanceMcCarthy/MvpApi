@@ -10,8 +10,11 @@ using System.Windows;
 using System.Windows.Navigation;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
+using Windows.UI.Popups;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using MvpApi.Common.Extensions;
 using MvpApi.Common.Models;
 using MvpApi.Wpf.Helpers;
@@ -54,7 +57,6 @@ namespace MvpApi.Wpf.ViewModels
 
             EditQueuedContributionCommand = new DelegateCommand<ContributionsModel>(async cont => await EditContribution(cont));
             RemoveQueuedContributionCommand = new DelegateCommand<ContributionsModel>(async cont => await RemoveContribution(cont));
-
             RemoveAdditionalTechAreaCommand = new DelegateCommand<ContributionTechnologyModel>(RemoveAdditionalArea);
 
             UploadQueue.CollectionChanged += UploadQueue_CollectionChanged;
@@ -211,7 +213,8 @@ namespace MvpApi.Wpf.ViewModels
 
             if (!validationResult.Item1)
             {
-                MessageBox.Show($"The {validationResult.Item2} field is a required entry for this contribution type.");
+                await new MessageDialog($"The {validationResult.Item2} field is a required entry for this contribution type.").ShowAsync();
+                //MessageBox.Show($"The {validationResult.Item2} field is a required entry for this contribution type.");
 
                 return;
             }
@@ -238,15 +241,25 @@ namespace MvpApi.Wpf.ViewModels
         {
             try
             {
-                var result = MessageBox.Show(
-                    "You are about to clear all of the contributions in the upload queue, are you sure?",
-                    "CLEAR",
-                    MessageBoxButton.OKCancel,
-                    MessageBoxImage.Warning,
-                    MessageBoxResult.Cancel);
+                var md = new MessageDialog("You are about to clear all of the contributions in the upload queue, are you sure?", "CLEAR");
+                md.Commands.Add(new UICommand("YES"));
+                md.Commands.Add(new UICommand("whoa, no!"));
 
-                if (result != MessageBoxResult.OK)
+                var dialogResult = await md.ShowAsync();
+
+                if (dialogResult.Label != "YES")
                     return;
+
+                // WPF option
+                //var result = MessageBox.Show(
+                //    "You are about to clear all of the contributions in the upload queue, are you sure?",
+                //    "CLEAR",
+                //    MessageBoxButton.OKCancel,
+                //    MessageBoxImage.Warning,
+                //    MessageBoxResult.Cancel);
+
+                //if (result != MessageBoxResult.OK)
+                //    return;
 
                 UploadQueue.Clear();
 
@@ -254,13 +267,18 @@ namespace MvpApi.Wpf.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Something went wrong clearing the queue, please try again. Error: {ex.Message}");
+                Crashes.TrackError(ex);
+
+                await new MessageDialog($"Something went wrong clearing the queue, please try again. Error: {ex.Message}").ShowAsync();
+                //MessageBox.Show($"Something went wrong clearing the queue, please try again. Error: {ex.Message}");
             }
         }
 
         public async void UploadQueue_Click(object sender, RoutedEventArgs e)
         {
             bool refreshNeeded = false;
+
+            var startNumber = UploadQueue.Count;
 
             foreach (var contribution in UploadQueue)
             {
@@ -281,6 +299,15 @@ namespace MvpApi.Wpf.ViewModels
             // remove successfully uploaded items form the queue
             UploadQueue.Remove(c => c.UploadStatus == UploadStatus.Success);
 
+            var endNumber = UploadQueue.Count;
+
+            Analytics.TrackEvent("Queue Upload Attempt", new Dictionary<string, string>
+            {
+                {"Starting Count", $"{startNumber}"},
+                {"End Count", $"{endNumber}"},
+                {"Failed Uploads", $"{startNumber - endNumber}"},
+            });
+
             // Update the Contributions list cache from the API if there were any uploads.
             if (refreshNeeded)
             {
@@ -292,6 +319,7 @@ namespace MvpApi.Wpf.ViewModels
                 IsBusyMessage = string.Empty;
                 IsBusy = false;
             }
+
 
             if (UploadQueue.Any())
             {
@@ -370,19 +398,32 @@ namespace MvpApi.Wpf.ViewModels
 
             if (contribution.ContributionId == 0)
             {
-                var result = MessageBox.Show(
-                    "Editing this contribution will replace the unsaved information you have in the form. If you do not want to lose that information, click 'cancel' and add it to the queue before editing this one.",
-                    "Warning",
-                    MessageBoxButton.OKCancel,
-                    MessageBoxImage.Warning,
-                    MessageBoxResult.Cancel);
+                // UWP option
+                var md = new MessageDialog("Editing this contribution will replace the unsaved information you have in the form. If you do not want to lose that information, click 'cancel' and add it to the queue before editing this one.", "Warning");
+                md.Commands.Add(new UICommand("edit"));
+                md.Commands.Add(new UICommand("cancel"));
 
-                if (result != MessageBoxResult.OK)
+                var dialogResult = await md.ShowAsync();
+
+                if (dialogResult.Label == "cancel")
                     return;
+
+                // WPF option
+                //var result = MessageBox.Show(
+                //    "Editing this contribution will replace the unsaved information you have in the form. If you do not want to lose that information, click 'cancel' and add it to the queue before editing this one.",
+                //    "Warning",
+                //    MessageBoxButton.OKCancel,
+                //    MessageBoxImage.Warning,
+                //    MessageBoxResult.Cancel);
+
+                //if (result != MessageBoxResult.OK)
+                //    return;
             }
 
             SelectedContribution = contribution;
             IsEditingQueuedItem = true;
+
+            Analytics.TrackEvent("Contribution Edited");
         }
 
         public async Task RemoveContribution(ContributionsModel contribution)
@@ -392,32 +433,58 @@ namespace MvpApi.Wpf.ViewModels
 
             try
             {
-                var result = MessageBox.Show(
-                    "Are you sure you want to remove this contribution from the queue?",
-                    "Remove Contribution?",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning,
-                    MessageBoxResult.No);
+                // UWP option
+                var md = new MessageDialog("Are you sure you want to remove this contribution from the queue?", "Remove Contribution?");
+                md.Commands.Add(new UICommand("yes"));
+                md.Commands.Add(new UICommand("cancel"));
 
-                if (result != MessageBoxResult.Yes)
-                    return;
+                var dialogResult = await md.ShowAsync();
 
-
-                if (SelectedContribution == contribution)
+                if (dialogResult.Label == "yes")
                 {
-                    SelectedContribution = null;
+                    if (SelectedContribution == contribution)
+                    {
+                        SelectedContribution = null;
+                    }
+
+                    UploadQueue.Remove(contribution);
+
+                    if (UploadQueue.Count == 0)
+                    {
+                        SetupNextEntry();
+                    }
                 }
 
-                UploadQueue.Remove(contribution);
+                // WPF option
+                //var result = MessageBox.Show(
+                //    "Are you sure you want to remove this contribution from the queue?",
+                //    "Remove Contribution?",
+                //    MessageBoxButton.YesNo,
+                //    MessageBoxImage.Warning,
+                //    MessageBoxResult.No);
 
-                if (UploadQueue.Count == 0)
-                {
-                    SetupNextEntry();
-                }
+                //if (result != MessageBoxResult.Yes)
+                //    return;
+
+
+                //if (SelectedContribution == contribution)
+                //{
+                //    SelectedContribution = null;
+                //}
+
+                //UploadQueue.Remove(contribution);
+
+                //if (UploadQueue.Count == 0)
+                //{
+                //    SetupNextEntry();
+                //}
+
+                Analytics.TrackEvent("Contribution Removed");
             }
             catch (Exception ex)
             {
-                //await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
+                Crashes.TrackError(ex);
+                await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
             }
         }
 
@@ -430,20 +497,15 @@ namespace MvpApi.Wpf.ViewModels
                 // copying back the ID which was created on the server once the item was added to the database
                 contribution.ContributionId = submissionResult.ContributionId;
 
-                // Quality assurance, only logs a successful upload.
-                //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                //    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
+                Analytics.TrackEvent("New Contribution Uploaded");
 
                 return true;
             }
             catch (Exception ex)
             {
+                Crashes.TrackError(ex);
 
-                // Quality assurance, only logs a failed upload.
-                //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                //    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
-
-                //await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
+                await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
                 return false;
             }
         }
@@ -544,6 +606,7 @@ namespace MvpApi.Wpf.ViewModels
                 }
                 catch (Exception ex)
                 {
+                    Crashes.TrackError(ex);
                     Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
                 }
                 finally

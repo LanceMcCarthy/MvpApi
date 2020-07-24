@@ -31,8 +31,7 @@
                             <Image Source="{Binding ImageUrl}" />
 
                             <Button Content="{Binding Price}"
-                                    Command="{Binding DataContext.GetKudoCommand, ElementName=TileView}"
-                                    CommandParameter="{Binding .}"
+                                    Click="ButtonBase_OnClick"
                                     Foreground="White"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Bottom"

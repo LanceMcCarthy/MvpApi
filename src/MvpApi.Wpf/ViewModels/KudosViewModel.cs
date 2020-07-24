@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Windows;
 using Windows.Services.Store;
 using Windows.UI.Popups;
 using CommonHelpers.Common;
@@ -16,7 +15,6 @@ namespace MvpApi.Wpf.ViewModels
     public class KudosViewModel : ViewModelBase
     {
         private StoreContext _context;
-        private Visibility _feedbackHubButtonVisibility;
         //private InterstitialAd _myInterstitialAd;
 
         public KudosViewModel()
@@ -27,23 +25,18 @@ namespace MvpApi.Wpf.ViewModels
             KudosCollection.Add(new Kudos { Title = "Lunch", ProductId = "MvpCompanion_Lunch", StoreId = "9N999Z3H3GPK", Price = "$4.89", ImageUrl = "/Images/LunchKudo.png" });
             KudosCollection.Add(new Kudos { Title = "Dinner", ProductId = "MvpCompanion_Dinner", StoreId = "9NB8SR731DM6", Price = "$9.49", ImageUrl = "/Images/DinnerKudo.png" });
 
-            GetKudoCommand = new DelegateCommand<Kudos>(GetKudo);
-        }
-
-        private void GetKudo(Kudos kudo)
-        {
-            Debug.WriteLine($"Ordered Kudo : {kudo.Title}");
+            //GetKudoCommand = new DelegateCommand<Kudos>((k) =>
+            //{
+            //    App.Current.MainWindow.Dispatcher.Invoke(async () =>
+            //    {
+                    
+            //    });
+            //});
         }
 
         public ObservableCollection<Kudos> KudosCollection { get; set; } = new ObservableCollection<Kudos>();
         
-        public Visibility FeedbackHubButtonVisibility
-        {
-            get => _feedbackHubButtonVisibility;
-            set => SetProperty(ref _feedbackHubButtonVisibility, value);
-        }
-
-        public DelegateCommand<Kudos> GetKudoCommand { get; set; }
+        //public DelegateCommand<Kudos> GetKudoCommand { get; set; }
 
         //public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
         //{
@@ -136,6 +129,8 @@ namespace MvpApi.Wpf.ViewModels
         {
             try
             {
+                Debug.WriteLine($"Ordered Kudo - StoreId: {storeId}");
+
                 IsBusy = true;
                 IsBusyMessage = "in-app purchase in progress (you should see a separate window)...";
 
@@ -226,10 +221,6 @@ namespace MvpApi.Wpf.ViewModels
 
         public async Task OnLoadedAsync()
         {
-            //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
-            //    ? Visibility.Visible
-            //    : Visibility.Collapsed;
-
             //_myInterstitialAd = new InterstitialAd();
             //_myInterstitialAd.AdReady += MyInterstitialAd_AdReady;
             //_myInterstitialAd.ErrorOccurred += MyInterstitialAd_ErrorOccurred;
@@ -237,7 +228,6 @@ namespace MvpApi.Wpf.ViewModels
             //_myInterstitialAd.Cancelled += MyInterstitialAd_Cancelled;
 
             //RefreshAd();
-
         }
 
         public async Task OnUnloadedAsync()
@@ -246,7 +236,6 @@ namespace MvpApi.Wpf.ViewModels
             //_myInterstitialAd.ErrorOccurred -= MyInterstitialAd_ErrorOccurred;
             //_myInterstitialAd.Completed -= MyInterstitialAd_Completed;
             //_myInterstitialAd.Cancelled -= MyInterstitialAd_Cancelled;
-
         }
 
         #endregion
