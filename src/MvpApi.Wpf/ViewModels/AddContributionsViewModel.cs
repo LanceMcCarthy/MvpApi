@@ -15,6 +15,7 @@ using CommonHelpers.Mvvm;
 using MvpApi.Common.Extensions;
 using MvpApi.Common.Models;
 using MvpApi.Wpf.Helpers;
+using MvpApi.Wpf.Properties;
 using ExceptionLogger = MvpApi.Services.Utilities.ExceptionLogger;
 using SelectionChangedEventArgs = System.Windows.Controls.SelectionChangedEventArgs;
 
@@ -518,8 +519,13 @@ namespace MvpApi.Wpf.ViewModels
                     // Note: The Category Areas will not be loaded until the CollectionViewSource is does it's initially loading.
                     SetupNextEntry();
 
-                    if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                    if (!Settings.Default.AddContributionTutorialShown)
                     {
+
+                    }
+
+                    //if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+                    //{
                         //var td = new TutorialDialog
                         //{
                         //    SettingsKey = "AddContributionPageTutorialShown",
@@ -533,7 +539,7 @@ namespace MvpApi.Wpf.ViewModels
                         //};
 
                         //await td.ShowAsync();
-                    }
+                    //}
 
                 }
                 catch (Exception ex)

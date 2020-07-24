@@ -34,5 +34,41 @@ namespace MvpApi.Wpf.Properties {
                 this["PreferredTheme"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HomeTutorialShown {
+            get {
+                return ((bool)(this["HomeTutorialShown"]));
+            }
+            set {
+                this["HomeTutorialShown"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AddContributionTutorialShown {
+            get {
+                return ((bool)(this["AddContributionTutorialShown"]));
+            }
+            set {
+                this["AddContributionTutorialShown"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ContributionDetailTutorialShown {
+            get {
+                return ((bool)(this["ContributionDetailTutorialShown"]));
+            }
+            set {
+                this["ContributionDetailTutorialShown"] = value;
+            }
+        }
     }
 }

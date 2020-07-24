@@ -5,5 +5,14 @@
     <Setting Name="PreferredTheme" Type="System.String" Scope="User">
       <Value Profile="(Default)">Fluent</Value>
     </Setting>
+    <Setting Name="HomeTutorialShown" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AddContributionTutorialShown" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ContributionDetailTutorialShown" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

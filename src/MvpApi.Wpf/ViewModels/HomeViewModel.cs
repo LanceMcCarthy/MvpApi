@@ -17,6 +17,7 @@ using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using MvpApi.Common.Models;
 using MvpApi.Wpf.Helpers;
+using MvpApi.Wpf.Properties;
 using Telerik.Windows.Data;
 
 namespace MvpApi.Wpf.ViewModels
@@ -351,6 +352,11 @@ namespace MvpApi.Wpf.ViewModels
                 if (shellVm.IsLoggedIn)
                 {
                     await LoadContributionsAsync();
+                }
+
+                if (!Settings.Default.HomeTutorialShown)
+                {
+
                 }
 
                 //if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
