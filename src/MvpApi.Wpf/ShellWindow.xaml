@@ -48,11 +48,10 @@
     <Grid>
         <telerik:RadNavigationView x:Name="RootNavigationView"
                                    ItemsSource="{Binding NavigationMenuItems}"
-                                   SelectedIndex="4"
+                                   SelectedIndex="0"
                                    AutoChangeDisplayMode="False"
                                    DisplayMode="Compact"
-                                   PaneHeader="Menu"
-                                   SelectionChanged="RootNavigationView_OnSelectionChanged">
+                                   PaneHeader="Menu">
             <telerik:RadNavigationView.Content>
                 <telerik:RadTransitionControl Content="{Binding SelectedItem, ElementName=RootNavigationView}"
                                               ContentTemplateSelector="{StaticResource ViewContentTemplateSelector}"
@@ -64,6 +63,11 @@
             </telerik:RadNavigationView.Content>
             <telerik:RadNavigationView.PaneFooter>
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
                     <Grid Width="38"
                           Height="38">
                         <Ellipse Visibility="{Binding ProfileImagePath, Converter={StaticResource NullToVisibilityConv}, Mode=OneWay}"
@@ -76,84 +80,14 @@
                             </Ellipse.Fill>
                         </Ellipse>
                     </Grid>
+
+                    <Button Content="Sign-out"
+                            Command="{Binding SignOutCommand}"
+                            Grid.Column="1"
+                            Margin="5,0,0,0"/>
                 </Grid>
             </telerik:RadNavigationView.PaneFooter>
         </telerik:RadNavigationView>
-
-        <!--<Grid x:Name="LoginOverlay"
-              Visibility="Collapsed"
-              Background="LightGray">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-
-            <StackPanel Width="200"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Margin="10"
-                        Grid.Column="0"
-                        Grid.Row="0">
-                <TextBlock Text="Problems?"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           HorizontalAlignment="Center" />
-                <TextBlock TextWrapping="Wrap"
-                           Margin="5">
-                    <Run Text="If you're having trouble signing in, or staying signed in, there might be a problem with the token cache. " />
-                    <LineBreak />
-                    <LineBreak />
-                    <Run Text="Click the " />
-                    <Run FontWeight="Bold"
-                         Text="Sign Out" 
-                         Foreground="DarkRed"/>
-                    <Run Text=" button below to get a fresh start." />
-                </TextBlock>
-            </StackPanel>
-
-            <WebBrowser x:Name="AuthWebView"
-                        Navigated="WebBrowser_OnNavigated"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Margin="0,10,0,0"
-                        Grid.Column="1"
-                        Grid.Row="0" />
-
-            <Button Content="Sign Out"
-                    Background="DarkRed"
-                    Foreground="White"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Bottom"
-                    Margin="10"
-                    Width="200"
-                    Click="LogoutButton_OnClick"
-                    Grid.Column="1"
-                    Grid.Row="1"/>
-
-            <Border HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Margin="10"
-                    Grid.Column="2"
-                    Grid.Row="0">
-                <TextBlock Text="Why so many permissions?" />
-                <telerik:RadToolTipService.ToolTipContent>
-                    <Grid Width="400">
-                        <StackPanel>
-                            <TextBlock Text="The permissions list you see is the smallest scope available by the Microsoft Account login service and app does not use anything from your Microsoft account directly."
-                                       TextWrapping="Wrap"
-                                       Margin="0,0,0,10" />
-                            <TextBlock Text="When you login, MVP Companion gets an access token and a refresh token from Microsoft Live, this token is then used to authenticate every call to the MVP portal API."
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Grid>
-                </telerik:RadToolTipService.ToolTipContent>
-            </Border>
-        </Grid>-->
 
         <telerik:RadBusyIndicator IsBusy="{Binding IsBusy}"
                                   Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConv}}">

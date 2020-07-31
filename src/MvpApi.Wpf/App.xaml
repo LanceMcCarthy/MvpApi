@@ -4,8 +4,7 @@
              xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
              xmlns:converters="clr-namespace:MvpApi.Wpf.Converters"
              xmlns:selectors="clr-namespace:MvpApi.Wpf.Selectors"
-             xmlns:system="clr-namespace:System;assembly=System.Runtime"
-             StartupUri="ShellWindow.xaml">
+             xmlns:system="clr-namespace:System;assembly=System.Runtime">
 
     <Application.Resources>
         <ResourceDictionary>

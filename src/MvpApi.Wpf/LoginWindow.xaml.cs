@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
 using Windows.Storage;
+using Windows.UI.Popups;
 using Microsoft.AppCenter.Crashes;
+using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Extensions;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
@@ -35,10 +36,20 @@ namespace MvpApi.Wpf
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Initialize with a callback that invokes when login completes
+        /// </summary>
+        /// <param name="loginCompleted"></param>
         public LoginWindow(Action loginCompleted)
         {
             InitializeComponent();
             _loginCompleted = loginCompleted;
+        }
+
+        private void ToggleBusy(string message, bool isBusy = true)
+        {
+            StatusTextBlock.Text = message;
+            StatusTextBlock.Visibility = isBusy ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private async Task CompleteSignInAsync(string authorizationHeader)
@@ -140,6 +151,61 @@ namespace MvpApi.Wpf
             }
         }
 
+        public async Task InitializeMvpApiAsync(string authorizationHeader)
+        {
+            if (App.ApiService != null)
+            {
+                App.ApiService.AccessTokenExpired -= ApiService_AccessTokenExpired;
+                App.ApiService.RequestErrorOccurred -= ApiService_RequestErrorOccurred;
+            }
+
+            // New-up the service
+            App.ApiService = new MvpApiService(authorizationHeader);
+
+            App.ApiService.AccessTokenExpired += ApiService_AccessTokenExpired;
+            App.ApiService.RequestErrorOccurred += ApiService_RequestErrorOccurred;
+
+            App.ApiService.IsLoggedIn = true;
+
+            // Get MVP profile
+            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "downloading profile info...";
+            App.ApiService.Mvp = await App.ApiService.GetProfileAsync();
+
+            // Get MVP profile image
+            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "downloading profile image...";
+            App.ApiService.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+
+            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "";
+        }
+
+        private async void ApiService_AccessTokenExpired(object sender, ApiServiceEventArgs e)
+        {
+            if (e.IsTokenRefreshNeeded)
+            {
+                await SignInAsync();
+            }
+            else
+            {
+                // Future use
+            }
+        }
+
+        private async void ApiService_RequestErrorOccurred(object sender, ApiServiceEventArgs e)
+        {
+            var message = "Unknown Server Error";
+
+            if (e.IsBadRequest)
+            {
+                message = e.Message;
+            }
+            else if (e.IsServerError)
+            {
+                message = e.Message + "\r\n\nIf this continues to happen, please open a GitHub Issue and we'll investigate further (find the GitHub link on the About page).";
+            }
+
+            await new MessageDialog(message, "MVP API Request Error").ShowAsync();
+        }
+
         public async Task<string> RequestAuthorizationAsync(string authCode, bool isRefresh = false)
         {
             var authorizationHeader = "";
@@ -211,31 +277,6 @@ namespace MvpApi.Wpf
             }
 
             return authorizationHeader;
-        }
-
-        public async Task InitializeMvpApiAsync(string authorizationHeader)
-        {
-            // New-up the service
-            App.ApiService = new MvpApiService(authorizationHeader);
-
-            // Trigger UI changes (e.g. hide the overlay)
-            App.ApiService.IsLoggedIn = true;
-
-            // Get MVP profile
-            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "downloading profile info...";
-            App.ApiService.Mvp = await App.ApiService.GetProfileAsync();
-
-            // Get MVP profile image
-            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "downloading profile image...";
-            App.ApiService.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
-
-            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "";
-        }
-
-        private void ToggleBusy(string message, bool isBusy = true)
-        {
-            StatusTextBlock.Text = message;
-            StatusTextBlock.Visibility = isBusy ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }
