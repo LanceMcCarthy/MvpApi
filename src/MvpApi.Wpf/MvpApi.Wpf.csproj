@@ -20,6 +20,9 @@
     <Generator>MSBuild:Compile</Generator>
     <SubType>Designer</SubType>
   </ApplicationDefinition>
+  <Page Include="LoginWindow.xaml">
+    <Generator>MSBuild:Compile</Generator>
+  </Page>
   <Page Include="ShellWindow.xaml">
     <Generator>MSBuild:Compile</Generator>
     <SubType>Designer</SubType>
@@ -66,6 +69,7 @@
   <Compile Include="Helpers\NetworkHelper.cs" />
   <Compile Include="Helpers\PaletteHelper.cs" />
   <Compile Include="Helpers\TaskUtilities.cs" />
+  <Compile Include="LoginWindow.xaml.cs" />
   <Compile Include="Models\NavItemModel.cs" />
   <Compile Include="Models\ViewName.cs" />
   <Compile Include="Properties\Settings.Designer.cs">

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CommonHelpers.Common;
+using CommonHelpers.Mvvm;
+using MvpApi.Common.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -7,16 +10,11 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.UI.Popups;
-using CommonHelpers.Common;
-using CommonHelpers.Mvvm;
-using MvpApi.Common.Models;
 
 namespace MvpApi.Wpf.ViewModels
 {
     public class ProfileViewModel : ViewModelBase
     {
-        private MvpApi.Common.Models.ProfileViewModel _mvp;
-        private string _profileImagePath;
         private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
         private SelectionMode _listViewSelectionMode = SelectionMode.Single;
         private bool _isMultipleSelectionEnabled;
@@ -32,16 +30,10 @@ namespace MvpApi.Wpf.ViewModels
             //}
 
             ClearSelectionCommand = new DelegateCommand(ClearSelection);
-            RefreshOnlineIdentitiesCommand = new DelegateCommand(async ()=> await RefreshOnlineIdentitiesAsync());
+            RefreshOnlineIdentitiesCommand = new DelegateCommand(async () => await RefreshOnlineIdentitiesAsync());
             ShowQuestionnaireCommand = new DelegateCommand(ShowQuestionnaire);
             DeleteOnlineIdentityCommand = new DelegateCommand(DeleteOnlineIdentity);
             ExportOnlineIdentitiesCommand = new DelegateCommand(ExportOnlineIdentities);
-        }
-
-        public MvpApi.Common.Models.ProfileViewModel Mvp
-        {
-            get => _mvp;
-            set => SetProperty(ref _mvp, value);
         }
 
         public ObservableCollection<OnlineIdentityViewModel> OnlineIdentities
@@ -60,11 +52,9 @@ namespace MvpApi.Wpf.ViewModels
 
         //public OnlineIdentityViewModel DraftOnlineIdentity { get; set; } = new OnlineIdentityViewModel();
 
-        public string ProfileImagePath
-        {
-            get => _profileImagePath;
-            set => SetProperty(ref _profileImagePath, value);
-        }
+        public string ProfileImagePath => App.ApiService.ProfileImagePath;
+
+        public Common.Models.ProfileViewModel Mvp => App.ApiService.Mvp;
 
         public bool IsMultipleSelectionEnabled
         {
@@ -119,7 +109,7 @@ namespace MvpApi.Wpf.ViewModels
                     OnlineIdentities.Add(onlineIdentity);
                 }
             }
-            
+
             IsBusyMessage = "";
             IsBusy = false;
         }
@@ -162,7 +152,7 @@ namespace MvpApi.Wpf.ViewModels
 
                 // Disable the Multiple  selection (this will also clear the LV selected items)
                 IsMultipleSelectionEnabled = false;
-                
+
                 // Handle Visual State
                 AreAppBarButtonsEnabled = false;
 
@@ -217,41 +207,35 @@ namespace MvpApi.Wpf.ViewModels
                     await new MessageDialog(message, "Export Saved").ShowAsync();
                 }
             }
-            
+
             IsBusyMessage = "";
             IsBusy = false;
         }
 
         public async Task OnLoadedAsync()
         {
-            if ((App.Current.MainWindow as ShellWindow).DataContext is ShellViewModel shellVm)
+            if (!App.ApiService.IsLoggedIn)
             {
-                if (!shellVm.IsLoggedIn)
-                {
-                    IsBusy = true;
-                    IsBusyMessage = "signing in...";
+                IsBusy = true;
+                IsBusyMessage = "signing in...";
 
-                    await (App.Current.MainWindow as ShellWindow).SignInAsync();
-                }
-
-                this.Mvp = shellVm.Mvp;
-                this.ProfileImagePath = shellVm.ProfileImagePath;
-
-                await RefreshOnlineIdentitiesAsync();
-
-                // TODO - future support for Visibilities
-                //IsBusyMessage = "loading visibility options...";
-
-                //var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-                //visibilities.ForEach(visibility =>
-                //{
-                //    Visibilities.Add(visibility);
-                //});
-
-                IsBusyMessage = "";
-                IsBusy = false;
+                await App.MainLoginWindow.SignInAsync();
             }
+
+            await RefreshOnlineIdentitiesAsync();
+
+            // TODO - future support for Visibilities
+            //IsBusyMessage = "loading visibility options...";
+
+            //var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+            //visibilities.ForEach(visibility =>
+            //{
+            //    Visibilities.Add(visibility);
+            //});
+
+            IsBusyMessage = "";
+            IsBusy = false;
         }
 
         // TODO API does not have API endpoint to add an identity yet.

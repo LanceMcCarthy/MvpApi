@@ -144,7 +144,9 @@ namespace MvpApi.Wpf.ViewModels
                 var extendedError = "";
 
                 if (result.ExtendedError != null)
+                {
                     extendedError = result.ExtendedError.Message;
+                }
 
                 var resultMessage = "";
 
@@ -219,8 +221,8 @@ namespace MvpApi.Wpf.ViewModels
 
         #region Navigation
 
-        public async Task OnLoadedAsync()
-        {
+        //public async Task OnLoadedAsync()
+        //{
             //_myInterstitialAd = new InterstitialAd();
             //_myInterstitialAd.AdReady += MyInterstitialAd_AdReady;
             //_myInterstitialAd.ErrorOccurred += MyInterstitialAd_ErrorOccurred;
@@ -228,15 +230,15 @@ namespace MvpApi.Wpf.ViewModels
             //_myInterstitialAd.Cancelled += MyInterstitialAd_Cancelled;
 
             //RefreshAd();
-        }
+        //}
 
-        public async Task OnUnloadedAsync()
-        {
+        //public async Task OnUnloadedAsync()
+        //{
             //_myInterstitialAd.AdReady -= MyInterstitialAd_AdReady;
             //_myInterstitialAd.ErrorOccurred -= MyInterstitialAd_ErrorOccurred;
             //_myInterstitialAd.Completed -= MyInterstitialAd_Completed;
             //_myInterstitialAd.Cancelled -= MyInterstitialAd_Cancelled;
-        }
+        //}
 
         #endregion
     }

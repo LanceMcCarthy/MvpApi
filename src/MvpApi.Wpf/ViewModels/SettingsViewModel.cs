@@ -147,9 +147,12 @@ namespace MvpApi.Wpf.ViewModels
 
         public async Task OnLoadedAsync()
         {
-            if (Application.Current.MainWindow is ShellWindow sw && !sw.ViewModel.IsLoggedIn)
+            if (!App.ApiService.IsLoggedIn)
             {
-                await sw.SignInAsync();
+                IsBusy = true;
+                IsBusyMessage = "signing in...";
+
+                await App.MainLoginWindow.SignInAsync();
             }
 
             if (IsBusy)

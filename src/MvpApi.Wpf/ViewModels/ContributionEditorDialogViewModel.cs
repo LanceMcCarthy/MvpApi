@@ -224,19 +224,26 @@ namespace MvpApi.Wpf.ViewModels
             //}
 
             // Verify the user is logged in
-            if (!(App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
+            //if (!(App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
+            //{
+            //    IsBusy = true;
+            //    IsBusyMessage = "logging in...";
+
+            //    await (App.Current.MainWindow as ShellWindow).SignInAsync();
+
+            //    IsBusyMessage = "";
+            //    IsBusy = false;
+            //}
+            if (!App.ApiService.IsLoggedIn)
             {
                 IsBusy = true;
-                IsBusyMessage = "logging in...";
+                IsBusyMessage = "signing in...";
 
-                await (App.Current.MainWindow as ShellWindow).SignInAsync();
-
-                IsBusyMessage = "";
-                IsBusy = false;
+                await App.MainLoginWindow.SignInAsync();
             }
 
-            if ((App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
-            {
+            //if ((App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
+            //{
                 try
                 {
                     IsBusy = true;
@@ -298,28 +305,7 @@ namespace MvpApi.Wpf.ViewModels
                     IsBusyMessage = "";
                     IsBusy = false;
                 }
-            }
-        }
-
-        private async void FrameFacade_BackRequested(object sender, HandledEventArgs e)
-        {
-            try
-            {
-                var md = new MessageDialog("Navigating away will lose any pending edits, continue?", "Close Editor?");
-                md.Commands.Add(new UICommand("yes"));
-                md.Commands.Add(new UICommand("no"));
-                md.CancelCommandIndex = 1;
-                md.DefaultCommandIndex = 1;
-
-                var result = await md.ShowAsync();
-
-                // If the user clicked no, then make the back request as handled to prevent closure of dialog
-                e.Handled = result.Label != "yes";
-            }
-            catch (Exception ex)
-            {
-                await ex.LogExceptionAsync();
-            }
+            //}
         }
 
         #endregion

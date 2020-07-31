@@ -80,7 +80,7 @@
             </telerik:RadNavigationView.PaneFooter>
         </telerik:RadNavigationView>
 
-        <Grid x:Name="LoginOverlay"
+        <!--<Grid x:Name="LoginOverlay"
               Visibility="Collapsed"
               Background="LightGray">
             <Grid.RowDefinitions>
@@ -153,7 +153,7 @@
                     </Grid>
                 </telerik:RadToolTipService.ToolTipContent>
             </Border>
-        </Grid>
+        </Grid>-->
 
         <telerik:RadBusyIndicator IsBusy="{Binding IsBusy}"
                                   Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConv}}">

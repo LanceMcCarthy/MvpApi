@@ -446,19 +446,27 @@ namespace MvpApi.Wpf.ViewModels
             }
 
             // Verify the user is logged in
-            if (!(App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
+            //if (!(App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
+            //{
+            //    IsBusy = true;
+            //    IsBusyMessage = "logging in...";
+
+            //    await (App.Current.MainWindow as ShellWindow).SignInAsync();
+
+            //    IsBusyMessage = "";
+            //    IsBusy = false;
+            //}
+
+            if (!App.ApiService.IsLoggedIn)
             {
                 IsBusy = true;
-                IsBusyMessage = "logging in...";
+                IsBusyMessage = "signing in...";
 
-                await (App.Current.MainWindow as ShellWindow).SignInAsync();
-
-                IsBusyMessage = "";
-                IsBusy = false;
+                await App.MainLoginWindow.SignInAsync();
             }
 
-            if ((App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
-            {
+            //if ((App.Current.MainWindow as ShellWindow).ViewModel.IsLoggedIn)
+            //{
                 try
                 {
                     IsBusy = true;
@@ -508,7 +516,7 @@ namespace MvpApi.Wpf.ViewModels
                     IsBusyMessage = "";
                     IsBusy = false;
                 }
-            }
+            //}
         }
 
         #endregion

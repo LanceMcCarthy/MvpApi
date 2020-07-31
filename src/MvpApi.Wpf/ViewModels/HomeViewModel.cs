@@ -343,42 +343,47 @@ namespace MvpApi.Wpf.ViewModels
             //    return;
             //}
 
-            if ((App.Current.MainWindow as ShellWindow).DataContext is ShellViewModel shellVm)
+            if (!App.ApiService.IsLoggedIn)
             {
-                if (!shellVm.IsLoggedIn)
-                {
-                    await (App.Current.MainWindow as ShellWindow).SignInAsync();
-                }
+                IsBusy = true;
+                IsBusyMessage = "signing in...";
 
-                // Although user should be logged in at this point, still check
-                // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
-                if (shellVm.IsLoggedIn)
-                {
-                    await LoadContributionsAsync();
-                }
-
-                if (!Settings.Default.HomeTutorialShown)
-                {
-                    //var td = new TutorialDialog
-                    //{
-                    //    SettingsKey = "HomePageTutorialShown",
-                    //    MessageTitle = "Home Page",
-                    //    Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
-                    //              "- Group or sort the contributions by any column.\r\n" +
-                    //              "- Select a contribution to view its details or edit it.\r\n" +
-                    //              "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
-                    //              "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
-                    //};
-
-                    //await td.ShowAsync();
-                }
-
-                if (IsBusy)
-                {
-                    IsBusy = false;
-                    IsBusyMessage = "";
-                }
+                await App.MainLoginWindow.SignInAsync();
             }
+
+            await LoadContributionsAsync();
+
+            if (!Settings.Default.HomeTutorialShown)
+            {
+                //var td = new TutorialDialog
+                //{
+                //    SettingsKey = "HomePageTutorialShown",
+                //    MessageTitle = "Home Page",
+                //    Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
+                //              "- Group or sort the contributions by any column.\r\n" +
+                //              "- Select a contribution to view its details or edit it.\r\n" +
+                //              "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
+                //              "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
+                //};
+
+                //await td.ShowAsync();
+            }
+
+            if (IsBusy)
+            {
+                IsBusy = false;
+                IsBusyMessage = "";
+            }
+
+            //if ((App.Current.MainWindow as ShellWindow).DataContext is ShellViewModel shellVm)
+            //{
+            //    if (!shellVm.IsLoggedIn)
+            //    {
+            //        await (App.Current.MainWindow as ShellWindow).SignInAsync();
+            //    }
+
+                
+            //}
         }
 
         #endregion

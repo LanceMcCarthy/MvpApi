@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using CommonHelpers.Common;
 using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Models;
 using MvpApi.Services.Utilities;
@@ -15,7 +14,7 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Services.Apis
 {
-    public class MvpApiService : IDisposable
+    public class MvpApiService : BindableBase, IDisposable
     {
         private readonly HttpClient _client;
         private ContributionViewModel _contributionsCachedResult;
@@ -23,6 +22,9 @@ namespace MvpApi.Services.Apis
         private IReadOnlyList<ContributionAreasRootItem> _contributionAreasCachedResult;
         private IReadOnlyList<VisibilityViewModel> _visibilitiesCachedResult;
         private IReadOnlyList<OnlineIdentityViewModel> _onlineIdentitiesCachedResult;
+        private ProfileViewModel mvp;
+        private bool _isLoggedIn;
+        private string profileImagePath;
 
         /// <summary>
         /// Service that interacts with the MVP API
@@ -31,6 +33,11 @@ namespace MvpApi.Services.Apis
         /// IMPORTANT: 'Bearer' prefix needed before the token code</param>
         public MvpApiService(string authorizationHeaderContent)
         {
+            if (string.IsNullOrEmpty(authorizationHeaderContent))
+            {
+                throw new ArgumentNullException(nameof(authorizationHeaderContent), "The authorization header (a.k.a. Bearer token) cannot be null or empty.");
+            }
+
             var handler = new HttpClientHandler();
             if (handler.SupportsAutomaticDecompression)
                 handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
@@ -40,7 +47,35 @@ namespace MvpApi.Services.Apis
             _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "3d199a7fb1c443e1985375f0572f58f8");
             _client.DefaultRequestHeaders.Add("Authorization", authorizationHeaderContent);
         }
-        
+
+        #region Properties
+
+        public ProfileViewModel Mvp
+        {
+            get => mvp;
+            set => SetProperty(ref mvp, value);
+        }
+
+        public bool IsLoggedIn
+        {
+            get => _isLoggedIn;
+            set => SetProperty(ref _isLoggedIn, value);
+        }
+
+        public string ProfileImagePath
+        {
+            get => profileImagePath;
+            set
+            {
+                profileImagePath = value;
+
+                // Always invoke PropertyChanged to ensure image is reloaded, even if the file path is the same.
+                OnPropertyChanged();
+            }
+        }
+
+        #endregion
+
         #region API Endpoints
 
         /// <summary>
@@ -1140,7 +1175,7 @@ namespace MvpApi.Services.Apis
 
         #endregion
 
-        #region events
+        #region Events
 
         /// <summary>
         /// This event will fire when there is a 401 or 403 returned from an API call. This indicates that a new Access Token is needed.

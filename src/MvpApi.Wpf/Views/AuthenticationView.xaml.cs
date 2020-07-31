@@ -21,9 +21,9 @@ namespace MvpApi.Wpf.Views
             }
         }
 
-        private void LoginButton_OnClick(object sender, RoutedEventArgs e)
+        private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
         {
-            (App.Current.MainWindow as ShellWindow).LoginOverlay.Visibility = Visibility.Visible;
+            await App.MainLoginWindow.SignInAsync();
         }
     }
 }

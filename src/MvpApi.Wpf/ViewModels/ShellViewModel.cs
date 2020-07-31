@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using CommonHelpers.Common;
+﻿using CommonHelpers.Common;
 using MvpApi.Services.Utilities;
 using MvpApi.Wpf.Models;
+using System;
+using System.Collections.ObjectModel;
 
 namespace MvpApi.Wpf.ViewModels
 {
     public class ShellViewModel : ViewModelBase
     {
-        private MvpApi.Common.Models.ProfileViewModel mvp;
-        private string profileImagePath;
-        private bool isLoggedIn;
         private DateTime submissionStartDate = ServiceConstants.SubmissionStartDate;
         private DateTime submissionDeadline = ServiceConstants.SubmissionDeadline;
 
@@ -35,31 +32,10 @@ namespace MvpApi.Wpf.ViewModels
 
         public ObservableCollection<NavItemModel> NavigationMenuItems { get; set; }
 
-        public string ProfileImagePath
-        {
-            get => profileImagePath;
-            set
-            {
-                profileImagePath = value;
+        public string ProfileImagePath => App.ApiService?.ProfileImagePath;
 
-                // Always invoke PropertyChanged to ensure image is reloaded,
-                // even if the file path is the same.
-                OnPropertyChanged();
-            }
-        }
+        public Common.Models.ProfileViewModel Mvp => App.ApiService?.Mvp;
 
-        public MvpApi.Common.Models.ProfileViewModel Mvp
-        {
-            get => mvp;
-            set => SetProperty(ref mvp, value);
-        }
-
-        public bool IsLoggedIn
-        {
-            get => isLoggedIn;
-            set => SetProperty(ref isLoggedIn, value);
-        }
-        
         public DateTime SubmissionStartDate
         {
             get => submissionStartDate;
