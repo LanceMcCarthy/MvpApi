@@ -23,7 +23,7 @@ namespace MvpApi.Wpf.ViewModels
                 new NavItemModel{Title = "Home", Name = ViewName.Home, IconGlyph = "&#xe022;"},
                 new NavItemModel{Title = "Kudos", Name = ViewName.Kudos, IconGlyph = "&#xe301;"},
                 new NavItemModel{Title = "Settings", Name = ViewName.Settings, IconGlyph = "&#xe13b;"},
-                new NavItemModel{Title = "Authentication", Name = ViewName.Auth, IconGlyph = "&#xe130;"},
+                //new NavItemModel{Title = "Authentication", Name = ViewName.Auth, IconGlyph = "&#xe130;"},
             };
         }
 

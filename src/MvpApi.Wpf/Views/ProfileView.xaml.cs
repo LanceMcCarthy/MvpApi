@@ -15,7 +15,7 @@ namespace MvpApi.Wpf.Views
 
         private async void ProfileView_Loaded(object sender, RoutedEventArgs e)
         {
-            if (DataContext is MvpApi.Wpf.ViewModels.ProfileViewModel vm)
+            if (DataContext is ViewModels.ProfileViewModel vm)
             {
                 await vm.OnLoadedAsync();
             }
@@ -23,7 +23,7 @@ namespace MvpApi.Wpf.Views
 
         private void OnlineIdentitiesListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (DataContext is MvpApi.Wpf.ViewModels.ProfileViewModel vm)
+            if (DataContext is ViewModels.ProfileViewModel vm)
             {
                 // Add any selected items to the SelectedItems collection
                 if (e.AddedItems != null)

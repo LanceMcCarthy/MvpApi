@@ -10,6 +10,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.UI.Popups;
+using MvpApi.Wpf.Helpers;
 
 namespace MvpApi.Wpf.ViewModels
 {
@@ -23,17 +24,16 @@ namespace MvpApi.Wpf.ViewModels
 
         public ProfileViewModel()
         {
-            //if (DesignerProperties.GetIsInDesignMode(new DependencyObject()))
-            //{
-            //    Mvp = DesignTimeHelpers.GenerateSampleMvp();
-            //    OnlineIdentities = DesignTimeHelpers.GenerateOnlineIdentities();
-            //}
-
             ClearSelectionCommand = new DelegateCommand(ClearSelection);
             RefreshOnlineIdentitiesCommand = new DelegateCommand(async () => await RefreshOnlineIdentitiesAsync());
             ShowQuestionnaireCommand = new DelegateCommand(ShowQuestionnaire);
             DeleteOnlineIdentityCommand = new DelegateCommand(DeleteOnlineIdentity);
             ExportOnlineIdentitiesCommand = new DelegateCommand(ExportOnlineIdentities);
+
+            // Design time
+            //App.ApiService.Mvp = DesignTimeHelpers.GenerateSampleMvp();
+            //App.ApiService.ProfileImagePath = "../Images/MvpIcon.png";
+            //OnlineIdentities = DesignTimeHelpers.GenerateOnlineIdentities();
         }
 
         public ObservableCollection<OnlineIdentityViewModel> OnlineIdentities
@@ -48,9 +48,9 @@ namespace MvpApi.Wpf.ViewModels
             set => SetProperty(ref _selectedOnlineIdentities, value);
         }
 
-        //public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
+        public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
 
-        //public OnlineIdentityViewModel DraftOnlineIdentity { get; set; } = new OnlineIdentityViewModel();
+        public OnlineIdentityViewModel DraftOnlineIdentity { get; set; } = new OnlineIdentityViewModel();
 
         public string ProfileImagePath => App.ApiService.ProfileImagePath;
 
@@ -221,6 +221,8 @@ namespace MvpApi.Wpf.ViewModels
 
                 await App.MainLoginWindow.SignInAsync();
             }
+
+            
 
             await RefreshOnlineIdentitiesAsync();
 

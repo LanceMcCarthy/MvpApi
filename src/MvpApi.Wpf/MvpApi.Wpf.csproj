@@ -148,14 +148,38 @@
     <Reference Include="Telerik.Windows.Controls.GridView">
       <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.GridView.dll</HintPath>
     </Reference>
+    <Reference Include="Telerik.Windows.Controls.ImageEditor">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.ImageEditor.dll</HintPath>
+    </Reference>
     <Reference Include="Telerik.Windows.Controls.Input">
       <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.Input.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Controls.Navigation">
       <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.Navigation.dll</HintPath>
     </Reference>
+    <Reference Include="Telerik.Windows.Controls.RibbonView">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.RibbonView.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.RichTextBox">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.RichTextBox.dll</HintPath>
+    </Reference>
     <Reference Include="Telerik.Windows.Data">
       <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Core">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Documents.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Flow.FormatProviders.Pdf">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Documents.Flow.FormatProviders.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Proofing">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Documents.Proofing.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Spreadsheet.FormatProviders.OpenXml">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Documents.Spreadsheet.FormatProviders.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Spreadsheet.FormatProviders.Pdf">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Documents.Spreadsheet.FormatProviders.Pdf.dll</HintPath>
     </Reference>
     <Reference Include="Telerik.Windows.Themes.Crystal">
       <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Crystal.dll</HintPath>
@@ -213,6 +237,9 @@
     </Reference>
     <Reference Include="Telerik.Windows.Themes.Windows8Touch">
       <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Windows8Touch.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Zip">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Zip.dll</HintPath>
     </Reference>
   </ItemGroup>
 

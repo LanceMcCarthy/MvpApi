@@ -31,10 +31,13 @@ namespace MvpApi.Wpf
                 typeof(Analytics), 
                 typeof(Crashes));
 
-            var dataContext = (SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext;
-            dataContext.ImagePath = "/MvpApi.Wpf;component/Images/HeroBackground.png";
-            dataContext.Content = "starting up...";
-            dataContext.Footer = new WelcomeMessageService().GetRandomMessage();
+            var welcomeMessage = new WelcomeMessageService().GetRandomMessage();
+            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Footer = welcomeMessage.Message;
+            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).HorizontalFooterAlignment = HorizontalAlignment.Center;
+
+            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).ImagePath = "/MvpApi.Wpf;component/Images/HeroBackground.png";
+            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "starting up...";
+
 
             RadSplashScreenManager.Show();
 

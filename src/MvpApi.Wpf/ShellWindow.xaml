@@ -37,11 +37,11 @@
                     <views:SettingsView />
                 </DataTemplate>
             </selectors:ViewContentTemplateSelector.SettingsTemplate>
-            <selectors:ViewContentTemplateSelector.AuthenticationTemplate>
+            <!--<selectors:ViewContentTemplateSelector.AuthenticationTemplate>
                 <DataTemplate>
                     <views:AuthenticationView />
                 </DataTemplate>
-            </selectors:ViewContentTemplateSelector.AuthenticationTemplate>
+            </selectors:ViewContentTemplateSelector.AuthenticationTemplate>-->
         </selectors:ViewContentTemplateSelector>
     </Window.Resources>
 

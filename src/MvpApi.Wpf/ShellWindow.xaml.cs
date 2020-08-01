@@ -35,40 +35,55 @@ namespace MvpApi.Wpf
             });
         }
 
-        public void UpdateTheme(string assemblyName)
+        public void UpdateTheme(string themeAssemblyName)
         {
             Application.Current.Resources.MergedDictionaries.Clear();
 
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
             {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/System.Windows.xaml", UriKind.RelativeOrAbsolute)
+                Source = new Uri($"/Telerik.Windows.Themes.{themeAssemblyName};component/Themes/System.Windows.xaml", UriKind.RelativeOrAbsolute)
             });
 
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.xaml", UriKind.RelativeOrAbsolute)
-            });
+            var ctrlAssemblyNames = new [] { "Controls", "Controls.Data", "Controls.GridView", "Controls.Input", "Controls.Navigation", "Controls.ImageEditor", "Controls.RichTextBox", "Controls.RibbonView" };
 
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            foreach (var ctrlAssemblyName in ctrlAssemblyNames)
             {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Data.xaml", UriKind.RelativeOrAbsolute)
-            });
+                Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+                {
+                    Source = new Uri($"/Telerik.Windows.Themes.{themeAssemblyName};component/Themes/Telerik.Windows.{ctrlAssemblyName}.xaml", UriKind.RelativeOrAbsolute)
+                });
+            }
 
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.GridView.xaml", UriKind.RelativeOrAbsolute)
-            });
+            //Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            //{
+            //    Source = new Uri($"/Telerik.Windows.Themes.{themeAssemblyName};component/Themes/Telerik.Windows.Controls.Data.xaml", UriKind.RelativeOrAbsolute)
+            //});
 
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Input.xaml", UriKind.RelativeOrAbsolute)
-            });
+            //Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            //{
+            //    Source = new Uri($"/Telerik.Windows.Themes.{themeAssemblyName};component/Themes/Telerik.Windows.Controls.GridView.xaml", UriKind.RelativeOrAbsolute)
+            //});
 
-            Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
-            {
-                Source = new Uri($"/Telerik.Windows.Themes.{assemblyName};component/Themes/Telerik.Windows.Controls.Navigation.xaml", UriKind.RelativeOrAbsolute)
-            });
-            
+            //Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            //{
+            //    Source = new Uri($"/Telerik.Windows.Themes.{themeAssemblyName};component/Themes/Telerik.Windows.Controls.Input.xaml", UriKind.RelativeOrAbsolute)
+            //});
+
+            //Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            //{
+            //    Source = new Uri($"/Telerik.Windows.Themes.{themeAssemblyName};component/Themes/Telerik.Windows.Controls.Navigation.xaml", UriKind.RelativeOrAbsolute)
+            //});
+
+            //Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            //{
+            //    Source = new Uri($"/Telerik.Windows.Themes.{themeAssemblyName};component/Themes/Telerik.Windows.Controls.ImageEditor.xaml", UriKind.RelativeOrAbsolute)
+            //});
+
+            //Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+            //{
+            //    Source = new Uri($"/Telerik.Windows.Themes.{themeAssemblyName};component/Themes/Telerik.Windows.Controls.RichTextBox.xaml", UriKind.RelativeOrAbsolute)
+            //});
+
             Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
             {
                 Source = new Uri("Styles/GeneralStyles.xaml", UriKind.RelativeOrAbsolute)

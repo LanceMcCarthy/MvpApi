@@ -1,21 +1,26 @@
 ﻿using System;
+using MvpApi.Services.Models;
 
 namespace MvpApi.Services.Data
 {
     public class WelcomeMessageService
     {
         private readonly Random rand;
-        private readonly string[] messages = 
+
+        private readonly WelcomeMessage[] messages = 
         {
-            "You da real MVP!",
-            "Hello, MVP!",
-            "Hi Most Valuable Player.. oh wait, wrong MVP :/",
-            "Welcome back!",
-            "WOW SUCH AWESOME",
-            "The Struggle Is Real",
-            "Sloth Has Been Saved",
-            "ALL YOUR CONTRIBUTIONS ARE BELONG TO US",
-            "ERMAHGERD, contributions!"
+            new WelcomeMessage { Message = "You da real MVP!", GifUrl = ""}, 
+            new WelcomeMessage { Message = "Hello, MVP!", GifUrl = "" }, 
+            new WelcomeMessage { Message = "Will the real MVP please stand up?", GifUrl = "" }, 
+            new WelcomeMessage { Message = "Welcome back!", GifUrl = "" }, 
+            new WelcomeMessage { Message = "WOW SUCH AWESOME", GifUrl = "" }, 
+            new WelcomeMessage { Message = "The Struggle Is Real", GifUrl = "" }, 
+            new WelcomeMessage { Message = "Sloth Has Been Saved", GifUrl = "" }, 
+            new WelcomeMessage { Message = "ALL YOUR CONTRIBUTIONS ARE BELONG TO US", GifUrl = "" }, 
+            new WelcomeMessage { Message = "ERMAHGERD, contributions!", GifUrl = "" }, 
+            new WelcomeMessage { Message = "Wow Much Valuable", GifUrl = "" }, 
+            new WelcomeMessage { Message = "May the Code be with You!", GifUrl = "" }, 
+            new WelcomeMessage { Message = "Most Valuable, you are", GifUrl = "" }
         };
 
         public WelcomeMessageService()
@@ -23,12 +28,12 @@ namespace MvpApi.Services.Data
             rand = new Random();
         }
 
-        public string GetRandomMessage()
+        public WelcomeMessage GetRandomMessage()
         {
             return messages[rand.Next(messages.Length)];
         }
 
-        public string GetMessage(int i)
+        public WelcomeMessage GetMessage(int i)
         {
             if (i >= messages.Length)
             {
