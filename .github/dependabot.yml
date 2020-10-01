@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: "src/MvpApi.Uwp"
+    schedule:
+      interval: "weekly"
