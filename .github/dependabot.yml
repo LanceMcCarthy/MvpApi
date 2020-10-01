@@ -2,5 +2,21 @@ version: 2
 updates:
   - package-ecosystem: nuget
     directory: "src/MvpApi.Uwp"
+    open-pull-requests-limit: 5
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: nuget
+    directory: "src/MvpApi.UwpBackgroundTasks"
+    open-pull-requests-limit: 5
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: nuget
+    directory: "src/MvpApi.Services"
+    open-pull-requests-limit: 5
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: nuget
+    directory: "src/MvpApi.Common"
+    open-pull-requests-limit: 5
     schedule:
       interval: "weekly"
