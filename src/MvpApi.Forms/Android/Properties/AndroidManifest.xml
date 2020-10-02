@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="com.LancelotSoftware.MVPCompanion" android:versionCode="1" android:versionName="0.1">
-	<uses-sdk android:targetSdkVersion="28" android:minSdkVersion="19" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto" package="com.LancelotSoftware.MVPCompanion" android:versionCode="3" android:versionName="2020.1001.1.0">
+	<uses-sdk android:targetSdkVersion="29" android:minSdkVersion="19" />
 	<application android:label="MVP Companion" android:icon="@mipmap/icon" android:theme="@style/MainTheme"></application>
 </manifest>

@@ -4,7 +4,8 @@
     {
         Home,
         Detail,
+        Add,
         Profile,
-        About
+        About,
     }
 }

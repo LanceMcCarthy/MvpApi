@@ -1,19 +1,22 @@
-﻿using System;
+﻿using Microsoft.Services.Store.Engagement;
+using MvpApi.Common.Models;
+using MvpApi.Uwp.Helpers;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation.Metadata;
 using Windows.Services.Store;
+using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Advertising.WinRT.UI;
-using Microsoft.Services.Store.Engagement;
-using MvpApi.Common.Models;
-using MvpApi.Uwp.Helpers;
-using Newtonsoft.Json.Linq;
+using VungleSDK;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -21,7 +24,9 @@ namespace MvpApi.Uwp.ViewModels
     {
         private StoreContext _context;
         private Visibility _feedbackHubButtonVisibility;
-        private InterstitialAd _myInterstitialAd;
+        VungleAd sdkInstance;
+        private string vungleAppId = "5f765c14d870a360a1d6f906";
+        private string vungleAdPlacementId = "KUDOSPAGEINTERSTITIAL-9395221";
 
         public KudosViewModel()
         {
@@ -33,7 +38,7 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         public ObservableCollection<Kudos> KudosCollection { get; set; } = new ObservableCollection<Kudos>();
-        
+
         public Visibility FeedbackHubButtonVisibility
         {
             get => _feedbackHubButtonVisibility;
@@ -59,17 +64,16 @@ namespace MvpApi.Uwp.ViewModels
 
             if (kudo.Title == "Video Ad")
             {
-                // Wait for ad to be ready
                 if (kudo.IsBusy)
                 {
                     await new MessageDialog("Ad is being fetched right now, wait for busy indicator disappear and try again.").ShowAsync();
-                    return;
                 }
-
-                // double check the ad is ready using the State value
-                if (_myInterstitialAd.State == InterstitialAdState.Ready)
+                else
                 {
-                    _myInterstitialAd.Show();
+                    AdConfig adConfig = new AdConfig();
+                    adConfig.SoundEnabled = false;
+
+                    sdkInstance.PlayAdAsync(adConfig, vungleAdPlacementId);
                 }
             }
         }
@@ -85,7 +89,7 @@ namespace MvpApi.Uwp.ViewModels
 
                 IsBusyMessage = "action complete, reviewing result...";
 
-                if (result.ExtendedError != null) 
+                if (result.ExtendedError != null)
                     return;
 
                 var jsonObject = JObject.Parse(result.Response);
@@ -136,7 +140,7 @@ namespace MvpApi.Uwp.ViewModels
 
                 if (_context == null)
                     _context = StoreContext.GetDefault();
-                
+
                 var result = await _context.RequestPurchaseAsync(storeId);
 
                 IsBusyMessage = "action complete, reviewing result...";
@@ -184,37 +188,20 @@ namespace MvpApi.Uwp.ViewModels
                 IsBusyMessage = "";
             }
         }
-        
-        private void MyInterstitialAd_AdReady(object sender, object e)
+
+        private async void SdkInstance_OnAdPlayableChanged(object sender, AdPlayableEventArgs e)
         {
+            Debug.WriteLine($"AdPlayable changed: {e.Placement}, Playable: {e.AdPlayable}");
+
             var kudo = KudosCollection.FirstOrDefault(a => a.Title == "Video Ad");
 
-            if (kudo != null)
-                kudo.IsBusy = false;
-        }
-
-        private void MyInterstitialAd_ErrorOccurred(object sender, AdErrorEventArgs e)
-        {
-            RefreshAd();
-        }
-
-        private void MyInterstitialAd_Completed(object sender, object e)
-        {
-            RefreshAd();
-        }
-
-        private void MyInterstitialAd_Cancelled(object sender, object e)
-        {
-            RefreshAd();
-        }
-
-        private void RefreshAd()
-        {
-            // Note: Ad unit name is 'KudosVideoInterstitial'
-            _myInterstitialAd.RequestAd(AdType.Video, "9nrxnx3wlh77", "1100019939");
-
-            var kudo = KudosCollection.FirstOrDefault(a => a.Title == "Video Ad");
-            if (kudo != null) kudo.IsBusy = true;
+            await CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                if (kudo != null)
+                {
+                    kudo.IsBusy = !e.AdPlayable;
+                }
+            });
         }
 
         #region Navigation
@@ -225,23 +212,16 @@ namespace MvpApi.Uwp.ViewModels
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
-            _myInterstitialAd = new InterstitialAd();
-            _myInterstitialAd.AdReady += MyInterstitialAd_AdReady;
-            _myInterstitialAd.ErrorOccurred += MyInterstitialAd_ErrorOccurred;
-            _myInterstitialAd.Completed += MyInterstitialAd_Completed;
-            _myInterstitialAd.Cancelled += MyInterstitialAd_Cancelled;
-
-            RefreshAd();
+            sdkInstance = AdFactory.GetInstance(vungleAppId);
+            sdkInstance.OnAdPlayableChanged += SdkInstance_OnAdPlayableChanged;
+            sdkInstance.LoadAd(vungleAdPlacementId);
 
             return base.OnNavigatedToAsync(parameter, mode, state);
         }
 
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
         {
-            _myInterstitialAd.AdReady -= MyInterstitialAd_AdReady;
-            _myInterstitialAd.ErrorOccurred -= MyInterstitialAd_ErrorOccurred;
-            _myInterstitialAd.Completed -= MyInterstitialAd_Completed;
-            _myInterstitialAd.Cancelled -= MyInterstitialAd_Cancelled;
+            sdkInstance.OnAdPlayableChanged -= SdkInstance_OnAdPlayableChanged;
 
             return base.OnNavigatedFromAsync(pageState, suspending);
         }

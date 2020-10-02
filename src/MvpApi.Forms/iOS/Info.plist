@@ -21,13 +21,13 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>10.3</string>
+	<string>12.1</string>
 	<key>CFBundleDisplayName</key>
 	<string>MVP Companion</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.LancelotSoftware.MVPCompanion</string>
 	<key>CFBundleVersion</key>
-	<string>0.1</string>
+	<string>2020.1001.1.0</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x</string>
@@ -51,6 +51,10 @@
 	<key>UIRequiresFullScreen</key>
 	<true/>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1</string>
+	<string>2020.1001.1.0</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Fonts/telerikfontexamples.ttf</string>
+	</array>
 </dict>
 </plist>

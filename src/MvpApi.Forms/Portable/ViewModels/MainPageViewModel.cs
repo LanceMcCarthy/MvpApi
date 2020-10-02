@@ -1,9 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using CommonHelpers.Common;
 using MvpApi.Common.Models;
 using MvpApi.Forms.Portable.Common;
 using MvpApi.Forms.Portable.Models;
+using MvpApi.Services.Utilities;
+using Telerik.XamarinForms.Common;
+using Telerik.XamarinForms.DataControls.ListView;
+using Telerik.XamarinForms.DataControls.ListView.Commands;
 using Xamarin.Forms;
 
 namespace MvpApi.Forms.Portable.ViewModels
@@ -14,30 +21,27 @@ namespace MvpApi.Forms.Portable.ViewModels
         private ObservableCollection<ContributionsModel> _contributions;
         private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
         private ContributionsModel _selectedContribution;
-
+        private int _selectedSegmentIndex;
         private string _profileImagePath;
         private bool _isLoggedIn;
-
         private bool _isDrawerOpen;
         private string _status;
+        private bool _isInEditMode;
 
         public MainPageViewModel()
         {
             GoToViewCommand = new Command(LoadView);
-            ToggleDrawerCommand = new Command(ToggleDrawer);
+            ToggleDrawerCommand = new Command(() => IsDrawerOpen = !IsDrawerOpen);
+            ToggleEditModeCommand = new Command(() => IsInEditMode = !IsInEditMode);
+            ItemTapCommand = new Command<ItemTapCommandContext>(ItemTapped);
         }
 
-        #region MVP Profile Properties
-
-        /// <summary>
-        /// File path to locally saved MVP profile image
-        /// </summary>
         public string ProfileImagePath
         {
             get => _profileImagePath;
             set
             {
-                //enforcing propChanged because path will be the same, but image is different
+                // Always trigger PropertyChanged. Image may update, but file path doesn't.
                 _profileImagePath = value;
                 OnPropertyChanged();
             }
@@ -72,14 +76,21 @@ namespace MvpApi.Forms.Portable.ViewModels
                 }
             }
         }
-        
+        public int SelectedSegmentIndex
+        {
+            get => _selectedSegmentIndex;
+            set
+            {
+                SetProperty(ref _selectedSegmentIndex, value);
+                SetGrouping(value);
+            }
+        }
+
         public bool IsLoggedIn
         {
             get => _isLoggedIn;
             set => SetProperty(ref _isLoggedIn, value);
         }
-
-        #endregion
 
         public bool IsDrawerOpen
         {
@@ -87,29 +98,48 @@ namespace MvpApi.Forms.Portable.ViewModels
             set => SetProperty(ref _isDrawerOpen, value);
         }
 
+        public bool IsInEditMode
+        {
+            get => _isInEditMode;
+            set => SetProperty(ref _isInEditMode, value);
+        }
+
         public string Status
         {
             get => _status;
             set => SetProperty(ref _status, value);
         }
-        
+
+        public List<string> GroupingOptions { get; } = new List<string> { "None", "Visibility", "Social" };
+
+        public ObservableCollection<GroupDescriptorBase> GroupDescriptors { get; set; }
+
+        public Command<ItemTapCommandContext> ItemTapCommand { get; set; }
+
         public Command GoToViewCommand { get; set; }
 
         public Command ToggleDrawerCommand { get; set; }
 
+        public Command ToggleEditModeCommand { get; set; }
+
         public INavigationHandler NavigationHandler { private get; set; }
+
 
         public async void LoadView(object viewType)
         {
-            // Work before view appears
+            // Pre-navigation work
             if ((ViewType)viewType == ViewType.Home)
             {
             }
-
-            // Invoke View change in
+            else if ((ViewType)viewType == ViewType.Add)
+            {
+                SelectedContribution = new ContributionsModel();
+            }
+            
+            // Invoke View change
             NavigationHandler.LoadView((ViewType)viewType);
 
-            // Work after view appears
+            // Post-navigation work
             if ((ViewType)viewType == ViewType.Home)
             {
                 if (!IsBusy)
@@ -118,11 +148,11 @@ namespace MvpApi.Forms.Portable.ViewModels
                 }
 
                 IsBusyMessage = "refreshing contributions...";
-                
-                await RefreshContributionsAsync();// TODO This is a temporary test, replace with incremental loading collection
-            }
 
-            if ((ViewType)viewType == ViewType.Profile)
+                // TODO temporary, replace with incremental loading collection
+                await RefreshContributionsAsync();
+            }
+            else if ((ViewType)viewType == ViewType.Profile)
             {
                 if (!IsBusy)
                 {
@@ -176,9 +206,58 @@ namespace MvpApi.Forms.Portable.ViewModels
             }
         }
         
-        private void ToggleDrawer()
+        private void SetGrouping(int groupOptionIndex)
         {
-            IsDrawerOpen = !IsDrawerOpen;
+            try
+            {
+                if (GroupDescriptors == null)
+                {
+                    return;
+                }
+
+                GroupDescriptors.Clear();
+
+                var propertyToGroupBy = GroupingOptions[groupOptionIndex];
+
+                if (string.IsNullOrEmpty(propertyToGroupBy))
+                {
+                    return;
+                }
+
+                switch (propertyToGroupBy)
+                {
+                    case "Visibility":
+                        GroupDescriptors.Add(new DelegateGroupDescriptor
+                        {
+                            KeyExtractor = (arg) => (arg as OnlineIdentityViewModel)?.OnlineIdentityVisibility?.Description,
+                            SortOrder = SortOrder.Descending
+                        });
+                        break;
+                    case "Social":
+                        GroupDescriptors.Add(new DelegateGroupDescriptor
+                        {
+                            KeyExtractor = (arg) => (arg as OnlineIdentityViewModel)?.SocialNetwork.Name,
+                            SortOrder = SortOrder.Descending
+                        });
+                        break;
+                    default:
+                        GroupDescriptors.Clear();
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.LogException();
+            }
+        }
+
+        private void ItemTapped(ItemTapCommandContext context)
+        {
+            if (context.Item is OnlineIdentityViewModel item)
+            {
+                // TODO Show popup or modal page for editing/deleting identities
+                Debug.WriteLine($"{item.SocialNetwork.Name} Tapped");
+            }
         }
     }
 }
