@@ -56,7 +56,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <EntryPointProjectUniqueName>..\MvpApi.Wpf\MvpApi.Wpf.csproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>E65BEDF6BC18C7FE7520BE62FDE6245972A24783</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>F59E815B12EB302AFB967D855BDEC315D27DB6B3</PackageCertificateThumbprint>
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
