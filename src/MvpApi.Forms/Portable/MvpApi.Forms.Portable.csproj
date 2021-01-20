@@ -10,10 +10,10 @@
         <DebugType>pdbonly</DebugType>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="CommonHelpers" Version="1.0.12" />
-        <PackageReference Include="Telerik.UI.for.Xamarin" Version="2019.2.619.1" />
-        <PackageReference Include="Xamarin.Forms" Version="3.6.0.539721" />
-        <PackageReference Include="SkiaSharp" Version="1.68.0" />
+        <PackageReference Include="CommonHelpers" Version="1.1.2" />
+        <PackageReference Include="Telerik.UI.for.Xamarin" Version="2020.3.916.1" />
+        <PackageReference Include="Xamarin.Forms" Version="4.8.0.1451" />
+        <PackageReference Include="SkiaSharp" Version="2.80.2" />
         <PackageReference Include="SkiaSharp.Views.Forms " Version="1.59.3" />
     </ItemGroup>
     <ItemGroup>
@@ -46,6 +46,6 @@
       </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Update="SkiaSharp.Views.Forms" Version="1.68.0" />
+      <PackageReference Update="SkiaSharp.Views.Forms" Version="2.80.2" />
     </ItemGroup>
 </Project>
