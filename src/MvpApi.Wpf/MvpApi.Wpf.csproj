@@ -1,0 +1,246 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>MvpApi.Wpf</RootNamespace>
+    <EnableDefaultItems>False</EnableDefaultItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommonHelpers" Version="1.1.2" />
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="3.4.0" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="3.4.0" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="0.1.0-prerelease.200629.3" />
+    <PackageReference Include="Microsoft.Windows.SDK.NET" Version="10.0.18362.3-preview" />
+  </ItemGroup>
+  
+  <ItemGroup>
+  <ApplicationDefinition Include="App.xaml">
+    <Generator>MSBuild:Compile</Generator>
+    <SubType>Designer</SubType>
+  </ApplicationDefinition>
+  <Page Include="LoginWindow.xaml">
+    <Generator>MSBuild:Compile</Generator>
+  </Page>
+  <Page Include="ShellWindow.xaml">
+    <Generator>MSBuild:Compile</Generator>
+    <SubType>Designer</SubType>
+  </Page>
+  <Page Include="Styles\GeneralStyles.xaml">
+    <Generator>MSBuild:Compile</Generator>
+  </Page>
+  <Page Include="Views\AuthenticationView.xaml">
+    <Generator>MSBuild:Compile</Generator>
+  </Page>
+  <Page Include="Views\HomeView.xaml">
+    <Generator>MSBuild:Compile</Generator>
+  </Page>
+  <Page Include="Views\KudosView.xaml">
+    <Generator>MSBuild:Compile</Generator>
+  </Page>
+  <Page Include="Views\ProfileView.xaml">
+    <Generator>MSBuild:Compile</Generator>
+  </Page>
+  <Page Include="Views\SettingsView.xaml">
+    <Generator>MSBuild:Compile</Generator>
+  </Page>
+  <Compile Include="App.xaml.cs">
+    <DependentUpon>App.xaml</DependentUpon>
+    <SubType>Code</SubType>
+  </Compile>
+  <Compile Include="Converters\BoolToIconConverter.cs" />
+  <Compile Include="Converters\ContributionTypeNameToBrushConverter.cs" />
+  <Compile Include="Converters\DateTimeToDateTimeOffsetConverter.cs" />
+  <Compile Include="Converters\DoubleToIntConverter.cs" />
+  <Compile Include="Converters\MvcContentUrlConverter.cs" />
+  <Compile Include="Converters\NullToVisibilityConverter.cs" />
+  <Compile Include="Converters\PathToBitmapImageConverter.cs" />
+  <Compile Include="Converters\PrivacyLevelToBrushConverter.cs" />
+  <Compile Include="Converters\StringToUriConverter.cs" />
+  <Compile Include="Converters\ThresholdConverter.cs" />
+  <Compile Include="Converters\UploadStatusToBoolConverter.cs" />
+  <Compile Include="Converters\UploadStatusToBrushConverter.cs" />
+  <Compile Include="Converters\ValueWhenConverter.cs" />
+  <Compile Include="Helpers\DesignTimeHelpers.cs" />
+  <Compile Include="Helpers\DiagnosticsHelper.cs" />
+  <Compile Include="Helpers\ExceptionLogger.cs" />
+  <Compile Include="Helpers\FeedbackHelpers.cs" />
+  <Compile Include="Helpers\NetworkHelper.cs" />
+  <Compile Include="Helpers\PaletteHelper.cs" />
+  <Compile Include="Helpers\TaskUtilities.cs" />
+  <Compile Include="LoginWindow.xaml.cs" />
+  <Compile Include="Models\NavItemModel.cs" />
+  <Compile Include="Models\ViewName.cs" />
+  <Compile Include="Properties\Settings.Designer.cs">
+    <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    <AutoGen>True</AutoGen>
+    <DependentUpon>Settings.settings</DependentUpon>
+  </Compile>
+  <Compile Include="Selectors\ContributionTypeNameCellStyleSelector.cs" />
+  <Compile Include="Selectors\TechAreaGroupStyleSelector.cs" />
+  <Compile Include="Selectors\ViewContentTemplateSelector.cs" />
+  <Compile Include="ShellWindow.xaml.cs">
+    <DependentUpon>ShellWindow.xaml</DependentUpon>
+    <SubType>Code</SubType>
+  </Compile>
+  <Compile Include="ViewModels\AboutViewModel.cs" />
+  <Compile Include="ViewModels\AddContributionsViewModel.cs" />
+  <Compile Include="ViewModels\AuthenticationViewModel.cs" />
+  <Compile Include="ViewModels\ContributionDetailViewModel.cs" />
+  <Compile Include="ViewModels\ContributionEditorDialogViewModel.cs" />
+  <Compile Include="ViewModels\HomeViewModel.cs" />
+  <Compile Include="ViewModels\KudosViewModel.cs" />
+  <Compile Include="ViewModels\ProfileViewModel.cs" />
+  <Compile Include="ViewModels\SettingsViewModel.cs" />
+  <Compile Include="ViewModels\ShellViewModel.cs" />
+  <Compile Include="Views\AuthenticationView.xaml.cs" />
+  <Compile Include="Views\HomeView.xaml.cs" />
+  <Compile Include="Views\KudosView.xaml.cs" />
+  <Compile Include="Views\ProfileView.xaml.cs" />
+  <Compile Include="Views\SettingsView.xaml.cs" />
+</ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Images\4starStar.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\CoffeeKudo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DinnerKudo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\LunchKudo.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\HeroBackground.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MvpIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\VideoAd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="ViewModels\readme.md" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj" />
+    <ProjectReference Include="..\MvpApi.Services\MvpApi.Services.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="Telerik.Windows.Controls">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.Data">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.GridView">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.GridView.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.ImageEditor">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.ImageEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.Input">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.Navigation">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.Navigation.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.RibbonView">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.RibbonView.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Controls.RichTextBox">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Controls.RichTextBox.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Data">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Core">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Documents.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Flow.FormatProviders.Pdf">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Documents.Flow.FormatProviders.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Proofing">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Documents.Proofing.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Spreadsheet.FormatProviders.OpenXml">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Documents.Spreadsheet.FormatProviders.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Documents.Spreadsheet.FormatProviders.Pdf">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Documents.Spreadsheet.FormatProviders.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Crystal">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Crystal.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Expression_Dark">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Expression_Dark.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Fluent">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Fluent.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Green">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Green.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Material">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Material.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Office2013">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Office2013.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Office2016">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Office2016.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Office2016Touch">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Office2016Touch.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Office_Black">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Office_Black.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Office_Blue">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Office_Blue.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Office_Silver">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Office_Silver.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Summer">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Summer.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Transparent">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Transparent.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Vista">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Vista.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.VisualStudio2013">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.VisualStudio2013.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.VisualStudio2019">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.VisualStudio2019.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Windows7">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Windows7.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Windows8">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Windows8.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Themes.Windows8Touch">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Themes.Windows8Touch.dll</HintPath>
+    </Reference>
+    <Reference Include="Telerik.Windows.Zip">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik UI for WPF R2 2020\Binaries.NoXaml\WPF50\Telerik.Windows.Zip.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

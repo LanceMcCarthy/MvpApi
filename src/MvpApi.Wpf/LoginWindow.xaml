@@ -1,0 +1,24 @@
+﻿<Window x:Class="MvpApi.Wpf.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MvpApi.Wpf"
+        xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+        mc:Ignorable="d"
+        Title="LoginWindow" Height="600" Width="400" >
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <WebBrowser x:Name="AuthWebView"
+                    Navigated="WebBrowser_OnNavigated"/>
+
+        <TextBlock x:Name="StatusTextBlock"
+                   Text="Hello"
+                   HorizontalAlignment="Center"
+                   Margin="5"
+                   Grid.Row="1"/>
+    </Grid>
+</Window>

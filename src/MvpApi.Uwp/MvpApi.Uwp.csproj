@@ -372,10 +372,6 @@
       <Project>{edc2d11b-fe53-454b-a7e5-6c74e89fa479}</Project>
       <Name>MvpApi.Services</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MvpApi.UwpBackgroundTasks\MvpApi.UwpBackgroundTasks.csproj">
-      <Project>{9d7ff5ea-20d9-40e3-9704-e3e7b5e2dc25}</Project>
-      <Name>MvpApi.UwpBackgroundTasks</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="Microsoft.Services.Store.Engagement, Version=10.0">

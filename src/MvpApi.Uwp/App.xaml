@@ -75,8 +75,8 @@
             <converters:PrivacyLevelToBrushConverter x:Key="PrivacyLevelToBrushConverter" />
             <converters:StringToUriConverter x:Key="StringToUriConverter" />
 
-            <converters:ContributionTypeNameToBrushConverter x:Name="ContributionTypeNameToBackgroundConverter" />
-            <converters:ContributionTypeNameToBrushConverter x:Name="ContributionTypeNameToForegroundConverter" IsForegroundColor="True" />
+            <converters:ContributionTypeNameToBrushConverter x:Key="ContributionTypeNameToBackgroundConverter" />
+            <converters:ContributionTypeNameToBrushConverter x:Key="ContributionTypeNameToForegroundConverter" IsForegroundColor="True" />
 
             <animations:AnimationCollection x:Key="CommonShowAnimations">
                 <animations:ScaleAnimation From="0.7"
