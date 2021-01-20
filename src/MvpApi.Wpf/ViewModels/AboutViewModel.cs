@@ -88,7 +88,7 @@ namespace MvpApi.Wpf.ViewModels
             await CreateEmailAsync();
         }
 
-        public async void FeedbackButton_Click(object sender, RoutedEventArgs e)
+        public void FeedbackButton_Click(object sender, RoutedEventArgs e)
         {
             //await StoreServicesFeedbackLauncher.GetDefault().LaunchAsync();
         }
