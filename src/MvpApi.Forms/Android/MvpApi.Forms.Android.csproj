@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Telerik.UI.for.Xamarin">
-      <Version>2020.3.916.1</Version>
+      <Version>2021.1.119.1</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.Compat">
       <Version>28.0.0.3</Version>
@@ -62,7 +62,7 @@
     <PackageReference Include="Xamarin.Android.Support.CustomTabs">
       <Version>28.0.0.3</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1451" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.1905" />
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
     <PackageReference Include="SkiaSharp.Views " Version="2.80.2" />
     <PackageReference Include="SkiaSharp.Views.Forms " Version="2.80.2" />

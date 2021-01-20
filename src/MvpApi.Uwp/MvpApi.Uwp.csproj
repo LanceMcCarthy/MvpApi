@@ -354,7 +354,7 @@
       <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
-      <Version>2020.3.902.1</Version>
+      <Version>2021.1.113.1</Version>
     </PackageReference>
     <PackageReference Include="Template10">
       <Version>1.1.12</Version>
