@@ -67,18 +67,8 @@
     <PackageReference Include="SkiaSharp" Version="2.80.2" />
     <PackageReference Include="SkiaSharp.Views " Version="2.80.2" />
     <PackageReference Include="SkiaSharp.Views.Forms " Version="2.80.2" />
-    <PackageReference Include="Xamarin.AndroidX.Legacy.Support.V4" Version="1.0.0.6" />
-    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.2.1.1" />
-    <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.2.0.6" />
-    <PackageReference Include="Xamarin.AndroidX.CardView" Version="1.0.0.6" />
-    <PackageReference Include="Xamarin.AndroidX.MediaRouter" Version="1.2.0.1" />
-    <PackageReference Include="Xamarin.AndroidX.VectorDrawable" Version="1.1.0.6" />
-    <PackageReference Include="Xamarin.AndroidX.VectorDrawable.Animated" Version="1.1.0.6" />
-    <PackageReference Include="Xamarin.AndroidX.RecyclerView" Version="1.1.0.6" />
-    <PackageReference Include="Xamarin.Android.Support.v8.RenderScript" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.AndroidX.Migration" Version="1.0.8" />
-    <PackageReference Include="Xamarin.AndroidX.MediaRouter" Version="1.2.0" />
     <PackageReference Include="Xamarin.AndroidX.Palette" Version="1.0.0.6" />
+    <PackageReference Include="Xamarin.AndroidX.MediaRouter" Version="1.2.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
