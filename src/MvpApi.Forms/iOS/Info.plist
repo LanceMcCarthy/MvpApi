@@ -27,7 +27,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.LancelotSoftware.MVPCompanion</string>
 	<key>CFBundleVersion</key>
-	<string>2020.1001.1.0</string>
+	<string>2021.120.1.0</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x</string>
@@ -51,7 +51,7 @@
 	<key>UIRequiresFullScreen</key>
 	<true/>
 	<key>CFBundleShortVersionString</key>
-	<string>2020.1001.1.0</string>
+	<string>2021.120.1.0</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Fonts/telerikfontexamples.ttf</string>

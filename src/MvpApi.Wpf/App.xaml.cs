@@ -83,9 +83,5 @@ namespace MvpApi.Wpf
 
             base.OnStartup(e);
         }
-
-
-        
-
     }
 }

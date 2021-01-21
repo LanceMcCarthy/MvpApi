@@ -12,16 +12,14 @@
                 <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/System.Windows.xaml" />
                 <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.xaml" />
                 <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Data.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Input.xaml" />
+                <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Docking.xaml" />
+                <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.FileDialogs.xaml" />
                 <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.GridView.xaml" />
+                <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Input.xaml" />
                 <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Navigation.xaml" />
                 <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.RichTextBox.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.ImageEditor.xaml" />
-                <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.RibbonView.xaml" />
                 <ResourceDictionary Source="Styles/GeneralStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <telerik:StringToGlyphConverter x:Key="StringToGlyphConverter" />
 
             <converters:ValueWhenConverter x:Key="InvertBoolConv">
                 <converters:ValueWhenConverter.When>
@@ -160,29 +158,32 @@
     </Application.Resources>
 </Application>
 
-<!--<ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Cloud.Controls.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.RibbonView.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.RichTextBox.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Diagrams.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Diagrams.Extensions.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Diagrams.Ribbon.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Docking.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.ScheduleView.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.GanttView.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.FileDialogs.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.DataVisualization.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Pivot.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.PivotFieldList.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.ImageEditor.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.VirtualGrid.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Spreadsheet.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.ConversationalUI.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Media.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.SyntaxEditor.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.fixeddocumentviewersui.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.documents.proofing.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.spreadsheetui.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.data.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.chart.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.expressions.xaml"/>
-            <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.fixeddocumentviewers.xaml"/>-->
+<!--
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Cloud.Controls.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.RibbonView.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.RichTextBox.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Diagrams.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Diagrams.Extensions.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Diagrams.Ribbon.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Docking.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.ScheduleView.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.GanttView.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.FileDialogs.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.DataVisualization.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Pivot.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.PivotFieldList.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.ImageEditor.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.VirtualGrid.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Spreadsheet.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.ConversationalUI.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.Media.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/Telerik.Windows.Controls.SyntaxEditor.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.fixeddocumentviewersui.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.documents.proofing.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.spreadsheetui.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.data.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.chart.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.expressions.xaml"/>
+    <ResourceDictionary Source="/Telerik.Windows.Themes.Fluent;component/Themes/telerik.windows.controls.fixeddocumentviewers.xaml"/>
+    
+    -->

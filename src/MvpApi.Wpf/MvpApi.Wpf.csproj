@@ -8,6 +8,20 @@
     <EnableDefaultItems>False</EnableDefaultItems>
     <Platforms>AnyCPU</Platforms>
     <ApplicationIcon>Images\MainIcon.ico</ApplicationIcon>
+    <Authors>Lance McCarthy</Authors>
+    <Company>Lancelot Software</Company>
+    <Copyright>Copyright 2016 - 2021</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/LanceMcCarthy/MvpApi</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/LanceMcCarthy/MvpApi</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>Microsoft MVP</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <AssemblyVersion>2021.120.1.0</AssemblyVersion>
+    <Version>2021.120.1.0</Version>
+    <FileVersion>2021.120.1.0</FileVersion>
+    <SignAssembly>false</SignAssembly>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -151,6 +165,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\MvpIcon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MvpCompanionIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\VideoAd.png">
