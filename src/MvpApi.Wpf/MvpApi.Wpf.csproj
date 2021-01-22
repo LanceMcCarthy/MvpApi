@@ -4,24 +4,14 @@
     <TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <RootNamespace>MvpApi.Wpf</RootNamespace>
+    <AssemblyName>MvpApi.Wpf</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <EnableDefaultItems>False</EnableDefaultItems>
-    <Platforms>AnyCPU</Platforms>
-    <ApplicationIcon>Images\MainIcon.ico</ApplicationIcon>
-    <Authors>Lance McCarthy</Authors>
-    <Company>Lancelot Software</Company>
-    <Copyright>Copyright 2016 - 2021</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression>https://github.com/LanceMcCarthy/MvpApi/blob/master/LICENSE</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/LanceMcCarthy/MvpApi</PackageProjectUrl>
     <RepositoryUrl>https://github.com/LanceMcCarthy/MvpApi</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>Microsoft MVP</PackageTags>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <AssemblyVersion>2021.120.1.0</AssemblyVersion>
-    <Version>2021.120.1.0</Version>
-    <FileVersion>2021.120.1.0</FileVersion>
-    <SignAssembly>false</SignAssembly>
-    <DelaySign>false</DelaySign>
+    <ApplicationIcon>Images\MainIcon.ico</ApplicationIcon>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -58,134 +48,8 @@
     <PackageReference Include="Telerik.Windows.Themes.Windows8.for.Wpf" Version="2021.1.119" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Page Include="LoginWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ShellWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\GeneralStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AuthenticationView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\HomeView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\KudosView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ProfileView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\SettingsView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Converters\BoolToIconConverter.cs" />
-    <Compile Include="Converters\ContributionTypeNameToBrushConverter.cs" />
-    <Compile Include="Converters\DateTimeToDateTimeOffsetConverter.cs" />
-    <Compile Include="Converters\DoubleToIntConverter.cs" />
-    <Compile Include="Converters\MvcContentUrlConverter.cs" />
-    <Compile Include="Converters\NullToVisibilityConverter.cs" />
-    <Compile Include="Converters\PathToBitmapImageConverter.cs" />
-    <Compile Include="Converters\PrivacyLevelToBrushConverter.cs" />
-    <Compile Include="Converters\StringToUriConverter.cs" />
-    <Compile Include="Converters\ThresholdConverter.cs" />
-    <Compile Include="Converters\UploadStatusToBoolConverter.cs" />
-    <Compile Include="Converters\UploadStatusToBrushConverter.cs" />
-    <Compile Include="Converters\ValueWhenConverter.cs" />
-    <Compile Include="Helpers\DesignTimeHelpers.cs" />
-    <Compile Include="Helpers\DiagnosticsHelper.cs" />
-    <Compile Include="Helpers\ExceptionLogger.cs" />
-    <Compile Include="Helpers\FeedbackHelpers.cs" />
-    <Compile Include="Helpers\NetworkHelper.cs" />
-    <Compile Include="Helpers\PaletteHelper.cs" />
-    <Compile Include="Helpers\TaskUtilities.cs" />
-    <Compile Include="LoginWindow.xaml.cs" />
-    <Compile Include="Models\NavItemModel.cs" />
-    <Compile Include="Models\ViewName.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Selectors\ContributionTypeNameCellStyleSelector.cs" />
-    <Compile Include="Selectors\TechAreaGroupStyleSelector.cs" />
-    <Compile Include="Selectors\ViewContentTemplateSelector.cs" />
-    <Compile Include="ShellWindow.xaml.cs">
-      <DependentUpon>ShellWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ViewModels\AboutViewModel.cs" />
-    <Compile Include="ViewModels\AddContributionsViewModel.cs" />
-    <Compile Include="ViewModels\AuthenticationViewModel.cs" />
-    <Compile Include="ViewModels\ContributionDetailViewModel.cs" />
-    <Compile Include="ViewModels\ContributionEditorDialogViewModel.cs" />
-    <Compile Include="ViewModels\HomeViewModel.cs" />
-    <Compile Include="ViewModels\KudosViewModel.cs" />
-    <Compile Include="ViewModels\ProfileViewModel.cs" />
-    <Compile Include="ViewModels\SettingsViewModel.cs" />
-    <Compile Include="ViewModels\ShellViewModel.cs" />
-    <Compile Include="Views\AuthenticationView.xaml.cs" />
-    <Compile Include="Views\HomeView.xaml.cs" />
-    <Compile Include="Views\KudosView.xaml.cs" />
-    <Compile Include="Views\ProfileView.xaml.cs" />
-    <Compile Include="Views\SettingsView.xaml.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Images\4starStar.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\CoffeeKudo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\DinnerKudo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\LunchKudo.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\HeroBackground.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\MainIcon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\MvpIcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\MvpCompanionIcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Images\VideoAd.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="ViewModels\readme.md" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj" />
     <ProjectReference Include="..\MvpApi.Services\MvpApi.Services.csproj" />
   </ItemGroup>
-
 </Project>

@@ -12,6 +12,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        
         <WebBrowser x:Name="AuthWebView"
                     Navigated="WebBrowser_OnNavigated"/>
 

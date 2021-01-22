@@ -1,9 +1,6 @@
-﻿using System;
-using System.Windows;
-using Windows.UI.Popups;
+﻿using System.Windows;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Crashes;
-using MvpApi.Common.CustomEventArgs;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Data;
 using MvpApi.Services.Utilities;
@@ -24,6 +21,7 @@ namespace MvpApi.Wpf
            MainLoginWindow = new LoginWindow();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
         protected override async void OnStartup(StartupEventArgs e)
         {
             AppCenter.Start(
@@ -32,6 +30,7 @@ namespace MvpApi.Wpf
                 typeof(Crashes));
 
             var welcomeMessage = new WelcomeMessageService().GetRandomMessage();
+
             ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Footer = welcomeMessage.Message;
             ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).HorizontalFooterAlignment = HorizontalAlignment.Center;
 
