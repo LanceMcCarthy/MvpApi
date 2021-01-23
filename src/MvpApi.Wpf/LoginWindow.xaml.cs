@@ -11,12 +11,16 @@ using Microsoft.AppCenter.Crashes;
 using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Extensions;
 using MvpApi.Services.Apis;
-using MvpApi.Services.Utilities;
+//using MvpApi.Services.Utilities;
 using MvpApi.Wpf.Helpers;
 using Newtonsoft.Json;
 using Telerik.Windows.Controls;
 using Telerik.Windows.Controls.SplashScreen;
 using Analytics = Microsoft.AppCenter.Analytics.Analytics;
+using System.Security.Cryptography;
+using System.IO;
+using System.Text;
+using System.Linq;
 
 namespace MvpApi.Wpf
 {
@@ -31,9 +35,16 @@ namespace MvpApi.Wpf
 
         private readonly Action _loginCompleted;
 
+        private readonly string _appDataFolder;
+        private readonly byte[] _symmetricKey;
+        private readonly byte[] _initializationVector;
+
         public LoginWindow()
         {
             InitializeComponent();
+            var keyGenerator = new Rfc2898DeriveBytes("b78BfJKEs7g", Encoding.ASCII.GetBytes("b78BfJKEs7g"));
+            _symmetricKey = keyGenerator.GetBytes(32);
+            _initializationVector = keyGenerator.GetBytes(16);
         }
 
         /// <summary>
@@ -43,6 +54,9 @@ namespace MvpApi.Wpf
         public LoginWindow(Action loginCompleted)
         {
             InitializeComponent();
+            var keyGenerator = new Rfc2898DeriveBytes("b78BfJKEs7g", Encoding.ASCII.GetBytes("b78BfJKEs7g"));
+            _symmetricKey = keyGenerator.GetBytes(32);
+            _initializationVector = keyGenerator.GetBytes(16);
             _loginCompleted = loginCompleted;
         }
 
@@ -83,7 +97,7 @@ namespace MvpApi.Wpf
 
         public async Task SignInAsync()
         {
-            var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
+            var refreshToken = LoadToken("refresh_token");
 
             // If refresh token is available, the user has previously been logged in and we can get a refreshed access token immediately
             if (!string.IsNullOrEmpty(refreshToken))
@@ -93,7 +107,9 @@ namespace MvpApi.Wpf
                 if (!string.IsNullOrEmpty(authorizationHeader))
                 {
                     Analytics.TrackEvent("LoginWindow SignInAsync - Seamless Signin Achieved");
+
                     await CompleteSignInAsync(authorizationHeader);
+
                     return;
                 }
             }
@@ -101,9 +117,10 @@ namespace MvpApi.Wpf
             // important we let this fall through to avoid multiple else statements
             Analytics.TrackEvent("LoginWindow SignInAsync - Manual Signin Required");
 
+            AuthWebView.Source = _signInUri;
+
             // Needs fresh login, navigate to sign in page
             this.ShowDialog();
-            AuthWebView.Source = _signInUri;
         }
 
         public async Task SignOutAsync()
@@ -119,8 +136,8 @@ namespace MvpApi.Wpf
 
                 // Erase cached tokens
                 //ViewModel.IsBusyMessage = "deleting cache files...";
-                StorageHelpers.Instance.DeleteToken("access_token");
-                StorageHelpers.Instance.DeleteToken("refresh_token");
+                DeleteToken("access_token");
+                DeleteToken("refresh_token");
 
                 // Clean up profile objects
                 ToggleBusy("resetting profile...");
@@ -151,6 +168,7 @@ namespace MvpApi.Wpf
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
         public async Task InitializeMvpApiAsync(string authorizationHeader)
         {
             if (App.ApiService != null)
@@ -240,11 +258,11 @@ namespace MvpApi.Wpf
                 if (tokenData.ContainsKey("access_token"))
                 {
                     // Store the expiration time of the token, currently 3600 seconds (an hour)
-                    StorageHelpers.Instance.SaveSetting("expires_in", tokenData["expires_in"]);
+                    SaveSetting("expires_in", tokenData["expires_in"]);
 
                     // Store tokens (NOTE: The tokens are encrypted with Rijindel before storing in LocalFolder)
-                    StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
-                    StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
+                    StoreToken("access_token", tokenData["access_token"]);
+                    StoreToken("refresh_token", tokenData["refresh_token"]);
 
                     // We need to prefix the access token with the token type for the auth header. 
                     // Currently this is always "bearer", doing this to be more future proof
@@ -278,5 +296,180 @@ namespace MvpApi.Wpf
 
             return authorizationHeader;
         }
+
+        #region Encryption methods
+
+        public bool SaveSetting(string key, string value)
+        {
+            try
+            {
+                var filePath = Path.Combine(_appDataFolder, "settings.json");
+
+                Dictionary<string, string> settings = null;
+
+                if (File.Exists(filePath))
+                {
+                    var json = "";
+                    json = File.ReadAllText(filePath);
+                    settings = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                }
+                else
+                {
+                    settings = new Dictionary<string, string>();
+                }
+
+                settings[key] = value;
+
+                var updatedJson = JsonConvert.SerializeObject(settings);
+
+                File.WriteAllText(filePath, updatedJson);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public string LoadSetting(string key)
+        {
+            try
+            {
+                var filePath = Path.Combine(_appDataFolder, "settings.json");
+
+                if (File.Exists(filePath))
+                {
+                    var json = File.ReadAllText(filePath);
+                    var settings = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    return settings.ContainsKey(key) ? settings[key] : null;
+                }
+                else
+                {
+                    var settings = new Dictionary<string, string>();
+                    var json = JsonConvert.SerializeObject(settings);
+                    File.WriteAllText(filePath, json);
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
+        public bool StoreToken(string key, string value)
+        {
+            try
+            {
+                var filePath = Path.Combine(_appDataFolder, $"{key}.txt");
+                var encryptedToken = EncryptString(value);
+
+                File.WriteAllText(filePath, encryptedToken);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"StoreToken Exception: {e}");
+                return false;
+            }
+        }
+
+        public string LoadToken(string key)
+        {
+            try
+            {
+                var filePath = Path.Combine(_appDataFolder, $"{key}.txt");
+
+                if (File.Exists(filePath))
+                {
+                    var storedValue = File.ReadAllText(filePath);
+                    var decryptedToken = DecryptString(storedValue);
+                    return decryptedToken;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"LoadToken Exception: {e}");
+                return null;
+            }
+        }
+
+        public bool DeleteToken(string key)
+        {
+            try
+            {
+                var filePath = Path.Combine(_appDataFolder, $"{key}.txt");
+
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"DeleteToken Exception: {e}");
+                return false;
+            }
+        }
+
+        private string EncryptString(string inputText)
+        {
+            var textBytes = Encoding.Unicode.GetBytes(inputText);
+            var encryptedBytes = EncryptBytes(textBytes);
+
+            Debug.WriteLine($"EncryptString complete: {encryptedBytes.Length} bytes");
+
+            return Convert.ToBase64String(encryptedBytes);
+        }
+
+        private string DecryptString(string encryptedText)
+        {
+            // NOTE: This string is encrypted first, THEN converted to Base64 (not just obfuscated as Base64)
+            var encryptedBytes = Convert.FromBase64String(encryptedText);
+            var decryptedBytes = DecryptBytes(encryptedBytes);
+
+            Debug.WriteLine($"DecryptString complete: {decryptedBytes.Length} bytes");
+            return Encoding.Unicode.GetString(decryptedBytes, 0, decryptedBytes.Length);
+        }
+
+        private byte[] EncryptBytes(byte[] unencryptedData)
+        {
+            // I chose Rijndael instead of AES because of it's support for larger block size (AES only support 128)
+            using (var cipher = new RijndaelManaged { Key = _symmetricKey, IV = _initializationVector })
+            using (var cryptoTransform = cipher.CreateEncryptor())
+            using (var memoryStream = new MemoryStream())
+            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write))
+            {
+                cryptoStream.Write(unencryptedData, 0, unencryptedData.Length);
+                cryptoStream.FlushFinalBlock();
+                var encryptedBytes = memoryStream.ToArray();
+                Debug.WriteLine($"EncryptBytes complete: {encryptedBytes.Length} bytes");
+                return encryptedBytes;
+            }
+        }
+
+        private byte[] DecryptBytes(byte[] encryptedBytes)
+        {
+            using (var cipher = new RijndaelManaged())
+            using (var cryptoTransform = cipher.CreateDecryptor(_symmetricKey, _initializationVector))
+            using (var memoryStream = new MemoryStream(encryptedBytes))
+            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Read))
+            {
+                byte[] decryptedBytes = new byte[encryptedBytes.Length];
+                int bytesRead = cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);
+
+                // Note - I'm using Take() to clean up junk bytes at the end of the array
+                return decryptedBytes.Take(bytesRead).ToArray();
+            }
+        }
+
+        #endregion
     }
 }

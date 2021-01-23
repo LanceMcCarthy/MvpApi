@@ -3,7 +3,6 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Crashes;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Data;
-using MvpApi.Services.Utilities;
 using Telerik.Windows.Controls;
 using Telerik.Windows.Controls.SplashScreen;
 
@@ -40,7 +39,7 @@ namespace MvpApi.Wpf
 
             RadSplashScreenManager.Show();
 
-            var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
+            var refreshToken = MainLoginWindow.LoadToken("refresh_token");
 
             // We have a refresh token from a previous session
             if (!string.IsNullOrEmpty(refreshToken))
