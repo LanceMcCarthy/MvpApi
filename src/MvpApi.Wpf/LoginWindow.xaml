@@ -6,20 +6,9 @@
         xmlns:local="clr-namespace:MvpApi.Wpf"
         xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
         mc:Ignorable="d"
-        Title="LoginWindow" Height="600" Width="400" >
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        
-        <WebBrowser x:Name="AuthWebView"
-                    Navigated="WebBrowser_OnNavigated"/>
-
-        <TextBlock x:Name="StatusTextBlock"
-                   Text="Hello"
-                   HorizontalAlignment="Center"
-                   Margin="5"
-                   Grid.Row="1"/>
-    </Grid>
+        Title="LoginWindow"
+        Height="600" 
+        Width="400" >
+    <WebBrowser x:Name="AuthWebView"
+                Navigated="WebBrowser_OnNavigated" />
 </Window>
