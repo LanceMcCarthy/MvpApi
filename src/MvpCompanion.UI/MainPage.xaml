@@ -1,0 +1,46 @@
+﻿<Page x:Class="MvpCompanion.UI.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:MvpCompanion.UI"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      mc:Ignorable="d"
+      xmlns:telerik="using:Telerik.UI.Xaml.Controls"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <telerik:RadRibbonView x:Name="xRibbon"
+                               ApplicationName="Ribbon Test Title"
+                               ApplicationButtonIcon="globe"
+                               ShowLayoutModeButton="True">
+            <telerik:RadRibbonView.QuickAccessToolBar>
+                <telerik:QuickAccessToolBar>
+                    <telerik:RadRibbonButton SmallIcon="Undo" />
+                    <telerik:RadRibbonButton SmallIcon="Redo" />
+                </telerik:QuickAccessToolBar>
+            </telerik:RadRibbonView.QuickAccessToolBar>
+            <telerik:RadRibbonTab Header="Home">
+                <telerik:RadRibbonGroup Header="Clipboard"
+                                        DialogLauncherVisibility="Visible">
+                    <telerik:RadRibbonButton LargeIcon="Cut"
+                                             Size="Large"
+                                             Text="Cut" />
+                    <telerik:RadRibbonButton LargeIcon="Copy"
+                                             Size="Large"
+                                             Text="Copy" />
+                    <telerik:RadRibbonButton LargeIcon="Paste"
+                                             Size="Large"
+                                             Text="Paste" />
+                </telerik:RadRibbonGroup>
+                <telerik:RadRibbonTab.SimplifiedItems>
+                    <telerik:RadRibbonGroup>
+                        <telerik:RadRibbonButton SmallIcon="Cut" />
+                        <telerik:RadRibbonButton SmallIcon="Copy" />
+                        <telerik:RadRibbonButton SmallIcon="Paste" />
+                    </telerik:RadRibbonGroup>
+                </telerik:RadRibbonTab.SimplifiedItems>
+            </telerik:RadRibbonTab>
+            <telerik:RadRibbonTab Header="Settings" />
+        </telerik:RadRibbonView>
+    </Grid>
+</Page>
