@@ -3,6 +3,7 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Crashes;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Data;
+using MvpApi.Services.Utilities;
 using Telerik.Windows.Controls;
 using Telerik.Windows.Controls.SplashScreen;
 
@@ -32,14 +33,12 @@ namespace MvpApi.Wpf
 
             ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Footer = welcomeMessage.Message;
             ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).HorizontalFooterAlignment = HorizontalAlignment.Center;
-
             ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).ImagePath = "/MvpApi.Wpf;component/Images/HeroBackground.png";
             ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "starting up...";
 
-
             RadSplashScreenManager.Show();
 
-            var refreshToken = MainLoginWindow.LoadToken("refresh_token");
+            var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
 
             // We have a refresh token from a previous session
             if (!string.IsNullOrEmpty(refreshToken))
@@ -48,7 +47,7 @@ namespace MvpApi.Wpf
 
                 ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "Signing in...";
 
-                var authorizationHeader = await MainLoginWindow.RequestAuthorizationAsync(refreshToken);
+                var authorizationHeader = await LoginWindow.RequestAuthorizationAsync(refreshToken);
 
                 // If the bearer token was returned
                 if (!string.IsNullOrEmpty(authorizationHeader))

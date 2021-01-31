@@ -16,43 +16,35 @@ using MvpApi.Wpf.Helpers;
 using Newtonsoft.Json;
 using Telerik.Windows.Controls;
 using Telerik.Windows.Controls.SplashScreen;
-using Analytics = Microsoft.AppCenter.Analytics.Analytics;
 
 namespace MvpApi.Wpf
 {
     public partial class LoginWindow : Window
     {
-        private static readonly string _scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
-        private static readonly string _clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
-        private readonly string _redirectUrl = "https://login.live.com/oauth20_desktop.srf";
-        private readonly string _accessTokenUrl = "https://login.live.com/oauth20_token.srf";
-        private readonly Uri _signInUri = new Uri($"https://login.live.com/oauth20_authorize.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={_scope}");
-        private readonly Uri _signOutUri = new Uri($"https://login.live.com/oauth20_logout.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf");
+        private static readonly string Scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
+        private static readonly string ClientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
+        private const string RedirectUrl = "https://login.live.com/oauth20_desktop.srf";
+        private const string AccessTokenUrl = "https://login.live.com/oauth20_token.srf";
+        private readonly Uri _signInUri = new ($"https://login.live.com/oauth20_authorize.srf?client_id={ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={Scope}");
+        private readonly Uri _signOutUri = new ($"https://login.live.com/oauth20_logout.srf?client_id={ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf");
 
         private readonly Action _loginCompleted;
-
-        //private readonly string _appDataFolder;
-        //private readonly byte[] _symmetricKey;
-        //private readonly byte[] _initializationVector;
 
         public LoginWindow()
         {
             InitializeComponent();
         }
 
-        /// <summary>
-        /// Initialize with a callback that invokes when login completes
-        /// </summary>
-        /// <param name="loginCompleted"></param>
         public LoginWindow(Action loginCompleted)
         {
             InitializeComponent();
             _loginCompleted = loginCompleted;
         }
 
-        private void ToggleBusy(string message, bool isBusy = true)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
+        private void UpdateBusyIndicatorMessage(string message)
         {
-            this.Title = message;
+            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = message;
         }
 
         private async Task CompleteSignInAsync(string authorizationHeader)
@@ -61,7 +53,7 @@ namespace MvpApi.Wpf
 
             _loginCompleted?.Invoke();
 
-            this.Hide();
+            Hide();
         }
 
         private async void WebBrowser_OnNavigated(object sender, NavigationEventArgs e)
@@ -95,7 +87,7 @@ namespace MvpApi.Wpf
 
                 if (!string.IsNullOrEmpty(authorizationHeader))
                 {
-                    Analytics.TrackEvent("LoginWindow SignInAsync - Seamless Signin Achieved");
+                    Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignInAsync - Seamless Signin Achieved");
 
                     await CompleteSignInAsync(authorizationHeader);
 
@@ -104,37 +96,36 @@ namespace MvpApi.Wpf
             }
 
             // important we let this fall through to avoid multiple else statements
-            Analytics.TrackEvent("LoginWindow SignInAsync - Manual Signin Required");
+            Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignInAsync - Manual Signin Required");
 
             AuthWebView.Source = _signInUri;
 
             // Needs fresh login, navigate to sign in page
-            this.ShowDialog();
+            ShowDialog();
         }
 
         public async Task SignOutAsync()
         {
-            Analytics.TrackEvent("LoginWindow SignOutAsync");
+            Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignOutAsync");
 
-            this.Show();
+            Show();
 
             try
             {
                 // Indicate to user we are signing out
-                ToggleBusy("logging out...");
+                UpdateBusyIndicatorMessage("logging out...");
 
                 // Erase cached tokens
-                //ViewModel.IsBusyMessage = "deleting cache files...";
                 StorageHelpers.Instance.DeleteToken("access_token");
                 StorageHelpers.Instance.DeleteToken("refresh_token");
 
                 // Clean up profile objects
-                ToggleBusy("resetting profile...");
+                UpdateBusyIndicatorMessage("resetting profile...");
                 App.ApiService.Mvp = null;
                 App.ApiService.ProfileImagePath = "";
 
                 // Delete profile photo file
-                ToggleBusy("deleting profile photo file...");
+                UpdateBusyIndicatorMessage("deleting profile photo file...");
 
                 var imageFile = await ApplicationData.Current.LocalFolder.TryGetItemAsync("ProfilePicture.jpg");
                 if (imageFile != null) await imageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
@@ -147,7 +138,7 @@ namespace MvpApi.Wpf
             finally
             {
                 // Hide busy indicator
-                ToggleBusy("", false);
+                UpdateBusyIndicatorMessage("");
 
                 // Toggle flag
                 App.ApiService.IsLoggedIn = false;
@@ -175,20 +166,19 @@ namespace MvpApi.Wpf
             App.ApiService.IsLoggedIn = true;
 
             // Get MVP profile
-            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "downloading profile info...";
+            UpdateBusyIndicatorMessage("downloading profile info...");
             App.ApiService.Mvp = await App.ApiService.GetProfileAsync();
 
             // Get MVP profile image
-            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "downloading profile image...";
+            UpdateBusyIndicatorMessage("downloading profile image...");
             App.ApiService.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
-
-            ((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = "";
         }
 
         private async void ApiService_AccessTokenExpired(object sender, ApiServiceEventArgs e)
         {
             if (e.IsTokenRefreshNeeded)
             {
+                UpdateBusyIndicatorMessage("TOKEN EXPIRED! Refreshing...");
                 await SignInAsync();
             }
             else
@@ -197,7 +187,7 @@ namespace MvpApi.Wpf
             }
         }
 
-        private async void ApiService_RequestErrorOccurred(object sender, ApiServiceEventArgs e)
+        private static async void ApiService_RequestErrorOccurred(object sender, ApiServiceEventArgs e)
         {
             var message = "Unknown Server Error";
 
@@ -213,7 +203,7 @@ namespace MvpApi.Wpf
             await new MessageDialog(message, "MVP API Request Error").ShowAsync();
         }
 
-        public async Task<string> RequestAuthorizationAsync(string authCode, bool isRefresh = false)
+        public static async Task<string> RequestAuthorizationAsync(string authCode, bool isRefresh = false)
         {
             var authorizationHeader = "";
 
@@ -224,17 +214,17 @@ namespace MvpApi.Wpf
                 // Construct the Form content
                 var postContent = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
                 {
-                    new KeyValuePair<string, string>("client_id", _clientId),
-                    new KeyValuePair<string, string>("grant_type", isRefresh ? "refresh_token" : "authorization_code"),
-                    new KeyValuePair<string, string>(isRefresh ? "refresh_token" : "code", authCode.Split('&')[0]),
-                    new KeyValuePair<string, string>("redirect_uri", _redirectUrl)
+                    new ("client_id", ClientId),
+                    new ("grant_type", isRefresh ? "refresh_token" : "authorization_code"),
+                    new (isRefresh ? "refresh_token" : "code", authCode.Split('&')[0]),
+                    new ("redirect_uri", RedirectUrl)
                 });
 
                 // Variable to hold the response data
-                var responseTxt = "";
+                string responseTxt;
 
                 // Post the Form data
-                using (var response = await client.PostAsync(new Uri(_accessTokenUrl), postContent))
+                using (var response = await client.PostAsync(new Uri(AccessTokenUrl), postContent))
                 {
                     // Read the response
                     responseTxt = await response.Content.ReadAsStringAsync();
@@ -270,14 +260,13 @@ namespace MvpApi.Wpf
 
                 if (ex.Message.Contains("401"))
                 {
-                    //TODO consider another message HTTP specific errors
+                    //TODO consider another message for HTTP specific errors
                 }
 
                 Debug.WriteLine($"LoginWindow HttpRequestException: {ex}");
             }
             catch (Exception ex)
             {
-
                 Crashes.TrackError(ex);
 
                 await ex.LogExceptionWithUserMessage();

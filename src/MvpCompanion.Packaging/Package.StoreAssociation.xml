@@ -369,6 +369,7 @@
   <AccountPackageIdentityNames>
     <MainPackageIdentityName>61469LanceLotSoftware.Barcodes</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.Strobe</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.AllAboutBoobs</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.ArtGalleryCRMBeta</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.AwesomeBand</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.AwesomeBandBackgrounds</MainPackageIdentityName>
@@ -382,6 +383,7 @@
     <MainPackageIdentityName>61469LanceLotSoftware.DVLUP</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.Fail</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.FantasyFootballFeeds</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.Frisky</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.FundRunner</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.GIFie</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.GraceHouse</MainPackageIdentityName>
@@ -392,6 +394,8 @@
     <MainPackageIdentityName>61469LanceLotSoftware.InstaLockscreen</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.InventoryScanner</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.iSmack</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.KissDictionary</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.KissList</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.LancelotSoftware</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.MediaFileManager</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.NetdunioNinja</MainPackageIdentityName>
@@ -426,6 +430,41 @@
         <PackageArchitecture>Arm</PackageArchitecture>
         <PackageMaxArchitectureVersion>1.9.2.0</PackageMaxArchitectureVersion>
       </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.2.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.2.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.2.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.2.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.2.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.2.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.2.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
     </BundleInfo>
     <BundleInfo>
       <PackageInfo>
@@ -441,6 +480,41 @@
       <PackageInfo>
         <OsMinVersion>0.0.0.0</OsMinVersion>
         <PackageArchitecture>Arm</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.5.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.5.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.5.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.5.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.5.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.5.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>1.9.5.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
         <PackageMaxArchitectureVersion>1.9.5.0</PackageMaxArchitectureVersion>
       </PackageInfo>
     </BundleInfo>

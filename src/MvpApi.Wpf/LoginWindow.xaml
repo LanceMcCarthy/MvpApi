@@ -4,11 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MvpApi.Wpf"
-        xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
         mc:Ignorable="d"
         Title="LoginWindow"
-        Height="600" 
-        Width="400" >
-    <WebBrowser x:Name="AuthWebView"
-                Navigated="WebBrowser_OnNavigated" />
+        Height="600"
+        Width="400">
+    <Grid>
+        <WebBrowser x:Name="AuthWebView"
+                    Navigated="WebBrowser_OnNavigated" />
+    </Grid>
 </Window>
