@@ -37,5 +37,10 @@ namespace MvpApi.Wpf.Views
         {
             
         }
+
+        private async void LoginButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            await App.MainLoginWindow.SignInAsync();
+        }
     }
 }

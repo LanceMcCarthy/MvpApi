@@ -19,6 +19,44 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Images\4starStar.png" />
+    <None Remove="Images\CoffeeKudo.png" />
+    <None Remove="Images\DinnerKudo.png" />
+    <None Remove="Images\HeroBackground.png" />
+    <None Remove="Images\LunchKudo.png" />
+    <None Remove="Images\MvpCompanionIcon.png" />
+    <None Remove="Images\MvpIcon.png" />
+    <None Remove="Images\VideoAd.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Images\4starStar.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\CoffeeKudo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\DinnerKudo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\HeroBackground.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\LunchKudo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MvpCompanionIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\MvpIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\VideoAd.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommonHelpers" Version="1.1.2" />
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.1.0" />
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.1.0" />
