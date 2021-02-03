@@ -1,5 +1,4 @@
-﻿using Microsoft.Services.Store.Engagement;
-using MvpApi.Common.Models;
+﻿using MvpApi.Common.Models;
 using MvpCompanion.UI.Helpers;
 using Newtonsoft.Json.Linq;
 using System;
@@ -13,18 +12,19 @@ using Windows.Foundation.Metadata;
 using Windows.Services.Store;
 using Windows.UI.Core;
 using Windows.UI.Popups;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
-using VungleSDK;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
+using CommonHelpers.Common;
+//using VungleSDK;
 
 namespace MvpCompanion.UI.ViewModels
 {
-    public class KudosViewModel : PageViewModelBase
+    public class KudosViewModel : ViewModelBase
     {
         private StoreContext _context;
         private Visibility _feedbackHubButtonVisibility;
-        VungleAd sdkInstance;
+        //VungleAd sdkInstance;
         private string vungleAppId = "5f765c14d870a360a1d6f906";
         private string vungleAdPlacementId = "KUDOSPAGEINTERSTITIAL-9395221";
 
@@ -42,15 +42,16 @@ namespace MvpCompanion.UI.ViewModels
         public Visibility FeedbackHubButtonVisibility
         {
             get => _feedbackHubButtonVisibility;
-            set => Set(ref _feedbackHubButtonVisibility, value);
+            set => SetProperty(ref _feedbackHubButtonVisibility, value);
         }
 
         public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
         {
             if (!(e.ClickedItem is Kudos kudo)) return;
 
-            if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                StoreServicesCustomEventLogger.GetDefault().Log($"{kudo.Title} Kudos Item Selected");
+            // TODO Store services
+            //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+            //    StoreServicesCustomEventLogger.GetDefault().Log($"{kudo.Title} Kudos Item Selected");
 
             if (!string.IsNullOrEmpty(kudo.StoreId))
             {
@@ -70,10 +71,10 @@ namespace MvpCompanion.UI.ViewModels
                 }
                 else
                 {
-                    AdConfig adConfig = new AdConfig();
-                    adConfig.SoundEnabled = false;
+                    //AdConfig adConfig = new AdConfig();
+                    //adConfig.SoundEnabled = false;
 
-                    sdkInstance.PlayAdAsync(adConfig, vungleAdPlacementId);
+                    //await sdkInstance.PlayAdAsync(adConfig, vungleAdPlacementId);
                 }
             }
         }
@@ -189,42 +190,42 @@ namespace MvpCompanion.UI.ViewModels
             }
         }
 
-        private async void SdkInstance_OnAdPlayableChanged(object sender, AdPlayableEventArgs e)
-        {
-            Debug.WriteLine($"AdPlayable changed: {e.Placement}, Playable: {e.AdPlayable}");
+        //private async void SdkInstance_OnAdPlayableChanged(object sender, AdPlayableEventArgs e)
+        //{
+        //    Debug.WriteLine($"AdPlayable changed: {e.Placement}, Playable: {e.AdPlayable}");
 
-            var kudo = KudosCollection.FirstOrDefault(a => a.Title == "Video Ad");
+        //    var kudo = KudosCollection.FirstOrDefault(a => a.Title == "Video Ad");
 
-            await CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                if (kudo != null)
-                {
-                    kudo.IsBusy = !e.AdPlayable;
-                }
-            });
-        }
+        //    await CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+        //    {
+        //        if (kudo != null)
+        //        {
+        //            kudo.IsBusy = !e.AdPlayable;
+        //        }
+        //    });
+        //}
 
         #region Navigation
 
-        public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
-        {
-            FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
-                ? Visibility.Visible
-                : Visibility.Collapsed;
+        //public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        //{
+        //    FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
+        //        ? Visibility.Visible
+        //        : Visibility.Collapsed;
 
-            sdkInstance = AdFactory.GetInstance(vungleAppId);
-            sdkInstance.OnAdPlayableChanged += SdkInstance_OnAdPlayableChanged;
-            sdkInstance.LoadAd(vungleAdPlacementId);
+        //    sdkInstance = AdFactory.GetInstance(vungleAppId);
+        //    sdkInstance.OnAdPlayableChanged += SdkInstance_OnAdPlayableChanged;
+        //    sdkInstance.LoadAd(vungleAdPlacementId);
 
-            return base.OnNavigatedToAsync(parameter, mode, state);
-        }
+        //    return base.OnNavigatedToAsync(parameter, mode, state);
+        //}
 
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            sdkInstance.OnAdPlayableChanged -= SdkInstance_OnAdPlayableChanged;
+        //public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+        //{
+        //    sdkInstance.OnAdPlayableChanged -= SdkInstance_OnAdPlayableChanged;
 
-            return base.OnNavigatedFromAsync(pageState, suspending);
-        }
+        //    return base.OnNavigatedFromAsync(pageState, suspending);
+        //}
 
         #endregion
     }

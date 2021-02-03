@@ -1,6 +1,6 @@
-﻿using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Microsoft.Toolkit.Uwp.Connectivity;
+﻿using Microsoft.Toolkit.Uwp.Connectivity;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.Extensions;
 
@@ -13,7 +13,7 @@ namespace MvpCompanion.UI.Dialogs
             typeof(ContributionsModel),
             typeof(ContributionEditorDialog),
             new PropertyMetadata(default(ContributionsModel)));
-        
+
         public ContributionsModel ContributionResult
         {
             get => (ContributionsModel)GetValue(ContributionResultProperty);
@@ -70,7 +70,7 @@ namespace MvpCompanion.UI.Dialogs
                 ViewModel.WarningMessage = "No Internet Available";
             }
         }
-        
+
         private async void SaveButton_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             var deferral = args.GetDeferral();

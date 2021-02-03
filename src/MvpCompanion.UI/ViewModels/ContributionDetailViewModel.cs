@@ -8,24 +8,20 @@ using Windows.ApplicationModel;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.UI.Popups;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using CommonHelpers.Mvvm;
-using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpCompanion.UI.Dialogs;
 using MvpCompanion.UI.Extensions;
 using MvpCompanion.UI.Helpers;
 using MvpCompanion.UI.Views;
-using Template10.Common;
-using Template10.Services.NavigationService;
-using Template10.Utils;
+using CommonHelpers.Common;
 
 namespace MvpCompanion.UI.ViewModels
 {
-    public class ContributionDetailViewModel : PageViewModelBase
+    public class ContributionDetailViewModel : ViewModelBase
     {
         #region Fields
 
@@ -63,7 +59,7 @@ namespace MvpCompanion.UI.ViewModels
         public ContributionsModel SelectedContribution
         {
             get => _selectedContribution;
-            set => Set(ref _selectedContribution, value);
+            set => SetProperty(ref _selectedContribution, value);
         }
         
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
@@ -73,67 +69,67 @@ namespace MvpCompanion.UI.ViewModels
         public bool IsSelectedContributionDirty
         {
             get => _isSelectedContributionDirty;
-            set => Set(ref _isSelectedContributionDirty, value);
+            set => SetProperty(ref _isSelectedContributionDirty, value);
         }
 
         public string AnnualQuantityHeader
         {
             get => _annualQuantityHeader;
-            set => Set(ref _annualQuantityHeader, value);
+            set => SetProperty(ref _annualQuantityHeader, value);
         }
 
         public string SecondAnnualQuantityHeader
         {
             get => _secondAnnualQuantityHeader;
-            set => Set(ref _secondAnnualQuantityHeader, value);
+            set => SetProperty(ref _secondAnnualQuantityHeader, value);
         }
 
         public string AnnualReachHeader
         {
             get => _annualReachHeader;
-            set => Set(ref _annualReachHeader, value);
+            set => SetProperty(ref _annualReachHeader, value);
         }
 
         public string UrlHeader
         {
             get => _urlHeader;
-            set => Set(ref _urlHeader, value);
+            set => SetProperty(ref _urlHeader, value);
         }
 
         public bool IsUrlRequired
         {
             get => _isUrlRequired;
-            set => Set(ref _isUrlRequired, value);
+            set => SetProperty(ref _isUrlRequired, value);
         }
 
         public bool IsAnnualQuantityRequired
         {
             get => _isAnnualQuantityRequired;
-            set => Set(ref _isAnnualQuantityRequired, value);
+            set => SetProperty(ref _isAnnualQuantityRequired, value);
         }
 
         public bool IsSecondAnnualQuantityRequired
         {
             get => _isSecondAnnualQuantityRequired;
-            set => Set(ref _isSecondAnnualQuantityRequired, value);
+            set => SetProperty(ref _isSecondAnnualQuantityRequired, value);
         }
 
         public bool IsAnnualReachRequired
         {
             get => _isAnnualReachRequired;
-            set => Set(ref _isAnnualReachRequired, value);
+            set => SetProperty(ref _isAnnualReachRequired, value);
         }
 
         public bool CanSave
         {
             get => _canSave;
-            set => Set(ref _canSave, value);
+            set => SetProperty(ref _canSave, value);
         }
 
         public string WarningMessage
         {
             get => _warningMessage;
-            set => Set(ref _warningMessage, value);
+            set => SetProperty(ref _warningMessage, value);
         }
 
         public bool IsAdditionalAreasReady { get; set; }
@@ -212,7 +208,7 @@ namespace MvpCompanion.UI.ViewModels
             // Quality assurance, only logs a successful or failed upload.
             if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
             {
-                StoreServicesCustomEventLogger.GetDefault().Log($"EditContribution{SelectedContribution.UploadStatus}");
+                //StoreServicesCustomEventLogger.GetDefault().Log($"EditContribution{SelectedContribution.UploadStatus}");
             }
 
             if (SelectedContribution.UploadStatus == UploadStatus.Success)
@@ -228,8 +224,8 @@ namespace MvpCompanion.UI.ViewModels
                 IsBusyMessage = string.Empty;
                 IsBusy = false;
 
-                if (BootStrapper.Current.NavigationService.CanGoBack)
-                    BootStrapper.Current.NavigationService.GoBack();
+                //if (BootStrapper.Current.NavigationService.CanGoBack)
+                //    BootStrapper.Current.NavigationService.GoBack();
             }
         }
 
@@ -251,8 +247,8 @@ namespace MvpCompanion.UI.ViewModels
                 if (result == true)
                 {
                     // Quality assurance, only logs a successful delete.
-                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                        StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionSuccess");
+                    //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionSuccess");
 
                     // Refresh the main cached contributions list because the details for this item has changed
                     IsBusy = true;
@@ -263,21 +259,21 @@ namespace MvpCompanion.UI.ViewModels
                     IsBusyMessage = string.Empty;
                     IsBusy = false;
 
-                    if (BootStrapper.Current.NavigationService.CanGoBack)
-                        BootStrapper.Current.NavigationService.GoBack();
+                    //if (BootStrapper.Current.NavigationService.CanGoBack)
+                    //    BootStrapper.Current.NavigationService.GoBack();
                 }
                 else
                 {
                     // Quality assurance, only logs a failed delete.
-                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                        StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
+                    //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
                 }
             }
             catch (Exception ex)
             {
                 // Quality assurance, only logs a failed delete.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
+                //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
 
                 await ex.LogExceptionAsync();
             }
@@ -387,20 +383,19 @@ namespace MvpCompanion.UI.ViewModels
             // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
             var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
 
-            areas.ForEach(area =>
+            foreach (var area in areas)
             {
                 CategoryAreas.Add(area);
-            });
-
+            }
 
             IsBusyMessage = "loading visibility options...";
 
             var visibilities = await App.ApiService.GetVisibilitiesAsync();
 
-            visibilities.ForEach(visibility =>
+            foreach (var visibility in visibilities)
             {
                 Visibilities.Add(visibility);
-            });
+            }
         }
 
         public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
@@ -425,126 +420,126 @@ namespace MvpCompanion.UI.ViewModels
 
         #region Navigation
 
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
-        {
-            if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-            {
-                if (BootStrapper.Current.NavigationService.CanGoBack)
-                    BootStrapper.Current.NavigationService.GoBack();
-            }
+        //public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        //{
+        //    if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        //    {
+        //        if (BootStrapper.Current.NavigationService.CanGoBack)
+        //            BootStrapper.Current.NavigationService.GoBack();
+        //    }
 
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
-            {
-                // Verify the user is logged in
-                if (!shellVm.IsLoggedIn)
-                {
-                    IsBusy = true;
-                    IsBusyMessage = "logging in...";
+        //    if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+        //    {
+        //        // Verify the user is logged in
+        //        if (!shellVm.IsLoggedIn)
+        //        {
+        //            IsBusy = true;
+        //            IsBusyMessage = "logging in...";
 
-                    await ShellPage.Instance.SignInAsync();
+        //            await ShellPage.Instance.SignInAsync();
                     
-                    IsBusyMessage = "";
-                    IsBusy = false;
-                }
+        //            IsBusyMessage = "";
+        //            IsBusy = false;
+        //        }
 
-                if (shellVm.IsLoggedIn)
-                {
-                    try
-                    {
-                        IsBusy = true;
+        //        if (shellVm.IsLoggedIn)
+        //        {
+        //            try
+        //            {
+        //                IsBusy = true;
 
-                        // Get the associated lists from the API
-                        await LoadSupportingDataAsync();
+        //                // Get the associated lists from the API
+        //                await LoadSupportingDataAsync();
 
-                        // Read the passed contribution parameter
-                        if (parameter is ContributionsModel param)
-                        {
-                            SelectedContribution = param;
+        //                // Read the passed contribution parameter
+        //                if (parameter is ContributionsModel param)
+        //                {
+        //                    SelectedContribution = param;
 
-                            SelectedContribution.UploadStatus = UploadStatus.None;
+        //                    SelectedContribution.UploadStatus = UploadStatus.None;
 
-                            // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
-                            DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
+        //                    // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
+        //                    DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
 
-                            // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-                            _originalContribution = SelectedContribution.Clone();
+        //                    // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
+        //                    _originalContribution = SelectedContribution.Clone();
 
-                            if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                            {
-                                var td = new TutorialDialog
-                                {
-                                    SettingsKey = "ContributionDetailPageTutorialShown",
-                                    MessageTitle = "Contribution Details",
-                                    Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
-                                              "- Click 'Save' button to save changes.\r\n" +
-                                              "- Click 'Delete' button to permanently delete the contribution.\r\n" +
-                                              "- Click the back button to leave and cancel any changes.\r\n\n" +
-                                              "Note: Pay attention to how the 'required' fields change depending on the technology selection."
-                                };
+        //                    if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+        //                    {
+        //                        var td = new TutorialDialog
+        //                        {
+        //                            SettingsKey = "ContributionDetailPageTutorialShown",
+        //                            MessageTitle = "Contribution Details",
+        //                            Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
+        //                                      "- Click 'Save' button to save changes.\r\n" +
+        //                                      "- Click 'Delete' button to permanently delete the contribution.\r\n" +
+        //                                      "- Click the back button to leave and cancel any changes.\r\n\n" +
+        //                                      "Note: Pay attention to how the 'required' fields change depending on the technology selection."
+        //                        };
 
-                                await td.ShowAsync();
-                            }
-                        }
-                        else
-                        {
-                            await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
+        //                        await td.ShowAsync();
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
 
-                            if (BootStrapper.Current.NavigationService.CanGoBack)
-                                BootStrapper.Current.NavigationService.GoBack();
-                        }
+        //                    if (BootStrapper.Current.NavigationService.CanGoBack)
+        //                        BootStrapper.Current.NavigationService.GoBack();
+        //                }
 
-                        // To prevent accidental back navigation
-                        NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"LoadDataAsync Exception {ex}");
-                    }
-                    finally
-                    {
-                        IsBusyMessage = "";
-                        IsBusy = false;
-                    }
-                }
-            }
-        }
+        //                // To prevent accidental back navigation
+        //                NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Debug.WriteLine($"LoadDataAsync Exception {ex}");
+        //            }
+        //            finally
+        //            {
+        //                IsBusyMessage = "";
+        //                IsBusy = false;
+        //            }
+        //        }
+        //    }
+        //}
 
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            return base.OnNavigatedFromAsync(pageState, suspending);
-        }
+        //public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+        //{
+        //    return base.OnNavigatedFromAsync(pageState, suspending);
+        //}
 
-        public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
-        {
-            NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
+        //public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
+        //{
+        //    NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
 
-            return base.OnNavigatingFromAsync(args);
-        }
+        //    return base.OnNavigatingFromAsync(args);
+        //}
 
-        // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
-        private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
-        {
-            e.Handled = IsSelectedContributionDirty;
+        //// Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
+        //private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
+        //{
+        //    e.Handled = IsSelectedContributionDirty;
             
-            if (IsSelectedContributionDirty)
-            {
-                var md = new MessageDialog("Navigating away now will lose your changes, continue?", "Warning: Unsaved Changes");
-                md.Commands.Add(new UICommand("yes"));
-                md.Commands.Add(new UICommand("no"));
-                md.CancelCommandIndex = 1;
-                md.DefaultCommandIndex = 1;
+        //    if (IsSelectedContributionDirty)
+        //    {
+        //        var md = new MessageDialog("Navigating away now will lose your changes, continue?", "Warning: Unsaved Changes");
+        //        md.Commands.Add(new UICommand("yes"));
+        //        md.Commands.Add(new UICommand("no"));
+        //        md.CancelCommandIndex = 1;
+        //        md.DefaultCommandIndex = 1;
 
-                var result = await md.ShowAsync();
+        //        var result = await md.ShowAsync();
 
-                if (result.Label == "yes")
-                {
-                    if (NavigationService.CanGoBack)
-                    {
-                        NavigationService.GoBack();
-                    }
-                }
-            }
-        }
+        //        if (result.Label == "yes")
+        //        {
+        //            if (NavigationService.CanGoBack)
+        //            {
+        //                NavigationService.GoBack();
+        //            }
+        //        }
+        //    }
+        //}
 
         #endregion
     }

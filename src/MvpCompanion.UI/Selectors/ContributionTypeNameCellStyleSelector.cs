@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
-using Windows.UI;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Shapes;
+using Microsoft.UI;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Shapes;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.Helpers;
 using Telerik.UI.Xaml.Controls.Grid;

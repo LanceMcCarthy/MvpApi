@@ -8,17 +8,18 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.UI.Popups;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.Dialogs;
 using MvpCompanion.UI.Helpers;
 using MvpCompanion.UI.Views;
+using CommonHelpers.Common;
 
 namespace MvpCompanion.UI.ViewModels
 {
-    public class ProfileViewModel : PageViewModelBase
+    public class ProfileViewModel : ViewModelBase
     {
         private MvpApi.Common.Models.ProfileViewModel _mvp;
         private string _profileImagePath;
@@ -40,19 +41,19 @@ namespace MvpCompanion.UI.ViewModels
         public MvpApi.Common.Models.ProfileViewModel Mvp
         {
             get => _mvp;
-            set => Set(ref _mvp, value);
+            set => SetProperty(ref _mvp, value);
         }
 
         public ObservableCollection<OnlineIdentityViewModel> OnlineIdentities
         {
             get => _onlineIdentities ?? (_onlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
-            set => Set(ref _onlineIdentities, value);
+            set => SetProperty(ref _onlineIdentities, value);
         }
 
         public ObservableCollection<OnlineIdentityViewModel> SelectedOnlineIdentities
         {
             get => _selectedOnlineIdentities ?? (_selectedOnlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
-            set => Set(ref _selectedOnlineIdentities, value);
+            set => SetProperty(ref _selectedOnlineIdentities, value);
         }
 
         //public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
@@ -62,7 +63,7 @@ namespace MvpCompanion.UI.ViewModels
         public string ProfileImagePath
         {
             get => _profileImagePath;
-            set => Set(ref _profileImagePath, value);
+            set => SetProperty(ref _profileImagePath, value);
         }
 
         public bool IsMultipleSelectionEnabled
@@ -70,7 +71,7 @@ namespace MvpCompanion.UI.ViewModels
             get => _isMultipleSelectionEnabled;
             set
             {
-                Set(ref _isMultipleSelectionEnabled, value);
+                SetProperty(ref _isMultipleSelectionEnabled, value);
                 
                 ListViewSelectionMode = value
                     ? ListViewSelectionMode.Multiple
@@ -81,13 +82,13 @@ namespace MvpCompanion.UI.ViewModels
         public ListViewSelectionMode ListViewSelectionMode
         {
             get => _listViewSelectionMode;
-            set => Set(ref _listViewSelectionMode, value);
+            set => SetProperty(ref _listViewSelectionMode, value);
         }
 
         public bool AreAppBarButtonsEnabled
         {
             get => _areAppBarButtonsEnabled;
-            set => Set(ref _areAppBarButtonsEnabled, value);
+            set => SetProperty(ref _areAppBarButtonsEnabled, value);
         }
 
         // Methods
@@ -263,41 +264,41 @@ namespace MvpCompanion.UI.ViewModels
 
         #region Navigation
 
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
-        {
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
-            {
-                if (!shellVm.IsLoggedIn)
-                {
-                    IsBusy = true;
-                    IsBusyMessage = "signing in...";
+        //public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        //{
+        //    if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+        //    {
+        //        if (!shellVm.IsLoggedIn)
+        //        {
+        //            IsBusy = true;
+        //            IsBusyMessage = "signing in...";
 
-                    await ShellPage.Instance.SignInAsync();
-                }
+        //            await ShellPage.Instance.SignInAsync();
+        //        }
 
-                this.Mvp = shellVm.Mvp;
-                this.ProfileImagePath = shellVm.ProfileImagePath;
+        //        this.Mvp = shellVm.Mvp;
+        //        this.ProfileImagePath = shellVm.ProfileImagePath;
 
-                await RefreshOnlineIdentitiesAsync();
+        //        await RefreshOnlineIdentitiesAsync();
 
-                //IsBusyMessage = "loading visibility options...";
+        //        //IsBusyMessage = "loading visibility options...";
 
-                //var visibilities = await App.ApiService.GetVisibilitiesAsync();
+        //        //var visibilities = await App.ApiService.GetVisibilitiesAsync();
 
-                //visibilities.ForEach(visibility =>
-                //{
-                //    Visibilities.Add(visibility);
-                //});
+        //        //visibilities.ForEach(visibility =>
+        //        //{
+        //        //    Visibilities.Add(visibility);
+        //        //});
 
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
-        }
+        //        IsBusyMessage = "";
+        //        IsBusy = false;
+        //    }
+        //}
 
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            return base.OnNavigatedFromAsync(pageState, suspending);
-        }
+        //public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+        //{
+        //    return base.OnNavigatedFromAsync(pageState, suspending);
+        //}
 
         #endregion
     }

@@ -3,10 +3,11 @@ using Windows.ApplicationModel;
 using Windows.Storage;
 using MvpApi.Services.Utilities;
 using MvpCompanion.UI.Helpers;
+using CommonHelpers.Common;
 
 namespace MvpCompanion.UI.ViewModels
 {
-    public class ShellViewModel : PageViewModelBase
+    public class ShellViewModel : ViewModelBase
     {
         private MvpApi.Common.Models.ProfileViewModel _mvp;
         private string _profileImagePath;
@@ -33,20 +34,20 @@ namespace MvpCompanion.UI.ViewModels
                 _profileImagePath = value;
 
                 // Manually invoke PropertyChanged to ensure image is reloaded, even if the file path is the same.
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
         public MvpApi.Common.Models.ProfileViewModel Mvp
         {
             get => _mvp;
-            set => Set(ref _mvp, value);
+            set => SetProperty(ref _mvp, value);
         }
 
         public bool IsLoggedIn
         {
             get => _isLoggedIn;
-            set => Set(ref _isLoggedIn, value);
+            set => SetProperty(ref _isLoggedIn, value);
         }
         
         public bool UseBetaEditor
@@ -66,7 +67,7 @@ namespace MvpCompanion.UI.ViewModels
             }
             set
             {
-                if (Set(ref _useBetaEditor, value))
+                if (SetProperty(ref _useBetaEditor, value))
                 {
                     ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
                 }
@@ -76,13 +77,13 @@ namespace MvpCompanion.UI.ViewModels
         public DateTime SubmissionStartDate
         {
             get => _submissionStartDate;
-            set => Set(ref _submissionStartDate, value);
+            set => SetProperty(ref _submissionStartDate, value);
         }
 
         public DateTime SubmissionDeadline
         {
             get => _submissionDeadline;
-            set => Set(ref _submissionDeadline, value);
+            set => SetProperty(ref _submissionDeadline, value);
         }
     }
 }

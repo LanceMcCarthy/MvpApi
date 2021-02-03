@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
-using Windows.UI.Xaml.Navigation;
+using Microsoft.UI.Xaml.Navigation;
 using MvpCompanion.UI.Views;
+using CommonHelpers.Common;
 
 namespace MvpCompanion.UI.ViewModels
 {
-    public class SettingsViewModel : PageViewModelBase
+    public class SettingsViewModel : ViewModelBase
     {
         public SettingsViewModel()
         {
@@ -35,26 +36,26 @@ namespace MvpCompanion.UI.ViewModels
             set => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline = value;
         }
 
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
-        {
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
-            {
-                if (!shellVm.IsLoggedIn)
-                {
-                    await ShellPage.Instance.SignInAsync();
-                }
+        //public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        //{
+        //    if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+        //    {
+        //        if (!shellVm.IsLoggedIn)
+        //        {
+        //            await ShellPage.Instance.SignInAsync();
+        //        }
 
-                if (IsBusy)
-                {
-                    IsBusy = false;
-                    IsBusyMessage = "";
-                }
-            }
-        }
+        //        if (IsBusy)
+        //        {
+        //            IsBusy = false;
+        //            IsBusyMessage = "";
+        //        }
+        //    }
+        //}
 
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            return base.OnNavigatedFromAsync(pageState, suspending);
-        }
+        //public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+        //{
+        //    return base.OnNavigatedFromAsync(pageState, suspending);
+        //}
     }
 }

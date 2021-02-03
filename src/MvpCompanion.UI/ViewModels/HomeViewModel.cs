@@ -10,25 +10,24 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.UI.Popups;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Navigation;
-using Microsoft.Services.Store.Engagement;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpCompanion.UI.Common;
-using MvpCompanion.UI.Dialogs;
 using MvpCompanion.UI.Helpers;
 using MvpCompanion.UI.Views;
 using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
-using Template10.Common;
-using Template10.Mvvm;
+using CommonHelpers.Common;
+using CommonHelpers.Mvvm;
+using MvpCompanion.UI.Dialogs;
+using MvpCompanion.UI.Common;
 
 namespace MvpCompanion.UI.ViewModels
 {
-    public class HomeViewModel : PageViewModelBase
+    public class HomeViewModel : ViewModelBase
     {
         #region Fields
 
@@ -74,7 +73,7 @@ namespace MvpCompanion.UI.ViewModels
         public ObservableCollection<ContributionsModel> Contributions
         {
             get => _contributions;
-            set => Set(ref _contributions, value);
+            set => SetProperty(ref _contributions, value);
         }
 
         public ObservableCollection<object> SelectedContributions { get; set; }
@@ -88,7 +87,7 @@ namespace MvpCompanion.UI.ViewModels
             get => _isMultipleSelectionEnabled;
             set
             {
-                Set(ref _isMultipleSelectionEnabled, value);
+                SetProperty(ref _isMultipleSelectionEnabled, value);
 
                 GridSelectionMode = value
                     ? DataGridSelectionMode.Multiple
@@ -99,19 +98,19 @@ namespace MvpCompanion.UI.ViewModels
         public DataGridSelectionMode GridSelectionMode
         {
             get => _gridSelectionMode;
-            set => Set(ref _gridSelectionMode, value);
+            set => SetProperty(ref _gridSelectionMode, value);
         }
 
         public bool AreAppBarButtonsEnabled
         {
             get => _areAppBarButtonsEnabled;
-            set => Set(ref _areAppBarButtonsEnabled, value);
+            set => SetProperty(ref _areAppBarButtonsEnabled, value);
         }
 
         public bool IsInternetDisabled
         {
             get => _isInternetDisabled;
-            set => Set(ref _isInternetDisabled, value);
+            set => SetProperty(ref _isInternetDisabled, value);
         }
 
         #endregion
@@ -120,21 +119,21 @@ namespace MvpCompanion.UI.ViewModels
 
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-            {
-                var editDialog = new ContributionEditorDialog();
+            //if (ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+            //{
+            //    var editDialog = new ContributionEditorDialog();
 
-                await editDialog.ShowAsync();
+            //    await editDialog.ShowAsync();
 
-                if (editDialog.ContributionResult != null)
-                {
-                    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-                }
-            }
-            else
-            {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
-            }
+            //    if (editDialog.ContributionResult != null)
+            //    {
+            //        Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
+            //    }
+            //}
+            //else
+            //{
+            //    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
+            //}
         }
 
         public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
@@ -165,8 +164,8 @@ namespace MvpCompanion.UI.ViewModels
                     var success = await App.ApiService.DeleteContributionAsync(contribution);
 
                     // Quality assurance, only logs a successful or failed delete.
-                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                        StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
+                    //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    //    StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
                 }
 
                 SelectedContributions.Clear();
@@ -198,7 +197,7 @@ namespace MvpCompanion.UI.ViewModels
             // When in single selection mode, go to the selected item's details page
             if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
             {
-                if(ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+                if (ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
                 {
                     var editDialog = new ContributionEditorDialog(contribution);
 
@@ -211,7 +210,8 @@ namespace MvpCompanion.UI.ViewModels
                 }
                 else
                 {
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
+                    //tofo fix nav
+                    //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
                 }
             }
         }
@@ -365,58 +365,58 @@ namespace MvpCompanion.UI.ViewModels
 
         #region Navigation
 
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
-        {
-            IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
+        //public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        //{
+        //    IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
 
-            if (IsInternetDisabled)
-            {
-                await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
-                return;
-            }
+        //    if (IsInternetDisabled)
+        //    {
+        //        await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+        //        return;
+        //    }
 
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
-            {
-                if (!shellVm.IsLoggedIn)
-                {
-                    await ShellPage.Instance.SignInAsync();
-                }
+        //    if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+        //    {
+        //        if (!shellVm.IsLoggedIn)
+        //        {
+        //            await ShellPage.Instance.SignInAsync();
+        //        }
 
-                // Although user should be logged in at this point, still check
-                // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
-                if (shellVm.IsLoggedIn)
-                {
-                    await LoadContributionsAsync();
-                }
+        //        // Although user should be logged in at this point, still check
+        //        // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
+        //        if (shellVm.IsLoggedIn)
+        //        {
+        //            await LoadContributionsAsync();
+        //        }
 
-                if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                {
-                    var td = new TutorialDialog
-                    {
-                        SettingsKey = "HomePageTutorialShown",
-                        MessageTitle = "Home Page",
-                        Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
-                                  "- Group or sort the contributions by any column.\r\n" +
-                                  "- Select a contribution to view its details or edit it.\r\n" +
-                                  "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
-                                  "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
-                    };
+        //        if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+        //        {
+        //            var td = new TutorialDialog
+        //            {
+        //                SettingsKey = "HomePageTutorialShown",
+        //                MessageTitle = "Home Page",
+        //                Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
+        //                          "- Group or sort the contributions by any column.\r\n" +
+        //                          "- Select a contribution to view its details or edit it.\r\n" +
+        //                          "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
+        //                          "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
+        //            };
 
-                    await td.ShowAsync();
-                }
+        //            await td.ShowAsync();
+        //        }
 
-                if (IsBusy)
-                {
-                    IsBusy = false;
-                    IsBusyMessage = "";
-                }
-            }
-        }
+        //        if (IsBusy)
+        //        {
+        //            IsBusy = false;
+        //            IsBusyMessage = "";
+        //        }
+        //    }
+        //}
 
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            return base.OnNavigatedFromAsync(pageState, suspending);
-        }
+        //public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+        //{
+        //    return base.OnNavigatedFromAsync(pageState, suspending);
+        //}
 
         #endregion
     }

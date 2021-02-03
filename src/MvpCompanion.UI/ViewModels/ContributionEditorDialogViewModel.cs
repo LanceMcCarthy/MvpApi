@@ -3,19 +3,18 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.ApplicationModel;
 using Windows.UI.Popups;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Controls;
+using Windows.ApplicationModel;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpCompanion.UI.Extensions;
+//using MvpCompanion.UI.Extensions;
 using MvpCompanion.UI.Helpers;
 using MvpCompanion.UI.Views;
-using Template10.Common;
-using Template10.Mvvm;
-using Template10.Services.PopupService;
-using Template10.Utils;
+using CommonHelpers.Common;
+using CommonHelpers.Mvvm;
+using System.ComponentModel;
+using MvpApi.Common.Extensions;
 
 namespace MvpCompanion.UI.ViewModels
 {
@@ -69,7 +68,7 @@ namespace MvpCompanion.UI.ViewModels
         public ContributionsModel SelectedContribution
         {
             get => _selectedContribution;
-            set => Set(ref _selectedContribution, value);
+            set => SetProperty(ref _selectedContribution, value);
         }
 
         // Data entry control headers, using VM properties to alert validation violations
@@ -77,79 +76,79 @@ namespace MvpCompanion.UI.ViewModels
         public string AnnualQuantityHeader
         {
             get => _annualQuantityHeader;
-            set => Set(ref _annualQuantityHeader, value);
+            set => SetProperty(ref _annualQuantityHeader, value);
         }
 
         public string SecondAnnualQuantityHeader
         {
             get => _secondAnnualQuantityHeader;
-            set => Set(ref _secondAnnualQuantityHeader, value);
+            set => SetProperty(ref _secondAnnualQuantityHeader, value);
         }
 
         public string AnnualReachHeader
         {
             get => _annualReachHeader;
-            set => Set(ref _annualReachHeader, value);
+            set => SetProperty(ref _annualReachHeader, value);
         }
 
         public string UrlHeader
         {
             get => _urlHeader;
-            set => Set(ref _urlHeader, value);
+            set => SetProperty(ref _urlHeader, value);
         }
 
         public bool IsUrlRequired
         {
             get => _isUrlRequired;
-            set => Set(ref _isUrlRequired, value);
+            set => SetProperty(ref _isUrlRequired, value);
         }
 
         public bool IsAnnualQuantityRequired
         {
             get => _isAnnualQuantityRequired;
-            set => Set(ref _isAnnualQuantityRequired, value);
+            set => SetProperty(ref _isAnnualQuantityRequired, value);
         }
 
         public bool IsSecondAnnualQuantityRequired
         {
             get => _isSecondAnnualQuantityRequired;
-            set => Set(ref _isSecondAnnualQuantityRequired, value);
+            set => SetProperty(ref _isSecondAnnualQuantityRequired, value);
         }
 
         public bool IsAnnualReachRequired
         {
             get => _isAnnualReachRequired;
-            set => Set(ref _isAnnualReachRequired, value);
+            set => SetProperty(ref _isAnnualReachRequired, value);
         }
 
         public bool CanSave
         {
             get => _canSave;
-            set => Set(ref _canSave, value);
+            set => SetProperty(ref _canSave, value);
         }
 
         public string WarningMessage
         {
             get => _warningMessage;
-            set => Set(ref _warningMessage, value);
+            set => SetProperty(ref _warningMessage, value);
         }
 
         public bool IsBusy
         {
             get => _isBusy;
-            set => Set(ref _isBusy, value);
+            set => SetProperty(ref _isBusy, value);
         }
 
         public string IsBusyMessage
         {
             get => _isBusyMessage;
-            set => Set(ref _isBusyMessage, value);
+            set => SetProperty(ref _isBusyMessage, value);
         }
         
         public bool EditingExistingContribution
         {
             get => _editingExistingContribution;
-            set => Set(ref _editingExistingContribution, value);
+            set => SetProperty(ref _editingExistingContribution, value);
         }
 
         // Commands
@@ -194,10 +193,11 @@ namespace MvpCompanion.UI.ViewModels
             }
             
             // Manually find the flyout's popup to close it
-            var lv = sender as ListView;
-            var foPresenter = lv?.Parent as FlyoutPresenter;
-            var popup = foPresenter?.Parent as Popup;
-            popup?.Hide();
+            // TODO fix
+            //var lv = sender as ListView;
+            //var foPresenter = lv?.Parent as FlyoutPresenter;
+            //var popup = foPresenter?.Parent as Popup;
+            //popup?.Hide();
         }
 
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
@@ -233,7 +233,8 @@ namespace MvpCompanion.UI.ViewModels
                 SelectedContribution.AdditionalTechnologies.Remove(area);
             }
         }
-        
+
+        // TODO fix
         public async Task OnDialogLoadedAsync()
         {
             if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
@@ -265,10 +266,10 @@ namespace MvpCompanion.UI.ViewModels
 
                         var types = await App.ApiService.GetContributionTypesAsync();
 
-                        types.ForEach(type =>
+                        foreach (var type in types)
                         {
                             Types.Add(type);
-                        });
+                        }
 
                         IsBusyMessage = "loading technologies...";
 
@@ -277,10 +278,10 @@ namespace MvpCompanion.UI.ViewModels
                         // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
                         var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
 
-                        areas.ForEach(area =>
+                        foreach (var area in areas)
                         {
                             CategoryAreas.Add(area);
-                        });
+                        }
 
                         // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
 
@@ -288,10 +289,10 @@ namespace MvpCompanion.UI.ViewModels
 
                         var visibilities = await App.ApiService.GetVisibilitiesAsync();
 
-                        visibilities.ForEach(visibility =>
+                        foreach (var visibility in visibilities)
                         {
                             Visibilities.Add(visibility);
-                        });
+                        }
 
                         // If the contribution object wasn't passed during Dialog creation, setup a blank one.
                         if (SelectedContribution == null)
@@ -307,12 +308,12 @@ namespace MvpCompanion.UI.ViewModels
                                 AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
                             };
                         }
-                        
+
                         // TODO prevent accidental back navigation
-                        if (BootStrapper.Current.NavigationService.FrameFacade != null)
-                        {
-                            BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacade_BackRequested;
-                        }
+                        //if (BootStrapper.Current.NavigationService.FrameFacade != null)
+                        //{
+                        //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacade_BackRequested;
+                        //}
                     }
                     catch (Exception ex)
                     {
@@ -330,10 +331,10 @@ namespace MvpCompanion.UI.ViewModels
 
         public void OnDialogClosingAsync()
         {
-            if (BootStrapper.Current.NavigationService.FrameFacade != null)
-            {
-                BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacade_BackRequested;
-            }
+            //if (BootStrapper.Current.NavigationService.FrameFacade != null)
+            //{
+            //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacade_BackRequested;
+            //}
         }
 
         private async void FrameFacade_BackRequested(object sender, HandledEventArgs e)
@@ -356,7 +357,7 @@ namespace MvpCompanion.UI.ViewModels
                 await ex.LogExceptionAsync();
             }
         }
-        
+
         #endregion
     }
 }

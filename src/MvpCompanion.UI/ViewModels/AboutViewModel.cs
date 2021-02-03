@@ -1,18 +1,17 @@
-﻿using System;
+﻿using CommonHelpers.Common;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Email;
 using Windows.Storage;
 using Windows.UI.Popups;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Navigation;
-using Microsoft.Services.Store.Engagement;
-using MvpCompanion.UI.Views;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace MvpCompanion.UI.ViewModels
 {
-    public class AboutViewModel : PageViewModelBase
+    public class AboutViewModel : ViewModelBase
     {
         private readonly ApplicationDataContainer _roamingSettings;
         private string _appVersion;
@@ -39,7 +38,7 @@ namespace MvpCompanion.UI.ViewModels
 
                 return _appVersion;
             }
-            set => Set(ref _appVersion, value);
+            set => SetProperty(ref _appVersion, value);
         }
 
         public int DaysToKeepErrorLogs
@@ -59,7 +58,7 @@ namespace MvpCompanion.UI.ViewModels
             }
             set
             {
-                Set(ref _daysToKeepErrorLogs, value);
+                SetProperty(ref _daysToKeepErrorLogs, value);
 
                 _roamingSettings.Values["DaysToKeepErrorLogs"] = value;
             }
@@ -68,7 +67,7 @@ namespace MvpCompanion.UI.ViewModels
         public Visibility FeedbackHubButtonVisibility
         {
             get => _feedbackHubButtonVisibility;
-            set => Set(ref _feedbackHubButtonVisibility, value);
+            set => SetProperty(ref _feedbackHubButtonVisibility, value);
         }
 
         //public bool UseBetaEditor
@@ -86,7 +85,7 @@ namespace MvpCompanion.UI.ViewModels
 
         public async void FeedbackButton_Click(object sender, RoutedEventArgs e)
         {
-            await StoreServicesFeedbackLauncher.GetDefault().LaunchAsync();
+            //await StoreServicesFeedbackLauncher.GetDefault().LaunchAsync();
         }
         
         private async Task CreateEmailAsync()
@@ -117,19 +116,19 @@ namespace MvpCompanion.UI.ViewModels
         
         #region Navigation
 
-        public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
-        {
-            FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
-                ? Visibility.Visible 
-                : Visibility.Collapsed;
+        //public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        //{
+        //    FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
+        //        ? Visibility.Visible 
+        //        : Visibility.Collapsed;
             
-            return base.OnNavigatedToAsync(parameter, mode, state);
-        }
+        //    return base.OnNavigatedToAsync(parameter, mode, state);
+        //}
 
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            return base.OnNavigatedFromAsync(pageState, suspending);
-        }
+        //public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+        //{
+        //    return base.OnNavigatedFromAsync(pageState, suspending);
+        //}
 
         #endregion
     }

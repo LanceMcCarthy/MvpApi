@@ -9,26 +9,19 @@ using Windows.ApplicationModel;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.UI.Popups;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
-using Microsoft.Services.Store.Engagement;
-using Microsoft.Toolkit.Uwp.Connectivity;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using MvpApi.Common.Models;
 using MvpApi.Services.Utilities;
-using MvpCompanion.UI.Dialogs;
 using MvpCompanion.UI.Extensions;
 using MvpCompanion.UI.Helpers;
+using CommonHelpers.Mvvm;
 using MvpCompanion.UI.Views;
-using Template10.Common;
-using Template10.Mvvm;
-using Template10.Services.NavigationService;
-using Template10.Utils;
-using ExceptionLogger = MvpCompanion.UI.Helpers.ExceptionLogger;
+using CommonHelpers.Common;
 
 namespace MvpCompanion.UI.ViewModels
 {
-    public class AddContributionsViewModel : PageViewModelBase
+    public class AddContributionsViewModel : ViewModelBase
     {
         #region Fields
         
@@ -82,7 +75,7 @@ namespace MvpCompanion.UI.ViewModels
         public ContributionsModel SelectedContribution
         {
             get => _selectedContribution;
-            set => Set(ref _selectedContribution, value);
+            set => SetProperty(ref _selectedContribution, value);
         }
         
         // Data entry control headers, using VM properties to alert validation violations
@@ -90,67 +83,67 @@ namespace MvpCompanion.UI.ViewModels
         public string AnnualQuantityHeader
         {
             get => _annualQuantityHeader;
-            set => Set(ref _annualQuantityHeader, value);
+            set => SetProperty(ref _annualQuantityHeader, value);
         }
 
         public string SecondAnnualQuantityHeader
         {
             get => _secondAnnualQuantityHeader;
-            set => Set(ref _secondAnnualQuantityHeader, value);
+            set => SetProperty(ref _secondAnnualQuantityHeader, value);
         }
 
         public string AnnualReachHeader
         {
             get => _annualReachHeader;
-            set => Set(ref _annualReachHeader, value);
+            set => SetProperty(ref _annualReachHeader, value);
         }
 
         public string UrlHeader
         {
             get => _urlHeader;
-            set => Set(ref _urlHeader, value);
+            set => SetProperty(ref _urlHeader, value);
         }
 
         public bool IsUrlRequired
         {
             get => _isUrlRequired;
-            set => Set(ref _isUrlRequired, value);
+            set => SetProperty(ref _isUrlRequired, value);
         }
 
         public bool IsAnnualQuantityRequired
         {
             get => _isAnnualQuantityRequired;
-            set => Set(ref _isAnnualQuantityRequired, value);
+            set => SetProperty(ref _isAnnualQuantityRequired, value);
         }
 
         public bool IsSecondAnnualQuantityRequired
         {
             get => _isSecondAnnualQuantityRequired;
-            set => Set(ref _isSecondAnnualQuantityRequired, value);
+            set => SetProperty(ref _isSecondAnnualQuantityRequired, value);
         }
 
         public bool IsAnnualReachRequired
         {
             get => _isAnnualReachRequired;
-            set => Set(ref _isAnnualReachRequired, value);
+            set => SetProperty(ref _isAnnualReachRequired, value);
         }
 
         public bool CanUpload
         {
             get => _canUpload;
-            set => Set(ref _canUpload, value);
+            set => SetProperty(ref _canUpload, value);
         }
 
         public bool IsEditingQueuedItem
         {
             get => _isEditingQueuedItem;
-            set => Set(ref _isEditingQueuedItem, value);
+            set => SetProperty(ref _isEditingQueuedItem, value);
         }
 
         public string WarningMessage
         {
             get => _warningMessage;
-            set => Set(ref _warningMessage, value);
+            set => SetProperty(ref _warningMessage, value);
         }
 
         // Commands
@@ -301,8 +294,9 @@ namespace MvpCompanion.UI.ViewModels
             else
             {
                 // If everything was uploaded, navigate away.
-                if (BootStrapper.Current.NavigationService.CanGoBack)
-                    BootStrapper.Current.NavigationService.GoBack();
+                // TODO fix navigation
+                //if (BootStrapper.Current.NavigationService.CanGoBack)
+                //    BootStrapper.Current.NavigationService.GoBack();
             }
         }
         
@@ -429,8 +423,9 @@ namespace MvpCompanion.UI.ViewModels
                 contribution.ContributionId = submissionResult.ContributionId;
 
                 // Quality assurance, only logs a successful upload.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
+                // todo store services
+                //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                //    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
 
                 return true;
             }
@@ -438,8 +433,9 @@ namespace MvpCompanion.UI.ViewModels
             {
 
                 // Quality assurance, only logs a failed upload.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
+                // todfo store services
+                //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                //    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
 
                 //await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
                 return false;
@@ -452,10 +448,10 @@ namespace MvpCompanion.UI.ViewModels
 
             var types = await App.ApiService.GetContributionTypesAsync();
 
-            types.ForEach(type =>
+            foreach (var type in types)
             {
                 Types.Add(type);
-            });
+            }
 
             IsBusyMessage = "loading technologies...";
 
@@ -464,10 +460,10 @@ namespace MvpCompanion.UI.ViewModels
             // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
             var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
 
-            areas.ForEach(area =>
+            foreach (var area in areas)
             {
                 CategoryAreas.Add(area);
-            });
+            }
 
             // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
             
@@ -475,127 +471,127 @@ namespace MvpCompanion.UI.ViewModels
 
             var visibilities = await App.ApiService.GetVisibilitiesAsync();
 
-            visibilities.ForEach(visibility =>
+            foreach (var visibility in visibilities)
             {
                 Visibilities.Add(visibility);
-            });
+            }
         }
 
         #endregion
 
         #region Navigation
 
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
-        {
-            if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-            {
-                if (BootStrapper.Current.NavigationService.CanGoBack)
-                    BootStrapper.Current.NavigationService.GoBack();
-            }
+        //public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        //{
+        //    if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        //    {
+        //        if (BootStrapper.Current.NavigationService.CanGoBack)
+        //            BootStrapper.Current.NavigationService.GoBack();
+        //    }
 
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
-            {
-                // Verify the user is logged in
-                if (!shellVm.IsLoggedIn)
-                {
-                    IsBusy = true;
-                    IsBusyMessage = "logging in...";
+        //    if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+        //    {
+        //        // Verify the user is logged in
+        //        if (!shellVm.IsLoggedIn)
+        //        {
+        //            IsBusy = true;
+        //            IsBusyMessage = "logging in...";
 
-                    await ShellPage.Instance.SignInAsync();
+        //            await ShellPage.Instance.SignInAsync();
 
-                    IsBusyMessage = "";
-                    IsBusy = false;
-                }
+        //            IsBusyMessage = "";
+        //            IsBusy = false;
+        //        }
 
-                if (shellVm.IsLoggedIn)
-                {
-                    try
-                    {
-                        IsBusy = true;
+        //        if (shellVm.IsLoggedIn)
+        //        {
+        //            try
+        //            {
+        //                IsBusy = true;
 
-                        // ** Get the necessary associated data from the API **
+        //                // ** Get the necessary associated data from the API **
 
-                        await LoadSupportingDataAsync();
+        //                await LoadSupportingDataAsync();
 
-                        // Note: The Category Areas will not be loaded until the CollectionViewSource is does it's initially loading.
-                        SetupNextEntry();
+        //                // Note: The Category Areas will not be loaded until the CollectionViewSource is does it's initially loading.
+        //                SetupNextEntry();
 
-                        if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                        {
-                            var td = new TutorialDialog
-                            {
-                                SettingsKey = "AddContributionPageTutorialShown",
-                                MessageTitle = "Add Contribution Page",
-                                Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
-                                          "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
-                                          "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
-                                          "- Click 'Upload' to save the queue to your profile.\r\n" +
-                                          "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
-                                          "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
-                            };
+        //                if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+        //                {
+        //                    var td = new TutorialDialog
+        //                    {
+        //                        SettingsKey = "AddContributionPageTutorialShown",
+        //                        MessageTitle = "Add Contribution Page",
+        //                        Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
+        //                                  "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
+        //                                  "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
+        //                                  "- Click 'Upload' to save the queue to your profile.\r\n" +
+        //                                  "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
+        //                                  "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
+        //                    };
 
-                            await td.ShowAsync();
-                        }
+        //                    await td.ShowAsync();
+        //                }
 
-                        // To prevent accidental back navigation
-                        if (BootStrapper.Current.NavigationService.FrameFacade != null)
-                            BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
-                    }
-                    finally
-                    {
-                        IsBusyMessage = "";
-                        IsBusy = false;
-                    }
-                }
-            }
-        }
+        //                // To prevent accidental back navigation
+        //                if (BootStrapper.Current.NavigationService.FrameFacade != null)
+        //                    BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
+        //            }
+        //            finally
+        //            {
+        //                IsBusyMessage = "";
+        //                IsBusy = false;
+        //            }
+        //        }
+        //    }
+        //}
         
 
-        public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
-        {
-            if (BootStrapper.Current.NavigationService.FrameFacade != null)
-                BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
+        //public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
+        //{
+        //    if (BootStrapper.Current.NavigationService.FrameFacade != null)
+        //        BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
             
-            return base.OnNavigatingFromAsync(args);
-        }
+        //    return base.OnNavigatingFromAsync(args);
+        //}
 
-        // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
-        private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
-        {
-            try
-            {
-                var itemsQueued = UploadQueue.Any();
+        //// Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
+        //private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
+        //{
+        //    try
+        //    {
+        //        var itemsQueued = UploadQueue.Any();
 
-                e.Handled = itemsQueued;
+        //        e.Handled = itemsQueued;
 
-                if (itemsQueued)
-                {
-                    var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
-                    md.Commands.Add(new UICommand("yes"));
-                    md.Commands.Add(new UICommand("no"));
-                    md.CancelCommandIndex = 1;
-                    md.DefaultCommandIndex = 1;
+        //        if (itemsQueued)
+        //        {
+        //            var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
+        //            md.Commands.Add(new UICommand("yes"));
+        //            md.Commands.Add(new UICommand("no"));
+        //            md.CancelCommandIndex = 1;
+        //            md.DefaultCommandIndex = 1;
 
-                    var result = await md.ShowAsync();
+        //            var result = await md.ShowAsync();
 
-                    if (result.Label == "yes")
-                    {
-                        if (NavigationService.CanGoBack)
-                        {
-                            NavigationService.GoBack();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                await ExceptionLogger.LogExceptionAsync(ex);
-            }
-        }
+        //            if (result.Label == "yes")
+        //            {
+        //                if (NavigationService.CanGoBack)
+        //                {
+        //                    NavigationService.GoBack();
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await ExceptionLogger.LogExceptionAsync(ex);
+        //    }
+        //}
 
         #endregion
     }

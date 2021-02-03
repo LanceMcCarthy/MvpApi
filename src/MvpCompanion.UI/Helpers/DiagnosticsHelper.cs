@@ -11,7 +11,7 @@ using Windows.Graphics.Display;
 using Windows.Networking.Connectivity;
 using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.Storage;
-using Windows.UI.Xaml;
+using Microsoft.UI.Xaml;
 
 namespace MvpCompanion.UI.Helpers
 {

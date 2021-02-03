@@ -20,12 +20,12 @@ namespace MvpCompanion.UI.Extensions
         /// <returns>Boolean that denotes a successful validation</returns>
         public static async Task<bool> Validate(this ContributionsModel contribution, bool showErrorMessage = false)
         {
-            if(contribution == null)
+            if (contribution == null)
                 throw new NullReferenceException("The contribution was null");
 
             var isValid = true;
             var failedFieldName = "";
-            
+
             // Check title
             if (string.IsNullOrEmpty(contribution?.Title))
             {
@@ -45,7 +45,7 @@ namespace MvpCompanion.UI.Extensions
                 failedFieldName = "Contribution Technology";
                 isValid = false;
             }
-            
+
             // *** ContributionType Specific Condition ***
 
             // Gets a Tuple that contains the specific conditions of a chosen ContributionType
@@ -89,12 +89,12 @@ namespace MvpCompanion.UI.Extensions
             }
 
             // If we're using this extension method for final validation and not fast validation, show error message to user
-            if(!isValid && showErrorMessage)
+            if (!isValid && showErrorMessage)
                 await new MessageDialog($"The {failedFieldName} field is a required entry for this contribution type.").ShowAsync();
 
             return isValid;
         }
-        
+
         //public static Tuple<bool, bool, bool, bool> GetContributionTypeRequirementsById(this ContributionTypeModel contributionType)
         //{
         //    bool isUrlRequired = false;

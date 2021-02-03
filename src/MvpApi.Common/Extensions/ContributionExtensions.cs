@@ -85,7 +85,7 @@ namespace MvpApi.Common.Extensions
 
             return new Tuple<bool, string>(isValid, failedFieldName);
         }
-        
+
         //public static Tuple<bool, bool, bool, bool> GetContributionTypeRequirementsById(this ContributionTypeModel contributionType)
         //{
         //    bool isUrlRequired = false;

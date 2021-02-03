@@ -8,7 +8,7 @@ namespace MvpCompanion.UI.Common
         {
             IsLoggedIn = isLoggedIn;
         }
-        
+
         public bool IsLoggedIn { get; set; }
     }
 }

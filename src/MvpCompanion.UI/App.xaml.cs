@@ -8,11 +8,13 @@ using System.Diagnostics;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.ApplicationModel;
+using MvpCompanion.UI.Views;
 
 namespace MvpCompanion.UI
 {
     sealed partial class App : Application
     {
+        public static MvpApiService ApiService { get; set; }
 
         public App()
         {
@@ -46,12 +48,35 @@ namespace MvpCompanion.UI
             {
                 if (rootFrame.Content == null)
                 {
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    rootFrame.Navigate(typeof(ShellPage), e.Arguments);
                 }
 
                 Window.Current.Activate();
             }
         }
+
+        // TODO uncomment after project reload
+        //protected override void OnActivated(IActivatedEventArgs args)
+        //{
+        //    
+        //    var engagementManager = StoreServicesEngagementManager.GetDefault();
+
+        //    await engagementManager.RegisterNotificationChannelAsync();
+
+        //    if (args.Kind == ActivationKind.ToastNotification)
+        //    {
+        //        var toastArgs = args as ToastNotificationActivatedEventArgs;
+
+        //        var originalArgs = engagementManager.ParseArgumentsAndTrackAppLaunch(toastArgs?.Argument);
+
+        //        if (originalArgs != null && originalArgs.Contains("id"))
+        //        {
+        //            Debug.WriteLine($"OnActivated ToastNotification argument: {originalArgs}");
+        //        }
+        //    }
+
+        //    base.OnActivated(args);
+        //}
 
 
         void OnNavigationFailed(object sender, NavigationFailedEventArgs e)

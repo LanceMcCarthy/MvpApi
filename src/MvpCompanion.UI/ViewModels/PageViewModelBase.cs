@@ -1,20 +1,15 @@
-﻿namespace MvpCompanion.UI.ViewModels
+﻿using CommonHelpers.Common;
+using System.Threading.Tasks;
+
+namespace MvpCompanion.UI.ViewModels
 {
-    public class PageViewModelBase : Template10.Mvvm.ViewModelBase
+    public class PageViewModelBase : ViewModelBase
     {
-        private bool _isBusy;
-        private string _isBusyMessage;
 
-        public bool IsBusy
-        {
-            get => _isBusy;
-            set => Set(ref _isBusy, value);
-        }
+        public virtual void OnNavigatingFrom(Microsoft.UI.Xaml.Navigation.NavigatingCancelEventArgs e) { /* empty */ }
 
-        public string IsBusyMessage
-        {
-            get => _isBusyMessage;
-            set => Set(ref _isBusyMessage, value);
-        }
+        public virtual void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e) { /* empty */ }
+
+        public virtual void OnNavigatedFrom(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e) { /* empty */ }
     }
 }
