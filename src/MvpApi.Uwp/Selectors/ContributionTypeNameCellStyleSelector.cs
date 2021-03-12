@@ -5,7 +5,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using MvpApi.Common.Models;
-using MvpApi.Uwp.Helpers;
+using MvpCompanion.UI.Common.Helpers;
 using Telerik.UI.Xaml.Controls.Grid;
 
 namespace MvpApi.Uwp.Selectors

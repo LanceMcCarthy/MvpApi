@@ -17,7 +17,7 @@ using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Dialogs;
 using MvpCompanion.UI.Common.Extensions;
-using MvpApi.Uwp.Helpers;
+using MvpCompanion.UI.Common.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Services.NavigationService;

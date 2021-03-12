@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using MvpApi.Common.Models;
+using MvpApi.Services.Apis;
+using MvpCompanion.UI.Common.Helpers;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Template10.Utils;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using MvpApi.Common.Models;
-using MvpApi.Services.Apis;
-using Template10.Utils;
 
 namespace MvpApi.Uwp.Dialogs
 {
@@ -24,7 +25,7 @@ namespace MvpApi.Uwp.Dialogs
             
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                Items = MvpApi.Uwp.Helpers.DesignTimeHelpers.GenerateQuestionnaireItems();
+                Items = DesignTimeHelpers.GenerateQuestionnaireItems();
             }
 
             ItemsListView.ItemsSource = Items;

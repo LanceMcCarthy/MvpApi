@@ -7,9 +7,8 @@
       xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:converters="using:MvpCompanion.UI.Common.Converters"
-      xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
+      xmlns:localConverters="using:MvpCompanion.UI.WinUI.Converters"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -17,14 +16,14 @@
     </Page.DataContext>
 
     <Page.Resources>
-        <converters:BoolToIconConverter x:Key="BoolToIconConverter">
-            <converters:BoolToIconConverter.FalseIcon>
+        <localConverters:BoolToIconConverter x:Key="BoolToIconConverter">
+            <localConverters:BoolToIconConverter.FalseIcon>
                 <SymbolIcon Symbol="Add" />
-            </converters:BoolToIconConverter.FalseIcon>
-            <converters:BoolToIconConverter.TrueIcon>
+            </localConverters:BoolToIconConverter.FalseIcon>
+            <localConverters:BoolToIconConverter.TrueIcon>
                 <SymbolIcon Symbol="Save" />
-            </converters:BoolToIconConverter.TrueIcon>
-        </converters:BoolToIconConverter>
+            </localConverters:BoolToIconConverter.TrueIcon>
+        </localConverters:BoolToIconConverter>
 
         <CollectionViewSource x:Name="awardCategoriesCvs"
                               Source="{Binding CategoryAreas}"
@@ -58,24 +57,6 @@
         <Grid x:Name="FormGrid"
               Grid.Row="1"
               Grid.Column="0">
-            <animations:Implicit.HideAnimations>
-                <animations:ScaleAnimation From="1"
-                                           To="0.7"
-                                           Duration="0:0:1.0" />
-                <animations:OpacityAnimation From="1"
-                                             To="0"
-                                             Duration="0:0:1.0" />
-            </animations:Implicit.HideAnimations>
-            <animations:Implicit.ShowAnimations>
-                <animations:ScaleAnimation From="0.7"
-                                           To="1"
-                                           Delay="0:0:0.2"
-                                           Duration="0:0:0.8"/>
-                <animations:OpacityAnimation From="0"
-                                             To="1"
-                                             Delay="0:0:0.2"
-                                             Duration="0:0:0.8" />
-            </animations:Implicit.ShowAnimations>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />

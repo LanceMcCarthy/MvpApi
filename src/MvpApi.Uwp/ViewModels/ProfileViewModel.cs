@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Dialogs;
-using MvpApi.Uwp.Helpers;
+using MvpCompanion.UI.Common.Helpers;
 using MvpApi.Uwp.Views;
 
 namespace MvpApi.Uwp.ViewModels

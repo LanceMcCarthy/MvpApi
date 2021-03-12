@@ -5,7 +5,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
+      xmlns:telerik="using:Telerik.UI.Xaml.Controls"
+      xmlns:windowsUiControls="using:Windows.UI.Xaml.Controls"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -13,7 +14,135 @@
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <controls:HamburgerMenu x:Name="Menu"
+        <!--<Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>-->
+
+        <!--<telerik:RadRibbonView x:Name="RibbonView1">
+            <telerik:RadRibbonView.ApplicationButtonIcon>
+                <SymbolIcon Symbol="Admin" />
+            </telerik:RadRibbonView.ApplicationButtonIcon>
+            <telerik:RadRibbonView.Items>
+                <telerik:RadRibbonTab Header="Home">
+                    <telerik:RadRibbonGroup Header="Clipboard">
+                        <telerik:RadRibbonButton Text="Copy" />
+                        <telerik:RadRibbonButton Text="Paste" />
+                    </telerik:RadRibbonGroup>
+                    
+                </telerik:RadRibbonTab>
+                <telerik:RadRibbonTab Header="Activities">
+                    <telerik:RadRibbonGroup Header="Activities">
+                        <telerik:RadRibbonButton Text="Add"
+                                                 Size="Large">
+                            <telerik:RadRibbonButton.LargeIcon>
+                                <SymbolIcon Symbol="Add" />
+                            </telerik:RadRibbonButton.LargeIcon>
+                        </telerik:RadRibbonButton>
+                    </telerik:RadRibbonGroup>
+                </telerik:RadRibbonTab>
+            </telerik:RadRibbonView.Items>
+            <telerik:RadRibbonView.Backstage>
+                <telerik:RadRibbonBackstage>
+                    <telerik:RadRibbonBackstageItem Header="Save"
+                                                    IsSelectable="False" />
+                    <telerik:RadRibbonBackstageItem Header="Open"
+                                                    IsSelectable="False" />
+                    <telerik:RadRibbonBackstageItem Header="Recent">
+                        <StackPanel Margin="10">
+                            <TextBlock Text="Recent files: "
+                                       Margin="0 0 0 5" />
+                        </StackPanel>
+                    </telerik:RadRibbonBackstageItem>
+                </telerik:RadRibbonBackstage>
+            </telerik:RadRibbonView.Backstage>
+        </telerik:RadRibbonView>-->
+
+        <NavigationView x:Name="NavView"
+                            Loaded="NavView_Loaded"
+                            ItemInvoked="NavView_ItemInvoked"
+                            BackRequested="NavView_BackRequested">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Tag="home"
+                                    Icon="Home"
+                                    Content="Home" />
+                <NavigationViewItem Tag="profile"
+                                    Icon="Contact"
+                                    Content="Profile" />
+                <NavigationViewItem Tag="kudos"
+                                    Content="Kudos">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets"
+                                  Glyph="&#xE00B;"
+                                  Foreground="DarkRed"
+                                  Width="48"
+                                  Height="48" />
+                        <!--<Grid>
+                            <FontIcon FontFamily="Segoe MDL2 Assets"
+                                      Glyph="&#xE00B;"
+                                      Foreground="DarkRed"
+                                      Width="48"
+                                      Height="48" />
+                            <FontIcon FontFamily="Segoe MDL2 Assets"
+                                      Glyph="&#xE006;"
+                                      Foreground="White"
+                                      Width="48"
+                                      Height="48" />
+                        </Grid>-->
+                        
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItemSeparator />
+                <NavigationViewItemHeader x:Name="MainPagesHeader"
+                                          Content="Main pages" />
+                <!--<NavigationViewItem Tag="apps"
+                                         Content="Apps">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets"
+                                  Glyph="&#xEB3C;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="games"
+                                         Content="Games">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets"
+                                  Glyph="&#xE7FC;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Tag="music"
+                                         Icon="Audio"
+                                         Content="Music" />-->
+            </NavigationView.MenuItems>
+
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem Tag="settings"
+                                    Icon="Setting"
+                                    Content="Settings" />
+            </NavigationView.FooterMenuItems>
+
+            <ScrollViewer>
+                <Frame x:Name="ContentFrame"
+                       Padding="12,0,12,24"
+                       IsTabStop="True"
+                       NavigationFailed="ContentFrame_NavigationFailed" />
+            </ScrollViewer>
+        </NavigationView>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState>
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{x:Bind NavView.CompactModeThresholdWidth}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ContentFrame.Padding"
+                                Value="24,0,24,24" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <!--<controls:HamburgerMenu x:Name="Menu"
                                 VisualStateNarrowMinWidth="0"
                                 VisualStateNormalMinWidth="641"
                                 VisualStateWideMinWidth="1600"
@@ -141,65 +270,66 @@
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
             </controls:HamburgerMenu.SecondaryButtons>
-        </controls:HamburgerMenu>
+        </controls:HamburgerMenu>-->
 
         <Grid x:Name="LoginOverlay"
               Visibility="Collapsed"
               Background="{ThemeResource SystemControlChromeHighAcrylicElementMediumBrush}">
+            <Grid.Children>
+                <windowsUiControls:WebView x:Name="AuthWebView"
+                                           NavigationCompleted="WebView_OnNavigationCompleted"
+                                           Width="400"
+                                           Height="600"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
 
-            <WebView x:Name="AuthWebView"
-                     NavigationCompleted="WebView_OnNavigationCompleted"
-                     Width="400"
-                     Height="600"
-                     HorizontalAlignment="Center"
-                     VerticalAlignment="Center" />
+                <Button Content="Why so many permissions?"
+                        Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="10">
+                    <Button.Flyout>
+                        <Flyout>
+                            <Grid Width="400">
+                                <StackPanel>
+                                    <TextBlock Text="The permissions list you see is the smallest scope available by the Microsoft Account login service and app does not use anything from your Microsoft account directly."
+                                               TextWrapping="Wrap"
+                                               Margin="0,0,0,10" />
+                                    <TextBlock Text="When you login, MVP Companion gets an access token and a refresh token from Microsoft Live, this token is then used to authenticate every call to the MVP portal API."
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Grid>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
 
-            <Button Content="Why so many permissions?"
-                    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Margin="10">
-                <Button.Flyout>
-                    <Flyout>
-                        <Grid Width="400">
-                            <StackPanel>
-                                <TextBlock Text="The permissions list you see is the smallest scope available by the Microsoft Account login service and app does not use anything from your Microsoft account directly."
+                <Button Content="Problems?"
+                        Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Margin="10">
+                    <Button.Flyout>
+                        <Flyout>
+                            <StackPanel Width="300">
+                                <TextBlock Text="If you're having trouble signing in, or staying signed in, there might be a problem with the token cache. Click the button below to get a fresh start."
                                            TextWrapping="Wrap"
-                                           Margin="0,0,0,10" />
-                                <TextBlock Text="When you login, MVP Companion gets an access token and a refresh token from Microsoft Live, this token is then used to authenticate every call to the MVP portal API."
-                                           TextWrapping="Wrap" />
+                                           Margin="5" />
+                                <Button Content="Reset Cache"
+                                        Background="DarkRed"
+                                        Foreground="White"
+                                        HorizontalAlignment="Stretch"
+                                        Margin="5"
+                                        Click="LogoutButton_OnClick" />
                             </StackPanel>
-                        </Grid>
-                    </Flyout>
-                </Button.Flyout>
-            </Button>
-
-            <Button Content="Problems?"
-                    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Margin="10">
-                <Button.Flyout>
-                    <Flyout>
-                        <StackPanel Width="300">
-                            <TextBlock Text="If you're having trouble signing in, or staying signed in, there might be a problem with the token cache. Click the button below to get a fresh start."
-                                       TextWrapping="Wrap"
-                                       Margin="5" />
-                            <Button Content="Reset Cache"
-                                    Background="DarkRed"
-                                    Foreground="White"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="5"
-                                    Click="LogoutButton_OnClick" />
-                        </StackPanel>
-                    </Flyout>
-                </Button.Flyout>
-            </Button>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+            </Grid.Children>
         </Grid>
 
         <primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                                      Visibility="{Binding IsBusy}"
                                      Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                                     Style="{StaticResource PageBusyIndicatorStyle}"/>
+                                     Style="{StaticResource PageBusyIndicatorStyle}" />
     </Grid>
 </Page>

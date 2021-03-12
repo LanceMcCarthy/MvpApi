@@ -15,16 +15,15 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpApi.Services.Utilities;
 using MvpApi.Uwp.Dialogs;
 using MvpCompanion.UI.Common.Extensions;
-using MvpApi.Uwp.Helpers;
+using MvpCompanion.UI.Common.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Mvvm;
 using Template10.Services.NavigationService;
 using Template10.Utils;
-using ExceptionLogger = MvpApi.Uwp.Helpers.ExceptionLogger;
+using ExceptionLogger = MvpCompanion.UI.Common.Helpers.ExceptionLogger;
 
 namespace MvpApi.Uwp.ViewModels
 {

@@ -2,7 +2,7 @@
 using Windows.ApplicationModel;
 using Windows.Storage;
 using MvpApi.Services.Utilities;
-using MvpApi.Uwp.Helpers;
+using MvpCompanion.UI.Common.Helpers;
 
 namespace MvpApi.Uwp.ViewModels
 {

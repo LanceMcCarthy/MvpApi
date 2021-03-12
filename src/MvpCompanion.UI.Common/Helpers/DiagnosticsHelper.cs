@@ -11,7 +11,6 @@ using Windows.Graphics.Display;
 using Windows.Networking.Connectivity;
 using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.Storage;
-using Windows.UI.Xaml;
 
 namespace MvpCompanion.UI.Common.Helpers
 {
@@ -45,7 +44,6 @@ namespace MvpCompanion.UI.Common.Helpers
             builder.AppendFormat($"Friendly System Name: {clientDeviceInformation.FriendlyName}\r\n");
             builder.AppendFormat($"Friendly System ID: {clientDeviceInformation.Id}\r\n");
             builder.AppendFormat($"Current Memory Usage: {GC.GetTotalMemory(false) / 1024f / 1024f:f3} MB\r\n");
-            builder.AppendFormat($"Window Bounds: {Window.Current.Bounds.Width} x {Window.Current.Bounds.Height}\r\n");
             builder.AppendFormat($"Logical DPI: {displayInformation.LogicalDpi}\r\n");
             builder.AppendFormat($"Resolution Scale: {displayInformation.ResolutionScale}\r\n");
             builder.AppendFormat($"Current Orientation: {displayInformation.CurrentOrientation}\r\n");

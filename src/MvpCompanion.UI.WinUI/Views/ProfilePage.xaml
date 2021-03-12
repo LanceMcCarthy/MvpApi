@@ -5,7 +5,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:controls="using:Telerik.UI.Xaml.Controls"
+      xmlns:telerik="using:Telerik.UI.Xaml.Controls"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       mc:Ignorable="d">
 
@@ -29,6 +29,45 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
         </Grid>
+
+        <telerik:RadRibbonView x:Name="RibbonView1">
+            <telerik:RadRibbonView.ApplicationButtonIcon>
+                <SymbolIcon Symbol="Admin" />
+            </telerik:RadRibbonView.ApplicationButtonIcon>
+            <telerik:RadRibbonView.Items>
+                <telerik:RadRibbonTab Header="Home">
+                    <telerik:RadRibbonGroup Header="Clipboard">
+                        <telerik:RadRibbonButton Text="Copy" />
+                        <telerik:RadRibbonButton Text="Paste" />
+                    </telerik:RadRibbonGroup>
+
+                </telerik:RadRibbonTab>
+                <telerik:RadRibbonTab Header="Activities">
+                    <telerik:RadRibbonGroup Header="Activities">
+                        <telerik:RadRibbonButton Text="Add"
+                                                 Size="Large">
+                            <telerik:RadRibbonButton.LargeIcon>
+                                <SymbolIcon Symbol="Add" />
+                            </telerik:RadRibbonButton.LargeIcon>
+                        </telerik:RadRibbonButton>
+                    </telerik:RadRibbonGroup>
+                </telerik:RadRibbonTab>
+            </telerik:RadRibbonView.Items>
+            <telerik:RadRibbonView.Backstage>
+                <telerik:RadRibbonBackstage>
+                    <telerik:RadRibbonBackstageItem Header="Save"
+                                                    IsSelectable="False" />
+                    <telerik:RadRibbonBackstageItem Header="Open"
+                                                    IsSelectable="False" />
+                    <telerik:RadRibbonBackstageItem Header="Recent">
+                        <StackPanel Margin="10">
+                            <TextBlock Text="Recent files: "
+                                       Margin="0 0 0 5" />
+                        </StackPanel>
+                    </telerik:RadRibbonBackstageItem>
+                </telerik:RadRibbonBackstage>
+            </telerik:RadRibbonView.Backstage>
+        </telerik:RadRibbonView>
 
         <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}"
               Grid.Row="1">

@@ -13,18 +13,20 @@
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
-    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <MinimumVisualStudioVersion>16</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>MvpApi.Uwp_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>
+    </PackageCertificateKeyFile>
     <RuntimeIdentifiers>win10-arm;win10-arm-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
-    <PackageCertificateThumbprint>7536EF90BE346D0D1ECF0C621C3174C7081B9147</PackageCertificateThumbprint>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <PackageCertificateThumbprint>D66A89CC346FCEFEB67EB315750FE7F426B1FCF9</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -127,6 +129,18 @@
     <Compile Include="Common\DateTimeMonthKeyLookup.cs" />
     <Compile Include="Common\TechnologyKeyLookup.cs" />
     <Compile Include="Controls\TechnologyAreasListView.cs" />
+    <Compile Include="Converters\BoolToIconConverter.cs" />
+    <Compile Include="Converters\ContributionTypeNameToBrushConverter.cs" />
+    <Compile Include="Converters\DateTimeToDateTimeOffsetConverter.cs" />
+    <Compile Include="Converters\DoubleToIntConverter.cs" />
+    <Compile Include="Converters\MvcContentUrlConverter.cs" />
+    <Compile Include="Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Converters\PathToBitmapImageConverter.cs" />
+    <Compile Include="Converters\PrivacyLevelToBrushConverter.cs" />
+    <Compile Include="Converters\StringToUriConverter.cs" />
+    <Compile Include="Converters\ThresholdConverter.cs" />
+    <Compile Include="Converters\UploadStatusToBoolConverter.cs" />
+    <Compile Include="Converters\UploadStatusToBrushConverter.cs" />
     <Compile Include="Dialogs\AdditionalTechnologyAreasPicker.xaml.cs">
       <DependentUpon>AdditionalTechnologyAreasPicker.xaml</DependentUpon>
     </Compile>
@@ -139,12 +153,6 @@
     <Compile Include="Dialogs\TutorialDialog.xaml.cs">
       <DependentUpon>TutorialDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\DiagnosticsHelper.cs" />
-    <Compile Include="Helpers\ExceptionLogger.cs" />
-    <Compile Include="Helpers\FeedbackHelpers.cs" />
-    <Compile Include="Helpers\PaletteHelper.cs" />
-    <Compile Include="Helpers\TaskUtilities.cs" />
-    <Compile Include="Helpers\DesignTimeHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Selectors\ContributionTypeNameCellStyleSelector.cs" />
     <Compile Include="Selectors\TechAreaGroupStyleSelector.cs" />
@@ -196,7 +204,6 @@
     <Content Include="Assets\LottieFiles\PaperPlane.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="MvpApi.Uwp_StoreKey.pfx" />
     <None Include="MvpApi.Uwp_TemporaryKey.pfx" />
     <None Include="ViewModels\readme.md" />
   </ItemGroup>

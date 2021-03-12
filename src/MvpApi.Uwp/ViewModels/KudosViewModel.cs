@@ -1,6 +1,6 @@
 ﻿using Microsoft.Services.Store.Engagement;
 using MvpApi.Common.Models;
-using MvpApi.Uwp.Helpers;
+using MvpCompanion.UI.Common.Helpers;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
