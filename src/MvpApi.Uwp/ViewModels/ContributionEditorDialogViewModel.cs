@@ -9,7 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpApi.Uwp.Extensions;
+using MvpCompanion.UI.Common.Extensions;
 using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;

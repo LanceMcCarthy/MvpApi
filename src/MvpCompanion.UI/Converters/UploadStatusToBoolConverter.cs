@@ -2,7 +2,7 @@
 using Microsoft.UI.Xaml.Data;
 using MvpApi.Common.Models;
 
-namespace MvpCompanion.UI.Converters
+namespace MvpCompanion.UI.Wpf.Converters
 {
     /// <inheritdoc />
     /// <summary>

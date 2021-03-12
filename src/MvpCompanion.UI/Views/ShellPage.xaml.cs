@@ -11,12 +11,12 @@ using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Extensions;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
-using MvpCompanion.UI.Helpers;
+using MvpCompanion.UI.Wpf.Helpers;
 using Newtonsoft.Json;
 using Windows.Storage;
 using Windows.UI.Popups;
 
-namespace MvpCompanion.UI.Views
+namespace MvpCompanion.UI.Wpf.Views
 {
     public sealed partial class ShellPage : PageBase
     {

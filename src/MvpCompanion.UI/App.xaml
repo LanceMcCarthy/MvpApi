@@ -1,12 +1,12 @@
-﻿<Application x:Class="MvpCompanion.UI.App"
+﻿<Application x:Class="MvpCompanion.UI.Wpf.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:MvpCompanion.UI"
+             xmlns:local="using:MvpCompanion.UI.Wpf"
              xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
              xmlns:controls="using:Telerik.UI.Xaml.Controls"
              xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
-             xmlns:converters="using:MvpCompanion.UI.Converters"
-             xmlns:selectors="using:MvpCompanion.UI.Selectors">
+             xmlns:converters="using:MvpCompanion.UI.Wpf.Converters"
+             xmlns:selectors="using:MvpCompanion.UI.Wpf.Selectors">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

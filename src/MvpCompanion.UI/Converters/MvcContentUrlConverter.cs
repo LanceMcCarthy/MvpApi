@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.UI.Xaml.Data;
 
-namespace MvpCompanion.UI.Converters
+namespace MvpCompanion.UI.Wpf.Converters
 {
     /// <summary>
     /// // Because the IconURls are using MVC content path, we need to prefix with the domain to get valid images. This converter does that automatically.

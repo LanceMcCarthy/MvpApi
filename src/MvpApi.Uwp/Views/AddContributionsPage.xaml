@@ -7,9 +7,9 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:converters="using:MvpApi.Uwp.Converters"
-      xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
+      xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
+      xmlns:converters="using:MvpCompanion.UI.Common.Converters"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -57,10 +57,25 @@
 
         <Grid x:Name="FormGrid"
               Grid.Row="1"
-              Grid.Column="0"
-              extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0"
-              animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}"
-              animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}">
+              Grid.Column="0">
+            <animations:Implicit.HideAnimations>
+                <animations:ScaleAnimation From="1"
+                                           To="0.7"
+                                           Duration="0:0:1.0" />
+                <animations:OpacityAnimation From="1"
+                                             To="0"
+                                             Duration="0:0:1.0" />
+            </animations:Implicit.HideAnimations>
+            <animations:Implicit.ShowAnimations>
+                <animations:ScaleAnimation From="0.7"
+                                           To="1"
+                                           Delay="0:0:0.2"
+                                           Duration="0:0:0.8"/>
+                <animations:OpacityAnimation From="0"
+                                             To="1"
+                                             Delay="0:0:0.2"
+                                             Duration="0:0:0.8" />
+            </animations:Implicit.ShowAnimations>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -349,10 +364,25 @@
 
         <Grid x:Name="QueueGrid"
               Grid.Row="1"
-              Grid.Column="2"
-              extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0"
-              animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}"
-              animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}">
+              Grid.Column="2">
+            <animations:Implicit.HideAnimations>
+                <animations:ScaleAnimation From="1"
+                                           To="0.7"
+                                           Duration="0:0:1.0" />
+                <animations:OpacityAnimation From="1"
+                                             To="0"
+                                             Duration="0:0:1.0" />
+            </animations:Implicit.HideAnimations>
+            <animations:Implicit.ShowAnimations>
+                <animations:ScaleAnimation From="0.7"
+                                           To="1"
+                                           Delay="0:0:0.2"
+                                           Duration="0:0:0.8" />
+                <animations:OpacityAnimation From="0"
+                                             To="1"
+                                             Delay="0:0:0.2"
+                                             Duration="0:0:0.8" />
+            </animations:Implicit.ShowAnimations>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />

@@ -1,6 +1,6 @@
-﻿using MvpCompanion.UI.ViewModels;
+﻿using MvpCompanion.UI.Wpf.ViewModels;
 
-namespace MvpCompanion.UI.Views
+namespace MvpCompanion.UI.Wpf.Views
 {
     public class PageBase : Microsoft.UI.Xaml.Controls.Page
     {

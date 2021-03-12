@@ -2,7 +2,7 @@
 using System.Globalization;
 using Windows.UI;
 
-namespace MvpCompanion.UI.Helpers
+namespace MvpCompanion.UI.Wpf.Helpers
 {
     public static class PaletteHelper
     {

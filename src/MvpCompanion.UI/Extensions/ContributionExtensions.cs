@@ -6,7 +6,7 @@ using Windows.UI.Popups;
 using MvpApi.Common.Models;
 using Newtonsoft.Json;
 
-namespace MvpCompanion.UI.Extensions
+namespace MvpCompanion.UI.Wpf.Extensions
 {
     public static class ContributionExtensions
     {

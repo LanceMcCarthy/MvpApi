@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Common", "MvpApi.Com
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Services", "MvpApi.Services\MvpApi.Services.csproj", "{EDC2D11B-FE53-454B-A7E5-6C74E89FA479}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Wpf", "MvpApi.Wpf\MvpApi.Wpf.csproj", "{010B7637-B75B-40E0-B7E6-7D3BF240C69E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpCompanion.Wpf", "MvpCompanion.Wpf\MvpCompanion.Wpf.csproj", "{010B7637-B75B-40E0-B7E6-7D3BF240C69E}"
 EndProject
-Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "MvpCompanion.Packaging", "MvpCompanion.Packaging\MvpCompanion.Packaging.wapproj", "{3CA27EC2-6009-4267-8265-2B4A088A8D25}"
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "MvpCompanion.Wpf.Packaging", "MvpCompanion.Wpf.Packaging\MvpCompanion.Wpf.Packaging.wapproj", "{3CA27EC2-6009-4267-8265-2B4A088A8D25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -2,9 +2,9 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MvpApi.Common.Models;
-using MvpCompanion.UI.Extensions;
+using MvpCompanion.UI.Wpf.Extensions;
 
-namespace MvpCompanion.UI.Dialogs
+namespace MvpCompanion.UI.Wpf.Dialogs
 {
     public sealed partial class ContributionEditorDialog : ContentDialog
     {

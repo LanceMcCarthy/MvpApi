@@ -14,12 +14,12 @@ using Microsoft.UI.Xaml.Navigation;
 using CommonHelpers.Mvvm;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpCompanion.UI.Extensions;
-using MvpCompanion.UI.Helpers;
-using MvpCompanion.UI.Views;
+using MvpCompanion.UI.Wpf.Extensions;
 using CommonHelpers.Common;
+using MvpCompanion.UI.Wpf.Helpers;
+using MvpCompanion.UI.Wpf.Views;
 
-namespace MvpCompanion.UI.ViewModels
+namespace MvpCompanion.UI.Wpf.ViewModels
 {
     public class ContributionDetailViewModel : ViewModelBase
     {

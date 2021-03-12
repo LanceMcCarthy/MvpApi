@@ -3,14 +3,14 @@ using System.Linq;
 using Windows.ApplicationModel.Activation;
 using Microsoft.UI.Xaml;
 using MvpApi.Services.Apis;
-using MvpCompanion.UI.Helpers;
+using MvpCompanion.UI.Wpf.Helpers;
 using System.Diagnostics;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.ApplicationModel;
-using MvpCompanion.UI.Views;
+using MvpCompanion.UI.Wpf.Views;
 
-namespace MvpCompanion.UI
+namespace MvpCompanion.UI.Wpf
 {
     sealed partial class App : Application
     {

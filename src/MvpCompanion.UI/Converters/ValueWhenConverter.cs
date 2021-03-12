@@ -1,7 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Data;
 using System;
 
-namespace MvpCompanion.UI.Converters
+namespace MvpCompanion.UI.Wpf.Converters
 {
     public class ValueWhenConverter : IValueConverter
     {

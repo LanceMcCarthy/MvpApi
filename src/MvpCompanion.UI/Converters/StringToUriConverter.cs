@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.UI.Xaml.Data;
 
-namespace MvpCompanion.UI.Converters
+namespace MvpCompanion.UI.Wpf.Converters
 {
     internal class StringToUriConverter : IValueConverter
     {

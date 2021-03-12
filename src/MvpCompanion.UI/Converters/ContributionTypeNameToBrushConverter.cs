@@ -2,9 +2,9 @@
 using Windows.UI;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
-using MvpCompanion.UI.Helpers;
+using MvpCompanion.UI.Wpf.Helpers;
 
-namespace MvpCompanion.UI.Converters
+namespace MvpCompanion.UI.Wpf.Converters
 {
     internal class ContributionTypeNameToBrushConverter : IValueConverter
     {

@@ -12,12 +12,12 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
-using MvpCompanion.UI.Dialogs;
-using MvpCompanion.UI.Helpers;
-using MvpCompanion.UI.Views;
+using MvpCompanion.UI.Wpf.Views;
 using CommonHelpers.Common;
+using MvpCompanion.UI.Wpf.Dialogs;
+using MvpCompanion.UI.Wpf.Helpers;
 
-namespace MvpCompanion.UI.ViewModels
+namespace MvpCompanion.UI.Wpf.ViewModels
 {
     public class ProfileViewModel : ViewModelBase
     {

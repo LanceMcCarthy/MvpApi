@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MvpApi.Common.Models;
 
-namespace MvpCompanion.UI.Helpers
+namespace MvpCompanion.UI.Wpf.Helpers
 {
     public static class DesignTimeHelpers
     {

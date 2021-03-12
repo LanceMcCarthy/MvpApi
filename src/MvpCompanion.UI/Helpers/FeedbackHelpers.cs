@@ -5,7 +5,7 @@ using Windows.UI.ViewManagement;
 using Microsoft.Toolkit.Extensions;
 using Windows.ApplicationModel.DataTransfer;
 
-namespace MvpCompanion.UI.Helpers
+namespace MvpCompanion.UI.Wpf.Helpers
 {
     public sealed class FeedbackHelpers
     {

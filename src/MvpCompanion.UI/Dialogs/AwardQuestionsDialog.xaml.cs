@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
-namespace MvpCompanion.UI.Dialogs
+namespace MvpCompanion.UI.Wpf.Dialogs
 {
     public sealed partial class AwardQuestionsDialog : ContentDialog
     {

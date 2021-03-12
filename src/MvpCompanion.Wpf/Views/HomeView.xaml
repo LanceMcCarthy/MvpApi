@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="MvpCompanion.Wpf.Views.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:MvpCompanion.Wpf.Views"
+             xmlns:viewModels="clr-namespace:MvpCompanion.Wpf.ViewModels"
+             xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
+             mc:Ignorable="d"
+             d:DesignHeight="450"
+             d:DesignWidth="800">
+
+    <UserControl.DataContext>
+        <viewModels:HomeViewModel />
+    </UserControl.DataContext>
+
+    <Grid>
+        <telerik:RadGridView ItemsSource="{Binding Contributions}"
+                             SelectionChanged="DataControl_OnSelectionChanged"
+                             RowDetailsVisibilityMode="VisibleWhenSelected"
+                             AutoGenerateColumns="False">
+            <telerik:RadGridView.RowDetailsTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <StackPanel Margin="10">
+                            <TextBlock Text="{Binding Description}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,10" />
+                            <TextBlock Text="{Binding AnnualQuantity, StringFormat='Annual Quantity: {0}'}"
+                                       Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding AnnualReach, StringFormat='Annual Reach: {0}'}"
+                                       Margin="0,0,0,5" />
+                            <TextBlock Text="{Binding ReferenceUrl, StringFormat='Link: {0}'}" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </telerik:RadGridView.RowDetailsTemplate>
+            <telerik:RadGridView.Columns>
+                <telerik:GridViewDataColumn Header="Date"
+                                            DataMemberBinding="{Binding StartDate}"
+                                            DataFormatString="{}{0:d}"/>
+                <telerik:GridViewDataColumn Header="Category Name"
+                                            DataMemberBinding="{Binding ContributionTechnology.Name}" />
+                <telerik:GridViewDataColumn Header="Title"
+                                            DataMemberBinding="{Binding Title}"
+                                            TextWrapping="Wrap"/>
+                <!--<telerik:GridViewDataColumn Header="Description"
+                                            DataMemberBinding="{Binding Description}"
+                                            Width="300" />
+                <telerik:GridViewDataColumn Header="Quantity"
+                                            DataMemberBinding="{Binding AnnualQuantity}" />
+                <telerik:GridViewDataColumn Header="Reach"
+                                            DataMemberBinding="{Binding AnnualReach}" />
+                <telerik:GridViewDataColumn Header="Url"
+                                            DataMemberBinding="{Binding ReferenceUrl}" />-->
+            </telerik:RadGridView.Columns>
+        </telerik:RadGridView>
+
+        <telerik:RadBusyIndicator IsBusy="{Binding IsBusy}"
+                                  BusyContent="{Binding IsBusyMessage}"
+                                  Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+    </Grid>
+</UserControl>

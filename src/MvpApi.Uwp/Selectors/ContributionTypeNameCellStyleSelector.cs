@@ -36,7 +36,7 @@ namespace MvpApi.Uwp.Selectors
             return NormalStyle;
         }
 
-        private SolidColorBrush GetBackgroundForContributionType(ContributionTypeModel contributionType)
+        private static SolidColorBrush GetBackgroundForContributionType(ContributionTypeModel contributionType)
         {
             // Special cases that don't have a GUId from the API
             if (contributionType.EnglishName == "Product Group Interaction (PGI)")

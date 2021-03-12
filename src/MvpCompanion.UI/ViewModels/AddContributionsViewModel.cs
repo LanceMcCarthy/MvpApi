@@ -13,13 +13,13 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MvpApi.Common.Models;
 using MvpApi.Services.Utilities;
-using MvpCompanion.UI.Extensions;
-using MvpCompanion.UI.Helpers;
+using MvpCompanion.UI.Wpf.Extensions;
 using CommonHelpers.Mvvm;
-using MvpCompanion.UI.Views;
 using CommonHelpers.Common;
+using MvpCompanion.UI.Wpf.Helpers;
+using MvpCompanion.UI.Wpf.Views;
 
-namespace MvpCompanion.UI.ViewModels
+namespace MvpCompanion.UI.Wpf.ViewModels
 {
     public class AddContributionsViewModel : ViewModelBase
     {

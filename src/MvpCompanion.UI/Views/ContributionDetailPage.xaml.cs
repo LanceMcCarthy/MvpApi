@@ -13,7 +13,7 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 
-namespace MvpCompanion.UI.Views
+namespace MvpCompanion.UI.Wpf.Views
 {
     public sealed partial class ContributionDetailPage : PageBase
     {

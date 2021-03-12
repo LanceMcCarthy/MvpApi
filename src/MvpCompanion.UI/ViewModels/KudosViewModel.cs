@@ -1,5 +1,4 @@
 ﻿using MvpApi.Common.Models;
-using MvpCompanion.UI.Helpers;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -16,9 +15,11 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using CommonHelpers.Common;
+using MvpCompanion.UI.Wpf.Helpers;
+
 //using VungleSDK;
 
-namespace MvpCompanion.UI.ViewModels
+namespace MvpCompanion.UI.Wpf.ViewModels
 {
     public class KudosViewModel : ViewModelBase
     {

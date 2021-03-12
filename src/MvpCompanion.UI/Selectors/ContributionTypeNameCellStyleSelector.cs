@@ -5,10 +5,10 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
 using MvpApi.Common.Models;
-using MvpCompanion.UI.Helpers;
+using MvpCompanion.UI.Wpf.Helpers;
 using Telerik.UI.Xaml.Controls.Grid;
 
-namespace MvpCompanion.UI.Selectors
+namespace MvpCompanion.UI.Wpf.Selectors
 {
     public class ContributionTypeNameCellStyleSelector : StyleSelector
     {

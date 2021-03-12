@@ -8,7 +8,7 @@ using Windows.Foundation.Collections;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace MvpCompanion.UI
+namespace MvpCompanion.UI.Wpf
 {
     public sealed partial class MainPage : Page
     {

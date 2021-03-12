@@ -9,14 +9,14 @@ using Windows.ApplicationModel;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 //using MvpCompanion.UI.Extensions;
-using MvpCompanion.UI.Helpers;
-using MvpCompanion.UI.Views;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using System.ComponentModel;
 using MvpApi.Common.Extensions;
+using MvpCompanion.UI.Wpf.Helpers;
+using MvpCompanion.UI.Wpf.Views;
 
-namespace MvpCompanion.UI.ViewModels
+namespace MvpCompanion.UI.Wpf.ViewModels
 {
     public class ContributionEditorDialogViewModel : ViewModelBase
     {

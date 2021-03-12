@@ -2,10 +2,10 @@
 using Windows.ApplicationModel;
 using Windows.Storage;
 using MvpApi.Services.Utilities;
-using MvpCompanion.UI.Helpers;
 using CommonHelpers.Common;
+using MvpCompanion.UI.Wpf.Helpers;
 
-namespace MvpCompanion.UI.ViewModels
+namespace MvpCompanion.UI.Wpf.ViewModels
 {
     public class ShellViewModel : ViewModelBase
     {

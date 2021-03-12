@@ -13,7 +13,7 @@ using Windows.Security.ExchangeActiveSyncProvisioning;
 using Windows.Storage;
 using Microsoft.UI.Xaml;
 
-namespace MvpCompanion.UI.Helpers
+namespace MvpCompanion.UI.Wpf.Helpers
 {
     public static class DiagnosticsHelper
     {

@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.ViewManagement;
-using Microsoft.Toolkit.Extensions;
 using Windows.ApplicationModel.DataTransfer;
+using Microsoft.Toolkit;
 
 namespace MvpApi.Uwp.Helpers
 {

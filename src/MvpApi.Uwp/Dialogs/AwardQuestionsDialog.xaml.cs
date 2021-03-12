@@ -4,18 +4,22 @@ using System.Linq;
 using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using CommonHelpers.Common;
 using MvpApi.Common.Models;
+using MvpApi.Services.Apis;
 using Template10.Utils;
 
 namespace MvpApi.Uwp.Dialogs
 {
     public sealed partial class AwardQuestionsDialog : ContentDialog
     {
+        private readonly MvpApiService apiService;
+
         private ObservableCollection<QuestionnaireItem> Items { get; set; } = new ObservableCollection<QuestionnaireItem>();
 
-        public AwardQuestionsDialog()
+        public AwardQuestionsDialog(MvpApiService service)
         {
+            this.apiService = service;
+
             this.InitializeComponent();
             
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
@@ -34,7 +38,7 @@ namespace MvpApi.Uwp.Dialogs
 
             // Go through the questions and populate the ListView.
 
-            var questions = new List<AwardConsiderationQuestionModel>(await App.ApiService.GetAwardConsiderationQuestionsAsync());
+            var questions = new List<AwardConsiderationQuestionModel>(await apiService.GetAwardConsiderationQuestionsAsync());
 
             foreach (var question in questions)
             {
@@ -45,7 +49,7 @@ namespace MvpApi.Uwp.Dialogs
 
             ShowProgress("getting saved answers...");
 
-            var savedAnswers = await App.ApiService.GetAwardConsiderationAnswersAsync();
+            var savedAnswers = await apiService.GetAwardConsiderationAnswersAsync();
 
             var answers = new List<AwardConsiderationAnswerModel>();
             
@@ -94,7 +98,7 @@ namespace MvpApi.Uwp.Dialogs
                     answers.Add(item.AnswerItem);
                 }
 
-                await App.ApiService.SaveAwardConsiderationAnswerAsync(answers);
+                await apiService.SaveAwardConsiderationAnswerAsync(answers);
             }
             finally
             {

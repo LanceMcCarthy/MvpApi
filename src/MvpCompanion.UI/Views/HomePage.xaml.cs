@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 
-namespace MvpCompanion.UI.Views
+namespace MvpCompanion.UI.Wpf.Views
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.

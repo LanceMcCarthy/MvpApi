@@ -16,16 +16,16 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpCompanion.UI.Helpers;
-using MvpCompanion.UI.Views;
 using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
-using MvpCompanion.UI.Dialogs;
 using MvpCompanion.UI.Common;
+using MvpCompanion.UI.Wpf.Dialogs;
+using MvpCompanion.UI.Wpf.Helpers;
+using MvpCompanion.UI.Wpf.Views;
 
-namespace MvpCompanion.UI.ViewModels
+namespace MvpCompanion.UI.Wpf.ViewModels
 {
     public class HomeViewModel : ViewModelBase
     {

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Popups;
 
-namespace MvpCompanion.UI.Helpers
+namespace MvpCompanion.UI.Wpf.Helpers
 {
     public static class ExceptionLogger
     {

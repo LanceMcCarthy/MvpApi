@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media;
 using MvpApi.Common.Models;
 
-namespace MvpCompanion.UI.Converters
+namespace MvpCompanion.UI.Wpf.Converters
 {
     internal class PrivacyLevelToBrushConverter : IValueConverter
     {

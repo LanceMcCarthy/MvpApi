@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Microsoft.UI.Xaml.Navigation;
-using MvpCompanion.UI.Views;
 using CommonHelpers.Common;
+using MvpCompanion.UI.Wpf.Views;
 
-namespace MvpCompanion.UI.ViewModels
+namespace MvpCompanion.UI.Wpf.ViewModels
 {
     public class SettingsViewModel : ViewModelBase
     {

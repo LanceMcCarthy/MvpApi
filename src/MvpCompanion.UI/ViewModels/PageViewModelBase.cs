@@ -1,7 +1,7 @@
 ﻿using CommonHelpers.Common;
 using System.Threading.Tasks;
 
-namespace MvpCompanion.UI.ViewModels
+namespace MvpCompanion.UI.Wpf.ViewModels
 {
     public class PageViewModelBase : ViewModelBase
     {
