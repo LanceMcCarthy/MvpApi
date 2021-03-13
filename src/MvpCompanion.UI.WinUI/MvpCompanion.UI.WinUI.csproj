@@ -128,6 +128,7 @@
     <Compile Include="ViewModels\ContributionEditorDialogViewModel.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\KudosViewModel.cs" />
+    <Compile Include="Common\PageViewModelBase.cs" />
     <Compile Include="ViewModels\ProfileViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Views\AddContributionsPage.xaml.cs">
       <DependentUpon>AddContributionsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\BasePage.cs" />
     <Compile Include="Views\ContributionDetailPage.xaml.cs">
       <DependentUpon>ContributionDetailPage.xaml</DependentUpon>
     </Compile>

@@ -2,7 +2,7 @@
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace MvpCompanion.UI.Common.Converters
+namespace MvpApi.Uwp.Converters
 {
     public class PathToBitmapImageConverter : IValueConverter
     {

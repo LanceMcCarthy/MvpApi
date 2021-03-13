@@ -1,4 +1,14 @@
-﻿using System;
+﻿using CommonHelpers.Common;
+using CommonHelpers.Mvvm;
+using Microsoft.Toolkit.Uwp.Connectivity;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Navigation;
+using MvpApi.Common.Models;
+using MvpCompanion.UI.Common.Extensions;
+using MvpCompanion.UI.Common.Helpers;
+using MvpCompanion.UI.WinUI.Views;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -6,36 +16,29 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Popups;
-using CommonHelpers.Common;
-using CommonHelpers.Mvvm;
-using Microsoft.Toolkit.Uwp.Connectivity;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using MvpApi.Common.Models;
-using MvpCompanion.UI.Common.Extensions;
-using MvpCompanion.UI.Common.Helpers;
+using MvpCompanion.UI.WinUI.Common;
 
 namespace MvpCompanion.UI.WinUI.ViewModels
 {
-    public class ContributionEditorDialogViewModel : ViewModelBase
+    public class ContributionEditorDialogViewModel : PageViewModelBase
     {
         #region Fields
 
-        private ContributionsModel _originalContribution;
-        private ContributionsModel _selectedContribution;
-        private string _urlHeader = "Url";
-        private string _annualQuantityHeader = "Annual Quantity";
-        private string _secondAnnualQuantityHeader = "Second Annual Quantity";
-        private string _annualReachHeader = "Annual Reach";
-        private bool _isUrlRequired;
-        private bool _isAnnualQuantityRequired;
-        private bool _isSecondAnnualQuantityRequired;
-        private bool _isAnnualReachRequired;
-        private bool _canSave = true;
-        private string _warningMessage;
-        private bool _isBusy;
-        private string _isBusyMessage;
-        private bool _editingExistingContribution;
+        private ContributionsModel originalContribution;
+        private ContributionsModel selectedContribution;
+        private string urlHeader = "Url";
+        private string annualQuantityHeader = "Annual Quantity";
+        private string secondAnnualQuantityHeader = "Second Annual Quantity";
+        private string annualReachHeader = "Annual Reach";
+        private bool isUrlRequired;
+        private bool isAnnualQuantityRequired;
+        private bool isSecondAnnualQuantityRequired;
+        private bool isAnnualReachRequired;
+        private bool canSave = true;
+        private string warningMessage;
+        private bool isBusy;
+        private string isBusyMessage;
+        private bool editingExistingContribution;
 
         #endregion
 
@@ -66,88 +69,88 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public ContributionsModel SelectedContribution
         {
-            get => _selectedContribution;
-            set => SetProperty(ref _selectedContribution, value);
+            get => selectedContribution;
+            set => SetProperty(ref selectedContribution, value);
         }
 
         // Data entry control headers, using VM properties to alert validation violations
 
         public string AnnualQuantityHeader
         {
-            get => _annualQuantityHeader;
-            set => SetProperty(ref _annualQuantityHeader, value);
+            get => annualQuantityHeader;
+            set => SetProperty(ref annualQuantityHeader, value);
         }
 
         public string SecondAnnualQuantityHeader
         {
-            get => _secondAnnualQuantityHeader;
-            set => SetProperty(ref _secondAnnualQuantityHeader, value);
+            get => secondAnnualQuantityHeader;
+            set => SetProperty(ref secondAnnualQuantityHeader, value);
         }
 
         public string AnnualReachHeader
         {
-            get => _annualReachHeader;
-            set => SetProperty(ref _annualReachHeader, value);
+            get => annualReachHeader;
+            set => SetProperty(ref annualReachHeader, value);
         }
 
         public string UrlHeader
         {
-            get => _urlHeader;
-            set => SetProperty(ref _urlHeader, value);
+            get => urlHeader;
+            set => SetProperty(ref urlHeader, value);
         }
 
         public bool IsUrlRequired
         {
-            get => _isUrlRequired;
-            set => SetProperty(ref _isUrlRequired, value);
+            get => isUrlRequired;
+            set => SetProperty(ref isUrlRequired, value);
         }
 
         public bool IsAnnualQuantityRequired
         {
-            get => _isAnnualQuantityRequired;
-            set => SetProperty(ref _isAnnualQuantityRequired, value);
+            get => isAnnualQuantityRequired;
+            set => SetProperty(ref isAnnualQuantityRequired, value);
         }
 
         public bool IsSecondAnnualQuantityRequired
         {
-            get => _isSecondAnnualQuantityRequired;
-            set => SetProperty(ref _isSecondAnnualQuantityRequired, value);
+            get => isSecondAnnualQuantityRequired;
+            set => SetProperty(ref isSecondAnnualQuantityRequired, value);
         }
 
         public bool IsAnnualReachRequired
         {
-            get => _isAnnualReachRequired;
-            set => SetProperty(ref _isAnnualReachRequired, value);
+            get => isAnnualReachRequired;
+            set => SetProperty(ref isAnnualReachRequired, value);
         }
 
         public bool CanSave
         {
-            get => _canSave;
-            set => SetProperty(ref _canSave, value);
+            get => canSave;
+            set => SetProperty(ref canSave, value);
         }
 
         public string WarningMessage
         {
-            get => _warningMessage;
-            set => SetProperty(ref _warningMessage, value);
+            get => warningMessage;
+            set => SetProperty(ref warningMessage, value);
         }
 
         public bool IsBusy
         {
-            get => _isBusy;
-            set => SetProperty(ref _isBusy, value);
+            get => isBusy;
+            set => SetProperty(ref isBusy, value);
         }
 
         public string IsBusyMessage
         {
-            get => _isBusyMessage;
-            set => SetProperty(ref _isBusyMessage, value);
+            get => isBusyMessage;
+            set => SetProperty(ref isBusyMessage, value);
         }
         
         public bool EditingExistingContribution
         {
-            get => _editingExistingContribution;
-            set => SetProperty(ref _editingExistingContribution, value);
+            get => editingExistingContribution;
+            set => SetProperty(ref editingExistingContribution, value);
         }
 
         // Commands
@@ -262,11 +265,11 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                         IsBusyMessage = "loading types...";
 
                         var types = await App.ApiService.GetContributionTypesAsync();
-
-                        types.ForEach(type =>
+                        
+                        foreach (var type in types)
                         {
                             Types.Add(type);
-                        });
+                        }
 
                         IsBusyMessage = "loading technologies...";
 
@@ -274,22 +277,22 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
                         // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
                         var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-
-                        areas.ForEach(area =>
+                        
+                        foreach (var area in areas)
                         {
                             CategoryAreas.Add(area);
-                        });
+                        }
 
                         // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
 
                         IsBusyMessage = "loading visibility options...";
 
                         var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-                        visibilities.ForEach(visibility =>
+                        
+                        foreach (var visibility in visibilities)
                         {
                             Visibilities.Add(visibility);
-                        });
+                        }
 
                         // If the contribution object wasn't passed during Dialog creation, setup a blank one.
                         if (SelectedContribution == null)
@@ -354,7 +357,22 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                 await ex.LogExceptionAsync();
             }
         }
-        
+
+        public override void OnPageNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnPageNavigatedTo(e);
+        }
+
+        public override void OnPageNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnPageNavigatedFrom(e);
+        }
+
+        public override void OnPageNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            base.OnPageNavigatingFrom(e);
+        }
+
         #endregion
     }
 }

@@ -1,13 +1,15 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MvpCompanion.UI.WinUI.Common;
 
 namespace MvpCompanion.UI.WinUI.Views
 {
-    public sealed partial class AddContributionsPage : Page
+    public sealed partial class AddContributionsPage : BasePage
     {
         public AddContributionsPage()
         {
             InitializeComponent();
+            this.PageViewModel = this.ViewModel;
 
             // Workaround to VisualStates not working properly
             SizeChanged += AddContributionsPage_SizeChanged;
@@ -20,11 +22,11 @@ namespace MvpCompanion.UI.WinUI.Views
             AnnualReachNumericBox.Maximum = int.MaxValue;
         }
 
-        private void AddContributionsPage_SizeChanged(object sender, Microsoft.UI.Xaml.SizeChangedEventArgs e)
+        private void AddContributionsPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (e.NewSize.Width < 641)
             {
-                BottomRowDefinition.Height = new GridLength(1, GridUnitType.Star);
+                BottomRowDefinition.Height = new GridLength() { GridUnitType = GridUnitType.Star };
                 Grid.SetColumnSpan(FormGrid, 3);
 
                 Grid.SetRow(QueueGrid, 2);
@@ -35,7 +37,7 @@ namespace MvpCompanion.UI.WinUI.Views
             }
             else
             {
-                BottomRowDefinition.Height = new GridLength(1, GridUnitType.Auto);
+                BottomRowDefinition.Height = new GridLength(){GridUnitType = GridUnitType.Auto};
 
                 Grid.SetColumnSpan(FormGrid, 1);
 

@@ -1,15 +1,17 @@
-﻿<Page x:Class="MvpCompanion.UI.WinUI.Views.HomePage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
-      xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
-      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
-      xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
-      xmlns:controls="using:Microsoft.UI.Xaml.Controls"
-      mc:Ignorable="d">
+﻿<common:BasePage x:Class="MvpCompanion.UI.WinUI.Views.HomePage"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
+                 xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
+                 xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+                 xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
+                 xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
+                 xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+                 xmlns:views="using:MvpCompanion.UI.WinUI.Views"
+                 xmlns:common="using:MvpCompanion.UI.WinUI.Common"
+                 mc:Ignorable="d">
 
     <Page.DataContext>
         <viewModels:HomeViewModel x:Name="ViewModel" />
@@ -52,6 +54,45 @@
                     Value="Center" />
         </Style>
     </Page.Resources>
+
+    <!--<telerik:RadRibbonView x:Name="RibbonView1">
+            <telerik:RadRibbonView.ApplicationButtonIcon>
+                <SymbolIcon Symbol="Admin" />
+            </telerik:RadRibbonView.ApplicationButtonIcon>
+            <telerik:RadRibbonView.Items>
+                <telerik:RadRibbonTab Header="Home">
+                    <telerik:RadRibbonGroup Header="Clipboard">
+                        <telerik:RadRibbonButton Text="Copy" />
+                        <telerik:RadRibbonButton Text="Paste" />
+                    </telerik:RadRibbonGroup>
+                    
+                </telerik:RadRibbonTab>
+                <telerik:RadRibbonTab Header="Activities">
+                    <telerik:RadRibbonGroup Header="Activities">
+                        <telerik:RadRibbonButton Text="Add"
+                                                 Size="Large">
+                            <telerik:RadRibbonButton.LargeIcon>
+                                <SymbolIcon Symbol="Add" />
+                            </telerik:RadRibbonButton.LargeIcon>
+                        </telerik:RadRibbonButton>
+                    </telerik:RadRibbonGroup>
+                </telerik:RadRibbonTab>
+            </telerik:RadRibbonView.Items>
+            <telerik:RadRibbonView.Backstage>
+                <telerik:RadRibbonBackstage>
+                    <telerik:RadRibbonBackstageItem Header="Save"
+                                                    IsSelectable="False" />
+                    <telerik:RadRibbonBackstageItem Header="Open"
+                                                    IsSelectable="False" />
+                    <telerik:RadRibbonBackstageItem Header="Recent">
+                        <StackPanel Margin="10">
+                            <TextBlock Text="Recent files: "
+                                       Margin="0 0 0 5" />
+                        </StackPanel>
+                    </telerik:RadRibbonBackstageItem>
+                </telerik:RadRibbonBackstage>
+            </telerik:RadRibbonView.Backstage>
+        </telerik:RadRibbonView>-->
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -217,4 +258,4 @@
                                      Grid.RowSpan="2"
                                      Grid.Column="0" />
     </Grid>
-</Page>
+</common:BasePage>

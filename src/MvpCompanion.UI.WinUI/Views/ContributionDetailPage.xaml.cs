@@ -1,12 +1,13 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using MvpCompanion.UI.WinUI.Common;
 
 namespace MvpCompanion.UI.WinUI.Views
 {
-    public sealed partial class ContributionDetailPage : Page
+    public sealed partial class ContributionDetailPage : BasePage
     {
         public ContributionDetailPage()
         {
             InitializeComponent();
+            PageViewModel = this.ViewModel;
 
             AnnualReachNumericBox.Minimum = 0;
             SecondAnnualQuantityNumericBox.Minimum = 0;

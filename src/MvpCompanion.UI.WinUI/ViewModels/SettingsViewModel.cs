@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Microsoft.UI.Xaml.Navigation;
+using MvpCompanion.UI.WinUI.Views;
+using System;
 using Windows.ApplicationModel;
-using Microsoft.UI.Xaml.Navigation;
-using CommonHelpers.Common;
+using MvpCompanion.UI.WinUI.Common;
 
 namespace MvpCompanion.UI.WinUI.ViewModels
 {
-    public class SettingsViewModel : ViewModelBase
+    public class SettingsViewModel : PageViewModelBase
     {
         public SettingsViewModel()
         {
@@ -34,9 +33,11 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             get => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline;
             set => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline = value;
         }
-
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        
+        public override async void OnPageNavigatedTo(NavigationEventArgs e)
         {
+            base.OnPageNavigatedTo(e);
+
             if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
             {
                 if (!shellVm.IsLoggedIn)
@@ -52,9 +53,14 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             }
         }
 
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+        public override void OnPageNavigatedFrom(NavigationEventArgs e)
         {
-            return base.OnNavigatedFromAsync(pageState, suspending);
+            base.OnPageNavigatedFrom(e);
+        }
+
+        public override void OnPageNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            base.OnPageNavigatingFrom(e);
         }
     }
 }

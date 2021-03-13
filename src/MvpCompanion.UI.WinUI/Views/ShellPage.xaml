@@ -1,67 +1,28 @@
-﻿<Page x:Class="MvpCompanion.UI.WinUI.Views.ShellPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
-      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:telerik="using:Telerik.UI.Xaml.Controls"
-      xmlns:windowsUiControls="using:Windows.UI.Xaml.Controls"
-      mc:Ignorable="d">
+﻿<common:BasePage x:Class="MvpCompanion.UI.WinUI.Views.ShellPage"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
+                xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+                xmlns:telerik="using:Telerik.UI.Xaml.Controls"
+                xmlns:windowsUiControls="using:Windows.UI.Xaml.Controls"
+                xmlns:views="using:MvpCompanion.UI.WinUI.Views"
+                xmlns:common="using:MvpCompanion.UI.WinUI.Common"
+                mc:Ignorable="d">
 
     <Page.DataContext>
         <viewModels:ShellViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <!--<Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>-->
 
-        <!--<telerik:RadRibbonView x:Name="RibbonView1">
-            <telerik:RadRibbonView.ApplicationButtonIcon>
-                <SymbolIcon Symbol="Admin" />
-            </telerik:RadRibbonView.ApplicationButtonIcon>
-            <telerik:RadRibbonView.Items>
-                <telerik:RadRibbonTab Header="Home">
-                    <telerik:RadRibbonGroup Header="Clipboard">
-                        <telerik:RadRibbonButton Text="Copy" />
-                        <telerik:RadRibbonButton Text="Paste" />
-                    </telerik:RadRibbonGroup>
-                    
-                </telerik:RadRibbonTab>
-                <telerik:RadRibbonTab Header="Activities">
-                    <telerik:RadRibbonGroup Header="Activities">
-                        <telerik:RadRibbonButton Text="Add"
-                                                 Size="Large">
-                            <telerik:RadRibbonButton.LargeIcon>
-                                <SymbolIcon Symbol="Add" />
-                            </telerik:RadRibbonButton.LargeIcon>
-                        </telerik:RadRibbonButton>
-                    </telerik:RadRibbonGroup>
-                </telerik:RadRibbonTab>
-            </telerik:RadRibbonView.Items>
-            <telerik:RadRibbonView.Backstage>
-                <telerik:RadRibbonBackstage>
-                    <telerik:RadRibbonBackstageItem Header="Save"
-                                                    IsSelectable="False" />
-                    <telerik:RadRibbonBackstageItem Header="Open"
-                                                    IsSelectable="False" />
-                    <telerik:RadRibbonBackstageItem Header="Recent">
-                        <StackPanel Margin="10">
-                            <TextBlock Text="Recent files: "
-                                       Margin="0 0 0 5" />
-                        </StackPanel>
-                    </telerik:RadRibbonBackstageItem>
-                </telerik:RadRibbonBackstage>
-            </telerik:RadRibbonView.Backstage>
-        </telerik:RadRibbonView>-->
 
         <NavigationView x:Name="NavView"
-                            Loaded="NavView_Loaded"
-                            ItemInvoked="NavView_ItemInvoked"
-                            BackRequested="NavView_BackRequested">
+                        PaneDisplayMode="Top"
+                        Loaded="NavView_Loaded"
+                        ItemInvoked="NavView_ItemInvoked"
+                        BackRequested="NavView_BackRequested">
             <NavigationView.MenuItems>
                 <NavigationViewItem Tag="home"
                                     Icon="Home"
@@ -77,41 +38,8 @@
                                   Foreground="DarkRed"
                                   Width="48"
                                   Height="48" />
-                        <!--<Grid>
-                            <FontIcon FontFamily="Segoe MDL2 Assets"
-                                      Glyph="&#xE00B;"
-                                      Foreground="DarkRed"
-                                      Width="48"
-                                      Height="48" />
-                            <FontIcon FontFamily="Segoe MDL2 Assets"
-                                      Glyph="&#xE006;"
-                                      Foreground="White"
-                                      Width="48"
-                                      Height="48" />
-                        </Grid>-->
-                        
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItemSeparator />
-                <NavigationViewItemHeader x:Name="MainPagesHeader"
-                                          Content="Main pages" />
-                <!--<NavigationViewItem Tag="apps"
-                                         Content="Apps">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets"
-                                  Glyph="&#xEB3C;" />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem Tag="games"
-                                         Content="Games">
-                    <NavigationViewItem.Icon>
-                        <FontIcon FontFamily="Segoe MDL2 Assets"
-                                  Glyph="&#xE7FC;" />
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>
-                <NavigationViewItem Tag="music"
-                                         Icon="Audio"
-                                         Content="Music" />-->
             </NavigationView.MenuItems>
 
             <NavigationView.FooterMenuItems>
@@ -119,6 +47,31 @@
                                     Icon="Setting"
                                     Content="Settings" />
             </NavigationView.FooterMenuItems>
+
+            <NavigationView.PaneFooter>
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Grid>
+                        <SymbolIcon Symbol="Contact"
+                                    Width="48"
+                                    Height="48" />
+                        <Ellipse Visibility="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}"
+                                 Margin="5"
+                                 Width="38"
+                                 Height="38">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{x:Bind ViewModel.ProfileImagePath, Converter={StaticResource BitmapImageConverter}, Mode=OneWay}" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+                    </Grid>
+
+                    <Button Click="LogoutButton_OnClick"
+                            Content="Logout"
+                            Background="DarkRed"
+                            Foreground="White"
+                            Margin="10,0,0,0" />
+                </StackPanel>
+            </NavigationView.PaneFooter>
 
             <ScrollViewer>
                 <Frame x:Name="ContentFrame"
@@ -128,7 +81,7 @@
             </ScrollViewer>
         </NavigationView>
 
-        <VisualStateManager.VisualStateGroups>
+        <!--<VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState>
                     <VisualState.StateTriggers>
@@ -140,7 +93,7 @@
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
+        </VisualStateManager.VisualStateGroups>-->
 
         <!--<controls:HamburgerMenu x:Name="Menu"
                                 VisualStateNarrowMinWidth="0"
@@ -275,6 +228,7 @@
         <Grid x:Name="LoginOverlay"
               Visibility="Collapsed"
               Background="{ThemeResource SystemControlChromeHighAcrylicElementMediumBrush}">
+
             <Grid.Children>
                 <windowsUiControls:WebView x:Name="AuthWebView"
                                            NavigationCompleted="WebView_OnNavigationCompleted"
@@ -332,4 +286,4 @@
                                      Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
                                      Style="{StaticResource PageBusyIndicatorStyle}" />
     </Grid>
-</Page>
+</common:BasePage>

@@ -1,15 +1,16 @@
-﻿<Page x:Name="Page"
-      x:Class="MvpCompanion.UI.WinUI.Views.AddContributionsPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
-      xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
-      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:ui="using:Microsoft.Toolkit.Uwp.UI"
-      xmlns:localConverters="using:MvpCompanion.UI.WinUI.Converters"
-      mc:Ignorable="d">
+﻿<common:BasePage x:Name="Page"
+                x:Class="MvpCompanion.UI.WinUI.Views.AddContributionsPage"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
+                xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
+                xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+                xmlns:localConverters="using:MvpCompanion.UI.WinUI.Converters"
+                xmlns:views="using:MvpCompanion.UI.WinUI.Views"
+                xmlns:common="using:MvpCompanion.UI.WinUI.Common"
+                mc:Ignorable="d">
 
     <Page.DataContext>
         <viewModels:AddContributionsViewModel x:Name="ViewModel" />
@@ -36,8 +37,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition x:Name="BottomRowDefinition"
-                           Height="Auto"/>
-        </Grid.RowDefinitions>                  
+                           Height="Auto" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
             <ColumnDefinition Width="1" />
@@ -70,12 +71,13 @@
                            Style="{StaticResource SubtitleTextBlockStyle}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
-                <Grid Background="Red" Visibility="{Binding WarningMessage, Converter={StaticResource NullToVisibilityConverter}}">
+                <Grid Background="Red"
+                      Visibility="{Binding WarningMessage, Converter={StaticResource NullToVisibilityConverter}}">
                     <TextBlock Text="{Binding WarningMessage}"
                                Foreground="White"
                                TextWrapping="WrapWholeWords"
                                VerticalAlignment="Center"
-                               HorizontalAlignment="Center"/>
+                               HorizontalAlignment="Center" />
                 </Grid>
             </Grid>
 
@@ -331,7 +333,7 @@
                     </ComboBox>
                 </StackPanel>
             </ScrollViewer>
-            
+
             <CommandBar Grid.Row="2"
                         Grid.Column="0">
                 <AppBarButton Label="clear form"
@@ -346,24 +348,6 @@
         <Grid x:Name="QueueGrid"
               Grid.Row="1"
               Grid.Column="2">
-            <animations:Implicit.HideAnimations>
-                <animations:ScaleAnimation From="1"
-                                           To="0.7"
-                                           Duration="0:0:1.0" />
-                <animations:OpacityAnimation From="1"
-                                             To="0"
-                                             Duration="0:0:1.0" />
-            </animations:Implicit.HideAnimations>
-            <animations:Implicit.ShowAnimations>
-                <animations:ScaleAnimation From="0.7"
-                                           To="1"
-                                           Delay="0:0:0.2"
-                                           Duration="0:0:0.8" />
-                <animations:OpacityAnimation From="0"
-                                             To="1"
-                                             Delay="0:0:0.2"
-                                             Duration="0:0:0.8" />
-            </animations:Implicit.ShowAnimations>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -451,7 +435,7 @@
                 </ListView.ItemContainerStyle>
             </ListView>
 
-            <CommandBar x:Name="UploadQueueCommandBar" 
+            <CommandBar x:Name="UploadQueueCommandBar"
                         Grid.Row="2">
                 <AppBarButton Label="clear queue"
                               Icon="Clear"
@@ -549,4 +533,4 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
     </Grid>
-</Page>
+</common:BasePage>

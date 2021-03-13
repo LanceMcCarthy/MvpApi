@@ -1,15 +1,17 @@
-﻿<Page x:Class="MvpCompanion.UI.WinUI.Views.SettingsPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:controls="using:Telerik.UI.Xaml.Controls"
-      xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
-      xmlns:toolkitControls="using:Microsoft.Toolkit.Uwp.UI.Controls"
-      xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
-      xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
-      mc:Ignorable="d"
-      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+﻿<common:BasePage x:Class="MvpCompanion.UI.WinUI.Views.SettingsPage"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:controls="using:Telerik.UI.Xaml.Controls"
+                xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
+                xmlns:toolkitControls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+                xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
+                xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
+                xmlns:views="using:MvpCompanion.UI.WinUI.Views"
+                xmlns:common="using:MvpCompanion.UI.WinUI.Common"
+                mc:Ignorable="d"
+                Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
         <Style x:Key="MyHeaderToggleButtonStyle"
@@ -376,7 +378,7 @@
 
                     <ToggleSwitch IsOn="{Binding UseBetaEditor, Mode=TwoWay}"
                                   Header="Use Experimental Editor"
-                                  VerticalAlignment="Center"/>
+                                  VerticalAlignment="Center" />
                 </StackPanel>
             </toolkitControls:Expander>
 
@@ -415,7 +417,7 @@
 
                     <input:RadDatePicker Header="Submissions Start Override"
                                          Value="{Binding SubmissionStartDate, Mode=TwoWay}"
-                                         HorizontalAlignment="Left"/>
+                                         HorizontalAlignment="Left" />
 
                     <TextBlock Text="Changing this value will temporarily override the deadline date for uploading activities (this does not guarantee that the API will accept it)."
                                Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
@@ -442,9 +444,9 @@
 
                     <input:RadDatePicker Header="Submissions Deadline Override"
                                          Value="{Binding SubmissionDeadline, Mode=TwoWay}"
-                                         HorizontalAlignment="Left"/>
+                                         HorizontalAlignment="Left" />
                 </StackPanel>
             </toolkitControls:Expander>
         </StackPanel>
     </Grid>
-</Page>
+</common:BasePage>

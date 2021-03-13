@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Navigation;
+using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Email;
 using Windows.Storage;
 using Windows.UI.Popups;
-using CommonHelpers.Common;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Navigation;
+using MvpCompanion.UI.WinUI.Common;
 
 namespace MvpCompanion.UI.WinUI.ViewModels
 {
-    public class AboutViewModel : ViewModelBase
+    public class AboutViewModel : PageViewModelBase
     {
-        private readonly ApplicationDataContainer _roamingSettings;
-        private string _appVersion;
-        private Visibility _feedbackHubButtonVisibility;
-        private int _daysToKeepErrorLogs = 5;
+        private string appVersion;
+        private readonly ApplicationDataContainer roamingSettings;
+        private Visibility feedbackHubButtonVisibility = Visibility.Collapsed;
+        private int daysToKeepErrorLogs = 5;
 
         public AboutViewModel()
         {
@@ -26,7 +25,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             }
             else
             {
-                _roamingSettings = ApplicationData.Current.RoamingSettings;
+                roamingSettings = ApplicationData.Current.RoamingSettings;
             }
         }
 
@@ -34,40 +33,40 @@ namespace MvpCompanion.UI.WinUI.ViewModels
         {
             get
             {
-                _appVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
+                appVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
 
-                return _appVersion;
+                return appVersion;
             }
-            set => SetProperty(ref _appVersion, value);
+            set => SetProperty(ref appVersion, value);
         }
 
         public int DaysToKeepErrorLogs
         {
             get
             {
-                if (_roamingSettings.Values.TryGetValue("DaysToKeepErrorLogs", out object rawValue))
+                if (roamingSettings.Values.TryGetValue("DaysToKeepErrorLogs", out object rawValue))
                 {
-                    _daysToKeepErrorLogs = Convert.ToInt32(rawValue);
+                    daysToKeepErrorLogs = Convert.ToInt32(rawValue);
                 }
                 else
                 {
-                    _roamingSettings.Values["DaysToKeepErrorLogs"] = _daysToKeepErrorLogs;
+                    roamingSettings.Values["DaysToKeepErrorLogs"] = daysToKeepErrorLogs;
                 }
 
-                return _daysToKeepErrorLogs;
+                return daysToKeepErrorLogs;
             }
             set
             {
-                Set(ref _daysToKeepErrorLogs, value);
+                SetProperty(ref daysToKeepErrorLogs, value);
 
-                _roamingSettings.Values["DaysToKeepErrorLogs"] = value;
+                roamingSettings.Values["DaysToKeepErrorLogs"] = value;
             }
         }
         
         public Visibility FeedbackHubButtonVisibility
         {
-            get => _feedbackHubButtonVisibility;
-            set => Set(ref _feedbackHubButtonVisibility, value);
+            get => feedbackHubButtonVisibility;
+            set => SetProperty(ref feedbackHubButtonVisibility, value);
         }
 
         //public bool UseBetaEditor
@@ -85,7 +84,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public async void FeedbackButton_Click(object sender, RoutedEventArgs e)
         {
-            await StoreServicesFeedbackLauncher.GetDefault().LaunchAsync();
+            //await StoreServicesFeedbackLauncher.GetDefault().LaunchAsync();
         }
         
         private async Task CreateEmailAsync()
@@ -104,7 +103,9 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             }
             catch (Exception ex)
             {
-                await new MessageDialog($"Something went wrong trying to open your email application automatically. You can still manually send an email to awesome.apps@outlook.com. /r/n/nError: {ex.Message}")
+                await new MessageDialog(
+                        $"Something went wrong trying to open your email application automatically. You can still manually send an email to awesome.apps@outlook.com. " +
+                        $"/r/n/nError: {ex.Message}")
                     .ShowAsync();
             }
             finally
@@ -113,21 +114,26 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                 IsBusyMessage = "";
             }
         }
-        
-        #region Navigation
 
-        public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        #region Navigation
+        
+        public override void OnPageNavigatedTo(NavigationEventArgs e)
         {
-            FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
-                ? Visibility.Visible 
-                : Visibility.Collapsed;
-            
-            return base.OnNavigatedToAsync(parameter, mode, state);
+            //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported() 
+            //    ? Visibility.Visible 
+            //    : Visibility.Collapsed;
+
+            base.OnPageNavigatedTo(e);
         }
 
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+        public override void OnPageNavigatedFrom(NavigationEventArgs e)
         {
-            return base.OnNavigatedFromAsync(pageState, suspending);
+            base.OnPageNavigatedFrom(e);
+        }
+
+        public override void OnPageNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            base.OnPageNavigatingFrom(e);
         }
 
         #endregion

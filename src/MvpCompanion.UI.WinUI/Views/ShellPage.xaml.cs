@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
@@ -17,19 +18,12 @@ using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
 using MvpCompanion.UI.Common.Helpers;
 using Newtonsoft.Json;
-//using NavigationView = Microsoft.UI.Xaml.Controls.NavigationView;
-//using NavigationViewBackRequestedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewBackRequestedEventArgs;
-//using NavigationViewItem = Microsoft.UI.Xaml.Controls.NavigationViewItem;
-//using NavigationViewItemInvokedEventArgs = Microsoft.UI.Xaml.Controls.NavigationViewItemInvokedEventArgs;
-//using NavigationViewItemSeparator = Microsoft.UI.Xaml.Controls.NavigationViewItemSeparator;
-//using Page = Microsoft.UI.Xaml.Controls.Page;
-//using Symbol = Microsoft.UI.Xaml.Controls.Symbol;
-//using SymbolIcon = Microsoft.UI.Xaml.Controls.SymbolIcon;
 using Microsoft.UI.Xaml.Controls;
+using MvpCompanion.UI.WinUI.Common;
 
 namespace MvpCompanion.UI.WinUI.Views
 {
-    public sealed partial class ShellPage : Page
+    public sealed partial class ShellPage : BasePage
     {
         private static readonly string _scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
         private static readonly string _clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
@@ -50,6 +44,7 @@ namespace MvpCompanion.UI.WinUI.Views
         {
             Instance = this;
             InitializeComponent();
+            PageViewModel = this.ViewModel;
             this.Loaded += ShellPage_Loaded;
         }
         
@@ -335,113 +330,88 @@ namespace MvpCompanion.UI.WinUI.Views
         //{
         //    get { return NavView.CompactModeThresholdWidth; }
         //}
-
-        //private void ContentFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
-        //{
-        //    throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
-        //}
+        
 
         //// List of ValueTuple holding the Navigation Tag and the relative Navigation Page
-        //private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
-        //{
-        //    ("Home", typeof(HomePage)),
-        //    ("Profile", typeof(ProfilePage)),
-        //    ("Kudos", typeof(KudosPage)),
-        //    ("Setting", typeof(SettingsPage)),
-        //    ("About", typeof(AboutPage)),
-        //};
+        private readonly List<(string Tag, Type Page)> _pages = new List<(string Tag, Type Page)>
+        {
+            ("home", typeof(HomePage)),
+            ("profile", typeof(ProfilePage)),
+            ("kudos", typeof(KudosPage)),
+            ("setting", typeof(SettingsPage)),
+            ("about", typeof(AboutPage)),
+        };
+        
 
-        //private void NavView_Loaded(object sender, RoutedEventArgs e)
-        //{
+        // NavView_SelectionChanged is not used in this example, but is shown for completeness.
+        // You will typically handle either ItemInvoked or SelectionChanged to perform navigation,
+        // but not both.
+        private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        {
+            if (args.IsSettingsSelected == true)
+            {
+                NavView_Navigate("settings", args.RecommendedNavigationTransitionInfo);
+            }
+            else if (args.SelectedItemContainer != null)
+            {
+                var navItemTag = args.SelectedItemContainer.Tag.ToString();
+                NavView_Navigate(navItemTag, args.RecommendedNavigationTransitionInfo);
+            }
+        }
 
-        //}
+        private void NavView_Navigate(string navItemTag, NavigationTransitionInfo transitionInfo)
+        {
+            Type page = null;
 
-        //private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
-        //{
-        //    if (args.IsSettingsInvoked == true)
-        //    {
-        //        NavView_Navigate("settings", args.RecommendedNavigationTransitionInfo);
-        //    }
-        //    else if (args.InvokedItemContainer != null)
-        //    {
-        //        var navItemTag = args.InvokedItemContainer.Tag.ToString();
-        //        NavView_Navigate(navItemTag, args.RecommendedNavigationTransitionInfo);
-        //    }
-        //}
+            if (navItemTag == "settings")
+            {
+                page = typeof(SettingsPage);
+            }
+            else
+            {
+                var item = _pages.FirstOrDefault(p => p.Tag.Equals(navItemTag));
+                page = item.Page;
+            }
 
-        //// NavView_SelectionChanged is not used in this example, but is shown for completeness.
-        //// You will typically handle either ItemInvoked or SelectionChanged to perform navigation,
-        //// but not both.
-        //private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
-        //{
-        //    if (args.IsSettingsSelected == true)
-        //    {
-        //        NavView_Navigate("settings", args.RecommendedNavigationTransitionInfo);
-        //    }
-        //    else if (args.SelectedItemContainer != null)
-        //    {
-        //        var navItemTag = args.SelectedItemContainer.Tag.ToString();
-        //        NavView_Navigate(navItemTag, args.RecommendedNavigationTransitionInfo);
-        //    }
-        //}
+            // Get the page type before navigation so you can prevent duplicate entries in the backstack.
+            var preNavPageType = ContentFrame.CurrentSourcePageType;
 
-        //private void NavView_Navigate(string navItemTag, NavigationTransitionInfo transitionInfo)
-        //{
-        //    Type _page = null;
-        //    if (navItemTag == "settings")
-        //    {
-        //        _page = typeof(SettingsPage);
-        //    }
-        //    else
-        //    {
-        //        var item = _pages.FirstOrDefault(p => p.Tag.Equals(navItemTag));
-        //        _page = item.Page;
-        //    }
+            // Only navigate if the selected page isn't currently loaded.
+            if (!(page is null) && !Type.Equals(preNavPageType, page))
+            {
+                ContentFrame.Navigate(page, null, transitionInfo);
+            }
+        }
+        
 
-        //    // Get the page type before navigation so you can prevent duplicate
-        //    // entries in the backstack.
-        //    var preNavPageType = ContentFrame.CurrentSourcePageType;
+        private void CoreDispatcher_AcceleratorKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs e)
+        {
+            // When Alt+Left are pressed navigate back
+            if (e.EventType == CoreAcceleratorKeyEventType.SystemKeyDown
+                && e.VirtualKey == VirtualKey.Left
+                && e.KeyStatus.IsMenuKeyDown
+                && !e.Handled)
+            {
+                e.Handled = TryGoBack();
+            }
+        }
 
-        //    // Only navigate if the selected page isn't currently loaded.
-        //    if (!(_page is null) && !Type.Equals(preNavPageType, _page))
-        //    {
-        //        ContentFrame.Navigate(_page, null, transitionInfo);
-        //    }
-        //}
+        private void System_BackRequested(object sender, BackRequestedEventArgs e)
+        {
+            if (!e.Handled)
+            {
+                e.Handled = TryGoBack();
+            }
+        }
 
-        //private void NavView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
-        //{
-        //    TryGoBack();
-        //}
-
-        //private void CoreDispatcher_AcceleratorKeyActivated(CoreDispatcher sender, AcceleratorKeyEventArgs e)
-        //{
-        //    // When Alt+Left are pressed navigate back
-        //    if (e.EventType == CoreAcceleratorKeyEventType.SystemKeyDown
-        //        && e.VirtualKey == VirtualKey.Left
-        //        && e.KeyStatus.IsMenuKeyDown == true
-        //        && !e.Handled)
-        //    {
-        //        e.Handled = TryGoBack();
-        //    }
-        //}
-
-        //private void System_BackRequested(object sender, BackRequestedEventArgs e)
-        //{
-        //    if (!e.Handled)
-        //    {
-        //        e.Handled = TryGoBack();
-        //    }
-        //}
-
-        //private void CoreWindow_PointerPressed(CoreWindow sender, PointerEventArgs e)
-        //{
-        //    // Handle mouse back button.
-        //    if (e.CurrentPoint.Properties.IsXButton1Pressed)
-        //    {
-        //        e.Handled = TryGoBack();
-        //    }
-        //}
+        private void CoreWindow_PointerPressed(CoreWindow sender, PointerEventArgs e)
+        {
+            // Handle mouse back button.
+            if (e.CurrentPoint.Properties.IsXButton1Pressed)
+            {
+                e.Handled = TryGoBack();
+            }
+        }
 
         private bool TryGoBack()
         {
@@ -449,37 +419,35 @@ namespace MvpCompanion.UI.WinUI.Views
                 return false;
 
             // Don't go back if the nav pane is overlayed.
-            if (NavView.IsPaneOpen &&
-                (NavView.DisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Compact ||
-                 NavView.DisplayMode == Microsoft.UI.Xaml.Controls.NavigationViewDisplayMode.Minimal))
+            if (NavView.IsPaneOpen && (NavView.DisplayMode == NavigationViewDisplayMode.Compact || NavView.DisplayMode == NavigationViewDisplayMode.Minimal))
                 return false;
 
             ContentFrame.GoBack();
+
             return true;
         }
 
-        //private void On_Navigated(object sender, NavigationEventArgs e)
-        //{
-        //    NavView.IsBackEnabled = ContentFrame.CanGoBack;
+        private void Frame_OnNavigated(object sender, NavigationEventArgs e)
+        {
+            NavView.IsBackEnabled = ContentFrame.CanGoBack;
 
-        //    if (ContentFrame.SourcePageType == typeof(SettingsPage))
-        //    {
-        //        // SettingsItem is not part of NavView.MenuItems, and doesn't have a Tag.
-        //        NavView.SelectedItem = (NavigationViewItem) NavView.SettingsItem;
-        //        NavView.Header = "Settings";
-        //    }
-        //    else if (ContentFrame.SourcePageType != null)
-        //    {
-        //        var item = _pages.FirstOrDefault(p => p.Page == e.SourcePageType);
+            if (ContentFrame.SourcePageType == typeof(SettingsPage))
+            {
+                // SettingsItem is not part of NavView.MenuItems, and doesn't have a Tag.
+                NavView.SelectedItem = (NavigationViewItem)NavView.SettingsItem;
+                NavView.Header = "Settings";
+            }
+            else if (ContentFrame.SourcePageType != null)
+            {
+                var item = _pages.FirstOrDefault(p => p.Page == e.SourcePageType);
 
-        //        NavView.SelectedItem = NavView.MenuItems
-        //            .OfType<NavigationViewItem>()
-        //            .First(n => n.Tag.Equals(item.Tag));
+                NavView.SelectedItem = NavView.MenuItems
+                    .OfType<NavigationViewItem>()
+                    .First(n => n.Tag.Equals(item.Tag));
 
-        //        NavView.Header =
-        //            ((NavigationViewItem) NavView.SelectedItem)?.Content?.ToString();
-        //    }
-        //}
+                NavView.Header = ((NavigationViewItem)NavView.SelectedItem)?.Content?.ToString();
+            }
+        }
 
         private void NavView_Loaded(object sender, RoutedEventArgs e)
         {
@@ -514,17 +482,25 @@ namespace MvpCompanion.UI.WinUI.Views
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            
+            if (args.IsSettingsInvoked == true)
+            {
+                NavView_Navigate("settings", args.RecommendedNavigationTransitionInfo);
+            }
+            else if (args.InvokedItemContainer != null)
+            {
+                var navItemTag = args.InvokedItemContainer.Tag.ToString();
+                NavView_Navigate(navItemTag, args.RecommendedNavigationTransitionInfo);
+            }
         }
 
         private void NavView_BackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
-            
+            TryGoBack();
         }
 
         private void ContentFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
         {
-            
+            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
     }
 }

@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Windows.ApplicationModel;
-using Windows.Foundation.Metadata;
-using Windows.Storage;
-using Windows.UI.Popups;
-using CommonHelpers.Common;
+﻿using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using Microsoft.UI.Xaml;
@@ -19,26 +8,37 @@ using MvpApi.Common.Models;
 using MvpCompanion.UI.Common.Extensions;
 using MvpCompanion.UI.Common.Helpers;
 using MvpCompanion.UI.WinUI.Dialogs;
+using MvpCompanion.UI.WinUI.Views;
+using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.ApplicationModel;
+using Windows.Storage;
+using Windows.UI.Popups;
+using MvpCompanion.UI.WinUI.Common;
 
 namespace MvpCompanion.UI.WinUI.ViewModels
 {
-    public class ContributionDetailViewModel : ViewModelBase
+    public class ContributionDetailViewModel : PageViewModelBase
     {
         #region Fields
 
-        private ContributionsModel _originalContribution;
-        private ContributionsModel _selectedContribution;
-        private bool _isSelectedContributionDirty;
-        private string _urlHeader = "Url";
-        private string _annualQuantityHeader = "Annual Quantity";
-        private string _secondAnnualQuantityHeader = "Second Annual Quantity";
-        private string _annualReachHeader = "Annual Reach";
-        private bool _isUrlRequired;
-        private bool _isAnnualQuantityRequired;
-        private bool _isSecondAnnualQuantityRequired;
-        private bool _isAnnualReachRequired;
-        private bool _canSave;
-        private string _warningMessage;
+        private ContributionsModel originalContribution;
+        private ContributionsModel selectedContribution;
+        private bool isSelectedContributionDirty;
+        private string urlHeader = "Url";
+        private string annualQuantityHeader = "Annual Quantity";
+        private string secondAnnualQuantityHeader = "Second Annual Quantity";
+        private string annualReachHeader = "Annual Reach";
+        private bool isUrlRequired;
+        private bool isAnnualQuantityRequired;
+        private bool isSecondAnnualQuantityRequired;
+        private bool isAnnualReachRequired;
+        private bool canSave;
+        private string warningMessage;
 
         //private AdditionalTechnologyAreasPicker picker;
 
@@ -59,8 +59,8 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public ContributionsModel SelectedContribution
         {
-            get => _selectedContribution;
-            set => SetProperty(ref _selectedContribution, value);
+            get => selectedContribution;
+            set => SetProperty(ref selectedContribution, value);
         }
         
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
@@ -69,68 +69,68 @@ namespace MvpCompanion.UI.WinUI.ViewModels
         
         public bool IsSelectedContributionDirty
         {
-            get => _isSelectedContributionDirty;
-            set => SetProperty(ref _isSelectedContributionDirty, value);
+            get => isSelectedContributionDirty;
+            set => SetProperty(ref isSelectedContributionDirty, value);
         }
 
         public string AnnualQuantityHeader
         {
-            get => _annualQuantityHeader;
-            set => SetProperty(ref _annualQuantityHeader, value);
+            get => annualQuantityHeader;
+            set => SetProperty(ref annualQuantityHeader, value);
         }
 
         public string SecondAnnualQuantityHeader
         {
-            get => _secondAnnualQuantityHeader;
-            set => SetProperty(ref _secondAnnualQuantityHeader, value);
+            get => secondAnnualQuantityHeader;
+            set => SetProperty(ref secondAnnualQuantityHeader, value);
         }
 
         public string AnnualReachHeader
         {
-            get => _annualReachHeader;
-            set => SetProperty(ref _annualReachHeader, value);
+            get => annualReachHeader;
+            set => SetProperty(ref annualReachHeader, value);
         }
 
         public string UrlHeader
         {
-            get => _urlHeader;
-            set => SetProperty(ref _urlHeader, value);
+            get => urlHeader;
+            set => SetProperty(ref urlHeader, value);
         }
 
         public bool IsUrlRequired
         {
-            get => _isUrlRequired;
-            set => SetProperty(ref _isUrlRequired, value);
+            get => isUrlRequired;
+            set => SetProperty(ref isUrlRequired, value);
         }
 
         public bool IsAnnualQuantityRequired
         {
-            get => _isAnnualQuantityRequired;
-            set => SetProperty(ref _isAnnualQuantityRequired, value);
+            get => isAnnualQuantityRequired;
+            set => SetProperty(ref isAnnualQuantityRequired, value);
         }
 
         public bool IsSecondAnnualQuantityRequired
         {
-            get => _isSecondAnnualQuantityRequired;
-            set => SetProperty(ref _isSecondAnnualQuantityRequired, value);
+            get => isSecondAnnualQuantityRequired;
+            set => SetProperty(ref isSecondAnnualQuantityRequired, value);
         }
 
         public bool IsAnnualReachRequired
         {
-            get => _isAnnualReachRequired;
-            set => SetProperty(ref _isAnnualReachRequired, value);
+            get => isAnnualReachRequired;
+            set => SetProperty(ref isAnnualReachRequired, value);
         }
 
         public bool CanSave
         {
-            get => _canSave;
-            set => SetProperty(ref _canSave, value);
+            get => canSave;
+            set => SetProperty(ref canSave, value);
         }
 
         public string WarningMessage
         {
-            get => _warningMessage;
-            set => SetProperty(ref _warningMessage, value);
+            get => warningMessage;
+            set => SetProperty(ref warningMessage, value);
         }
 
         public bool IsAdditionalAreasReady { get; set; }
@@ -207,10 +207,10 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             SelectedContribution.UploadStatus = success ? UploadStatus.Success : UploadStatus.Failed;
 
             // Quality assurance, only logs a successful or failed upload.
-            if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-            {
-                StoreServicesCustomEventLogger.GetDefault().Log($"EditContribution{SelectedContribution.UploadStatus}");
-            }
+            //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+            //{
+            //    StoreServicesCustomEventLogger.GetDefault().Log($"EditContribution{SelectedContribution.UploadStatus}");
+            //}
 
             if (SelectedContribution.UploadStatus == UploadStatus.Success)
             {
@@ -248,8 +248,8 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                 if (result == true)
                 {
                     // Quality assurance, only logs a successful delete.
-                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                        StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionSuccess");
+                    //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionSuccess");
 
                     // Refresh the main cached contributions list because the details for this item has changed
                     IsBusy = true;
@@ -266,15 +266,15 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                 else
                 {
                     // Quality assurance, only logs a failed delete.
-                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                        StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
+                    //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
                 }
             }
             catch (Exception ex)
             {
                 // Quality assurance, only logs a failed delete.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
+                //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
 
                 await ex.LogExceptionAsync();
             }
@@ -302,7 +302,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         private void Compare()
         {
-            var match = _originalContribution.Compare(SelectedContribution);
+            var match = originalContribution.Compare(SelectedContribution);
 
             if (match)
             {
@@ -383,21 +383,20 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
             // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
             var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-
-            areas.ForEach(area =>
+            
+            foreach (var area in areas)
             {
                 CategoryAreas.Add(area);
-            });
-
-
+            }
+            
             IsBusyMessage = "loading visibility options...";
 
             var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-            visibilities.ForEach(visibility =>
+            
+            foreach (var visibility in visibilities)
             {
                 Visibilities.Add(visibility);
-            });
+            }
         }
 
         public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
@@ -422,7 +421,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         #region Navigation
 
-        public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        public override async void OnPageNavigatedTo(NavigationEventArgs e)
         {
             if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
             {
@@ -439,7 +438,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                     IsBusyMessage = "logging in...";
 
                     await ShellPage.Instance.SignInAsync();
-                    
+
                     IsBusyMessage = "";
                     IsBusy = false;
                 }
@@ -464,7 +463,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                             DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
 
                             // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-                            _originalContribution = SelectedContribution.Clone();
+                            originalContribution = SelectedContribution.Clone();
 
                             if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
                             {
@@ -504,25 +503,25 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                     }
                 }
             }
+
+            base.OnPageNavigatedTo(e);
         }
 
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            return base.OnNavigatedFromAsync(pageState, suspending);
-        }
-
-        public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
+        public override void OnPageNavigatedFrom(NavigationEventArgs e)
         {
             NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
-
-            return base.OnNavigatingFromAsync(args);
+            base.OnPageNavigatedFrom(e);
         }
 
-        // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
+        public override void OnPageNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            base.OnPageNavigatingFrom(e);
+        }
+
         private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
         {
             e.Handled = IsSelectedContributionDirty;
-            
+
             if (IsSelectedContributionDirty)
             {
                 var md = new MessageDialog("Navigating away now will lose your changes, continue?", "Warning: Unsaved Changes");
