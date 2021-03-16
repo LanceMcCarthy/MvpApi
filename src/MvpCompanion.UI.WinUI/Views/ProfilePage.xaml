@@ -1,0 +1,401 @@
+﻿<common:BasePage x:Class="MvpCompanion.UI.WinUI.Views.ProfilePage"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
+                xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+                xmlns:telerik="using:Telerik.UI.Xaml.Controls"
+                xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
+                xmlns:views="using:MvpCompanion.UI.WinUI.Views"
+                xmlns:common="using:MvpCompanion.UI.WinUI.Common"
+                mc:Ignorable="d">
+
+    <Page.DataContext>
+        <viewModels:ProfileViewModel x:Name="ViewModel" />
+    </Page.DataContext>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="260" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="HeaderGrid"
+              Height="48"
+              Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
+            <TextBlock Text="Profile"
+                       Style="{StaticResource TitleTextBlockStyle}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+        </Grid>
+
+        <telerik:RadRibbonView x:Name="RibbonView1">
+            <telerik:RadRibbonView.ApplicationButtonIcon>
+                <SymbolIcon Symbol="Admin" />
+            </telerik:RadRibbonView.ApplicationButtonIcon>
+            <telerik:RadRibbonView.Items>
+                <telerik:RadRibbonTab Header="Home">
+                    <telerik:RadRibbonGroup Header="Clipboard">
+                        <telerik:RadRibbonButton Text="Copy" />
+                        <telerik:RadRibbonButton Text="Paste" />
+                    </telerik:RadRibbonGroup>
+
+                </telerik:RadRibbonTab>
+                <telerik:RadRibbonTab Header="Activities">
+                    <telerik:RadRibbonGroup Header="Activities">
+                        <telerik:RadRibbonButton Text="Add"
+                                                 Size="Large">
+                            <telerik:RadRibbonButton.LargeIcon>
+                                <SymbolIcon Symbol="Add" />
+                            </telerik:RadRibbonButton.LargeIcon>
+                        </telerik:RadRibbonButton>
+                    </telerik:RadRibbonGroup>
+                </telerik:RadRibbonTab>
+            </telerik:RadRibbonView.Items>
+            <telerik:RadRibbonView.Backstage>
+                <telerik:RadRibbonBackstage>
+                    <telerik:RadRibbonBackstageItem Header="Save"
+                                                    IsSelectable="False" />
+                    <telerik:RadRibbonBackstageItem Header="Open"
+                                                    IsSelectable="False" />
+                    <telerik:RadRibbonBackstageItem Header="Recent">
+                        <StackPanel Margin="10">
+                            <TextBlock Text="Recent files: "
+                                       Margin="0 0 0 5" />
+                        </StackPanel>
+                    </telerik:RadRibbonBackstageItem>
+                </telerik:RadRibbonBackstage>
+            </telerik:RadRibbonView.Backstage>
+        </telerik:RadRibbonView>
+
+        <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}"
+              Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Ellipse x:Name="ProfileImageEllipse"
+                     Stroke="{ThemeResource ApplicationForegroundThemeBrush}"
+                     Margin="20"
+                     Width="220"
+                     Height="220">
+                <animations:Implicit.ShowAnimations>
+                    <animations:ScaleAnimation From="0.6"
+                                               To="1"
+                                               Duration="0:0:1" />
+                    <animations:OpacityAnimation From="0"
+                                                 To="1"
+                                                 Duration="0:0:1" />
+                </animations:Implicit.ShowAnimations>
+                <animations:Implicit.HideAnimations>
+                    <animations:ScaleAnimation From="1"
+                                               To="0.8"
+                                               Duration="0:0:0.6" />
+                    <animations:OpacityAnimation From="1"
+                                                 To="0"
+                                                 Duration="0:0:0.6" />
+                </animations:Implicit.HideAnimations>
+                <Ellipse.Fill>
+                    <ImageBrush x:Name="ProfileImageBrush"
+                                ImageSource="{Binding ProfileImagePath}" />
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Grid x:Name="DetailsGrid"
+                  Grid.Column="1">
+                <StackPanel Margin="20"
+                            Grid.Row="0"
+                            VerticalAlignment="Top">
+                    <animations:Implicit.ShowAnimations>
+                        <animations:TranslationAnimation Delay="0:0:0.3"
+                                                         From="40,0,0"
+                                                         To="0,0,0"
+                                                         Duration="0:0:0.8" />
+                        <animations:OpacityAnimation Delay="0:0:0.2"
+                                                     From="0"
+                                                     To="1"
+                                                     Duration="0:0:1" />
+                    </animations:Implicit.ShowAnimations>
+                    <animations:Implicit.HideAnimations>
+                        <animations:TranslationAnimation From="0,0,0"
+                                                         To="0,40,0"
+                                                         Duration="0:0:0.6" />
+                        <animations:OpacityAnimation From="1"
+                                                     To="0"
+                                                     Duration="0:0:0.6" />
+                    </animations:Implicit.HideAnimations>
+                    <TextBlock Text="{Binding Mvp.FullName}"
+                               Style="{ThemeResource HeaderTextBlockStyle}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Mvp.Headline}"
+                               Style="{StaticResource TitleTextBlockStyle}" />
+                </StackPanel>
+
+                <StackPanel Margin="20"
+                            Grid.Row="0"
+                            VerticalAlignment="Bottom">
+                    <animations:Implicit.ShowAnimations>
+                        <animations:TranslationAnimation Delay="0:0:0.3"
+                                                         From="20,0,0"
+                                                         To="0,0,0"
+                                                         Duration="0:0:0.8" />
+                        <animations:OpacityAnimation Delay="0:0:0.2"
+                                                     From="0"
+                                                     To="1"
+                                                     Duration="0:0:0.8" />
+                    </animations:Implicit.ShowAnimations>
+                    <animations:Implicit.HideAnimations>
+                        <animations:TranslationAnimation From="0,0,0"
+                                                         To="0,40,0"
+                                                         Duration="0:0:0.6" />
+                        <animations:OpacityAnimation From="1"
+                                                     To="0"
+                                                     Duration="0:0:0.6" />
+                    </animations:Implicit.HideAnimations>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="First MVP award in:"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding Mvp.FirstAwardYear}"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Years as MVP:"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   Margin="0,0,10,0" />
+                        <TextBlock Text="{Binding Mvp.YearsAsMvp}"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="SubHeaderGrid"
+                  BorderThickness="0,2,0,1"
+                  BorderBrush="{ThemeResource SystemControlHighlightAltListAccentLowBrush}"
+                  Grid.ColumnSpan="2"
+                  Height="35">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Biography"
+                           Style="{StaticResource SubtitleTextBlockStyle}"
+                           Padding="5"
+                           Foreground="{ThemeResource SystemControlHighlightAltAccentBrush}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+
+                <TextBlock Text="Online Identities"
+                           HorizontalAlignment="Center"
+                           Padding="5"
+                           Foreground="{ThemeResource SystemControlHighlightAltAccentBrush}"
+                           Style="{ThemeResource SubtitleTextBlockStyle}"
+                           Grid.Column="1" />
+            </Grid>
+
+            <ScrollViewer Grid.Row="1"
+                          Grid.Column="0">
+                <TextBlock Text="{Binding Mvp.Biography}"
+                           TextWrapping="Wrap"
+                           Margin="10,10,10,0">
+                    <animations:Implicit.ShowAnimations>
+                        <animations:ScaleAnimation From="0.6"
+                                                   To="1"
+                                                   Duration="0:0:1" />
+                        <animations:OpacityAnimation From="0"
+                                                     To="1"
+                                                     Duration="0:0:1" />
+                    </animations:Implicit.ShowAnimations>
+                    <animations:Implicit.HideAnimations>
+                        <animations:ScaleAnimation From="1"
+                                                   To="0.8"
+                                                   Duration="0:0:0.6" />
+                        <animations:OpacityAnimation From="1"
+                                                     To="0"
+                                                     Duration="0:0:0.6" />
+                    </animations:Implicit.HideAnimations>
+                </TextBlock>
+            </ScrollViewer>
+
+            <ListView x:Name="OnlineIdentitiesListView"
+                      ItemsSource="{Binding OnlineIdentities}"
+                      SelectionChanged="{x:Bind ViewModel.OnlineIdentitiesListView_OnSelectionChanged}"
+                      SelectionMode="{Binding ListViewSelectionMode}"
+                      Grid.Row="1"
+                      Grid.Column="1">
+                <animations:Implicit.ShowAnimations>
+                    <animations:ScaleAnimation Delay="0:0:0.3"
+                                               From="0.8"
+                                               To="1"
+                                               Duration="0:0:1.2" />
+                    <animations:TranslationAnimation Delay="0:0:0.3"
+                                                     From="0,80,0"
+                                                     To="0,0,0"
+                                                     Duration="0:0:1.2" />
+                    <animations:OpacityAnimation Delay="0:0:0.3"
+                                                 From="0"
+                                                 To="1"
+                                                 Duration="0:0:1.2" />
+                </animations:Implicit.ShowAnimations>
+                <animations:Implicit.HideAnimations>
+                    <animations:ScaleAnimation From="1"
+                                               To="0.8"
+                                               Duration="0:0:0.6" />
+                    <animations:TranslationAnimation From="0,0,0"
+                                                     To="0,80,0"
+                                                     Duration="0:0:0.6" />
+                    <animations:OpacityAnimation From="1"
+                                                 To="0"
+                                                 Duration="0:0:0.6" />
+                </animations:Implicit.HideAnimations>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="VerticalContentAlignment"
+                                Value="Stretch" />
+                        <Setter Property="HorizontalContentAlignment"
+                                Value="Stretch" />
+                        <Setter Property="VerticalAlignment"
+                                Value="Stretch" />
+                        <Setter Property="HorizontalAlignment"
+                                Value="Stretch" />
+                        <Setter Property="Padding"
+                                Value="10" />
+                        <Setter Property="Margin"
+                                Value="0" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{Binding SocialNetwork.IconUrl, Converter={StaticResource MvcContentUrlConverter}}"
+                                       Width="20"
+                                       Height="20"
+                                       Margin="0,0,10,0" />
+                                <TextBlock Text="{Binding SocialNetwork.Name}"
+                                           Style="{ThemeResource SubtitleTextBlockStyle}" />
+                            </StackPanel>
+
+                            <HyperlinkButton Content="{Binding Url}"
+                                             NavigateUri="{Binding Url, Converter={StaticResource StringToUriConverter}}" />
+
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Identity visible to:"
+                                           Margin="0,0,5,0"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding OnlineIdentityVisibility.Description}"
+                                           Foreground="{Binding OnlineIdentityVisibility, Converter={StaticResource PrivacyLevelToBrushConverter}}"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <!--<Grid x:Name="OnlineIdentityEditor"
+                  Background="Bisque"
+                  Grid.Row="1"
+                  Grid.Column="1"
+                  Padding="10">
+                <ScrollViewer>
+                    <StackPanel>
+                        <ComboBox Header="Select Social Network"/>
+
+                        <ComboBox ItemsSource="{x:Bind ViewModel.Visibilities}"
+                                  SelectedItem="{Binding DraftOnlineIdentity.OnlineIdentityVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  IsTextSearchEnabled="True"
+                                  DisplayMemberPath="Description"
+                                  HorizontalAlignment="Left"
+                                  MinWidth="300"
+                                  Margin="0,10">
+                            <ComboBox.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Select Visibility"
+                                               Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                               Margin="0,0,5,0" />
+                                    <TextBlock Text="(required)"
+                                               FontStyle="Italic"
+                                               Margin="5,0"
+                                               Foreground="Red" />
+                                </StackPanel>
+                            </ComboBox.Header>
+                        </ComboBox>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding DraftOnlineIdentity.SocialNetwork.IconUrl, Converter={StaticResource MvcContentUrlConverter}}"
+                                   Width="20"
+                                   Height="20"
+                                   Margin="0,0,10,0" />
+                            <TextBlock Text="{Binding DraftOnlineIdentity.SocialNetwork.Name}"
+                                       Style="{ThemeResource SubtitleTextBlockStyle}" />
+                        </StackPanel>
+
+                        <TextBlock Text="Social Network"/>
+
+                        <TextBox Header="SocialNetwork.Name" 
+                                 Text="{Binding DraftOnlineIdentity.SocialNetwork.Name}" />
+                        <TextBox Header="SocialNetwork"
+                                 Text="{Binding DraftOnlineIdentity.SocialNetwork.IconUrl}" />
+
+                        <TextBox Text="{Binding DraftOnlineIdentity.Url}" />
+
+                        <TextBox Text="{Binding DraftOnlineIdentity.DisplayName}" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>-->
+
+            <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                                         IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                         Style="{StaticResource PageBusyIndicatorStyle}"
+                                         Grid.Row="1"
+                                         Grid.Column="1" />
+        </Grid>
+
+        <CommandBar Grid.Row="3">
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Label="Export Online Identities"
+                              Click="{x:Bind ViewModel.ExportButton_OnClick}" />
+                <AppBarButton Label="Complete Award Questionnaire (beta)"
+                              Icon="OpenWith"
+                              Click="{x:Bind ViewModel.ShowQuestionnaireButton_Click}" />
+            </CommandBar.SecondaryCommands>
+
+            <AppBarButton Label="delete identity"
+                          Icon="Delete"
+                          Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                          IsEnabled="{Binding AreAppBarButtonsEnabled}"
+                          Click="{x:Bind ViewModel.DeleteOnlineIdentityButton_Click}" />
+            <AppBarButton Label="clear selection"
+                          Icon="ClearSelection"
+                          Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                          IsEnabled="{Binding AreAppBarButtonsEnabled}"
+                          Click="{x:Bind ViewModel.ClearSelectionButton_Click}" />
+            <AppBarToggleButton Label="multiple selection"
+                                Icon="Bullets"
+                                IsChecked="{Binding IsMultipleSelectionEnabled, Mode=TwoWay}" />
+            <AppBarButton Label="refresh identities"
+                          Icon="Refresh"
+                          Click="{x:Bind ViewModel.RefreshOnlineIdentitiesButton_Click}" />
+        </CommandBar>
+    </Grid>
+</common:BasePage>

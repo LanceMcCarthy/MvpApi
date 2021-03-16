@@ -8,7 +8,7 @@ namespace MvpApi.Uwp.Converters
     /// <summary>
     /// Returns error color if upload failed
     /// </summary>
-    internal class UploadStatusToBoolConverter : IValueConverter
+    public class UploadStatusToBoolConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

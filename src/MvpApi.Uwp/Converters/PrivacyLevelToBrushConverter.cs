@@ -6,7 +6,7 @@ using MvpApi.Common.Models;
 
 namespace MvpApi.Uwp.Converters
 {
-    internal class PrivacyLevelToBrushConverter : IValueConverter
+    public class PrivacyLevelToBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

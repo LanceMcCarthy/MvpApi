@@ -8,7 +8,6 @@
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:controls="using:Telerik.UI.Xaml.Controls"
-      xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       mc:Ignorable="d">
 
@@ -41,10 +40,7 @@
         </Grid>
 
         <Grid Background="{Binding SelectedContribution.UploadStatus, Converter={StaticResource UploadStatusBackgroundConverter}}"
-              Grid.Row="1"
-              extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0"
-              animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}"
-              animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}">
+              Grid.Row="1">
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -63,10 +59,7 @@
             </Grid>
         </Grid>
 
-        <ScrollViewer Grid.Row="2"
-                      extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0"
-                      animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}"
-                      animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}">
+        <ScrollViewer Grid.Row="2">
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Type:"

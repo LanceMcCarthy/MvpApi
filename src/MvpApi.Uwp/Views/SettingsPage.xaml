@@ -8,7 +8,6 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:toolkitControls="using:Microsoft.Toolkit.Uwp.UI.Controls"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
-      xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       mc:Ignorable="d"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -378,9 +377,7 @@
 
                     <ToggleSwitch IsOn="{Binding UseBetaEditor, Mode=TwoWay}"
                                   Header="Use Experimental Editor"
-                                  VerticalAlignment="Center"
-                                  animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}"
-                                  animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}" />
+                                  VerticalAlignment="Center"/>
                 </StackPanel>
             </toolkitControls:Expander>
 
@@ -419,9 +416,7 @@
 
                     <input:RadDatePicker Header="Submissions Start Override"
                                          Value="{Binding SubmissionStartDate, Mode=TwoWay}"
-                                         HorizontalAlignment="Left"
-                                         animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}"
-                                         animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}" />
+                                         HorizontalAlignment="Left"/>
 
                     <TextBlock Text="Changing this value will temporarily override the deadline date for uploading activities (this does not guarantee that the API will accept it)."
                                Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
@@ -448,9 +443,7 @@
 
                     <input:RadDatePicker Header="Submissions Deadline Override"
                                          Value="{Binding SubmissionDeadline, Mode=TwoWay}"
-                                         HorizontalAlignment="Left"
-                                         animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}"
-                                         animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}" />
+                                         HorizontalAlignment="Left"/>
                 </StackPanel>
             </toolkitControls:Expander>
         </StackPanel>

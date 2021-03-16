@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Dialogs;
-using MvpApi.Uwp.Helpers;
+using MvpCompanion.UI.Common.Helpers;
 using MvpApi.Uwp.Views;
 
 namespace MvpApi.Uwp.ViewModels
@@ -149,7 +149,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void ShowQuestionnaireButton_Click(object sender, RoutedEventArgs e)
         {
-            await new AwardQuestionsDialog().ShowAsync();
+            await new AwardQuestionsDialog(App.ApiService).ShowAsync();
         }
 
         public async void DeleteOnlineIdentityButton_Click(object sender, RoutedEventArgs e)

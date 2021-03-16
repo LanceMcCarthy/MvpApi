@@ -77,7 +77,7 @@ namespace MvpApi.Services.Utilities
                     File.WriteAllText(filePath, logContent);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
 #if DEBUG
                 Debugger.Break();
@@ -113,7 +113,7 @@ namespace MvpApi.Services.Utilities
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
 #if DEBUG
                 Debugger.Break();

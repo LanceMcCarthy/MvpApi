@@ -7,7 +7,7 @@ namespace MvpApi.Uwp.Converters
     /// <summary>
     /// Converts between DateTime and DateTimeOffset
     /// </summary>
-    internal class DateTimeToDateTimeOffsetConverter : IValueConverter
+    public class DateTimeToDateTimeOffsetConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

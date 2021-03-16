@@ -10,7 +10,7 @@ namespace MvpApi.Uwp.Converters
     /// <summary>
     /// Converts UploadStatus enumeration to a color (a visual indicator for upload state).
     /// </summary>
-    internal class UploadStatusToBrushConverter : IValueConverter
+    public class UploadStatusToBrushConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

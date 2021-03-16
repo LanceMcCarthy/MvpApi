@@ -7,7 +7,7 @@ namespace MvpApi.Uwp.Converters
     /// <summary>
     /// Converts between Double and Int32
     /// </summary>
-    internal class DoubleToIntConverter : IValueConverter
+    public class DoubleToIntConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

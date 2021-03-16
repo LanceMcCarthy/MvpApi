@@ -7,7 +7,7 @@ namespace MvpApi.Uwp.Converters
     /// <summary>
     /// Returns one of two objects depending on a set threshold amount
     /// </summary>
-    internal class ThresholdConverter : IValueConverter
+    public class ThresholdConverter : IValueConverter
     {
         /// <summary>
         /// OverResult will be returned when the value is larger than the threshold amount (UnderResult is used when Threshold is equal to value)
