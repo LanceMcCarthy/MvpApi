@@ -1,7 +1,11 @@
 ﻿# Important Data Structures
 
-- [Award Categories and related award technologies](https://github.com/LanceMcCarthy/MvpApi/tree/master/MvpApi.Uwp/ViewModels#award-categories-and-related-award-technologies)
-- [Contribution Types, field titles and required values](https://github.com/LanceMcCarthy/MvpApi/tree/master/MvpApi.Uwp/ViewModels#contribution-types-field-titles-and-required-values)
+## 2020-2022
+### Contribution Type and Area Breaking Changes
+
+another year, another change to certain categories. This can sometimes cause breaking changes. In order to keep better track of these changes, I've not included the raw json response from the API. As time goes on, you can diff the changes.
+
+Visit `src/src\MvpApi.Services\Json` to see all json responses.
 
 ## 2018-2019
 ### New Areas and Categories
