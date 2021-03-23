@@ -114,13 +114,13 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"GetProfileAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetProfileAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Debug.WriteLine($"GetProfileAsync Exception: {e}");
+                Trace.WriteLine($"GetProfileAsync Exception: {e}");
             }
 
             return null;
@@ -155,7 +155,7 @@ namespace MvpApi.Services.Apis
                         catch (Exception e)
                         {
                             await e.LogExceptionAsync();
-                            Debug.WriteLine($"GetProfileImageAsync Image Conversion Exception: {e}");
+                            Trace.WriteLine($"GetProfileImageAsync Image Conversion Exception: {e}");
                         }
                     }
                     else
@@ -181,12 +181,12 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"GetProfileImageAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetProfileImageAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
-                Debug.WriteLine($"GetProfileImageAsync Exception: {e}");
+                Trace.WriteLine($"GetProfileImageAsync Exception: {e}");
             }
 
             return null;
@@ -239,7 +239,7 @@ namespace MvpApi.Services.Apis
                         catch (Exception e)
                         {
                             await e.LogExceptionAsync();
-                            Debug.WriteLine($"DownloadAndSaveProfileImage Exception: {e}");
+                            Trace.WriteLine($"DownloadAndSaveProfileImage Exception: {e}");
                         }
                     }
                     else
@@ -265,12 +265,12 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"GetProfileImageAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetProfileImageAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
-                Debug.WriteLine($"GetProfileImageAsync Exception: {e}");
+                Trace.WriteLine($"GetProfileImageAsync Exception: {e}");
             }
 
             return null;
@@ -318,13 +318,13 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"GetContributionsAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetContributionsAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Debug.WriteLine($"GetContributionsAsync Exception: {e}");
+                Trace.WriteLine($"GetContributionsAsync Exception: {e}");
             }
 
             return null;
@@ -385,13 +385,13 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"GetContributionsAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetContributionsAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Debug.WriteLine($"GetContributionsAsync Exception: {e}");
+                Trace.WriteLine($"GetContributionsAsync Exception: {e}");
             }
 
             return null;
@@ -445,12 +445,12 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
+                Trace.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
-                Debug.WriteLine($"SubmitContributionAsync Exception: {e}");
+                Trace.WriteLine($"SubmitContributionAsync Exception: {e}");
             }
 
             return null;
@@ -504,14 +504,14 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"UpdateContributionAsync HttpRequestException: {e}");
+                Trace.WriteLine($"UpdateContributionAsync HttpRequestException: {e}");
                 return null;
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Debug.WriteLine($"GetProfileAsync Exception: {e}");
+                Trace.WriteLine($"GetProfileAsync Exception: {e}");
             }
 
             return null;
@@ -556,14 +556,14 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"UpdateContributionAsync HttpRequestException: {e}");
+                Trace.WriteLine($"UpdateContributionAsync HttpRequestException: {e}");
                 return null;
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Debug.WriteLine($"GetProfileAsync Exception: {e}");
+                Trace.WriteLine($"GetProfileAsync Exception: {e}");
                 return null;
             }
 
@@ -618,13 +618,13 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"GetContributionTypesAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetContributionTypesAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Debug.WriteLine($"GetContributionTypesAsync Exception: {e}");
+                Trace.WriteLine($"GetContributionTypesAsync Exception: {e}");
             }
 
             return null;
@@ -678,13 +678,13 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"GetContributionTechnologiesAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetContributionTechnologiesAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Debug.WriteLine($"GetContributionTechnologiesAsync Exception: {e}");
+                Trace.WriteLine($"GetContributionTechnologiesAsync Exception: {e}");
             }
 
             return null;
@@ -738,13 +738,13 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"GetVisibilitiesAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetVisibilitiesAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Debug.WriteLine($"GetVisibilitiesAsync Exception: {e}");
+                Trace.WriteLine($"GetVisibilitiesAsync Exception: {e}");
             }
 
             return null;
@@ -798,12 +798,12 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
-                Debug.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
+                Trace.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
             }
 
             return null;
@@ -833,10 +833,10 @@ namespace MvpApi.Services.Apis
                         if (response.IsSuccessStatusCode)
                         {
                             var json = await response.Content.ReadAsStringAsync();
-                            Debug.WriteLine($"OnlineIdentity Save JSON: {json}");
+                            Trace.WriteLine($"OnlineIdentity Save JSON: {json}");
 
                             var result = JsonConvert.DeserializeObject<OnlineIdentity>(json);
-                            Debug.WriteLine($"OnlineIdentity Save Result: ID {result.PrivateSiteId}");
+                            Trace.WriteLine($"OnlineIdentity Save Result: ID {result.PrivateSiteId}");
 
                             return result;
                         }
@@ -862,13 +862,13 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"SubmitOnlineIdentitiesAsync HttpRequestException: {e}");
+                Trace.WriteLine($"SubmitOnlineIdentitiesAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Debug.WriteLine($"SubmitOnlineIdentitiesAsync Exception: {e}");
+                Trace.WriteLine($"SubmitOnlineIdentitiesAsync Exception: {e}");
             }
 
             return null;
@@ -908,13 +908,13 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"SubmitOnlineIdentitiesAsync HttpRequestException: {e}");
+                Trace.WriteLine($"SubmitOnlineIdentitiesAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Debug.WriteLine($"SubmitOnlineIdentitiesAsync Exception: {e}");
+                Trace.WriteLine($"SubmitOnlineIdentitiesAsync Exception: {e}");
             }
 
             return false;
@@ -956,12 +956,12 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
-                Debug.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
+                Trace.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
             }
 
             return null;
@@ -1003,12 +1003,12 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
-                Debug.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
+                Trace.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
             }
 
             return null;
@@ -1065,12 +1065,12 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Debug.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
+                Trace.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
-                Debug.WriteLine($"SubmitContributionAsync Exception: {e}");
+                Trace.WriteLine($"SubmitContributionAsync Exception: {e}");
             }
 
             return null;
@@ -1120,12 +1120,12 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true, Message = e.Message});
                 }
 
-                Debug.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
+                Trace.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
-                Debug.WriteLine($"SubmitContributionAsync Exception: {e}");
+                Trace.WriteLine($"SubmitContributionAsync Exception: {e}");
             }
 
             return false;
