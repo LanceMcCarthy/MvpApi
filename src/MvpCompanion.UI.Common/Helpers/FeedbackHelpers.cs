@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Email;
+using Windows.Storage;
 using Windows.System;
 using Windows.UI.ViewManagement;
 using Microsoft.Toolkit;
@@ -57,6 +59,25 @@ namespace MvpCompanion.UI.Common.Helpers
             // TODO log success or failure of email compose
 
             return result;
+        }
+
+        public async Task EmailErrorWithAttachmentAsync(string subject, string body, StorageFile file)
+        {
+            var emailMessage = new EmailMessage
+            {
+                Body = body, 
+                Subject = subject
+            };
+
+            emailMessage.To.Add(new EmailRecipient("awesome.apps@outlook.com"));
+            
+            emailMessage.Attachments.Add(new EmailAttachment
+            {
+                FileName = file.DisplayName,
+                Data = file
+            });
+
+            await EmailManager.ShowComposeNewEmailAsync(emailMessage);
         }
 
         public async Task<bool> EmailFeedbackMessageAsync()

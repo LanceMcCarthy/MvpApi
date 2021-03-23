@@ -26,33 +26,41 @@ namespace MvpCompanion.UI.Common.Helpers
         public static async Task LogExceptionWithUserMessage(this Exception exception)
         {
             if(exception == null)
+            {
                 throw new ArgumentNullException(nameof(exception));
+            }
 
             var exceptionMessage = CreateErrorMessage(exception);
 
-            await LogFileWriteAsync(exceptionMessage);
+            var logFile = await LogFileWriteAsync(exceptionMessage);
 
             var md = new MessageDialog(
-                "Sorry, there has been an unexpected error. If you'd like to send a technical summary to the app development team, click Yes.", 
+                "Sorry, something went wrong. Will you please send us the crash report? Just click an option and we'll automatically draft the email:", 
                 "Unexpected Error");
 
-            md.Commands.Add(new UICommand("yes (summary)"));
-            md.Commands.Add(new UICommand("yes (full)"));
+            md.Commands.Add(new UICommand("yes (recommended)", async command =>
+            {
+                var dumpDetails = await DiagnosticsHelper.DumpAsync(exception);
+                var subject = "MVP Companion Error Report";
+                var body = exceptionMessage + "\r\n\n" + dumpDetails;
+
+                await FeedbackHelpers.Current.EmailErrorWithAttachmentAsync(subject, body, logFile);
+            }));
+            
+            md.Commands.Add(new UICommand("yes (device info)", async command =>
+            {
+                var dumpDetailsWithDeviceInfo = await DiagnosticsHelper.DumpAsync(exception, true);
+                var subject = "MVP Companion Error Report";
+                var body = exceptionMessage + "\r\n\n" + dumpDetailsWithDeviceInfo;
+
+                await FeedbackHelpers.Current.EmailErrorWithAttachmentAsync(subject, body, logFile);
+            }));
+            
             md.Commands.Add(new UICommand("no"));
 
-            var result = await md.ShowAsync();
-
-            if (result.Label == "yes (summary)")
-            {
-                await FeedbackHelpers.Current.EmailErrorMessageAsync(exceptionMessage);
-            }
-            else if (result.Label == "yes (full)")
-            {
-                var text = await DiagnosticsHelper.DumpAsync(exception);
-                await FeedbackHelpers.Current.EmailErrorMessageAsync(exceptionMessage + "\r\n\n" + text);
-            }
+            await md.ShowAsync();
         }
-
+        
         /// <summary>
         /// Easy to use Exception logger that shows the user a custom error message
         /// </summary>
@@ -127,7 +135,7 @@ namespace MvpCompanion.UI.Common.Helpers
             }
         }
         
-        private static async Task LogFileWriteAsync(string exceptionMessage)
+        private static async Task<StorageFile> LogFileWriteAsync(string exceptionMessage)
         {
             try
             {
@@ -145,12 +153,15 @@ namespace MvpCompanion.UI.Common.Helpers
                 {
                     await FileIO.AppendTextAsync(logFile, exceptionMessage);
                 }
+
+                return logFile;
             }
             catch(Exception ex)
             {
 #if DEBUG
                 Debugger.Break();
 #endif
+                return null;
             }
         }
         
