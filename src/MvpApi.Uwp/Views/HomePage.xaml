@@ -130,20 +130,22 @@
             </animations:Implicit.HideAnimations>
             <grid:RadDataGrid.GroupHeaderTemplate>
                 <DataTemplate>
-                    <Grid Background="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToBackgroundConverter}}">
+                    <Grid>
                         <StackPanel Orientation="Horizontal">
+                            <Border Background="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToBackgroundConverter}}"
+                                    BorderThickness="2"
+                                    Width="20"
+                                    Height="10"
+                                    BorderBrush="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}" />
                             <TextBlock Text="{Binding Group.Key}"
                                        Style="{ThemeResource BodyTextBlockStyle}"
-                                       Foreground="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}"
                                        VerticalAlignment="Center"
                                        Margin="10,0" />
                             <TextBlock Text="-"
                                        Style="{ThemeResource BodyTextBlockStyle}"
-                                       Foreground="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}"
                                        VerticalAlignment="Center" />
                             <TextBlock Text="{Binding Group.Items.Count}"
                                        Style="{ThemeResource BodyTextBlockStyle}"
-                                       Foreground="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}"
                                        VerticalAlignment="Center"
                                        Margin="10,0" />
                         </StackPanel>
