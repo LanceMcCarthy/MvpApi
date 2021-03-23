@@ -60,7 +60,6 @@ namespace MvpApi.Uwp.ViewModels
 
             EditQueuedContributionCommand = new DelegateCommand<ContributionsModel>(async cont => await EditContribution(cont));
             RemoveQueuedContributionCommand = new DelegateCommand<ContributionsModel>(async cont => await RemoveContribution(cont));
-
             RemoveAdditionalTechAreaCommand = new DelegateCommand<ContributionTechnologyModel>(RemoveAdditionalArea);
 
             UploadQueue.CollectionChanged += UploadQueue_CollectionChanged;
