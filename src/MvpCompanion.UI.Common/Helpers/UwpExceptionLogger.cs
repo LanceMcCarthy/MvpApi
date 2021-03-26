@@ -7,7 +7,7 @@ using Windows.UI.Popups;
 
 namespace MvpCompanion.UI.Common.Helpers
 {
-    public static class ExceptionLogger
+    public static class UwpExceptionLogger
     {
         public static async Task LogExceptionAsync(this Exception currentException)
         {

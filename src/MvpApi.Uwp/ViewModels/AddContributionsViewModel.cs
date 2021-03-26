@@ -23,7 +23,6 @@ using Template10.Common;
 using Template10.Mvvm;
 using Template10.Services.NavigationService;
 using Template10.Utils;
-using ExceptionLogger = MvpCompanion.UI.Common.Helpers.ExceptionLogger;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -551,7 +550,6 @@ namespace MvpApi.Uwp.ViewModels
                 }
             }
         }
-        
 
         public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
         {
@@ -591,7 +589,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
-                await ExceptionLogger.LogExceptionAsync(ex);
+                await ex.LogExceptionAsync();
             }
         }
 

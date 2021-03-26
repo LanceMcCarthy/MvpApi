@@ -16,14 +16,14 @@ namespace MvpApi.Services.Apis
 {
     public class MvpApiService : BindableBase, IDisposable
     {
-        private readonly HttpClient _client;
-        private ContributionViewModel _contributionsCachedResult;
-        private IReadOnlyList<ContributionTypeModel> _contributionTypesCachedResult;
-        private IReadOnlyList<ContributionAreasRootItem> _contributionAreasCachedResult;
-        private IReadOnlyList<VisibilityViewModel> _visibilitiesCachedResult;
-        private IReadOnlyList<OnlineIdentityViewModel> _onlineIdentitiesCachedResult;
+        private readonly HttpClient client;
+        private ContributionViewModel contributionsCachedResult;
+        private IReadOnlyList<ContributionTypeModel> contributionTypesCachedResult;
+        private IReadOnlyList<ContributionAreasRootItem> contributionAreasCachedResult;
+        private IReadOnlyList<VisibilityViewModel> visibilitiesCachedResult;
+        private IReadOnlyList<OnlineIdentityViewModel> onlineIdentitiesCachedResult;
         private ProfileViewModel mvp;
-        private bool _isLoggedIn;
+        private bool isLoggedIn;
         private string profileImagePath;
 
         /// <summary>
@@ -42,10 +42,10 @@ namespace MvpApi.Services.Apis
             if (handler.SupportsAutomaticDecompression)
                 handler.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
-            _client = new HttpClient(handler);
-            _client.BaseAddress = new Uri("https://mvpapi.azure-api.net/mvp/api/");
-            _client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "3d199a7fb1c443e1985375f0572f58f8");
-            _client.DefaultRequestHeaders.Add("Authorization", authorizationHeaderContent);
+            client = new HttpClient(handler);
+            client.BaseAddress = new Uri("https://mvpapi.azure-api.net/mvp/api/");
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", "3d199a7fb1c443e1985375f0572f58f8");
+            client.DefaultRequestHeaders.Add("Authorization", authorizationHeaderContent);
         }
 
         #region Properties
@@ -58,8 +58,8 @@ namespace MvpApi.Services.Apis
 
         public bool IsLoggedIn
         {
-            get => _isLoggedIn;
-            set => SetProperty(ref _isLoggedIn, value);
+            get => isLoggedIn;
+            set => SetProperty(ref isLoggedIn, value);
         }
 
         public string ProfileImagePath
@@ -86,7 +86,7 @@ namespace MvpApi.Services.Apis
         {
             try
             {
-                using (var response = await _client.GetAsync("profile"))
+                using (var response = await client.GetAsync("profile"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -107,8 +107,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -135,7 +133,7 @@ namespace MvpApi.Services.Apis
             try
             {
                 // the result is Detected mime type: image/jpeg; charset=binary
-                using (var response = await _client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
+                using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -154,7 +152,7 @@ namespace MvpApi.Services.Apis
                         }
                         catch (Exception e)
                         {
-                            await e.LogExceptionAsync();
+                            //await e.LogExceptionAsync();
                             Trace.WriteLine($"GetProfileImageAsync Image Conversion Exception: {e}");
                         }
                     }
@@ -174,8 +172,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -201,7 +197,7 @@ namespace MvpApi.Services.Apis
             try
             {
                 // the result is Detected mime type: image/jpeg; charset=binary
-                using (var response = await _client.GetAsync("profile/photo"))
+                using (var response = await client.GetAsync("profile/photo"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -258,8 +254,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -269,7 +263,7 @@ namespace MvpApi.Services.Apis
             }
             catch (Exception e)
             {
-                await e.LogExceptionAsync();
+                //await e.LogExceptionAsync();
                 Trace.WriteLine($"GetProfileImageAsync Exception: {e}");
             }
 
@@ -283,10 +277,10 @@ namespace MvpApi.Services.Apis
         /// <returns>A list of the MVP's contributions</returns>
         public async Task<ContributionViewModel> GetAllContributionsAsync(bool forceRefresh = false)
         {
-            if (_contributionsCachedResult != null && !forceRefresh)
+            if (contributionsCachedResult != null && !forceRefresh)
             {
                 // Return the cached result by default.
-                return _contributionsCachedResult;
+                return contributionsCachedResult;
             }
             
             try
@@ -294,7 +288,7 @@ namespace MvpApi.Services.Apis
                 int totalCount = 0;
 
                 // The first fetch gets the total count, which we need to do the full fetch
-                using (var response = await _client.GetAsync($"contributions/0/0"))
+                using (var response = await client.GetAsync($"contributions/0/0"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -311,8 +305,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -339,10 +331,10 @@ namespace MvpApi.Services.Apis
         /// <returns>A list of the MVP's contributions</returns>
         public async Task<ContributionViewModel> GetContributionsAsync(int? offset, int limit, bool forceRefresh = false)
         {
-            if (_contributionsCachedResult != null && !forceRefresh)
+            if (contributionsCachedResult != null && !forceRefresh)
             {
                 // Return the cached result by default.
-                return _contributionsCachedResult;
+                return contributionsCachedResult;
             }
             
             if (offset == null)
@@ -352,7 +344,7 @@ namespace MvpApi.Services.Apis
 
             try
             {
-                using (var response = await _client.GetAsync($"contributions/{offset}/{limit}"))
+                using (var response = await client.GetAsync($"contributions/{offset}/{limit}"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -360,9 +352,9 @@ namespace MvpApi.Services.Apis
                         var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
 
                         // Update the cached result.
-                        _contributionsCachedResult = deserializedResult;
+                        contributionsCachedResult = deserializedResult;
 
-                        return _contributionsCachedResult;
+                        return contributionsCachedResult;
                     }
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
@@ -378,8 +370,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -416,7 +406,7 @@ namespace MvpApi.Services.Apis
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    using (var response = await _client.PostAsync("contributions?", content))
+                    using (var response = await client.PostAsync("contributions?", content))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -438,8 +428,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -476,7 +464,7 @@ namespace MvpApi.Services.Apis
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    using (var response = await _client.PutAsync("contributions?", content))
+                    using (var response = await client.PutAsync("contributions?", content))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -497,8 +485,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -529,7 +515,7 @@ namespace MvpApi.Services.Apis
 
             try
             {
-                using (var response = await _client.DeleteAsync($"contributions?id={contribution.ContributionId}"))
+                using (var response = await client.DeleteAsync($"contributions?id={contribution.ContributionId}"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -549,8 +535,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -577,15 +561,15 @@ namespace MvpApi.Services.Apis
         /// <returns>List of contributions types</returns>
         public async Task<IReadOnlyList<ContributionTypeModel>> GetContributionTypesAsync(bool forceRefresh = false)
         {
-            if (_contributionTypesCachedResult?.Count == 0 && !forceRefresh)
+            if (contributionTypesCachedResult?.Count == 0 && !forceRefresh)
             {
                 // Return the cached result by default.
-                return _contributionTypesCachedResult;
+                return contributionTypesCachedResult;
             }
 
             try
             {
-                using (var response = await _client.GetAsync("contributions/contributiontypes"))
+                using (var response = await client.GetAsync("contributions/contributiontypes"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -593,9 +577,9 @@ namespace MvpApi.Services.Apis
                         var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<ContributionTypeModel>>(json);
 
                         // Update the cached result.
-                        _contributionTypesCachedResult = new List<ContributionTypeModel>(deserializedResult);
+                        contributionTypesCachedResult = new List<ContributionTypeModel>(deserializedResult);
                         
-                        return _contributionTypesCachedResult;
+                        return contributionTypesCachedResult;
                     }
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
@@ -611,8 +595,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -637,15 +619,15 @@ namespace MvpApi.Services.Apis
         /// <returns>A list of available contribution areas</returns>
         public async Task<IReadOnlyList<ContributionAreasRootItem>> GetContributionAreasAsync(bool forceRefresh = false)
         {
-            if (_contributionAreasCachedResult?.Count == 0 && !forceRefresh)
+            if (contributionAreasCachedResult?.Count == 0 && !forceRefresh)
             {
                 // Return the cached result by default.
-                return _contributionAreasCachedResult;
+                return contributionAreasCachedResult;
             }
 
             try
             {
-                using (var response = await _client.GetAsync("contributions/contributionareas"))
+                using (var response = await client.GetAsync("contributions/contributionareas"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -653,9 +635,9 @@ namespace MvpApi.Services.Apis
                         var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<ContributionAreasRootItem>>(json);
 
                         // Update the cached result.
-                        _contributionAreasCachedResult = new List<ContributionAreasRootItem>(deserializedResult);
+                        contributionAreasCachedResult = new List<ContributionAreasRootItem>(deserializedResult);
 
-                        return _contributionAreasCachedResult;
+                        return contributionAreasCachedResult;
                     }
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
@@ -671,8 +653,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -697,15 +677,15 @@ namespace MvpApi.Services.Apis
         /// <returns>A list of available visibilities</returns>
         public async Task<IReadOnlyList<VisibilityViewModel>> GetVisibilitiesAsync(bool forceRefresh = false)
         {
-            if (_visibilitiesCachedResult?.Count == 0 && !forceRefresh)
+            if (visibilitiesCachedResult?.Count == 0 && !forceRefresh)
             {
                 // Return the cached result by default.
-                return _visibilitiesCachedResult;
+                return visibilitiesCachedResult;
             }
 
             try
             {
-                using (var response = await _client.GetAsync("contributions/sharingpreferences"))
+                using (var response = await client.GetAsync("contributions/sharingpreferences"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -714,9 +694,9 @@ namespace MvpApi.Services.Apis
                         var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<VisibilityViewModel>>(json);
 
                         // Update the cached result.
-                        _visibilitiesCachedResult = new List<VisibilityViewModel>(deserializedResult);
+                        visibilitiesCachedResult = new List<VisibilityViewModel>(deserializedResult);
 
-                        return _visibilitiesCachedResult;
+                        return visibilitiesCachedResult;
                     }
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
@@ -731,8 +711,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -757,15 +735,15 @@ namespace MvpApi.Services.Apis
         /// <returns></returns>
         public async Task<IReadOnlyList<OnlineIdentityViewModel>> GetOnlineIdentitiesAsync(bool forceRefresh = false)
         {
-            if (_contributionTypesCachedResult?.Count == 0 && !forceRefresh)
+            if (contributionTypesCachedResult?.Count == 0 && !forceRefresh)
             {
                 // Return the cached result by default.
-                return _onlineIdentitiesCachedResult;
+                return onlineIdentitiesCachedResult;
             }
 
             try
             {
-                using (var response = await _client.GetAsync("onlineidentities"))
+                using (var response = await client.GetAsync("onlineidentities"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -773,9 +751,9 @@ namespace MvpApi.Services.Apis
                         var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<OnlineIdentityViewModel>>(json);
 
                         // Update the cached result.
-                        _onlineIdentitiesCachedResult = new List<OnlineIdentityViewModel>(deserializedResult);
+                        onlineIdentitiesCachedResult = new List<OnlineIdentityViewModel>(deserializedResult);
 
-                        return _onlineIdentitiesCachedResult;
+                        return onlineIdentitiesCachedResult;
                     }
 
                     if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
@@ -791,8 +769,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -803,6 +779,7 @@ namespace MvpApi.Services.Apis
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
+
                 Trace.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
             }
 
@@ -828,7 +805,7 @@ namespace MvpApi.Services.Apis
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    using (var response = await _client.PostAsync("onlineidentities?", content))
+                    using (var response = await client.PostAsync("onlineidentities?", content))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -855,8 +832,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -881,7 +856,7 @@ namespace MvpApi.Services.Apis
 
             try
             {
-                using (var response = await _client.DeleteAsync($"onlineidentities?id={onlineIdentity.PrivateSiteId}"))
+                using (var response = await client.DeleteAsync($"onlineidentities?id={onlineIdentity.PrivateSiteId}"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -901,8 +876,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -928,7 +901,7 @@ namespace MvpApi.Services.Apis
         {
             try
             {
-                using (var response = await _client.GetAsync("awardconsideration/getcurrentquestions"))
+                using (var response = await client.GetAsync("awardconsideration/getcurrentquestions"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -949,8 +922,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -975,7 +946,7 @@ namespace MvpApi.Services.Apis
         {
             try
             {
-                using (var response = await _client.GetAsync("awardconsideration/GetAnswers"))
+                using (var response = await client.GetAsync("awardconsideration/GetAnswers"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -996,8 +967,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -1036,7 +1005,7 @@ namespace MvpApi.Services.Apis
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    using (var response = await _client.PostAsync("awardconsideration/saveanswers?", content))
+                    using (var response = await client.PostAsync("awardconsideration/saveanswers?", content))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -1058,8 +1027,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
@@ -1092,7 +1059,7 @@ namespace MvpApi.Services.Apis
                 {
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    using (var response = await _client.PostAsync("awardconsideration/SubmitAnswers?", content))
+                    using (var response = await client.PostAsync("awardconsideration/SubmitAnswers?", content))
                     {
                         if (response.IsSuccessStatusCode)
                         {
@@ -1113,8 +1080,6 @@ namespace MvpApi.Services.Apis
             }
             catch (HttpRequestException e)
             {
-                await e.LogExceptionAsync();
-
                 if (e.Message.Contains("500"))
                 {
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true, Message = e.Message});
@@ -1125,6 +1090,7 @@ namespace MvpApi.Services.Apis
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
+
                 Trace.WriteLine($"SubmitContributionAsync Exception: {e}");
             }
 
@@ -1139,20 +1105,8 @@ namespace MvpApi.Services.Apis
         {
             try
             {
-                var ping = await GetContributionsAsync(0, 1);
-
-                var totalContributions = ping.TotalContributions;
-
-                if (totalContributions != null)
-                {
-                    var allContributions = await GetContributionsAsync(0, (int)totalContributions);
-
-                    return JsonConvert.SerializeObject(allContributions);
-                }
-                else
-                {
-                    return "";
-                }
+                var allContributions = await GetAllContributionsAsync();
+                return JsonConvert.SerializeObject(allContributions);
             }
             catch
             {
@@ -1192,7 +1146,7 @@ namespace MvpApi.Services.Apis
 
         public void Dispose()
         {
-            _client?.Dispose();
+            client?.Dispose();
         }
     }
 }
