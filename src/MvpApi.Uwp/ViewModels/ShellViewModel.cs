@@ -48,41 +48,77 @@ namespace MvpApi.Uwp.ViewModels
             get => _isLoggedIn;
             set => Set(ref _isLoggedIn, value);
         }
-        
+
         public bool UseBetaEditor
         {
             get
             {
-                if (ApplicationData.Current.RoamingSettings.Values.TryGetValue(nameof(UseBetaEditor), out object rawValue))
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(UseBetaEditor), out object rawValue))
                 {
                     _useBetaEditor = (bool)rawValue;
                 }
                 else
                 {
-                    ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
+                    ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
                 }
-                
+
                 return _useBetaEditor;
             }
             set
             {
                 if (Set(ref _useBetaEditor, value))
                 {
-                    ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
+                    ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
                 }
             }
         }
 
         public DateTime SubmissionStartDate
         {
-            get => _submissionStartDate;
-            set => Set(ref _submissionStartDate, value);
+            get
+            {
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(SubmissionStartDate), out object rawValue))
+                {
+                    _submissionStartDate = DateTime.Parse((string)rawValue);
+                }
+                else
+                {
+                    ApplicationData.Current.LocalSettings.Values[nameof(SubmissionStartDate)] = _submissionStartDate.ToLongDateString();
+                }
+
+                return _submissionStartDate;
+            }
+            set
+            {
+                if (Set(ref _submissionStartDate, value))
+                {
+                    ApplicationData.Current.LocalSettings.Values[nameof(SubmissionStartDate)] = _submissionStartDate.ToLongDateString();
+                }
+            }
         }
 
         public DateTime SubmissionDeadline
         {
-            get => _submissionDeadline;
-            set => Set(ref _submissionDeadline, value);
+            get
+            {
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(SubmissionDeadline), out object rawValue))
+                {
+                    _submissionDeadline = DateTime.Parse((string)rawValue);
+                }
+                else
+                {
+                    ApplicationData.Current.LocalSettings.Values[nameof(SubmissionDeadline)] = _submissionDeadline.ToLongDateString();
+                }
+                
+                return _submissionDeadline;
+            }
+            set
+            {
+                if (Set(ref _submissionDeadline, value))
+                {
+                    ApplicationData.Current.LocalSettings.Values[nameof(SubmissionDeadline)] = _submissionDeadline.ToLongDateString();
+                }
+            }
         }
     }
 }
