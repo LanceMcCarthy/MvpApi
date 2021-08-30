@@ -11,6 +11,7 @@
     <RootNamespace>MvpApi.Forms.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <AssemblyName>MvpApi.Forms.iOS</AssemblyName>
+    <ProvisioningType>automatic</ProvisioningType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,7 +25,7 @@
     <MtouchArch>x86_64</MtouchArch>
     <MtouchLink>None</MtouchLink>
     <MtouchDebug>true</MtouchDebug>
-    <CodesignKey>iPhone Developer: Lance McCarthy (AJ9XMDH9A2)</CodesignKey>
+    <CodesignKey>Apple Development: Lance McCarthy (AJ9XMDH9A2)</CodesignKey>
     <CodesignProvision>VS: WildCard Development</CodesignProvision>
     <CodesignExtraArgs />
     <CodesignResourceRules />
@@ -130,12 +131,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Telerik.UI.for.Xamarin">
-      <Version>2021.1.224.1</Version>
+      <Version>2021.2.728.1</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
-    <PackageReference Include="SkiaSharp" Version="2.80.2" />
-    <PackageReference Include="SkiaSharp.Views " Version="2.80.2" />
-    <PackageReference Include="SkiaSharp.Views.Forms " Version="2.80.2" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2083" />
+    <PackageReference Include="SkiaSharp" Version="2.80.3" />
+    <PackageReference Include="SkiaSharp.Views " Version="2.80.3" />
+    <PackageReference Include="SkiaSharp.Views.Forms " Version="2.80.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Portable\MvpApi.Forms.Portable.csproj">

@@ -218,6 +218,30 @@ namespace MvpApi.Services.Utilities
             }
         }
 
+        public static bool AppendToLogFile(string logContent, string filePath)
+        {
+            try
+            {
+                logContent = $"--****-- {DateTime.Now:G} --****-- \r\n";
+
+                if (File.Exists(filePath))
+                {
+                    File.AppendAllText(filePath, logContent);
+                }
+                else
+                {
+                    File.WriteAllText(filePath, logContent);
+                }
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine($"StorageHelpers.AppendToLogFile Exception: {ex}");
+                return false;
+            }
+        }
+
         #endregion
 
         #region Encryption methods

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,25 +8,38 @@ namespace MvpApi.Services.Utilities
 {
     public static class ExceptionLogger
     {
-        public static async Task LogExceptionAsync(this Exception exception)
+        private static bool _isWriting;
+        private static readonly string AppDataFolder;
+
+        static ExceptionLogger()
         {
-            await Task.Run(() =>
-            {
-                var logContent = BuildLogMessage(exception);
+            AppDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        }
 
-                WriteLogFile(logContent);
+        public static Task LogExceptionAsync(this Exception exception)
+        {
+            LogException(exception);
 
-                PurgeOldLogFiles();
-            });
+            return Task.CompletedTask;
         }
 
         public static void LogException(this Exception exception)
         {
-            var logContent = BuildLogMessage(exception);
+            if (_isWriting)
+            {
+                return;
+            }
 
-            WriteLogFile(logContent);
+            var logContent = BuildLogMessage(exception);
+            var fileName = "ErrorLog" + "_" + DateTime.Today.ToString("yyyyMMdd") + "." + "log";
+            var filePath = Path.Combine(AppDataFolder, fileName);
+
+            StorageHelpers.AppendToLogFile(logContent, filePath);
 
             PurgeOldLogFiles();
+
+            _isWriting = false;
+
         }
 
         private static string BuildLogMessage(Exception currentException)
@@ -58,66 +70,30 @@ namespace MvpApi.Services.Utilities
 
             return messageBuilder.ToString();
         }
-
-        private static void WriteLogFile(string logContent)
-        {
-            // Write to file
-            try
-            {
-                var fileName = "MVPCompanion_ErrorLog" + "_" + DateTime.Today.ToString("yyyyMMdd") + "." + "log";
-                var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                var filePath = Path.Combine(appDataFolder, fileName);
-
-                if (File.Exists(filePath))
-                {
-                    File.AppendAllText(filePath, logContent);
-                }
-                else
-                {
-                    File.WriteAllText(filePath, logContent);
-                }
-            }
-            catch (Exception)
-            {
-#if DEBUG
-                Debugger.Break();
-#endif
-            }
-        }
-
-        private static void PurgeOldLogFiles()
+        
+        public static void PurgeOldLogFiles()
         {
             // Delete any outdated log files
             try
             {
-                var daysToKeepLog = 5;
-
-                var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-                var filePaths = Directory.GetFiles(appDataFolder).ToList();
+                var daysToKeepLog = 30;
+                
+                var filePaths = Directory.GetFiles(AppDataFolder, "*.log").ToList();
 
                 if (filePaths.Count < 1)
                     return;
 
                 foreach (var filePath in filePaths)
                 {
-                    var fileExtension = Path.GetExtension(filePath)?.ToLower();
-
-                    if (fileExtension == ".log")
-                    {
-                        var created = File.GetCreationTime(filePath);
-
-                        if (DateTime.Compare(DateTime.Today.Date, created.AddDays(daysToKeepLog).Date) >= 0)
-                        {
-                            File.Delete(filePath);
-                        }
-                    }
+                    DateTime created = File.GetCreationTime(filePath);
+                    if (DateTime.Compare(DateTime.Today.Date, created.AddDays(daysToKeepLog).Date) >= 0) File.Delete(filePath);
                 }
             }
             catch (Exception)
             {
-#if DEBUG
-                Debugger.Break();
-#endif
+//#if DEBUG
+//                Debugger.Break();
+//#endif
             }
         }
     }
