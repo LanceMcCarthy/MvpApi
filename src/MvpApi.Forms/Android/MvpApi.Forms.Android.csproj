@@ -15,7 +15,7 @@
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v10.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
@@ -54,15 +54,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Telerik.UI.for.Xamarin" Version="2021.1.224.1" />
-    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.3.2.3" />
-    <PackageReference Include="Xamarin.AndroidX.Browser" Version="1.3.0.5" />
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
-    <PackageReference Include="SkiaSharp" Version="2.80.2" />
-    <PackageReference Include="SkiaSharp.Views " Version="2.80.2" />
-    <PackageReference Include="SkiaSharp.Views.Forms " Version="2.80.2" />
-    <PackageReference Include="Xamarin.AndroidX.Palette" Version="1.0.0.7" />
-    <PackageReference Include="Xamarin.AndroidX.MediaRouter" Version="1.2.2.1" />
+    <PackageReference Include="Telerik.UI.for.Xamarin" Version="2021.2.728.1" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2083" />
+    <PackageReference Include="SkiaSharp" Version="2.80.3" />
+    <PackageReference Include="SkiaSharp.Views " Version="2.80.3" />
+    <PackageReference Include="SkiaSharp.Views.Forms " Version="2.80.3" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
