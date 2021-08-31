@@ -364,47 +364,5 @@
       <ReservedName>MVP Companion</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
-  <AccountPackageIdentityNames>
-    <MainPackageIdentityName>61469LanceLotSoftware.Barcodes</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.Strobe</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.AllAboutBoobs</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.ArtGalleryCRMBeta</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.AwesomeBand</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.AwesomeBandBackgrounds</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.AwesomeBarcode</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.AwesomeMosaic</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.BandDashboard</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.BandWallpaper</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.BiometricLieDetector</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.ConferencedIn</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.Fail</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.FantasyFootballFeeds</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.Frisky</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.FundRunner</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.GIFie</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.GraceHouse</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.GreenScreen</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.Hacked</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.HeyTaxi</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.HollyDays</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.InstaLockscreen</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.InventoryScanner</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.iSmack</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.KissDictionary</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.KissList</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.LancelotSoftware</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.NetdunioNinja</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.Pickr</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.SecurityStrobe</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.Spectrometer</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.StarbucksLocator</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.StupidCriminals</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.UberMe</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.VideoDiary</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.VideoJournal</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.VideoMeme</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.VSauceSupreme</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.XKCDComicViewer</MainPackageIdentityName>
-  </AccountPackageIdentityNames>
   <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9NRXNX3WLH77" />
 </StoreAssociation>
