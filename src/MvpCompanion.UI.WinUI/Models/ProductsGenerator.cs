@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MvpCompanion.UI.WinUI
+namespace MvpCompanion.UI.WinUI.Models
 {
     public static class ProductsGenerator
     {

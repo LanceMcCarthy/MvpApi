@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+		<TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
 		<TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
 		<RootNamespace>MvpCompanion.UI.WinUI</RootNamespace>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -12,14 +12,25 @@
 		<PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
 	</PropertyGroup>
 	<ItemGroup>
+		<None Remove="Dialogs\AdditionalTechnologyAreasPicker.xaml" />
+		<None Remove="Dialogs\AwardQuestionsDialog.xaml" />
+		<None Remove="Dialogs\ContributionEditorDialog.xaml" />
+		<None Remove="Dialogs\TutorialDialog.xaml" />
+		<None Remove="Images\4starStar.png" />
+		<None Remove="Images\CoffeeKudo.png" />
+		<None Remove="Images\DinnerKudo.png" />
 		<None Remove="Images\LockScreenLogo.scale-200.png" />
+		<None Remove="Images\LunchKudo.png" />
+		<None Remove="Images\MvpIcon.png" />
 		<None Remove="Images\SplashScreen.scale-200.png" />
 		<None Remove="Images\Square150x150Logo.scale-200.png" />
 		<None Remove="Images\Square44x44Logo.scale-200.png" />
 		<None Remove="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
 		<None Remove="Images\StoreLogo.png" />
+		<None Remove="Images\VideoAd.png" />
 		<None Remove="Images\Wide310x150Logo.scale-200.png" />
 		<None Remove="Package.appxmanifest" />
+		<None Remove="Views\ShellView.xaml" />
 	</ItemGroup>
 	<ItemGroup>
 		<AppxManifest Include="Package.appxmanifest">
@@ -27,20 +38,54 @@
 		</AppxManifest>
 	</ItemGroup>
 	<ItemGroup>
+		<Content Include="Images\4starStar.png" />
+		<Content Include="Images\CoffeeKudo.png" />
+		<Content Include="Images\DinnerKudo.png" />
 		<Content Include="Images\LockScreenLogo.scale-200.png" />
+		<Content Include="Images\LunchKudo.png" />
+		<Content Include="Images\MvpIcon.png" />
 		<Content Include="Images\SplashScreen.scale-200.png" />
 		<Content Include="Images\Square150x150Logo.scale-200.png" />
 		<Content Include="Images\Square44x44Logo.scale-200.png" />
 		<Content Include="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
 		<Content Include="Images\StoreLogo.png" />
+		<Content Include="Images\VideoAd.png" />
 		<Content Include="Images\Wide310x150Logo.scale-200.png" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.WinUI.Connectivity" Version="7.0.3" />
 		<PackageReference Include="Microsoft.ProjectReunion" Version="0.8.5" />
 		<PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="0.8.5" />
 		<PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="0.8.5" />
+		<PackageReference Include="Microsoft.Services.Store.Engagement" Version="10.1901.28001" />
 		<PackageReference Include="Telerik.WinUI.Controls" Version="*" />
 		<Manifest Include="$(ApplicationManifest)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj" />
+	  <ProjectReference Include="..\MvpApi.Services\MvpApi.Services.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Dialogs\AdditionalTechnologyAreasPicker.xaml">
+	    <SubType>Designer</SubType>
+	  </Page>
+	  <Page Update="Dialogs\AwardQuestionsDialog.xaml">
+	    <SubType>Designer</SubType>
+	  </Page>
+	  <Page Update="Dialogs\ContributionEditorDialog.xaml">
+	    <SubType>Designer</SubType>
+	  </Page>
+	  <Page Update="Dialogs\TutorialDialog.xaml">
+	    <SubType>Designer</SubType>
+	  </Page>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Views\ShellView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 </Project>

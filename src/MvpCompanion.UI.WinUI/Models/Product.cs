@@ -1,7 +1,7 @@
 ﻿using System;
 using Telerik.Core;
 
-namespace MvpCompanion.UI.WinUI
+namespace MvpCompanion.UI.WinUI.Models
 {
     public class Product : ViewModelBase
     {
@@ -34,12 +34,12 @@ namespace MvpCompanion.UI.WinUI
         {
             get
             {
-                return this.id;
+                return id;
             }
             set
             {
-                this.id = value;
-                this.OnPropertyChanged();
+                id = value;
+                OnPropertyChanged();
             }
         }
 
@@ -47,12 +47,12 @@ namespace MvpCompanion.UI.WinUI
         {
             get
             {
-                return this.name;
+                return name;
             }
             set
             {
-                this.name = value;
-                this.OnPropertyChanged();
+                name = value;
+                OnPropertyChanged();
             }
         }
 
@@ -60,12 +60,12 @@ namespace MvpCompanion.UI.WinUI
         {
             get
             {
-                return this.unitPrice;
+                return unitPrice;
             }
             set
             {
-                this.unitPrice = value;
-                this.OnPropertyChanged();
+                unitPrice = value;
+                OnPropertyChanged();
             }
         }
 
@@ -73,12 +73,12 @@ namespace MvpCompanion.UI.WinUI
         {
             get
             {
-                return this.date;
+                return date;
             }
             set
             {
-                this.date = value;
-                this.OnPropertyChanged();
+                date = value;
+                OnPropertyChanged();
             }
         }
 
@@ -86,12 +86,12 @@ namespace MvpCompanion.UI.WinUI
         {
             get
             {
-                return this.discontinued;
+                return discontinued;
             }
             set
             {
-                this.discontinued = value;
-                this.OnPropertyChanged();
+                discontinued = value;
+                OnPropertyChanged();
             }
         }
     }
