@@ -1,6 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CommunityToolkit.WinUI.Connectivity;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.WinUI.Extensions;
 

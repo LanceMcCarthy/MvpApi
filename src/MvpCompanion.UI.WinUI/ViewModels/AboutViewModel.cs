@@ -7,7 +7,6 @@ using Windows.Storage;
 using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Navigation;
-using Microsoft.Services.Store.Engagement;
 using MvpCompanion.UI.WinUI.Views;
 using MvpCompanion.UI.WinUI.ViewModels;
 using CommonHelpers.Common;

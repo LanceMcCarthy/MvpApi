@@ -14,12 +14,10 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
-using Microsoft.Services.Store.Engagement;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.WinUI.Common;
 using MvpCompanion.UI.WinUI.Dialogs;
 using MvpCompanion.UI.WinUI.Views;
-using MvpCompanion.UI.Common.Helpers;
 using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
 using CommonHelpers.Common;
@@ -135,7 +133,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             else
             {
                 // TODO navigation
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
+                //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
             }
         }
 
@@ -216,7 +214,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                 else
                 {
                     // TODO navigation
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
+                    //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
                 }
             }
         }

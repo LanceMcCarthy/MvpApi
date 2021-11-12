@@ -29,6 +29,7 @@
 		<None Remove="Images\StoreLogo.png" />
 		<None Remove="Images\VideoAd.png" />
 		<None Remove="Images\Wide310x150Logo.scale-200.png" />
+		<None Remove="LoginWindow.xaml" />
 		<None Remove="Package.appxmanifest" />
 		<None Remove="Views\ShellView.xaml" />
 	</ItemGroup>
@@ -58,7 +59,6 @@
 		<PackageReference Include="Microsoft.ProjectReunion" Version="0.8.5" />
 		<PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="0.8.5" />
 		<PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="0.8.5" />
-		<PackageReference Include="Microsoft.Services.Store.Engagement" Version="10.1901.28001" />
 		<PackageReference Include="Telerik.WinUI.Controls" Version="*" />
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
@@ -80,6 +80,9 @@
 	  </Page>
 	  <Page Update="Dialogs\TutorialDialog.xaml">
 	    <SubType>Designer</SubType>
+	  </Page>
+	  <Page Update="LoginWindow.xaml">
+	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 	  </Page>
 	</ItemGroup>
 

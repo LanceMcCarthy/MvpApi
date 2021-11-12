@@ -1,49 +1,56 @@
 ﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using Microsoft.UI.Xaml.Shapes;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using MvpApi.Services.Apis;
+using MvpApi.Services.Utilities;
 
 namespace MvpCompanion.UI.WinUI
 {
-    /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
-    /// </summary>
     public partial class App : Application
     {
-        /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
+        public static MvpApiService ApiService { get; set; }
+
+        public static LoginWindow MainLoginWindow { get; private set; }
+
         public App()
         {
             this.InitializeComponent();
+            MainLoginWindow = new LoginWindow();
         }
 
-        /// <summary>
-        /// Invoked when the application is launched normally by the end user.  Other entry points
-        /// will be used such as when the application is launched to open a specific file.
-        /// </summary>
-        /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
+
+            // We have a refresh token from a previous session
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                var authorizationHeader = await LoginWindow.RequestAuthorizationAsync(refreshToken);
+
+                // If the bearer token was returned
+                if (!string.IsNullOrEmpty(authorizationHeader))
+                {
+                    await MainLoginWindow.InitializeMvpApiAsync(authorizationHeader);
+                }
+                else
+                {
+                    await MainLoginWindow.SignInAsync();
+                }
+            }
+            else
+            {
+                await MainLoginWindow.SignInAsync();
+            }
+
             m_window = new MainWindow();
             m_window.Activate();
+
+            // TODO Ask user to send crash report from previous crash
+
+            //bool didAppCrash = await Crashes.HasCrashedInLastSessionAsync();
+
+            //if (didAppCrash)
+            //{
+            //    ErrorReport crashReport = await Crashes.GetLastSessionCrashReportAsync();
+            //}
         }
 
         private Window m_window;

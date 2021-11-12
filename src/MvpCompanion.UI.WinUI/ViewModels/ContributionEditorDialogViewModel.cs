@@ -1,20 +1,19 @@
-﻿using System;
+﻿using CommonHelpers.Common;
+using CommonHelpers.Mvvm;
+using CommunityToolkit.WinUI.Connectivity;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using MvpApi.Common.Models;
+using MvpCompanion.UI.WinUI.Extensions;
+using MvpCompanion.UI.WinUI.Helpers;
+using MvpCompanion.UI.WinUI.Views;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Popups;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using CommunityToolkit.WinUI.Connectivity;
-using MvpApi.Common.Models;
-using MvpCompanion.UI.WinUI.Extensions;
-using MvpCompanion.UI.WinUI.Helpers;
-using MvpCompanion.UI.WinUI.Views;
-using CommonHelpers.Common;
-using CommonHelpers.Mvvm;
-using MvpApi.Common.Extensions;
 
 namespace MvpCompanion.UI.WinUI.ViewModels
 {
@@ -34,8 +33,6 @@ namespace MvpCompanion.UI.WinUI.ViewModels
         private bool _isAnnualReachRequired;
         private bool _canSave = true;
         private string _warningMessage;
-        private bool _isBusy;
-        private string _isBusyMessage;
         private bool _editingExistingContribution;
 
         #endregion
@@ -132,18 +129,6 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             get => _warningMessage;
             set => SetProperty(ref _warningMessage, value);
         }
-
-        public bool IsBusy
-        {
-            get => _isBusy;
-            set => SetProperty(ref _isBusy, value);
-        }
-
-        public string IsBusyMessage
-        {
-            get => _isBusyMessage;
-            set => SetProperty(ref _isBusyMessage, value);
-        }
         
         public bool EditingExistingContribution
         {
@@ -196,7 +181,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             var lv = sender as ListView;
             var foPresenter = lv?.Parent as FlyoutPresenter;
             var popup = foPresenter?.Parent as Popup;
-            popup?.Hide();
+            //popup?.Hide();
         }
 
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)

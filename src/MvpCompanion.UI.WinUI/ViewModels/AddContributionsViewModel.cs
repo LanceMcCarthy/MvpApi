@@ -12,7 +12,6 @@ using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
-using Microsoft.Services.Store.Engagement;
 using CommunityToolkit.WinUI.Connectivity;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.WinUI.Dialogs;
@@ -21,7 +20,6 @@ using MvpCompanion.UI.WinUI.Helpers;
 using MvpCompanion.UI.WinUI.Views;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
-using MvpApi.Uwp.ViewModels;
 
 namespace MvpCompanion.UI.WinUI.ViewModels
 {

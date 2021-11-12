@@ -4,16 +4,19 @@
              xmlns:local="using:MvpCompanion.UI.WinUI"
              xmlns:telerikGrid="using:Telerik.UI.Xaml.Controls.Grid"
              xmlns:telerikData="using:Telerik.Data.Core"
-             xmlns:telerikCore="using:Telerik.Core">
+             xmlns:telerikCore="using:Telerik.Core" 
+             xmlns:vms="using:MvpCompanion.UI.WinUI.ViewModels" 
+             xmlns:selectors="using:MvpCompanion.UI.WinUI.Selectors" 
+             xmlns:models="using:MvpCompanion.UI.WinUI.Models">
     
     <UserControl.DataContext>
-        <local:ViewModel />
+        <vms:ViewModel />
     </UserControl.DataContext>
 
     <UserControl.Resources>
         <telerikCore:StringFormatConverter x:Key="StringFormatConverter"/>
-        <local:GroupHeaderTemplateSelector x:Key="TemplateSelector">
-            <local:GroupHeaderTemplateSelector.TopLevelGroupTemplate>
+        <selectors:GroupHeaderTemplateSelector x:Key="TemplateSelector">
+            <selectors:GroupHeaderTemplateSelector.TopLevelGroupTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <FontIcon Glyph="&#xE787;"
@@ -26,16 +29,16 @@
                                    Margin="5 0 0 0"/>
                     </StackPanel>
                 </DataTemplate>
-            </local:GroupHeaderTemplateSelector.TopLevelGroupTemplate>
-            <local:GroupHeaderTemplateSelector.SecondLevelGroupTemplate>
+            </selectors:GroupHeaderTemplateSelector.TopLevelGroupTemplate>
+            <selectors:GroupHeaderTemplateSelector.SecondLevelGroupTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Group.Key}"
                                FontStyle="Italic"
                                FontWeight="SemiBold"
                                VerticalAlignment="Center"/>
                 </DataTemplate>
-            </local:GroupHeaderTemplateSelector.SecondLevelGroupTemplate>
-        </local:GroupHeaderTemplateSelector>
+            </selectors:GroupHeaderTemplateSelector.SecondLevelGroupTemplate>
+        </selectors:GroupHeaderTemplateSelector>
     </UserControl.Resources>
 
     <telerikGrid:RadDataGrid x:Name="dataGrid"
@@ -72,7 +75,7 @@
             <telerikData:PropertyGroupDescriptor PropertyName="Date" SortOrder="Descending"/>
             <telerikData:DelegateGroupDescriptor DisplayContent="Name A-Z">
                 <telerikData:DelegateGroupDescriptor.KeyLookup>
-                    <local:CustomIKeyLookup/>
+                    <models:CustomIKeyLookup/>
                 </telerikData:DelegateGroupDescriptor.KeyLookup>
             </telerikData:DelegateGroupDescriptor>
         </telerikGrid:RadDataGrid.GroupDescriptors>

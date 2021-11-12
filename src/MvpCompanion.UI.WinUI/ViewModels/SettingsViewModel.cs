@@ -5,6 +5,9 @@ using Windows.ApplicationModel;
 using Microsoft.UI.Xaml.Navigation;
 using MvpCompanion.UI.WinUI.Views;
 using CommonHelpers.Common;
+using Windows.ApplicationModel.Email;
+using System.Diagnostics;
+using Windows.UI.Popups;
 
 namespace MvpCompanion.UI.WinUI.ViewModels
 {
@@ -57,5 +60,56 @@ namespace MvpCompanion.UI.WinUI.ViewModels
         {
 
         }
+
+        private void OpenUrl(string url)
+        {
+            Process.Start(url);
+        }
+
+        private async Task CreateEmailAsync()
+        {
+            try
+            {
+                IsBusy = true;
+                IsBusyMessage = "opening email...";
+
+                var email = new EmailMessage();
+                email.To.Add(new EmailRecipient("awesome.apps@outlook.com", "Lancelot Software"));
+                //email.Subject = $"MVP Companion {AppVersion}";
+                email.Body = "[write your message here]\r\n\n";
+
+                await EmailManager.ShowComposeNewEmailAsync(email);
+            }
+            catch (Exception ex)
+            {
+                //Crashes.TrackError(ex);
+
+                await new MessageDialog($"Something went wrong trying to open your email application automatically. You can still manually send an email to awesome.apps@outlook.com. /r/n/nError: {ex.Message}")
+                    .ShowAsync();
+            }
+            finally
+            {
+                IsBusy = false;
+                IsBusyMessage = "";
+            }
+        }
+
+        public async Task OnLoadedAsync()
+        {
+            if (!App.ApiService.IsLoggedIn)
+            {
+                IsBusy = true;
+                IsBusyMessage = "signing in...";
+
+                await App.MainLoginWindow.SignInAsync();
+            }
+
+            if (IsBusy)
+            {
+                IsBusy = false;
+                IsBusyMessage = "";
+            }
+        }
+
     }
 }

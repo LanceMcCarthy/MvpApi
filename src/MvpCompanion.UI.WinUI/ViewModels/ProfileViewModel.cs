@@ -18,6 +18,7 @@ using MvpCompanion.UI.WinUI.Views;
 using CommonHelpers.Common;
 using MvpCompanion.UI.WinUI.Helpers;
 using MvpCompanion.UI.WinUI.ViewModels;
+using MvpCompanion.UI.WinUI;
 
 namespace MvpApi.Uwp.ViewModels
 {

@@ -7,6 +7,7 @@ using System.Linq;
 using Windows.ApplicationModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using MvpCompanion.UI.WinUI.Extensions;
 
 namespace MvpCompanion.UI.WinUI.Dialogs
 {

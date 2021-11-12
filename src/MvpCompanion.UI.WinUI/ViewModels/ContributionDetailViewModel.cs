@@ -12,7 +12,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using CommonHelpers.Mvvm;
-using Microsoft.Services.Store.Engagement;
 using CommunityToolkit.WinUI.Connectivity;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.WinUI.Dialogs;
@@ -119,7 +118,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
         public bool IsAnnualReachRequired
         {
             get => _isAnnualReachRequired;
-            set => Set(ref _isAnnualReachRequired, value);
+            set => SetProperty(ref _isAnnualReachRequired, value);
         }
 
         public bool CanSave
