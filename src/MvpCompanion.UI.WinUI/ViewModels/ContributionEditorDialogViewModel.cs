@@ -1,44 +1,39 @@
 ﻿using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
-using Microsoft.Toolkit.Uwp.Connectivity;
+using CommunityToolkit.WinUI.Connectivity;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
-using MvpCompanion.UI.Common.Extensions;
-using MvpCompanion.UI.Common.Helpers;
+using MvpCompanion.UI.WinUI.Extensions;
+using MvpCompanion.UI.WinUI.Helpers;
 using MvpCompanion.UI.WinUI.Views;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Popups;
-using MvpCompanion.UI.WinUI.Common;
 
 namespace MvpCompanion.UI.WinUI.ViewModels
 {
-    public class ContributionEditorDialogViewModel : PageViewModelBase
+    public class ContributionEditorDialogViewModel : ViewModelBase
     {
         #region Fields
 
-        private ContributionsModel originalContribution;
-        private ContributionsModel selectedContribution;
-        private string urlHeader = "Url";
-        private string annualQuantityHeader = "Annual Quantity";
-        private string secondAnnualQuantityHeader = "Second Annual Quantity";
-        private string annualReachHeader = "Annual Reach";
-        private bool isUrlRequired;
-        private bool isAnnualQuantityRequired;
-        private bool isSecondAnnualQuantityRequired;
-        private bool isAnnualReachRequired;
-        private bool canSave = true;
-        private string warningMessage;
-        private bool isBusy;
-        private string isBusyMessage;
-        private bool editingExistingContribution;
+        private ContributionsModel _originalContribution;
+        private ContributionsModel _selectedContribution;
+        private string _urlHeader = "Url";
+        private string _annualQuantityHeader = "Annual Quantity";
+        private string _secondAnnualQuantityHeader = "Second Annual Quantity";
+        private string _annualReachHeader = "Annual Reach";
+        private bool _isUrlRequired;
+        private bool _isAnnualQuantityRequired;
+        private bool _isSecondAnnualQuantityRequired;
+        private bool _isAnnualReachRequired;
+        private bool _canSave = true;
+        private string _warningMessage;
+        private bool _editingExistingContribution;
 
         #endregion
 
@@ -69,88 +64,76 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public ContributionsModel SelectedContribution
         {
-            get => selectedContribution;
-            set => SetProperty(ref selectedContribution, value);
+            get => _selectedContribution;
+            set => SetProperty(ref _selectedContribution, value);
         }
 
         // Data entry control headers, using VM properties to alert validation violations
 
         public string AnnualQuantityHeader
         {
-            get => annualQuantityHeader;
-            set => SetProperty(ref annualQuantityHeader, value);
+            get => _annualQuantityHeader;
+            set => SetProperty(ref _annualQuantityHeader, value);
         }
 
         public string SecondAnnualQuantityHeader
         {
-            get => secondAnnualQuantityHeader;
-            set => SetProperty(ref secondAnnualQuantityHeader, value);
+            get => _secondAnnualQuantityHeader;
+            set => SetProperty(ref _secondAnnualQuantityHeader, value);
         }
 
         public string AnnualReachHeader
         {
-            get => annualReachHeader;
-            set => SetProperty(ref annualReachHeader, value);
+            get => _annualReachHeader;
+            set => SetProperty(ref _annualReachHeader, value);
         }
 
         public string UrlHeader
         {
-            get => urlHeader;
-            set => SetProperty(ref urlHeader, value);
+            get => _urlHeader;
+            set => SetProperty(ref _urlHeader, value);
         }
 
         public bool IsUrlRequired
         {
-            get => isUrlRequired;
-            set => SetProperty(ref isUrlRequired, value);
+            get => _isUrlRequired;
+            set => SetProperty(ref _isUrlRequired, value);
         }
 
         public bool IsAnnualQuantityRequired
         {
-            get => isAnnualQuantityRequired;
-            set => SetProperty(ref isAnnualQuantityRequired, value);
+            get => _isAnnualQuantityRequired;
+            set => SetProperty(ref _isAnnualQuantityRequired, value);
         }
 
         public bool IsSecondAnnualQuantityRequired
         {
-            get => isSecondAnnualQuantityRequired;
-            set => SetProperty(ref isSecondAnnualQuantityRequired, value);
+            get => _isSecondAnnualQuantityRequired;
+            set => SetProperty(ref _isSecondAnnualQuantityRequired, value);
         }
 
         public bool IsAnnualReachRequired
         {
-            get => isAnnualReachRequired;
-            set => SetProperty(ref isAnnualReachRequired, value);
+            get => _isAnnualReachRequired;
+            set => SetProperty(ref _isAnnualReachRequired, value);
         }
 
         public bool CanSave
         {
-            get => canSave;
-            set => SetProperty(ref canSave, value);
+            get => _canSave;
+            set => SetProperty(ref _canSave, value);
         }
 
         public string WarningMessage
         {
-            get => warningMessage;
-            set => SetProperty(ref warningMessage, value);
-        }
-
-        public bool IsBusy
-        {
-            get => isBusy;
-            set => SetProperty(ref isBusy, value);
-        }
-
-        public string IsBusyMessage
-        {
-            get => isBusyMessage;
-            set => SetProperty(ref isBusyMessage, value);
+            get => _warningMessage;
+            set => SetProperty(ref _warningMessage, value);
         }
         
         public bool EditingExistingContribution
         {
-            get => editingExistingContribution;
-            set => SetProperty(ref editingExistingContribution, value);
+            get => _editingExistingContribution;
+            set => SetProperty(ref _editingExistingContribution, value);
         }
 
         // Commands
@@ -161,7 +144,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            if (e.NewDate < (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline)
+            if (e.NewDate < (ShellView.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellView.Instance.DataContext as ShellViewModel).SubmissionDeadline)
             {
                 WarningMessage = "The contribution date must be after the start of your current award period and before March 31st in order for it to count towards your evaluation";
             }
@@ -198,7 +181,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             var lv = sender as ListView;
             var foPresenter = lv?.Parent as FlyoutPresenter;
             var popup = foPresenter?.Parent as Popup;
-            popup?.Hide();
+            //popup?.Hide();
         }
 
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
@@ -243,7 +226,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                 return;
             }
 
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+            if (ShellView.Instance.DataContext is ShellViewModel shellVm)
             {
                 // Verify the user is logged in
                 if (!shellVm.IsLoggedIn)
@@ -251,7 +234,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                     IsBusy = true;
                     IsBusyMessage = "logging in...";
 
-                    await ShellPage.Instance.SignInAsync();
+                    await ShellView.Instance.SignInAsync();
 
                     IsBusyMessage = "";
                     IsBusy = false;
@@ -265,11 +248,11 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                         IsBusyMessage = "loading types...";
 
                         var types = await App.ApiService.GetContributionTypesAsync();
-                        
-                        foreach (var type in types)
+
+                        types.ForEach(type =>
                         {
                             Types.Add(type);
-                        }
+                        });
 
                         IsBusyMessage = "loading technologies...";
 
@@ -277,22 +260,22 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
                         // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
                         var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-                        
-                        foreach (var area in areas)
+
+                        areas.ForEach(area =>
                         {
                             CategoryAreas.Add(area);
-                        }
+                        });
 
                         // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
 
                         IsBusyMessage = "loading visibility options...";
 
                         var visibilities = await App.ApiService.GetVisibilitiesAsync();
-                        
-                        foreach (var visibility in visibilities)
+
+                        visibilities.ForEach(visibility =>
                         {
                             Visibilities.Add(visibility);
-                        }
+                        });
 
                         // If the contribution object wasn't passed during Dialog creation, setup a blank one.
                         if (SelectedContribution == null)
@@ -310,10 +293,10 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                         }
                         
                         // TODO prevent accidental back navigation
-                        if (BootStrapper.Current.NavigationService.FrameFacade != null)
-                        {
-                            BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacade_BackRequested;
-                        }
+                        //if (BootStrapper.Current.NavigationService.FrameFacade != null)
+                        //{
+                        //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacade_BackRequested;
+                        //}
                     }
                     catch (Exception ex)
                     {
@@ -331,48 +314,33 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public void OnDialogClosingAsync()
         {
-            if (BootStrapper.Current.NavigationService.FrameFacade != null)
-            {
-                BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacade_BackRequested;
-            }
+            //if (BootStrapper.Current.NavigationService.FrameFacade != null)
+            //{
+            //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacade_BackRequested;
+            //}
         }
 
-        private async void FrameFacade_BackRequested(object sender, HandledEventArgs e)
-        {
-            try
-            {
-                var md = new MessageDialog("Navigating away will lose any pending edits, continue?", "Close Editor?");
-                md.Commands.Add(new UICommand("yes"));
-                md.Commands.Add(new UICommand("no"));
-                md.CancelCommandIndex = 1;
-                md.DefaultCommandIndex = 1;
+        //private async void FrameFacade_BackRequested(object sender, HandledEventArgs e)
+        //{
+        //    try
+        //    {
+        //        var md = new MessageDialog("Navigating away will lose any pending edits, continue?", "Close Editor?");
+        //        md.Commands.Add(new UICommand("yes"));
+        //        md.Commands.Add(new UICommand("no"));
+        //        md.CancelCommandIndex = 1;
+        //        md.DefaultCommandIndex = 1;
 
-                var result = await md.ShowAsync();
+        //        var result = await md.ShowAsync();
 
-                // If the user clicked no, then make the back request as handled to prevent closure of dialog
-                e.Handled = result.Label != "yes";
-            }
-            catch (Exception ex)
-            {
-                await ex.LogExceptionAsync();
-            }
-        }
-
-        public override void OnPageNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnPageNavigatedTo(e);
-        }
-
-        public override void OnPageNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnPageNavigatedFrom(e);
-        }
-
-        public override void OnPageNavigatingFrom(NavigatingCancelEventArgs e)
-        {
-            base.OnPageNavigatingFrom(e);
-        }
-
+        //        // If the user clicked no, then make the back request as handled to prevent closure of dialog
+        //        e.Handled = result.Label != "yes";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await ex.LogExceptionAsync();
+        //    }
+        //}
+        
         #endregion
     }
 }

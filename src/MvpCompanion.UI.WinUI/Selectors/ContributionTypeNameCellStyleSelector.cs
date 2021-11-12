@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
 using MvpApi.Common.Models;
-using MvpCompanion.UI.Common.Helpers;
+using MvpCompanion.UI.WinUI.Helpers;
 using Telerik.UI.Xaml.Controls.Grid;
 
 namespace MvpCompanion.UI.WinUI.Selectors
@@ -15,7 +15,7 @@ namespace MvpCompanion.UI.WinUI.Selectors
         public Style NormalStyle { get; set; }
 
         public Style ColoredBackgroundStyle { get; set; }
-        
+
         protected override Style SelectStyleCore(object item, DependencyObject container)
         {
             if (item is DataGridCellInfo cellInfo)
@@ -25,7 +25,7 @@ namespace MvpCompanion.UI.WinUI.Selectors
                     Debug.WriteLine($"ContributionTypeName: {contributionModel.ContributionTypeName}");
                     // Get the color for that specific type name
                     var background = GetBackgroundForContributionType(contributionModel.ContributionType);
-                    
+
                     // Add the style Setter
                     ColoredBackgroundStyle.Setters.Add(new Setter { Target = new TargetPropertyPath(Rectangle.FillProperty), Value = background });
 

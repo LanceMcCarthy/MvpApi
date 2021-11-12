@@ -1,6 +1,6 @@
 ﻿using System;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace MvpCompanion.UI.WinUI.Converters
 {
@@ -13,7 +13,7 @@ namespace MvpCompanion.UI.WinUI.Converters
 
             if (string.IsNullOrEmpty(value.ToString()))
                 return null;
-            
+
             return new BitmapImage(new Uri((string)value));
         }
 

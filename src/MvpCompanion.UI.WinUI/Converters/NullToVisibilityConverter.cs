@@ -1,6 +1,6 @@
 ﻿using System;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Data;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Data;
 
 namespace MvpCompanion.UI.WinUI.Converters
 {
@@ -16,14 +16,14 @@ namespace MvpCompanion.UI.WinUI.Converters
         {
             if (value is string s)
             {
-                if(IsInverted)
+                if (IsInverted)
                     return string.IsNullOrEmpty(s) ? Visibility.Visible : Visibility.Collapsed;
 
                 return string.IsNullOrEmpty(s) ? Visibility.Collapsed : Visibility.Visible;
             }
             else
             {
-                if(IsInverted)
+                if (IsInverted)
                     return value == null ? Visibility.Visible : Visibility.Collapsed;
 
                 return value == null ? Visibility.Collapsed : Visibility.Visible;

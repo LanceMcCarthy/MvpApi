@@ -1,21 +1,20 @@
 ﻿using System;
 using Windows.ApplicationModel;
 using Windows.Storage;
-using Microsoft.UI.Xaml.Navigation;
 using MvpApi.Services.Utilities;
-using MvpCompanion.UI.Common.Helpers;
-using MvpCompanion.UI.WinUI.Common;
+using MvpCompanion.UI.WinUI.Helpers;
+using CommonHelpers.Common;
 
 namespace MvpCompanion.UI.WinUI.ViewModels
 {
-    public class ShellViewModel : PageViewModelBase
+    public class ShellViewModel : ViewModelBase
     {
-        private MvpApi.Common.Models.ProfileViewModel mvp;
-        private string profileImagePath;
-        private bool isLoggedIn;
-        private bool useBetaEditor;
-        private DateTime submissionStartDate = ServiceConstants.SubmissionStartDate;
-        private DateTime submissionDeadline = ServiceConstants.SubmissionDeadline;
+        private MvpApi.Common.Models.ProfileViewModel _mvp;
+        private string _profileImagePath;
+        private bool _isLoggedIn;
+        private bool _useBetaEditor;
+        private DateTime _submissionStartDate = ServiceConstants.SubmissionStartDate;
+        private DateTime _submissionDeadline = ServiceConstants.SubmissionDeadline;
 
         public ShellViewModel()
         {
@@ -29,10 +28,10 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public string ProfileImagePath
         {
-            get => profileImagePath;
+            get => _profileImagePath;
             set
             {
-                profileImagePath = value;
+                _profileImagePath = value;
 
                 // Manually invoke PropertyChanged to ensure image is reloaded, even if the file path is the same.
                 OnPropertyChanged();
@@ -41,65 +40,86 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public MvpApi.Common.Models.ProfileViewModel Mvp
         {
-            get => mvp;
-            set => SetProperty(ref mvp, value);
+            get => _mvp;
+            set => SetProperty(ref _mvp, value);
         }
 
         public bool IsLoggedIn
         {
-            get => isLoggedIn;
-            set => SetProperty(ref isLoggedIn, value);
+            get => _isLoggedIn;
+            set => SetProperty(ref _isLoggedIn, value);
         }
-        
+
         public bool UseBetaEditor
         {
             get
             {
-                if (ApplicationData.Current.RoamingSettings.Values.TryGetValue(nameof(UseBetaEditor), out object rawValue))
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(UseBetaEditor), out object rawValue))
                 {
-                    useBetaEditor = (bool)rawValue;
+                    _useBetaEditor = (bool)rawValue;
                 }
                 else
                 {
-                    ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = useBetaEditor;
+                    ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
                 }
-                
-                return useBetaEditor;
+
+                return _useBetaEditor;
             }
             set
             {
-                if (SetProperty(ref useBetaEditor, value))
+                if (SetProperty(ref _useBetaEditor, value))
                 {
-                    ApplicationData.Current.RoamingSettings.Values[nameof(UseBetaEditor)] = useBetaEditor;
+                    ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
                 }
             }
         }
 
         public DateTime SubmissionStartDate
         {
-            get => submissionStartDate;
-            set => SetProperty(ref submissionStartDate, value);
+            get
+            {
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(SubmissionStartDate), out object rawValue))
+                {
+                    _submissionStartDate = DateTime.Parse((string)rawValue);
+                }
+                else
+                {
+                    ApplicationData.Current.LocalSettings.Values[nameof(SubmissionStartDate)] = _submissionStartDate.ToLongDateString();
+                }
+
+                return _submissionStartDate;
+            }
+            set
+            {
+                if (SetProperty(ref _submissionStartDate, value))
+                {
+                    ApplicationData.Current.LocalSettings.Values[nameof(SubmissionStartDate)] = _submissionStartDate.ToLongDateString();
+                }
+            }
         }
 
         public DateTime SubmissionDeadline
         {
-            get => submissionDeadline;
-            set => SetProperty(ref submissionDeadline, value);
-        }
-
-        public override void OnPageNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnPageNavigatedTo(e);
-        }
-
-        public override void OnPageNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnPageNavigatedFrom(e);
-        }
-
-        public override void OnPageNavigatingFrom(NavigatingCancelEventArgs e)
-        {
-            base.OnPageNavigatingFrom(e);
+            get
+            {
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(SubmissionDeadline), out object rawValue))
+                {
+                    _submissionDeadline = DateTime.Parse((string)rawValue);
+                }
+                else
+                {
+                    ApplicationData.Current.LocalSettings.Values[nameof(SubmissionDeadline)] = _submissionDeadline.ToLongDateString();
+                }
+                
+                return _submissionDeadline;
+            }
+            set
+            {
+                if (SetProperty(ref _submissionDeadline, value))
+                {
+                    ApplicationData.Current.LocalSettings.Values[nameof(SubmissionDeadline)] = _submissionDeadline.ToLongDateString();
+                }
+            }
         }
     }
 }

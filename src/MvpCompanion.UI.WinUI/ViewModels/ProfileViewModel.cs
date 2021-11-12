@@ -1,12 +1,4 @@
-﻿using CommonHelpers.Common;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
-using MvpApi.Common.Models;
-using MvpCompanion.UI.Common.Helpers;
-using MvpCompanion.UI.WinUI.Dialogs;
-using MvpCompanion.UI.WinUI.Views;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,19 +8,29 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.UI.Popups;
-using MvpCompanion.UI.WinUI.Common;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
+using MvpApi.Common.Models;
+using MvpCompanion.UI.WinUI.Dialogs;
+using MvpCompanion.UI.Common.Helpers;
+using MvpCompanion.UI.WinUI.Views;
+using CommonHelpers.Common;
+using MvpCompanion.UI.WinUI.Helpers;
+using MvpCompanion.UI.WinUI.ViewModels;
+using MvpCompanion.UI.WinUI;
 
-namespace MvpCompanion.UI.WinUI.ViewModels
+namespace MvpApi.Uwp.ViewModels
 {
-    public class ProfileViewModel : PageViewModelBase
+    public class ProfileViewModel : ViewModelBase
     {
-        private MvpApi.Common.Models.ProfileViewModel mvp;
-        private string profileImagePath;
-        private ObservableCollection<OnlineIdentityViewModel> onlineIdentities;
-        private ListViewSelectionMode listViewSelectionMode = ListViewSelectionMode.Single;
-        private bool isMultipleSelectionEnabled;
-        private bool areAppBarButtonsEnabled;
-        private ObservableCollection<OnlineIdentityViewModel> selectedOnlineIdentities;
+        private MvpApi.Common.Models.ProfileViewModel _mvp;
+        private string _profileImagePath;
+        private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
+        private ListViewSelectionMode _listViewSelectionMode = ListViewSelectionMode.Single;
+        private bool _isMultipleSelectionEnabled;
+        private bool _areAppBarButtonsEnabled;
+        private ObservableCollection<OnlineIdentityViewModel> _selectedOnlineIdentities;
 
         public ProfileViewModel()
         {
@@ -41,20 +43,20 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public MvpApi.Common.Models.ProfileViewModel Mvp
         {
-            get => mvp;
-            set => SetProperty(ref mvp, value);
+            get => _mvp;
+            set => SetProperty(ref _mvp, value);
         }
 
         public ObservableCollection<OnlineIdentityViewModel> OnlineIdentities
         {
-            get => onlineIdentities ?? (onlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
-            set => SetProperty(ref onlineIdentities, value);
+            get => _onlineIdentities ?? (_onlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
+            set => SetProperty(ref _onlineIdentities, value);
         }
 
         public ObservableCollection<OnlineIdentityViewModel> SelectedOnlineIdentities
         {
-            get => selectedOnlineIdentities ?? (selectedOnlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
-            set => SetProperty(ref selectedOnlineIdentities, value);
+            get => _selectedOnlineIdentities ?? (_selectedOnlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
+            set => SetProperty(ref _selectedOnlineIdentities, value);
         }
 
         //public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
@@ -63,16 +65,16 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public string ProfileImagePath
         {
-            get => profileImagePath;
-            set => SetProperty(ref profileImagePath, value);
+            get => _profileImagePath;
+            set => SetProperty(ref _profileImagePath, value);
         }
 
         public bool IsMultipleSelectionEnabled
         {
-            get => isMultipleSelectionEnabled;
+            get => _isMultipleSelectionEnabled;
             set
             {
-                SetProperty(ref isMultipleSelectionEnabled, value);
+                SetProperty(ref _isMultipleSelectionEnabled, value);
                 
                 ListViewSelectionMode = value
                     ? ListViewSelectionMode.Multiple
@@ -82,14 +84,14 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public ListViewSelectionMode ListViewSelectionMode
         {
-            get => listViewSelectionMode;
-            set => SetProperty(ref listViewSelectionMode, value);
+            get => _listViewSelectionMode;
+            set => SetProperty(ref _listViewSelectionMode, value);
         }
 
         public bool AreAppBarButtonsEnabled
         {
-            get => areAppBarButtonsEnabled;
-            set => SetProperty(ref areAppBarButtonsEnabled, value);
+            get => _areAppBarButtonsEnabled;
+            set => SetProperty(ref _areAppBarButtonsEnabled, value);
         }
 
         // Methods
@@ -264,17 +266,17 @@ namespace MvpCompanion.UI.WinUI.ViewModels
         //}
 
         #region Navigation
-        
-        public override async void OnPageNavigatedTo(NavigationEventArgs e)
+
+        public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+            if (ShellView.Instance.DataContext is ShellViewModel shellVm)
             {
                 if (!shellVm.IsLoggedIn)
                 {
                     IsBusy = true;
                     IsBusyMessage = "signing in...";
 
-                    await ShellPage.Instance.SignInAsync();
+                    await ShellView.Instance.SignInAsync();
                 }
 
                 this.Mvp = shellVm.Mvp;
@@ -294,18 +296,11 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                 IsBusyMessage = "";
                 IsBusy = false;
             }
-
-            base.OnPageNavigatedTo(e);
         }
 
-        public override void OnPageNavigatedFrom(NavigationEventArgs e)
+        public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
         {
-            base.OnPageNavigatedFrom(e);
-        }
 
-        public override void OnPageNavigatingFrom(NavigatingCancelEventArgs e)
-        {
-            base.OnPageNavigatingFrom(e);
         }
 
         #endregion

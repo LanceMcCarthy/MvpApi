@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 
-namespace MvpCompanion.UI.WinUI.Selectors
+namespace MvpApi.Uwp.Selectors
 {
     internal class TechAreaGroupStyleSelector : GroupStyleSelector
     {

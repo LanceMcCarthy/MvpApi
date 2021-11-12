@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using MvpApi.Common.Models;
+using MvpApi.Services.Apis;
+using MvpCompanion.UI.WinUI.Helpers;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Windows.ApplicationModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using MvpApi.Common.Models;
-using MvpApi.Services.Apis;
+using MvpCompanion.UI.WinUI.Extensions;
 
 namespace MvpCompanion.UI.WinUI.Dialogs
 {
@@ -17,13 +19,13 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
         public AwardQuestionsDialog(MvpApiService service)
         {
-            apiService = service;
+            this.apiService = service;
 
             this.InitializeComponent();
             
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                Items = UI.Common.Helpers.DesignTimeHelpers.GenerateQuestionnaireItems();
+                Items = DesignTimeHelpers.GenerateQuestionnaireItems();
             }
 
             ItemsListView.ItemsSource = Items;
@@ -56,11 +58,8 @@ namespace MvpCompanion.UI.WinUI.Dialogs
             if (savedAnswers == null)
             {
                 ShowProgress("You've likely already submitted your answers. If not, try again later.");
-                
-                foreach (var item in Items)
-                {
-                    item.AnswerItem = new AwardConsiderationAnswerModel();
-                }
+
+                Items.ForEach(item=>item.AnswerItem = new AwardConsiderationAnswerModel());
 
                 SubmitButton.IsEnabled = false;
                 ConfirmationCheckBox.IsEnabled = false;

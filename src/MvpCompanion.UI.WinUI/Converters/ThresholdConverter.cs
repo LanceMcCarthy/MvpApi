@@ -1,5 +1,5 @@
 ﻿using System;
-using Windows.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Data;
 
 namespace MvpCompanion.UI.WinUI.Converters
 {
@@ -13,7 +13,7 @@ namespace MvpCompanion.UI.WinUI.Converters
         /// OverResult will be returned when the value is larger than the threshold amount (UnderResult is used when Threshold is equal to value)
         /// </summary>
         public int Threshold { get; set; }
-        
+
         public object UnderResult { get; set; }
 
         public object OverResult { get; set; }

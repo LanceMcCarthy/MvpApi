@@ -1,8 +1,8 @@
-﻿using Microsoft.Toolkit.Uwp.Connectivity;
+﻿using CommunityToolkit.WinUI.Connectivity;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MvpApi.Common.Models;
-using MvpCompanion.UI.Common.Extensions;
+using MvpCompanion.UI.WinUI.Extensions;
 
 namespace MvpCompanion.UI.WinUI.Dialogs
 {

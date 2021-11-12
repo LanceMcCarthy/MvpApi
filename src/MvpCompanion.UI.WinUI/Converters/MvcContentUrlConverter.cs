@@ -1,5 +1,5 @@
 ﻿using System;
-using Windows.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Data;
 
 namespace MvpCompanion.UI.WinUI.Converters
 {
@@ -12,7 +12,7 @@ namespace MvpCompanion.UI.WinUI.Converters
         {
             if (value is string mvcUrl)
             {
-                return  mvcUrl.Replace("~", "https://mvp.microsoft.com");
+                return mvcUrl.Replace("~", "https://mvp.microsoft.com");
             }
 
             return "";

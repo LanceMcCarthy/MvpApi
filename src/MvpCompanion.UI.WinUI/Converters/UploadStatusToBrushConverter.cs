@@ -1,8 +1,9 @@
 ﻿using System;
-using Windows.UI;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Media;
+using Microsoft.UI;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Media;
 using MvpApi.Common.Models;
+using Windows.UI;
 
 namespace MvpCompanion.UI.WinUI.Converters
 {
@@ -25,7 +26,7 @@ namespace MvpCompanion.UI.WinUI.Converters
                     case UploadStatus.Success:
                         return new SolidColorBrush(Colors.LightGreen);
                     case UploadStatus.Failed:
-                        return new SolidColorBrush(Color.FromArgb(0xFF,0xF6,0x37,0x37));
+                        return new SolidColorBrush(Color.FromArgb(0xFF, 0xF6, 0x37, 0x37));
                     case UploadStatus.None:
                         return new SolidColorBrush(Colors.Transparent);
                 }

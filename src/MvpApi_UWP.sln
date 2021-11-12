@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29001.49
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvpApi.Uwp", "MvpApi.Uwp\MvpApi.Uwp.csproj", "{FA6C2B8C-C185-4152-ACE1-A65A815A518E}"
 EndProject

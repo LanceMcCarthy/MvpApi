@@ -1,8 +1,8 @@
 ﻿using System;
-using Windows.UI;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Media;
-using MvpCompanion.UI.Common.Helpers;
+using Microsoft.UI;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Media;
+using MvpCompanion.UI.WinUI.Helpers;
 
 namespace MvpCompanion.UI.WinUI.Converters
 {

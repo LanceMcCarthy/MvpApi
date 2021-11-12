@@ -1,22 +1,25 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
-using MvpApi.Common.Models;
-using MvpCompanion.UI.Common.Helpers;
+﻿using MvpApi.Common.Models;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Windows.Foundation.Metadata;
 using Windows.Services.Store;
 using Windows.UI.Popups;
-using MvpCompanion.UI.WinUI.Common;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Navigation;
+//using VungleSDK;
+using CommonHelpers.Common;
+using MvpCompanion.UI.WinUI.Helpers;
 
 namespace MvpCompanion.UI.WinUI.ViewModels
 {
-    public class KudosViewModel : PageViewModelBase
+    public class KudosViewModel : ViewModelBase
     {
-        private StoreContext context;
-        private Visibility feedbackHubButtonVisibility;
+        private StoreContext _context;
+        private Visibility _feedbackHubButtonVisibility;
         //VungleAd sdkInstance;
         private string vungleAppId = "5f765c14d870a360a1d6f906";
         private string vungleAdPlacementId = "KUDOSPAGEINTERSTITIAL-9395221";
@@ -34,16 +37,18 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public Visibility FeedbackHubButtonVisibility
         {
-            get => feedbackHubButtonVisibility;
-            set => SetProperty(ref feedbackHubButtonVisibility, value);
+            get => _feedbackHubButtonVisibility;
+            set => SetProperty(ref _feedbackHubButtonVisibility, value);
         }
 
         public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
         {
             if (!(e.ClickedItem is Kudos kudo)) return;
 
-            //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-            //    StoreServicesCustomEventLogger.GetDefault().Log($"{kudo.Title} Kudos Item Selected");
+            if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+            {
+                //StoreServicesCustomEventLogger.GetDefault().Log($"{kudo.Title} Kudos Item Selected");
+            }
 
             if (!string.IsNullOrEmpty(kudo.StoreId))
             {
@@ -131,10 +136,10 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                 IsBusy = true;
                 IsBusyMessage = "in-app purchase in progress (you should see a separate window)...";
 
-                if (context == null)
-                    context = StoreContext.GetDefault();
+                if (_context == null)
+                    _context = StoreContext.GetDefault();
 
-                var result = await context.RequestPurchaseAsync(storeId);
+                var result = await _context.RequestPurchaseAsync(storeId);
 
                 IsBusyMessage = "action complete, reviewing result...";
 
@@ -199,7 +204,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         #region Navigation
 
-        public override void OnPageNavigatedTo(NavigationEventArgs e)
+        public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
             //    ? Visibility.Visible
@@ -209,19 +214,12 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             //sdkInstance.OnAdPlayableChanged += SdkInstance_OnAdPlayableChanged;
             //sdkInstance.LoadAd(vungleAdPlacementId);
 
-            base.OnPageNavigatedTo(e);
         }
 
-        public override void OnPageNavigatedFrom(NavigationEventArgs e)
+        public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
         {
             //sdkInstance.OnAdPlayableChanged -= SdkInstance_OnAdPlayableChanged;
 
-            base.OnPageNavigatedFrom(e);
-        }
-
-        public override void OnPageNavigatingFrom(NavigatingCancelEventArgs e)
-        {
-            base.OnPageNavigatingFrom(e);
         }
 
         #endregion

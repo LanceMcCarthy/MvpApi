@@ -5,7 +5,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.WinUI.ViewModels;
-using Visibility = Microsoft.UI.Xaml.Visibility;
 
 namespace MvpCompanion.UI.WinUI.Dialogs
 {
@@ -16,7 +15,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
         public AdditionalTechnologyAreasPicker()
         {
-            ((FrameworkElement) this).DataContext = Context;
+            DataContext = Context;
 
             InitializeComponent();
             

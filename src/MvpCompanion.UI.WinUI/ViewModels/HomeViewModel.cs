@@ -1,40 +1,41 @@
-﻿using CommonHelpers.Mvvm;
-using Microsoft.Toolkit.Uwp.Connectivity;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Navigation;
-using MvpApi.Common.Models;
-using MvpCompanion.UI.Common.Helpers;
-using MvpCompanion.UI.WinUI.Common;
-using MvpCompanion.UI.WinUI.Dialogs;
-using MvpCompanion.UI.WinUI.Views;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Telerik.Core;
-using Telerik.Data.Core;
-using Telerik.UI.Xaml.Controls.Grid;
 using Windows.ApplicationModel;
+using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.UI.Popups;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Navigation;
+using MvpApi.Common.Models;
+using MvpCompanion.UI.WinUI.Common;
+using MvpCompanion.UI.WinUI.Dialogs;
+using MvpCompanion.UI.WinUI.Views;
+using Telerik.Data.Core;
+using Telerik.UI.Xaml.Controls.Grid;
+using CommonHelpers.Common;
+using MvpCompanion.UI.WinUI.Helpers;
+using CommonHelpers.Mvvm;
+using CommunityToolkit.WinUI.Connectivity;
 
 namespace MvpCompanion.UI.WinUI.ViewModels
 {
-    public class HomeViewModel : PageViewModelBase
+    public class HomeViewModel : ViewModelBase
     {
         #region Fields
 
-        private DataGridSelectionMode gridSelectionMode = DataGridSelectionMode.Single;
-        private bool isMultipleSelectionEnabled;
-        private ObservableCollection<ContributionsModel> contributions;
-        private bool areAppBarButtonsEnabled;
-        private bool isInternetDisabled;
+        private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
+        private bool _isMultipleSelectionEnabled;
+        private ObservableCollection<ContributionsModel> _contributions;
+        private bool _areAppBarButtonsEnabled;
+        private bool _isInternetDisabled;
 
         #endregion
 
@@ -71,11 +72,11 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public ObservableCollection<ContributionsModel> Contributions
         {
-            get => contributions;
-            set => SetProperty(ref contributions, value);
+            get => _contributions;
+            set => SetProperty(ref _contributions, value);
         }
 
-        public BindableCollection<object> SelectedContributions { get; set; }
+        public ObservableCollection<object> SelectedContributions { get; set; }
 
         public GroupDescriptorCollection GroupDescriptors { get; set; }
 
@@ -83,10 +84,10 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public bool IsMultipleSelectionEnabled
         {
-            get => isMultipleSelectionEnabled;
+            get => _isMultipleSelectionEnabled;
             set
             {
-                SetProperty(ref isMultipleSelectionEnabled, value);
+                SetProperty(ref _isMultipleSelectionEnabled, value);
 
                 GridSelectionMode = value
                     ? DataGridSelectionMode.Multiple
@@ -96,20 +97,20 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public DataGridSelectionMode GridSelectionMode
         {
-            get => gridSelectionMode;
-            set => SetProperty(ref gridSelectionMode, value);
+            get => _gridSelectionMode;
+            set => SetProperty(ref _gridSelectionMode, value);
         }
 
         public bool AreAppBarButtonsEnabled
         {
-            get => areAppBarButtonsEnabled;
-            set => SetProperty(ref areAppBarButtonsEnabled, value);
+            get => _areAppBarButtonsEnabled;
+            set => SetProperty(ref _areAppBarButtonsEnabled, value);
         }
 
         public bool IsInternetDisabled
         {
-            get => isInternetDisabled;
-            set => SetProperty(ref isInternetDisabled, value);
+            get => _isInternetDisabled;
+            set => SetProperty(ref _isInternetDisabled, value);
         }
 
         #endregion
@@ -118,7 +119,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
 
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+            if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
             {
                 var editDialog = new ContributionEditorDialog();
 
@@ -131,7 +132,8 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             }
             else
             {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
+                // TODO navigation
+                //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
             }
         }
 
@@ -163,8 +165,10 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                     var success = await App.ApiService.DeleteContributionAsync(contribution);
 
                     // Quality assurance, only logs a successful or failed delete.
-                    //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    //    StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
+                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    {
+                        //StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
+                    }
                 }
 
                 SelectedContributions.Clear();
@@ -196,7 +200,7 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             // When in single selection mode, go to the selected item's details page
             if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
             {
-                if(ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+                if(ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
                 {
                     var editDialog = new ContributionEditorDialog(contribution);
 
@@ -209,7 +213,8 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                 }
                 else
                 {
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
+                    // TODO navigation
+                    //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
                 }
             }
         }
@@ -338,18 +343,26 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             {
                 IsBusy = true;
                 IsBusyMessage = "loading contributions...";
-                
+
+                Contributions = new ObservableCollection<ContributionsModel>();
+
                 // Get all the contributions for the currently signed in MVP.
                 var result = await App.ApiService.GetAllContributionsAsync();
 
+                foreach (var cont in result.Contributions)
+                {
+                    Contributions.Add(cont);
+                }
+
                 // Load the items into the DataGrid
-                Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);
+                //Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);
 
                 IsBusyMessage = "";
                 IsBusy = false;
             }
             catch (Exception ex)
             {
+                // BUG
                 await ex.LogExceptionWithUserMessage();
             }
             finally
@@ -362,8 +375,8 @@ namespace MvpCompanion.UI.WinUI.ViewModels
         #endregion
 
         #region Navigation
-        
-        public override async void OnPageNavigatedTo(NavigationEventArgs e)
+
+        public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
 
@@ -373,11 +386,11 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                 return;
             }
 
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+            if (ShellView.Instance.DataContext is ShellViewModel shellVm)
             {
                 if (!shellVm.IsLoggedIn)
                 {
-                    await ShellPage.Instance.SignInAsync();
+                    await ShellView.Instance.SignInAsync();
                 }
 
                 // Although user should be logged in at this point, still check
@@ -409,18 +422,11 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                     IsBusyMessage = "";
                 }
             }
-
-            base.OnPageNavigatedTo(e);
         }
 
-        public override void OnPageNavigatedFrom(NavigationEventArgs e)
+        public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
         {
-            base.OnPageNavigatedFrom(e);
-        }
 
-        public override void OnPageNavigatingFrom(NavigatingCancelEventArgs e)
-        {
-            base.OnPageNavigatingFrom(e);
         }
 
         #endregion

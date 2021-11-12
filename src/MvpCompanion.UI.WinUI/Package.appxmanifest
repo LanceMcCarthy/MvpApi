@@ -2,25 +2,24 @@
 
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
-  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  IgnorableNamespaces="uap mp">
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="ca1a7ec0-85ea-4637-9a4a-736c8ec70ac3"
-    Publisher="CN=mccarthy"
+    Name="e602f808-31b6-443c-a57e-531b4d70a6fc"
+    Publisher="CN=vgrozdan"
     Version="1.0.0.0" />
 
-  <mp:PhoneIdentity PhoneProductId="ca1a7ec0-85ea-4637-9a4a-736c8ec70ac3" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
-
   <Properties>
-    <DisplayName>MvpCompanion.WinUI</DisplayName>
-    <PublisherDisplayName>mccarthy</PublisherDisplayName>
-    <Logo>Assets\StoreLogo.png</Logo>
+    <DisplayName>MvpCompanion.UI.WinUI (Package)</DisplayName>
+    <PublisherDisplayName>vgrozdan</PublisherDisplayName>
+    <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.18362.0" MaxVersionTested="10.0.19041.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.18362.0" MaxVersionTested="10.0.19041.0" />
   </Dependencies>
 
   <Resources>
@@ -30,17 +29,20 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="MvpCompanion.WinUI.App">
+      EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="MvpCompanion.WinUI"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png"
-        Description="MvpCompanion.WinUI"
-        BackgroundColor="transparent">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        DisplayName="MvpCompanion.UI.WinUI (Package)"
+        Description="MvpCompanion.UI.WinUI (Package)"
+        BackgroundColor="transparent"
+        Square150x150Logo="Images\Square150x150Logo.png"
+        Square44x44Logo="Images\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
     </Application>
   </Applications>
 
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
 </Package>

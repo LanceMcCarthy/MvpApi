@@ -1,98 +1,58 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.Activation;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
+﻿using Microsoft.UI.Xaml;
 using MvpApi.Services.Apis;
-using MvpCompanion.UI.Common.Helpers;
+using MvpApi.Services.Utilities;
 
 namespace MvpCompanion.UI.WinUI
 {
-    sealed partial class App : Application
+    public partial class App : Application
     {
         public static MvpApiService ApiService { get; set; }
+
+        public static LoginWindow MainLoginWindow { get; private set; }
 
         public App()
         {
             this.InitializeComponent();
-            this.Suspending += OnSuspending;
-            UnhandledException += OnUnhandledException;
+            MainLoginWindow = new LoginWindow();
         }
 
-        private async void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            e.Handled = true;
-            await e.Exception.LogExceptionWithUserMessage();
-        }
-        
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs e)
-        {
-            Frame rootFrame = Window.Current.Content as Frame;
-            
-            if (rootFrame == null)
+            var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
+
+            // We have a refresh token from a previous session
+            if (!string.IsNullOrEmpty(refreshToken))
             {
-                rootFrame = new Frame();
+                var authorizationHeader = await LoginWindow.RequestAuthorizationAsync(refreshToken);
 
-                rootFrame.NavigationFailed += OnNavigationFailed;
-
-                if (e.UWPLaunchActivatedEventArgs.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                // If the bearer token was returned
+                if (!string.IsNullOrEmpty(authorizationHeader))
                 {
-                    //TODO: Load state from previously suspended application
+                    await MainLoginWindow.InitializeMvpApiAsync(authorizationHeader);
                 }
-
-                // Place the frame in the current Window
-                Window.Current.Content = rootFrame;
-            }
-
-            if (e.UWPLaunchActivatedEventArgs.PrelaunchActivated == false)
-            {
-                if (rootFrame.Content == null)
+                else
                 {
-                    // When the navigation stack isn't restored navigate to the first page,
-                    // configuring the new page by passing required information as a navigation
-                    // parameter
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    await MainLoginWindow.SignInAsync();
                 }
-
-                // Ensure the current window is active
-                Window.Current.Activate();
             }
-        }
-
-        protected override async void OnActivated(IActivatedEventArgs args)
-        {
-            base.OnActivated(args);
-
-            //var engagementManager = StoreServicesEngagementManager.GetDefault();
-
-            //await engagementManager.RegisterNotificationChannelAsync();
-
-            if (args.Kind == ActivationKind.ToastNotification)
+            else
             {
-                var toastArgs = args as ToastNotificationActivatedEventArgs;
-
-                //var originalArgs = engagementManager.ParseArgumentsAndTrackAppLaunch(toastArgs?.Argument);
-
-                //if (originalArgs != null && originalArgs.Contains("id"))
-                //{
-                //    Debug.WriteLine($"OnActivated ToastNotification argument: {originalArgs}");
-                //}
+                await MainLoginWindow.SignInAsync();
             }
+
+            m_window = new MainWindow();
+            m_window.Activate();
+
+            // TODO Ask user to send crash report from previous crash
+
+            //bool didAppCrash = await Crashes.HasCrashedInLastSessionAsync();
+
+            //if (didAppCrash)
+            //{
+            //    ErrorReport crashReport = await Crashes.GetLastSessionCrashReportAsync();
+            //}
         }
 
-        void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
-        {
-            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
-        }
-        
-        private void OnSuspending(object sender, SuspendingEventArgs e)
-        {
-            var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
-            deferral.Complete();
-        }
+        private Window m_window;
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using Windows.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Data;
 using MvpApi.Common.Models;
 
 namespace MvpCompanion.UI.WinUI.Converters
