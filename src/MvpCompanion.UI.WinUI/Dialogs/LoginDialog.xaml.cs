@@ -5,52 +5,53 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Popups;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.Web.WebView2.Core;
 using MvpApi.Common.CustomEventArgs;
-using MvpApi.Common.Extensions;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
-using Newtonsoft.Json;
-using Microsoft.UI.Xaml;
 using MvpCompanion.UI.WinUI.Helpers;
+using MvpCompanion.UI.WinUI.ViewModels;
+using MvpCompanion.UI.WinUI.Views;
+using Newtonsoft.Json;
+using Telerik.UI.Xaml.Controls;
 
-namespace MvpCompanion.UI.WinUI
+namespace MvpCompanion.UI.WinUI.Dialogs
 {
-    public partial class LoginWindow : Window
+    public sealed partial class LoginDialog : ContentDialog
     {
         private static readonly string Scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
         private static readonly string ClientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
         private const string RedirectUrl = "https://login.live.com/oauth20_desktop.srf";
         private const string AccessTokenUrl = "https://login.live.com/oauth20_token.srf";
-        private readonly Uri _signInUri = new($"https://login.live.com/oauth20_authorize.srf?client_id={ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={Scope}");
-        private readonly Uri _signOutUri = new($"https://login.live.com/oauth20_logout.srf?client_id={ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf");
+        private readonly Uri signInUri = new($"https://login.live.com/oauth20_authorize.srf?client_id={ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={Scope}");
+        private readonly Uri signOutUri = new($"https://login.live.com/oauth20_logout.srf?client_id={ClientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf");
+        private readonly Action loginCompleted;
 
-        private readonly Action _loginCompleted;
-
-        public LoginWindow()
+        public LoginDialog()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
-        public LoginWindow(Action loginCompleted)
+        public LoginDialog(Action loginCompleted)
         {
-            InitializeComponent();
-            _loginCompleted = loginCompleted;
+            this.InitializeComponent();
+            this.loginCompleted = loginCompleted;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>")]
         private void UpdateBusyIndicatorMessage(string message)
         {
             //((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = message;
+            ((ShellViewModel)ShellView.Instance.DataContext).IsBusyMessage = message;
         }
 
         private async Task CompleteSignInAsync(string authorizationHeader)
         {
             await InitializeMvpApiAsync(authorizationHeader);
 
-            _loginCompleted?.Invoke();
+            loginCompleted?.Invoke();
 
-            this.Close();
-            //Hide();
+            this.Hide();
         }
 
         public async Task SignInAsync()
@@ -73,21 +74,19 @@ namespace MvpCompanion.UI.WinUI
             }
 
             // important we let this fall through to avoid multiple else statements
-           // Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignInAsync - Manual Signin Required");
+            // Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignInAsync - Manual Signin Required");
 
-            AuthWebView.Source = _signInUri;
+            AuthWebView.Source = signInUri;
 
             // Needs fresh login, navigate to sign in page
-            //ShowDialog();
-            this.Activate();
+            await this.ShowAsync();
         }
 
         public async Task SignOutAsync()
         {
             //Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignOutAsync");
 
-            this.Activate();
-            //Show();
+            await this.ShowAsync();
 
             try
             {
@@ -123,7 +122,7 @@ namespace MvpCompanion.UI.WinUI
                 App.ApiService.IsLoggedIn = false;
 
                 // Start auth workflow again (the logout Uri redirects to sign in again)
-                AuthWebView.Source = _signOutUri;
+                AuthWebView.Source = signOutUri;
             }
         }
 
@@ -135,7 +134,7 @@ namespace MvpCompanion.UI.WinUI
                 App.ApiService.RequestErrorOccurred -= ApiService_RequestErrorOccurred;
             }
 
-            // New-up the service
+            //New-up the service
             App.ApiService = new MvpApiService(authorizationHeader);
 
             App.ApiService.AccessTokenExpired += ApiService_AccessTokenExpired;
@@ -150,6 +149,9 @@ namespace MvpCompanion.UI.WinUI
             // Get MVP profile image
             UpdateBusyIndicatorMessage("downloading profile image...");
             App.ApiService.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+
+            // Force value changed for the GUI bound properties
+            ((ShellViewModel)ShellView.Instance.DataContext).RefreshProperties();
         }
 
         private async void ApiService_AccessTokenExpired(object sender, ApiServiceEventArgs e)
@@ -157,6 +159,7 @@ namespace MvpCompanion.UI.WinUI
             if (e.IsTokenRefreshNeeded)
             {
                 UpdateBusyIndicatorMessage("TOKEN EXPIRED! Refreshing...");
+
                 await SignInAsync();
             }
             else
@@ -183,6 +186,8 @@ namespace MvpCompanion.UI.WinUI
 
         public static async Task<string> RequestAuthorizationAsync(string authCode, bool isRefresh = false)
         {
+            Trace.WriteLine($"[LoginDialog] Request Authorization - Is Refresh: {isRefresh}.");
+
             var authorizationHeader = "";
 
             try
@@ -254,15 +259,16 @@ namespace MvpCompanion.UI.WinUI
         }
 
 
-        private async void AuthWebView_NavigationStarting(Microsoft.UI.Xaml.Controls.WebView2 sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
+        private async void AuthWebView_NavigationStarting(WebView2 sender, CoreWebView2NavigationStartingEventArgs e)
         {
+            Trace.WriteLine($"[LoginDialog] Navigation Starting - Is redirected: {e.IsRedirected}, Uri: {e.Uri}");
             
             if (e.Uri.Contains("code="))
             {
-                // original
+                // original UWP WebView code
                 //var authCode = e.Uri.ExtractQueryValue("code");
 
-                // hack
+                // hack for WebView2
                 var queryString = e.Uri.Split('?')[1];
                 var queryDictionary = System.Web.HttpUtility.ParseQueryString(queryString);
                 var authCode = queryDictionary["code"];
@@ -277,14 +283,21 @@ namespace MvpCompanion.UI.WinUI
             else if (e.Uri.Contains("lc="))
             {
                 // If the redirected uri doesn't have a code in query string, redirect with Uri that explicitly requests response_type=code
-                AuthWebView.Source = _signInUri;
+                AuthWebView.Source = signInUri;
             }
         }
-
-
-        private async void AuthWebView_NavigationCompleted(Microsoft.UI.Xaml.Controls.WebView2 sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
+        
+        private void AuthWebView_NavigationCompleted(WebView2 sender, CoreWebView2NavigationCompletedEventArgs e)
         {
-
+            if (e.IsSuccess)
+            {
+                Trace.WriteLine($"[LoginDialog] WebView Navigation Completed: {e.IsSuccess}");
+            }
+            else
+            {
+                Trace.TraceError($"[LoginDialog] WebView Navigation Error: {e.WebErrorStatus}");
+            }
+            
         }
     }
 }

@@ -1,18 +1,17 @@
-﻿<UserControl x:Class="MvpCompanion.UI.WinUI.DataGridUserControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:MvpCompanion.UI.WinUI"
-             xmlns:telerikGrid="using:Telerik.UI.Xaml.Controls.Grid"
-             xmlns:telerikData="using:Telerik.Data.Core"
-             xmlns:telerikCore="using:Telerik.Core" 
-             xmlns:vms="using:MvpCompanion.UI.WinUI.ViewModels" 
-             xmlns:selectors="using:MvpCompanion.UI.WinUI.Selectors" 
-             xmlns:models="using:MvpCompanion.UI.WinUI.Models">
-    
-    <UserControl.DataContext>
-        <vms:ViewModel />
-    </UserControl.DataContext>
+﻿<UserControl
+    x:Class="MvpCompanion.UI.WinUI.DataGridUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MvpCompanion.UI.WinUI"
+    xmlns:telerikGrid="using:Telerik.UI.Xaml.Controls.Grid"
+    xmlns:telerikData="using:Telerik.Data.Core"
+    xmlns:telerikCore="using:Telerik.Core"
+    xmlns:selectors="using:MvpCompanion.UI.WinUI.Selectors">
 
+    <UserControl.DataContext>
+        <local:ViewModel />
+    </UserControl.DataContext>
+    
     <UserControl.Resources>
         <telerikCore:StringFormatConverter x:Key="StringFormatConverter"/>
         <selectors:GroupHeaderTemplateSelector x:Key="TemplateSelector">
@@ -75,7 +74,7 @@
             <telerikData:PropertyGroupDescriptor PropertyName="Date" SortOrder="Descending"/>
             <telerikData:DelegateGroupDescriptor DisplayContent="Name A-Z">
                 <telerikData:DelegateGroupDescriptor.KeyLookup>
-                    <models:CustomIKeyLookup/>
+                    <local:CustomIKeyLookup/>
                 </telerikData:DelegateGroupDescriptor.KeyLookup>
             </telerikData:DelegateGroupDescriptor>
         </telerikGrid:RadDataGrid.GroupDescriptors>

@@ -7,11 +7,12 @@ namespace MvpCompanion.UI.WinUI.Selectors
     public class GroupHeaderTemplateSelector : DataTemplateSelector
     {
         public DataTemplate TopLevelGroupTemplate { get; set; }
+
         public DataTemplate SecondLevelGroupTemplate { get; set; }
 
         protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
         {
-            if ((item as GroupHeaderContext).Level == 0)
+            if(item is GroupHeaderContext { Level: 0 })
             {
                 return TopLevelGroupTemplate;
             }

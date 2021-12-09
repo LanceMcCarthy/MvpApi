@@ -2,35 +2,31 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
 
-namespace MvpCompanion.UI.WinUI.Converters
+namespace MvpCompanion.UI.WinUI.Converters;
+
+public class BoolToIconConverter : IValueConverter
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// Returns a chosen IconElement depending on the boolean value
-    /// </summary>
-    public class BoolToIconConverter : IValueConverter
+    public IconElement TrueIcon { get; set; }
+
+    public IconElement FalseIcon { get; set; }
+
+    public object Convert(object value, Type targetType, object parameter, string language)
     {
-        public IconElement TrueIcon { get; set; }
-        public IconElement FalseIcon { get; set; }
-
-        public object Convert(object value, Type targetType, object parameter, string language)
+        if (value is bool val)
         {
-            if (value is bool val)
-            {
-                return val ? TrueIcon : FalseIcon;
-            }
-
-            return null;
+            return val ? TrueIcon : FalseIcon;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            if (value is IconElement icon)
-            {
-                return icon == TrueIcon;
-            }
+        return null;
+    }
 
-            return null;
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        if (value is IconElement icon)
+        {
+            return icon == TrueIcon;
         }
+
+        return null;
     }
 }

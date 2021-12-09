@@ -1,34 +1,51 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using Microsoft.UI.Xaml.Controls;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using MvpApi.Services.Utilities;
+using MvpCompanion.UI.WinUI.Dialogs;
+using Telerik.UI.Xaml;
 
-namespace MvpCompanion.UI.WinUI.Views
+namespace MvpCompanion.UI.WinUI.Views;
+
+public sealed partial class ShellView : UserControl
 {
-    public sealed partial class ShellView : UserControl
+    public static ShellView Instance { get; set; }
+
+    public LoginDialog LoginDialog { get; set; }
+
+    public ShellView()
     {
-        public static ShellView Instance { get; set; }
+        Instance = this;
+        this.InitializeComponent();
+        LoginDialog.XamlRoot = this.XamlRoot;
 
-        public ShellView()
+        this.Loaded += ShellView_Loaded;
+    }
+    
+    private void RadRibbonView_OnHelpRequested(object? sender, RadRoutedEventArgs e)
+    {
+
+    }
+
+    private async void ShellView_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
+
+        // We have a refresh token from a previous session
+        if (!string.IsNullOrEmpty(refreshToken))
         {
-            Instance = this;
-            this.InitializeComponent();
+            // Use the refresh token to get a new access token
+            var authorizationHeader = await LoginDialog.RequestAuthorizationAsync(refreshToken);
+
+            // If the bearer token was returned, login
+            if (!string.IsNullOrEmpty(authorizationHeader))
+            {
+                await this.LoginDialog.InitializeMvpApiAsync(authorizationHeader);
+
+                return;
+            }
         }
 
-        public async Task SignInAsync()
-        {
-
-        }
+        // all other cases fall down to needing the user to sign back in
+        await this.LoginDialog.SignInAsync();
     }
 }

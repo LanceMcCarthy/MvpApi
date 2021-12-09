@@ -13,296 +13,305 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.WinUI.Dialogs;
-using MvpCompanion.UI.Common.Helpers;
 using MvpCompanion.UI.WinUI.Views;
 using CommonHelpers.Common;
 using MvpCompanion.UI.WinUI.Helpers;
 using MvpCompanion.UI.WinUI.ViewModels;
 using MvpCompanion.UI.WinUI;
 
-namespace MvpApi.Uwp.ViewModels
+namespace MvpApi.Uwp.ViewModels;
+
+public class ProfileViewModel : ViewModelBase
 {
-    public class ProfileViewModel : ViewModelBase
+    private MvpApi.Common.Models.ProfileViewModel _mvp;
+    private string _profileImagePath;
+    private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
+    private ListViewSelectionMode _listViewSelectionMode = ListViewSelectionMode.Single;
+    private bool _isMultipleSelectionEnabled;
+    private bool _areAppBarButtonsEnabled;
+    private ObservableCollection<OnlineIdentityViewModel> _selectedOnlineIdentities;
+
+    public ProfileViewModel()
     {
-        private MvpApi.Common.Models.ProfileViewModel _mvp;
-        private string _profileImagePath;
-        private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
-        private ListViewSelectionMode _listViewSelectionMode = ListViewSelectionMode.Single;
-        private bool _isMultipleSelectionEnabled;
-        private bool _areAppBarButtonsEnabled;
-        private ObservableCollection<OnlineIdentityViewModel> _selectedOnlineIdentities;
-
-        public ProfileViewModel()
+        if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
         {
-            if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
-            {
-                Mvp = DesignTimeHelpers.GenerateSampleMvp();
-                OnlineIdentities = DesignTimeHelpers.GenerateOnlineIdentities();
-            }
+            Mvp = DesignTimeHelpers.GenerateSampleMvp();
+            OnlineIdentities = DesignTimeHelpers.GenerateOnlineIdentities();
         }
+    }
 
-        public MvpApi.Common.Models.ProfileViewModel Mvp
+    public MvpApi.Common.Models.ProfileViewModel Mvp
+    {
+        get => _mvp;
+        set => SetProperty(ref _mvp, value);
+    }
+
+    public ObservableCollection<OnlineIdentityViewModel> OnlineIdentities
+    {
+        get => _onlineIdentities ?? (_onlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
+        set => SetProperty(ref _onlineIdentities, value);
+    }
+
+    public ObservableCollection<OnlineIdentityViewModel> SelectedOnlineIdentities
+    {
+        get => _selectedOnlineIdentities ?? (_selectedOnlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
+        set => SetProperty(ref _selectedOnlineIdentities, value);
+    }
+
+    //public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
+
+    //public OnlineIdentityViewModel DraftOnlineIdentity { get; set; } = new OnlineIdentityViewModel();
+
+    public string ProfileImagePath
+    {
+        get => _profileImagePath;
+        set => SetProperty(ref _profileImagePath, value);
+    }
+
+    public bool IsMultipleSelectionEnabled
+    {
+        get => _isMultipleSelectionEnabled;
+        set
         {
-            get => _mvp;
-            set => SetProperty(ref _mvp, value);
-        }
-
-        public ObservableCollection<OnlineIdentityViewModel> OnlineIdentities
-        {
-            get => _onlineIdentities ?? (_onlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
-            set => SetProperty(ref _onlineIdentities, value);
-        }
-
-        public ObservableCollection<OnlineIdentityViewModel> SelectedOnlineIdentities
-        {
-            get => _selectedOnlineIdentities ?? (_selectedOnlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
-            set => SetProperty(ref _selectedOnlineIdentities, value);
-        }
-
-        //public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
-
-        //public OnlineIdentityViewModel DraftOnlineIdentity { get; set; } = new OnlineIdentityViewModel();
-
-        public string ProfileImagePath
-        {
-            get => _profileImagePath;
-            set => SetProperty(ref _profileImagePath, value);
-        }
-
-        public bool IsMultipleSelectionEnabled
-        {
-            get => _isMultipleSelectionEnabled;
-            set
-            {
-                SetProperty(ref _isMultipleSelectionEnabled, value);
+            SetProperty(ref _isMultipleSelectionEnabled, value);
                 
-                ListViewSelectionMode = value
-                    ? ListViewSelectionMode.Multiple
-                    : ListViewSelectionMode.Single;
-            }
+            ListViewSelectionMode = value
+                ? ListViewSelectionMode.Multiple
+                : ListViewSelectionMode.Single;
         }
+    }
 
-        public ListViewSelectionMode ListViewSelectionMode
+    public ListViewSelectionMode ListViewSelectionMode
+    {
+        get => _listViewSelectionMode;
+        set => SetProperty(ref _listViewSelectionMode, value);
+    }
+
+    public bool AreAppBarButtonsEnabled
+    {
+        get => _areAppBarButtonsEnabled;
+        set => SetProperty(ref _areAppBarButtonsEnabled, value);
+    }
+
+    // Methods
+
+    private async Task RefreshOnlineIdentitiesAsync()
+    {
+        IsBusy = true;
+        IsBusyMessage = "loading Online Identities...";
+
+        var identities = await App.ApiService.GetOnlineIdentitiesAsync();
+
+        if (identities != null & identities?.Count > 0)
         {
-            get => _listViewSelectionMode;
-            set => SetProperty(ref _listViewSelectionMode, value);
-        }
+            OnlineIdentities.Clear();
 
-        public bool AreAppBarButtonsEnabled
-        {
-            get => _areAppBarButtonsEnabled;
-            set => SetProperty(ref _areAppBarButtonsEnabled, value);
-        }
-
-        // Methods
-
-        private async Task RefreshOnlineIdentitiesAsync()
-        {
-            IsBusy = true;
-            IsBusyMessage = "loading Online Identities...";
-
-            var identities = await App.ApiService.GetOnlineIdentitiesAsync();
-
-            if (identities != null & identities?.Count > 0)
+            foreach (var onlineIdentity in identities)
             {
-                OnlineIdentities.Clear();
-
-                foreach (var onlineIdentity in identities)
-                {
-                    OnlineIdentities.Add(onlineIdentity);
-                }
+                OnlineIdentities.Add(onlineIdentity);
             }
+        }
             
-            IsBusyMessage = "";
-            IsBusy = false;
+        IsBusyMessage = "";
+        IsBusy = false;
+    }
+
+    public void OnlineIdentitiesListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // Add any selected items to the SelectedItems collection
+        if (e.AddedItems != null)
+        {
+            foreach (OnlineIdentityViewModel identity in e.AddedItems)
+            {
+                SelectedOnlineIdentities.Add(identity);
+            }
         }
 
-        public void OnlineIdentitiesListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        // Remove any selected items from the SelectedItems collection
+        if (e.RemovedItems != null)
         {
-            // Add any selected items to the SelectedItems collection
-            if (e.AddedItems != null)
+            foreach (OnlineIdentityViewModel identity in e.RemovedItems)
             {
-                foreach (OnlineIdentityViewModel identity in e.AddedItems)
-                {
-                    SelectedOnlineIdentities.Add(identity);
-                }
+                SelectedOnlineIdentities.Remove(identity);
             }
-
-            // Remove any selected items from the SelectedItems collection
-            if (e.RemovedItems != null)
-            {
-                foreach (OnlineIdentityViewModel identity in e.RemovedItems)
-                {
-                    SelectedOnlineIdentities.Remove(identity);
-                }
-            }
-
-            // Enable or Disable the ClearSelection and Delete buttons according to the selected items collection's count
-            AreAppBarButtonsEnabled = SelectedOnlineIdentities.Any();
         }
 
-        public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
+        // Enable or Disable the ClearSelection and Delete buttons according to the selected items collection's count
+        AreAppBarButtonsEnabled = SelectedOnlineIdentities.Any();
+    }
+
+    public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
+    {
+        SelectedOnlineIdentities.Clear();
+    }
+
+    public async void RefreshOnlineIdentitiesButton_Click(object sender, RoutedEventArgs e)
+    {
+        await RefreshOnlineIdentitiesAsync();
+    }
+
+    public async void ShowQuestionnaireButton_Click(object sender, RoutedEventArgs e)
+    {
+        await new AwardQuestionsDialog(App.ApiService).ShowAsync();
+    }
+
+    public async void DeleteOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
+    {
+        IsBusy = true;
+        IsBusyMessage = "requesting permission to delete Online Identities...";
+
+        var md = new MessageDialog("Are you sure you want to delete this Online Identity? \r\n\nIf you want to add it again, you'll need to use the MVP portal. The MVP API doesn't allow adding new Online Identities yet.", "Confirm Delete!");
+
+        md.Commands.Add(new UICommand("DELETE"));
+        md.Commands.Add(new UICommand("cancel"));
+
+        var result = await md.ShowAsync();
+
+        if (result.Label == "DELETE")
         {
+            // iterate over the selected items
+            foreach (OnlineIdentityViewModel onlineIdentity in SelectedOnlineIdentities)
+            {
+                IsBusyMessage = $"deleting {onlineIdentity.Url}...";
+
+                // Call the API to delete the item
+                await App.ApiService.DeleteOnlineIdentityAsync(onlineIdentity);
+            }
+
+            // Clear selected items
             SelectedOnlineIdentities.Clear();
-        }
 
-        public async void RefreshOnlineIdentitiesButton_Click(object sender, RoutedEventArgs e)
-        {
+            // Disable the Multiple  selection (this will also clear the LV selected items)
+            IsMultipleSelectionEnabled = false;
+                
+            // Handle Visual State
+            AreAppBarButtonsEnabled = false;
+
+            // Refresh the list
             await RefreshOnlineIdentitiesAsync();
         }
 
-        public async void ShowQuestionnaireButton_Click(object sender, RoutedEventArgs e)
+        IsBusyMessage = "";
+        IsBusy = false;
+    }
+
+    public async void ExportButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        IsBusy = true;
+        IsBusyMessage = "exporting all Online Identities...";
+
+        var jsonData = await App.ApiService.ExportOnlineIdentitiesAsync();
+
+        if (string.IsNullOrEmpty(jsonData))
+            return;
+
+        var savePicker = new FileSavePicker
         {
-            await new AwardQuestionsDialog(App.ApiService).ShowAsync();
-        }
+            SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+            SuggestedFileName = $"MVP OnlineIdentities {DateTime.Now:yyyy-dd-M--HH-mm-ss}"
+        };
 
-        public async void DeleteOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
+        savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
+
+        var file = await savePicker.PickSaveFileAsync();
+
+        if (file != null)
         {
-            IsBusy = true;
-            IsBusyMessage = "requesting permission to delete Online Identities...";
+            IsBusyMessage = "saving file...";
 
-            var md = new MessageDialog("Are you sure you want to delete this Online Identity? \r\n\nIf you want to add it again, you'll need to use the MVP portal. The MVP API doesn't allow adding new Online Identities yet.", "Confirm Delete!");
+            // prevents file changes by syncing services like OneDrive
+            CachedFileManager.DeferUpdates(file);
 
-            md.Commands.Add(new UICommand("DELETE"));
-            md.Commands.Add(new UICommand("cancel"));
+            await FileIO.WriteTextAsync(file, jsonData);
 
-            var result = await md.ShowAsync();
+            // releases the hold on the file so syncing services can make changes
+            var status = await CachedFileManager.CompleteUpdatesAsync(file);
 
-            if (result.Label == "DELETE")
+            if (status == FileUpdateStatus.Complete)
             {
-                // iterate over the selected items
-                foreach (OnlineIdentityViewModel onlineIdentity in SelectedOnlineIdentities)
-                {
-                    IsBusyMessage = $"deleting {onlineIdentity.Url}...";
+                var message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
+                              "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
+                              "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
+                              "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
+                              "4. Now you can us 'Save As' to xlsx file or csv.";
 
-                    // Call the API to delete the item
-                    await App.ApiService.DeleteOnlineIdentityAsync(onlineIdentity);
-                }
-
-                // Clear selected items
-                SelectedOnlineIdentities.Clear();
-
-                // Disable the Multiple  selection (this will also clear the LV selected items)
-                IsMultipleSelectionEnabled = false;
-                
-                // Handle Visual State
-                AreAppBarButtonsEnabled = false;
-
-                // Refresh the list
-                await RefreshOnlineIdentitiesAsync();
+                await new MessageDialog(message, "Export Saved").ShowAsync();
             }
-
-            IsBusyMessage = "";
-            IsBusy = false;
         }
+            
+        IsBusyMessage = "";
+        IsBusy = false;
+    }
 
-        public async void ExportButton_OnClick(object sender, RoutedEventArgs e)
+    // TODO API does not have API endpoint to add an identity yet.
+    //public async void AddOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
+    //{
+    //    var md = new MessageDialog("What type of online identity would you like to add?\r\n'Linked Identity' is an MSDN property (e.g. MSDN or Microsoft Community Forum), these can be used to automatically create contributions based on your activity.\r\n'Other Identity' for everything else, like social networks, GitHub and StackOverflow. ", "Add Online Identity");
+
+    //    md.Commands.Add(new UICommand("Linked Identity"));
+    //    md.Commands.Add(new UICommand("Other Identity"));
+
+    //    var result = await md.ShowAsync();
+
+    //    if (result.Label == "Linked")
+    //    {
+
+    //    }
+
+    //    if (result.Label == "Other")
+    //    {
+
+    //    }
+    //}
+
+    #region Navigation
+
+    public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+    {
+        if (ShellView.Instance.DataContext is ShellViewModel shellVm)
         {
-            IsBusy = true;
-            IsBusyMessage = "exporting all Online Identities...";
-
-            var jsonData = await App.ApiService.ExportOnlineIdentitiesAsync();
-
-            if (string.IsNullOrEmpty(jsonData))
-                return;
-
-            var savePicker = new FileSavePicker
+            if (!shellVm.IsLoggedIn)
             {
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
-                SuggestedFileName = $"MVP OnlineIdentities {DateTime.Now:yyyy-dd-M--HH-mm-ss}"
-            };
+                IsBusy = true;
+                IsBusyMessage = "signing in...";
 
-            savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
-
-            var file = await savePicker.PickSaveFileAsync();
-
-            if (file != null)
-            {
-                IsBusyMessage = "saving file...";
-
-                // prevents file changes by syncing services like OneDrive
-                CachedFileManager.DeferUpdates(file);
-
-                await FileIO.WriteTextAsync(file, jsonData);
-
-                // releases the hold on the file so syncing services can make changes
-                var status = await CachedFileManager.CompleteUpdatesAsync(file);
-
-                if (status == FileUpdateStatus.Complete)
-                {
-                    var message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
-                                  "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
-                                  "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
-                                  "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
-                                  "4. Now you can us 'Save As' to xlsx file or csv.";
-
-                    await new MessageDialog(message, "Export Saved").ShowAsync();
-                }
+                await ShellView.Instance.LoginDialog.SignInAsync();
             }
             
+            this.Mvp = shellVm.Mvp;
+            this.ProfileImagePath = shellVm.ProfileImagePath;
+
+            await RefreshOnlineIdentitiesAsync();
+
+            //IsBusyMessage = "loading visibility options...";
+
+            //var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+            //visibilities.ForEach(visibility =>
+            //{
+            //    Visibilities.Add(visibility);
+            //});
+
             IsBusyMessage = "";
             IsBusy = false;
         }
 
-        // TODO API does not have API endpoint to add an identity yet.
-        //public async void AddOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var md = new MessageDialog("What type of online identity would you like to add?\r\n'Linked Identity' is an MSDN property (e.g. MSDN or Microsoft Community Forum), these can be used to automatically create contributions based on your activity.\r\n'Other Identity' for everything else, like social networks, GitHub and StackOverflow. ", "Add Online Identity");
-
-        //    md.Commands.Add(new UICommand("Linked Identity"));
-        //    md.Commands.Add(new UICommand("Other Identity"));
-
-        //    var result = await md.ShowAsync();
-
-        //    if (result.Label == "Linked")
-        //    {
-
-        //    }
-
-        //    if (result.Label == "Other")
-        //    {
-
-        //    }
-        //}
-
-        #region Navigation
-
-        public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        if (!App.ApiService.IsLoggedIn)
         {
-            if (ShellView.Instance.DataContext is ShellViewModel shellVm)
-            {
-                if (!shellVm.IsLoggedIn)
-                {
-                    IsBusy = true;
-                    IsBusyMessage = "signing in...";
+            IsBusy = true;
+            IsBusyMessage = "signing in...";
 
-                    await ShellView.Instance.SignInAsync();
-                }
+            await ShellView.Instance.LoginDialog.SignInAsync();
 
-                this.Mvp = shellVm.Mvp;
-                this.ProfileImagePath = shellVm.ProfileImagePath;
-
-                await RefreshOnlineIdentitiesAsync();
-
-                //IsBusyMessage = "loading visibility options...";
-
-                //var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-                //visibilities.ForEach(visibility =>
-                //{
-                //    Visibilities.Add(visibility);
-                //});
-
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
+            IsBusy = false;
+            IsBusyMessage = "";
         }
-
-        public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-
-        }
-
-        #endregion
     }
+
+    public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+    {
+
+    }
+
+    #endregion
 }

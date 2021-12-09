@@ -1,9 +1,8 @@
-﻿using CommonHelpers.Common;
-using MvpCompanion.UI.WinUI.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Telerik.Core;
 
-namespace MvpCompanion.UI.WinUI.ViewModels
+namespace MvpCompanion.UI.WinUI
 {
     public class ViewModel : ViewModelBase
     {
