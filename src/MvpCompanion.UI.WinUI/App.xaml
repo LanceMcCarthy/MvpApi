@@ -5,9 +5,8 @@
              xmlns:controls="using:Telerik.UI.Xaml.Controls"
              xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
              xmlns:converters="using:MvpCompanion.UI.WinUI.Converters"
-             xmlns:system="using:System"
-             xmlns:ui="using:Windows.UI"
-             xmlns:selectors="using:MvpCompanion.UI.WinUI.Selectors">
+             xmlns:selectors="using:MvpCompanion.UI.WinUI.Selectors"
+             xmlns:models="using:MvpApi.Common.Models">
 
     <Application.Resources>
         <ResourceDictionary>
@@ -30,6 +29,54 @@
             <SolidColorBrush x:Key="MediumTranslucentBackgroundColor">#AA000000</SolidColorBrush>
             <SolidColorBrush x:Key="DarkTranslucentBackgroundColor">#CC000000</SolidColorBrush>
 
+            <converters:ValueWhenConverter x:Key="InvertBoolConverter">
+                <converters:ValueWhenConverter.When>
+                    <x:Boolean>True</x:Boolean>
+                </converters:ValueWhenConverter.When>
+                <converters:ValueWhenConverter.Value>
+                    <x:Boolean>False</x:Boolean>
+                </converters:ValueWhenConverter.Value>
+                <converters:ValueWhenConverter.Otherwise>
+                    <x:Boolean>True</x:Boolean>
+                </converters:ValueWhenConverter.Otherwise>
+            </converters:ValueWhenConverter>
+
+            <converters:ValueWhenConverter x:Key="BoolToVisibilityConverter">
+                <converters:ValueWhenConverter.When>
+                    <x:Boolean>True</x:Boolean>
+                </converters:ValueWhenConverter.When>
+                <converters:ValueWhenConverter.Value>
+                    <Visibility>Visible</Visibility>
+                </converters:ValueWhenConverter.Value>
+                <converters:ValueWhenConverter.Otherwise>
+                    <Visibility>Collapsed</Visibility>
+                </converters:ValueWhenConverter.Otherwise>
+            </converters:ValueWhenConverter>
+
+            <converters:ValueWhenConverter x:Key="InvertedBoolToVisibilityConverter">
+                <converters:ValueWhenConverter.When>
+                    <x:Boolean>True</x:Boolean>
+                </converters:ValueWhenConverter.When>
+                <converters:ValueWhenConverter.Value>
+                    <Visibility>Collapsed</Visibility>
+                </converters:ValueWhenConverter.Value>
+                <converters:ValueWhenConverter.Otherwise>
+                    <Visibility>Visible</Visibility>
+                </converters:ValueWhenConverter.Otherwise>
+            </converters:ValueWhenConverter>
+
+            <converters:ValueWhenConverter x:Key="UploadStatusToBoolConverter">
+                <converters:ValueWhenConverter.When>
+                    <models:UploadStatus>Failed</models:UploadStatus>
+                </converters:ValueWhenConverter.When>
+                <converters:ValueWhenConverter.Value>
+                    <x:Boolean>True</x:Boolean>
+                </converters:ValueWhenConverter.Value>
+                <converters:ValueWhenConverter.Otherwise>
+                    <x:Boolean>False</x:Boolean>
+                </converters:ValueWhenConverter.Otherwise>
+            </converters:ValueWhenConverter>
+
             <!-- If value > 1, return Collapsed-->
             <converters:ThresholdConverter x:Key="CountToVisibilityConverter"
                                            Threshold="1">
@@ -47,8 +94,8 @@
             <converters:PathToBitmapImageConverter x:Key="BitmapImageConverter" />
             <converters:DateTimeToDateTimeOffsetConverter x:Key="DateTimeOffsetConverter" />
             <converters:DoubleToIntConverter x:Key="DoubleToIntConverter" />
+
             <converters:UploadStatusToBrushConverter x:Key="UploadStatusBackgroundConverter" />
-            <converters:UploadStatusToBoolConverter x:Key="UploadStatusToBoolConverter" />
 
             <converters:MvcContentUrlConverter x:Key="MvcContentUrlConverter" />
             <converters:PrivacyLevelToBrushConverter x:Key="PrivacyLevelToBrushConverter" />
@@ -57,7 +104,6 @@
             <converters:ContributionTypeNameToBrushConverter x:Key="ContributionTypeNameToBackgroundConverter" />
             <converters:ContributionTypeNameToBrushConverter x:Key="ContributionTypeNameToForegroundConverter"
                                                              IsForegroundColor="True" />
-
 
             <!-- Full icon list here - https://docs.telerik.com/devtools/xamarin/styling-and-appearance/telerik-font-icons -->
             <x:String x:Key="StarIcon">&#xE805;</x:String>
@@ -80,6 +126,16 @@
             <x:String x:Key="ArrowsUpIcon">&#xE800;</x:String>
             <x:String x:Key="ArrowsDownIcon">&#xE803;</x:String>
 
+            <Style x:Key="SymbolFontIconStyle"
+                   TargetType="FontIcon">
+                <Setter Property="FontFamily"
+                        Value="{ThemeResource SymbolThemeFontFamily}" />
+                <Setter Property="Foreground"
+                        Value="{ThemeResource SystemAccentColor}" />
+                <Setter Property="FontSize"
+                        Value="16" />
+            </Style>
+
             <Style x:Key="LargeIconRadButtonStyle"
                    TargetType="controls:RadButton">
                 <Setter Property="Background"
@@ -87,7 +143,7 @@
                 <Setter Property="BorderBrush"
                         Value="Transparent" />
                 <Setter Property="Foreground"
-                        Value="{StaticResource DarkBlueColor}" />
+                        Value="{ThemeResource SystemAccentColor}" />
                 <Setter Property="BorderThickness"
                         Value="0" />
                 <Setter Property="CornerRadius"
@@ -99,7 +155,7 @@
                 <Setter Property="Height"
                         Value="50" />
                 <Setter Property="FontFamily"
-                        Value="{StaticResource TelerikWebUI}" />
+                        Value="{StaticResource SymbolThemeFontFamily}" />
                 <Setter Property="FontSize" Value="28"/>
             </Style>
 

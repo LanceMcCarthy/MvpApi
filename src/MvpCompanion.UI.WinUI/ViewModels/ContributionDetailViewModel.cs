@@ -10,7 +10,6 @@ using Windows.Storage;
 using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
 using CommonHelpers.Mvvm;
 using CommunityToolkit.WinUI.Connectivity;
 using MvpApi.Common.Models;
@@ -26,19 +25,19 @@ public class ContributionDetailViewModel : ViewModelBase
 {
     #region Fields
 
-    private ContributionsModel _originalContribution;
-    private ContributionsModel _selectedContribution;
-    private bool _isSelectedContributionDirty;
-    private string _urlHeader = "Url";
-    private string _annualQuantityHeader = "Annual Quantity";
-    private string _secondAnnualQuantityHeader = "Second Annual Quantity";
-    private string _annualReachHeader = "Annual Reach";
-    private bool _isUrlRequired;
-    private bool _isAnnualQuantityRequired;
-    private bool _isSecondAnnualQuantityRequired;
-    private bool _isAnnualReachRequired;
-    private bool _canSave;
-    private string _warningMessage;
+    private ContributionsModel originalContribution;
+    private ContributionsModel selectedContribution;
+    private bool isSelectedContributionDirty;
+    private string urlHeader = "Url";
+    private string annualQuantityHeader = "Annual Quantity";
+    private string secondAnnualQuantityHeader = "Second Annual Quantity";
+    private string annualReachHeader = "Annual Reach";
+    private bool isUrlRequired;
+    private bool isAnnualQuantityRequired;
+    private bool isSecondAnnualQuantityRequired;
+    private bool isAnnualReachRequired;
+    private bool canSave;
+    private string warningMessage;
 
     //private AdditionalTechnologyAreasPicker picker;
 
@@ -59,78 +58,78 @@ public class ContributionDetailViewModel : ViewModelBase
 
     public ContributionsModel SelectedContribution
     {
-        get => _selectedContribution;
-        set => SetProperty(ref _selectedContribution, value);
+        get => selectedContribution;
+        set => SetProperty(ref selectedContribution, value);
     }
         
-    public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
+    public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ();
 
-    public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
+    public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ();
         
     public bool IsSelectedContributionDirty
     {
-        get => _isSelectedContributionDirty;
-        set => SetProperty(ref _isSelectedContributionDirty, value);
+        get => isSelectedContributionDirty;
+        set => SetProperty(ref isSelectedContributionDirty, value);
     }
 
     public string AnnualQuantityHeader
     {
-        get => _annualQuantityHeader;
-        set => SetProperty(ref _annualQuantityHeader, value);
+        get => annualQuantityHeader;
+        set => SetProperty(ref annualQuantityHeader, value);
     }
 
     public string SecondAnnualQuantityHeader
     {
-        get => _secondAnnualQuantityHeader;
-        set => SetProperty(ref _secondAnnualQuantityHeader, value);
+        get => secondAnnualQuantityHeader;
+        set => SetProperty(ref secondAnnualQuantityHeader, value);
     }
 
     public string AnnualReachHeader
     {
-        get => _annualReachHeader;
-        set => SetProperty(ref _annualReachHeader, value);
+        get => annualReachHeader;
+        set => SetProperty(ref annualReachHeader, value);
     }
 
     public string UrlHeader
     {
-        get => _urlHeader;
-        set => SetProperty(ref _urlHeader, value);
+        get => urlHeader;
+        set => SetProperty(ref urlHeader, value);
     }
 
     public bool IsUrlRequired
     {
-        get => _isUrlRequired;
-        set => SetProperty(ref _isUrlRequired, value);
+        get => isUrlRequired;
+        set => SetProperty(ref isUrlRequired, value);
     }
 
     public bool IsAnnualQuantityRequired
     {
-        get => _isAnnualQuantityRequired;
-        set => SetProperty(ref _isAnnualQuantityRequired, value);
+        get => isAnnualQuantityRequired;
+        set => SetProperty(ref isAnnualQuantityRequired, value);
     }
 
     public bool IsSecondAnnualQuantityRequired
     {
-        get => _isSecondAnnualQuantityRequired;
-        set => SetProperty(ref _isSecondAnnualQuantityRequired, value);
+        get => isSecondAnnualQuantityRequired;
+        set => SetProperty(ref isSecondAnnualQuantityRequired, value);
     }
 
     public bool IsAnnualReachRequired
     {
-        get => _isAnnualReachRequired;
-        set => SetProperty(ref _isAnnualReachRequired, value);
+        get => isAnnualReachRequired;
+        set => SetProperty(ref isAnnualReachRequired, value);
     }
 
     public bool CanSave
     {
-        get => _canSave;
-        set => SetProperty(ref _canSave, value);
+        get => canSave;
+        set => SetProperty(ref canSave, value);
     }
 
     public string WarningMessage
     {
-        get => _warningMessage;
-        set => SetProperty(ref _warningMessage, value);
+        get => warningMessage;
+        set => SetProperty(ref warningMessage, value);
     }
 
     public bool IsAdditionalAreasReady { get; set; }
@@ -302,7 +301,7 @@ public class ContributionDetailViewModel : ViewModelBase
 
     private void Compare()
     {
-        var match = _originalContribution.Compare(SelectedContribution);
+        var match = originalContribution.Compare(SelectedContribution);
 
         if (match)
         {
@@ -422,91 +421,156 @@ public class ContributionDetailViewModel : ViewModelBase
 
     #region Navigation
 
-    public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+    public async void OnLoaded(ContributionsModel param = null)
     {
         if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
         {
+            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+            return;
+        }
+
+        if (param == null)
+        {
+            await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
+            return;
+
             //if (BootStrapper.Current.NavigationService.CanGoBack)
             //    BootStrapper.Current.NavigationService.GoBack();
         }
 
-        if (ShellView.Instance.DataContext is ShellViewModel shellVm)
+        if (!App.ApiService.IsLoggedIn)
         {
-            // Verify the user is logged in
-            if (!shellVm.IsLoggedIn)
-            {
-                IsBusy = true;
-                IsBusyMessage = "logging in...";
+            IsBusy = true;
+            IsBusyMessage = "logging in...";
 
-                await ShellView.Instance.LoginDialog.SignInAsync();
-                    
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
-
-            if (shellVm.IsLoggedIn)
-            {
-                try
-                {
-                    IsBusy = true;
-
-                    // Get the associated lists from the API
-                    await LoadSupportingDataAsync();
-
-                    // Read the passed contribution parameter
-                    if (parameter is ContributionsModel param)
-                    {
-                        SelectedContribution = param;
-
-                        SelectedContribution.UploadStatus = UploadStatus.None;
-
-                        // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
-                        DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
-
-                        // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-                        _originalContribution = SelectedContribution.Clone();
-
-                        if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                        {
-                            var td = new TutorialDialog
-                            {
-                                SettingsKey = "ContributionDetailPageTutorialShown",
-                                MessageTitle = "Contribution Details",
-                                Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
-                                          "- Click 'Save' button to save changes.\r\n" +
-                                          "- Click 'Delete' button to permanently delete the contribution.\r\n" +
-                                          "- Click the back button to leave and cancel any changes.\r\n\n" +
-                                          "Note: Pay attention to how the 'required' fields change depending on the technology selection."
-                            };
-
-                            await td.ShowAsync();
-                        }
-                    }
-                    else
-                    {
-                        await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
-
-                        //if (BootStrapper.Current.NavigationService.CanGoBack)
-                        //    BootStrapper.Current.NavigationService.GoBack();
-                    }
-
-                    // To prevent accidental back navigation
-                    //NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"LoadDataAsync Exception {ex}");
-                }
-                finally
-                {
-                    IsBusyMessage = "";
-                    IsBusy = false;
-                }
-            }
+            await ShellView.Instance.LoginDialog.SignInAsync();
         }
+
+        try
+        {
+            IsBusy = true;
+
+            // Get the associated lists from the API
+            await LoadSupportingDataAsync();
+
+            // Read the passed contribution parameter
+            SelectedContribution = param;
+
+            SelectedContribution.UploadStatus = UploadStatus.None;
+
+            // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
+            DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
+
+            // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
+            originalContribution = SelectedContribution.Clone();
+
+            if (ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is not bool tutorialShown || !tutorialShown)
+            {
+                var td = new TutorialDialog
+                {
+                    XamlRoot = ShellView.Instance.XamlRoot,
+                    SettingsKey = "ContributionDetailPageTutorialShown",
+                    MessageTitle = "Contribution Details",
+                    Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
+                              "- Click 'Save' button to save changes.\r\n" +
+                              "- Click 'Delete' button to permanently delete the contribution.\r\n" +
+                              "- Click the back button to leave and cancel any changes.\r\n\n" +
+                              "Note: Pay attention to how the 'required' fields change depending on the technology selection."
+                };
+
+                await td.ShowAsync();
+            }
+
+            // To prevent accidental back navigation
+            //NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"LoadDataAsync Exception {ex}");
+        }
+        finally
+        {
+            IsBusyMessage = "";
+            IsBusy = false;
+        }
+
+        //if (ShellView.Instance.DataContext is ShellViewModel shellVm)
+        //{
+        //    // Verify the user is logged in
+        //    if (!shellVm.IsLoggedIn)
+        //    {
+        //        IsBusy = true;
+        //        IsBusyMessage = "logging in...";
+
+        //        await ShellView.Instance.LoginDialog.SignInAsync();
+
+        //        IsBusyMessage = "";
+        //        IsBusy = false;
+        //    }
+
+        //if (shellVm.IsLoggedIn)
+        //{
+        //    try
+        //    {
+        //        IsBusy = true;
+
+        //        // Get the associated lists from the API
+        //        await LoadSupportingDataAsync();
+
+        //        // Read the passed contribution parameter
+        //        if (parameter is ContributionsModel param)
+        //        {
+        //            SelectedContribution = param;
+
+        //            SelectedContribution.UploadStatus = UploadStatus.None;
+
+        //            // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
+        //            DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
+
+        //            // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
+        //            _originalContribution = SelectedContribution.Clone();
+
+        //            if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+        //            {
+        //                var td = new TutorialDialog
+        //                {
+        //                    SettingsKey = "ContributionDetailPageTutorialShown",
+        //                    MessageTitle = "Contribution Details",
+        //                    Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
+        //                              "- Click 'Save' button to save changes.\r\n" +
+        //                              "- Click 'Delete' button to permanently delete the contribution.\r\n" +
+        //                              "- Click the back button to leave and cancel any changes.\r\n\n" +
+        //                              "Note: Pay attention to how the 'required' fields change depending on the technology selection."
+        //                };
+
+        //                await td.ShowAsync();
+        //            }
+        //        }
+        //        else
+        //        {
+        //            await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
+
+        //            //if (BootStrapper.Current.NavigationService.CanGoBack)
+        //            //    BootStrapper.Current.NavigationService.GoBack();
+        //        }
+
+        //        // To prevent accidental back navigation
+        //        //NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine($"LoadDataAsync Exception {ex}");
+        //    }
+        //    finally
+        //    {
+        //        IsBusyMessage = "";
+        //        IsBusy = false;
+        //    }
+        //}
+        //}
     }
 
-    public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+    public async void OnUnloaded()
     {
 
     }

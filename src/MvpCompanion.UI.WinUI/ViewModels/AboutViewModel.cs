@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using CommonHelpers.Common;
+using Microsoft.UI.Xaml;
+using System;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Email;
 using Windows.Storage;
 using Windows.UI.Popups;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Navigation;
-using MvpCompanion.UI.WinUI.Views;
-using MvpCompanion.UI.WinUI.ViewModels;
-using CommonHelpers.Common;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
 public class AboutViewModel : ViewModelBase
 {
-    private readonly ApplicationDataContainer _roamingSettings;
-    private string _appVersion;
-    private Visibility _feedbackHubButtonVisibility;
-    private int _daysToKeepErrorLogs = 5;
+    private readonly ApplicationDataContainer roamingSettings;
+    private string appVersion;
+    private Visibility feedbackHubButtonVisibility;
+    private int daysToKeepErrorLogs = 5;
 
     public AboutViewModel()
     {
@@ -28,7 +24,7 @@ public class AboutViewModel : ViewModelBase
         }
         else
         {
-            _roamingSettings = ApplicationData.Current.RoamingSettings;
+            roamingSettings = ApplicationData.Current.RoamingSettings;
         }
     }
 
@@ -36,47 +32,41 @@ public class AboutViewModel : ViewModelBase
     {
         get
         {
-            _appVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
+            appVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
 
-            return _appVersion;
+            return appVersion;
         }
-        set => SetProperty(ref _appVersion, value);
+        set => SetProperty(ref appVersion, value);
     }
 
     public int DaysToKeepErrorLogs
     {
         get
         {
-            if (_roamingSettings.Values.TryGetValue("DaysToKeepErrorLogs", out object rawValue))
+            if (roamingSettings.Values.TryGetValue("DaysToKeepErrorLogs", out object rawValue))
             {
-                _daysToKeepErrorLogs = Convert.ToInt32(rawValue);
+                daysToKeepErrorLogs = Convert.ToInt32(rawValue);
             }
             else
             {
-                _roamingSettings.Values["DaysToKeepErrorLogs"] = _daysToKeepErrorLogs;
+                roamingSettings.Values["DaysToKeepErrorLogs"] = daysToKeepErrorLogs;
             }
 
-            return _daysToKeepErrorLogs;
+            return daysToKeepErrorLogs;
         }
         set
         {
-            SetProperty(ref _daysToKeepErrorLogs, value);
+            SetProperty(ref daysToKeepErrorLogs, value);
 
-            _roamingSettings.Values["DaysToKeepErrorLogs"] = value;
+            roamingSettings.Values["DaysToKeepErrorLogs"] = value;
         }
     }
 
     public Visibility FeedbackHubButtonVisibility
     {
-        get => _feedbackHubButtonVisibility;
-        set => SetProperty(ref _feedbackHubButtonVisibility, value);
+        get => feedbackHubButtonVisibility;
+        set => SetProperty(ref feedbackHubButtonVisibility, value);
     }
-
-    //public bool UseBetaEditor
-    //{
-    //    get => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor;
-    //    set => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor = value;
-    //}
 
     // Methods
 
@@ -118,15 +108,14 @@ public class AboutViewModel : ViewModelBase
 
     #region Navigation
 
-    public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+    public async void OnLoaded()
     {
         //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
         //    ? Visibility.Visible
         //    : Visibility.Collapsed;
-
     }
 
-    public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+    public async void OnUnloaded()
     {
 
     }

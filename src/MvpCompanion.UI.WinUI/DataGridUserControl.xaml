@@ -6,10 +6,11 @@
     xmlns:telerikGrid="using:Telerik.UI.Xaml.Controls.Grid"
     xmlns:telerikData="using:Telerik.Data.Core"
     xmlns:telerikCore="using:Telerik.Core"
-    xmlns:selectors="using:MvpCompanion.UI.WinUI.Selectors">
+    xmlns:selectors="using:MvpCompanion.UI.WinUI.Selectors"
+    xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels">
 
     <UserControl.DataContext>
-        <local:ViewModel />
+        <viewModels:ViewModel />
     </UserControl.DataContext>
     
     <UserControl.Resources>

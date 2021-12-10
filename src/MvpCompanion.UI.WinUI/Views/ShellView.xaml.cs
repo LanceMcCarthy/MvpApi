@@ -47,5 +47,7 @@ public sealed partial class ShellView : UserControl
 
         // all other cases fall down to needing the user to sign back in
         await this.LoginDialog.SignInAsync();
+
+        ViewModel.OnLoaded();
     }
 }

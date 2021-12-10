@@ -41,6 +41,7 @@
 		<None Remove="Dialogs\TutorialDialog.xaml" />
 		<None Remove="Views\HomeView.xaml" />
 		<None Remove="Views\LoginView.xaml" />
+		<None Remove="Views\SettingsView.xaml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -56,6 +57,12 @@
 	<ItemGroup>
 		<ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj" />
 		<ProjectReference Include="..\MvpApi.Services\MvpApi.Services.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Views\SettingsView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 
 	<ItemGroup>

@@ -21,19 +21,19 @@ public class ContributionEditorDialogViewModel : ViewModelBase
 {
     #region Fields
 
-    private ContributionsModel _originalContribution;
-    private ContributionsModel _selectedContribution;
-    private string _urlHeader = "Url";
-    private string _annualQuantityHeader = "Annual Quantity";
-    private string _secondAnnualQuantityHeader = "Second Annual Quantity";
-    private string _annualReachHeader = "Annual Reach";
-    private bool _isUrlRequired;
-    private bool _isAnnualQuantityRequired;
-    private bool _isSecondAnnualQuantityRequired;
-    private bool _isAnnualReachRequired;
-    private bool _canSave = true;
-    private string _warningMessage;
-    private bool _editingExistingContribution;
+    private ContributionsModel originalContribution;
+    private ContributionsModel selectedContribution;
+    private string urlHeader = "Url";
+    private string annualQuantityHeader = "Annual Quantity";
+    private string secondAnnualQuantityHeader = "Second Annual Quantity";
+    private string annualReachHeader = "Annual Reach";
+    private bool isUrlRequired;
+    private bool isAnnualQuantityRequired;
+    private bool isSecondAnnualQuantityRequired;
+    private bool isAnnualReachRequired;
+    private bool canSave = true;
+    private string warningMessage;
+    private bool editingExistingContribution;
 
     #endregion
 
@@ -54,86 +54,86 @@ public class ContributionEditorDialogViewModel : ViewModelBase
 
     // Collections and SelectedItems
 
-    public ObservableCollection<ContributionsModel> UploadQueue { get; } = new ObservableCollection<ContributionsModel>();
+    public ObservableCollection<ContributionsModel> UploadQueue { get; } = new();
 
-    public ObservableCollection<ContributionTypeModel> Types { get; } = new ObservableCollection<ContributionTypeModel>();
+    public ObservableCollection<ContributionTypeModel> Types { get; } = new();
 
-    public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
+    public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new();
 
-    public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
+    public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new();
 
     public ContributionsModel SelectedContribution
     {
-        get => _selectedContribution;
-        set => SetProperty(ref _selectedContribution, value);
+        get => selectedContribution;
+        set => SetProperty(ref selectedContribution, value);
     }
 
     // Data entry control headers, using VM properties to alert validation violations
 
     public string AnnualQuantityHeader
     {
-        get => _annualQuantityHeader;
-        set => SetProperty(ref _annualQuantityHeader, value);
+        get => annualQuantityHeader;
+        set => SetProperty(ref annualQuantityHeader, value);
     }
 
     public string SecondAnnualQuantityHeader
     {
-        get => _secondAnnualQuantityHeader;
-        set => SetProperty(ref _secondAnnualQuantityHeader, value);
+        get => secondAnnualQuantityHeader;
+        set => SetProperty(ref secondAnnualQuantityHeader, value);
     }
 
     public string AnnualReachHeader
     {
-        get => _annualReachHeader;
-        set => SetProperty(ref _annualReachHeader, value);
+        get => annualReachHeader;
+        set => SetProperty(ref annualReachHeader, value);
     }
 
     public string UrlHeader
     {
-        get => _urlHeader;
-        set => SetProperty(ref _urlHeader, value);
+        get => urlHeader;
+        set => SetProperty(ref urlHeader, value);
     }
 
     public bool IsUrlRequired
     {
-        get => _isUrlRequired;
-        set => SetProperty(ref _isUrlRequired, value);
+        get => isUrlRequired;
+        set => SetProperty(ref isUrlRequired, value);
     }
 
     public bool IsAnnualQuantityRequired
     {
-        get => _isAnnualQuantityRequired;
-        set => SetProperty(ref _isAnnualQuantityRequired, value);
+        get => isAnnualQuantityRequired;
+        set => SetProperty(ref isAnnualQuantityRequired, value);
     }
 
     public bool IsSecondAnnualQuantityRequired
     {
-        get => _isSecondAnnualQuantityRequired;
-        set => SetProperty(ref _isSecondAnnualQuantityRequired, value);
+        get => isSecondAnnualQuantityRequired;
+        set => SetProperty(ref isSecondAnnualQuantityRequired, value);
     }
 
     public bool IsAnnualReachRequired
     {
-        get => _isAnnualReachRequired;
-        set => SetProperty(ref _isAnnualReachRequired, value);
+        get => isAnnualReachRequired;
+        set => SetProperty(ref isAnnualReachRequired, value);
     }
 
     public bool CanSave
     {
-        get => _canSave;
-        set => SetProperty(ref _canSave, value);
+        get => canSave;
+        set => SetProperty(ref canSave, value);
     }
 
     public string WarningMessage
     {
-        get => _warningMessage;
-        set => SetProperty(ref _warningMessage, value);
+        get => warningMessage;
+        set => SetProperty(ref warningMessage, value);
     }
         
     public bool EditingExistingContribution
     {
-        get => _editingExistingContribution;
-        set => SetProperty(ref _editingExistingContribution, value);
+        get => editingExistingContribution;
+        set => SetProperty(ref editingExistingContribution, value);
     }
 
     // Commands
@@ -181,7 +181,7 @@ public class ContributionEditorDialogViewModel : ViewModelBase
         var lv = sender as ListView;
         var foPresenter = lv?.Parent as FlyoutPresenter;
         var popup = foPresenter?.Parent as Popup;
-        //popup?.Hide();
+        popup.IsOpen = false;
     }
 
     public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
@@ -217,100 +217,6 @@ public class ContributionEditorDialogViewModel : ViewModelBase
             SelectedContribution.AdditionalTechnologies.Remove(area);
         }
     }
-        
-    public async Task OnDialogLoadedAsync()
-    {
-        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-        {
-            WarningMessage = "No Internet Available";
-            return;
-        }
-
-        if (ShellView.Instance.DataContext is ShellViewModel shellVm)
-        {
-            // Verify the user is logged in
-            if (!shellVm.IsLoggedIn)
-            {
-                IsBusy = true;
-                IsBusyMessage = "logging in...";
-
-                await ShellView.Instance.LoginDialog.SignInAsync();
-
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
-
-            if (shellVm.IsLoggedIn)
-            {
-                try
-                {
-                    IsBusy = true;
-                    IsBusyMessage = "loading types...";
-
-                    var types = await App.ApiService.GetContributionTypesAsync();
-
-                    types.ForEach(type =>
-                    {
-                        Types.Add(type);
-                    });
-
-                    IsBusyMessage = "loading technologies...";
-
-                    var areaRoots = await App.ApiService.GetContributionAreasAsync();
-
-                    // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-                    var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-
-                    areas.ForEach(area =>
-                    {
-                        CategoryAreas.Add(area);
-                    });
-
-                    // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
-
-                    IsBusyMessage = "loading visibility options...";
-
-                    var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-                    visibilities.ForEach(visibility =>
-                    {
-                        Visibilities.Add(visibility);
-                    });
-
-                    // If the contribution object wasn't passed during Dialog creation, setup a blank one.
-                    if (SelectedContribution == null)
-                    {
-                        SelectedContribution = new ContributionsModel
-                        {
-                            ContributionId = 0,
-                            StartDate = DateTime.Now,
-                            Visibility = Visibilities.FirstOrDefault(),
-                            ContributionType = Types.FirstOrDefault(),
-                            ContributionTypeName = SelectedContribution?.ContributionType?.Name,
-                            ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas.FirstOrDefault(),
-                            AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
-                        };
-                    }
-                        
-                    // TODO prevent accidental back navigation
-                    //if (BootStrapper.Current.NavigationService.FrameFacade != null)
-                    //{
-                    //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacade_BackRequested;
-                    //}
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
-                    await ex.LogExceptionAsync();
-                }
-                finally
-                {
-                    IsBusyMessage = "";
-                    IsBusy = false;
-                }
-            }
-        }
-    }
 
     public void OnDialogClosingAsync()
     {
@@ -340,6 +246,183 @@ public class ContributionEditorDialogViewModel : ViewModelBase
     //        await ex.LogExceptionAsync();
     //    }
     //}
-        
+
     #endregion
+
+    public async void OnLoaded()
+    {
+        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        {
+            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+            return;
+        }
+
+        if (!App.ApiService.IsLoggedIn)
+        {
+            IsBusy = true;
+            IsBusyMessage = "logging in...";
+
+            await ShellView.Instance.LoginDialog.SignInAsync();
+        }
+
+        if (!App.ApiService.IsLoggedIn)
+        {
+            await new MessageDialog("You did not successfully complete the signin, this app requires an active MVP profile.", "Not Signed In").ShowAsync();
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            IsBusyMessage = "loading types...";
+
+            var types = await App.ApiService.GetContributionTypesAsync();
+
+            types.ForEach(type =>
+            {
+                Types.Add(type);
+            });
+
+            IsBusyMessage = "loading technologies...";
+
+            var areaRoots = await App.ApiService.GetContributionAreasAsync();
+
+            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
+            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+
+            areas.ForEach(area =>
+            {
+                CategoryAreas.Add(area);
+            });
+
+            // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
+
+            IsBusyMessage = "loading visibility options...";
+
+            var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+            visibilities.ForEach(visibility =>
+            {
+                Visibilities.Add(visibility);
+            });
+
+            // If the contribution object wasn't passed during Dialog creation, setup a blank one.
+            SelectedContribution ??= new ContributionsModel
+            {
+                ContributionId = 0,
+                StartDate = DateTime.Now,
+                Visibility = Visibilities.FirstOrDefault(),
+                ContributionType = Types.FirstOrDefault(),
+                ContributionTypeName = SelectedContribution?.ContributionType?.Name,
+                ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas.FirstOrDefault(),
+                AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
+            };
+
+            // TODO prevent accidental back navigation
+            //if (BootStrapper.Current.NavigationService.FrameFacade != null)
+            //{
+            //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacade_BackRequested;
+            //}
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
+            await ex.LogExceptionAsync();
+        }
+        finally
+        {
+            IsBusyMessage = "";
+            IsBusy = false;
+        }
+
+        //if (ShellView.Instance.DataContext is ShellViewModel shellVm)
+        //{
+        //    // Verify the user is logged in
+        //    if (!shellVm.IsLoggedIn)
+        //    {
+        //        IsBusy = true;
+        //        IsBusyMessage = "logging in...";
+
+        //        await ShellView.Instance.LoginDialog.SignInAsync();
+
+        //        IsBusyMessage = "";
+        //        IsBusy = false;
+        //    }
+
+        //    if (shellVm.IsLoggedIn)
+        //    {
+        //        try
+        //        {
+        //            IsBusy = true;
+        //            IsBusyMessage = "loading types...";
+
+        //            var types = await App.ApiService.GetContributionTypesAsync();
+
+        //            types.ForEach(type =>
+        //            {
+        //                Types.Add(type);
+        //            });
+
+        //            IsBusyMessage = "loading technologies...";
+
+        //            var areaRoots = await App.ApiService.GetContributionAreasAsync();
+
+        //            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
+        //            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+
+        //            areas.ForEach(area =>
+        //            {
+        //                CategoryAreas.Add(area);
+        //            });
+
+        //            // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
+
+        //            IsBusyMessage = "loading visibility options...";
+
+        //            var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+        //            visibilities.ForEach(visibility =>
+        //            {
+        //                Visibilities.Add(visibility);
+        //            });
+
+        //            // If the contribution object wasn't passed during Dialog creation, setup a blank one.
+        //            if (SelectedContribution == null)
+        //            {
+        //                SelectedContribution = new ContributionsModel
+        //                {
+        //                    ContributionId = 0,
+        //                    StartDate = DateTime.Now,
+        //                    Visibility = Visibilities.FirstOrDefault(),
+        //                    ContributionType = Types.FirstOrDefault(),
+        //                    ContributionTypeName = SelectedContribution?.ContributionType?.Name,
+        //                    ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas.FirstOrDefault(),
+        //                    AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
+        //                };
+        //            }
+
+        //            // TODO prevent accidental back navigation
+        //            //if (BootStrapper.Current.NavigationService.FrameFacade != null)
+        //            //{
+        //            //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacade_BackRequested;
+        //            //}
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
+        //            await ex.LogExceptionAsync();
+        //        }
+        //        finally
+        //        {
+        //            IsBusyMessage = "";
+        //            IsBusy = false;
+        //        }
+        //    }
+        //}
+    }
+
+    public async void OnUnloaded()
+    {
+
+    }
 }

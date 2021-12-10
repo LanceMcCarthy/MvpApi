@@ -8,28 +8,27 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.UI.Popups;
+using CommonHelpers.Common;
+using CommunityToolkit.WinUI.Connectivity;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.WinUI.Dialogs;
-using MvpCompanion.UI.WinUI.Views;
-using CommonHelpers.Common;
+using MvpCompanion.UI.WinUI.Extensions;
 using MvpCompanion.UI.WinUI.Helpers;
-using MvpCompanion.UI.WinUI.ViewModels;
-using MvpCompanion.UI.WinUI;
+using MvpCompanion.UI.WinUI.Views;
 
-namespace MvpApi.Uwp.ViewModels;
+namespace MvpCompanion.UI.WinUI.ViewModels;
 
 public class ProfileViewModel : ViewModelBase
 {
-    private MvpApi.Common.Models.ProfileViewModel _mvp;
-    private string _profileImagePath;
-    private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
-    private ListViewSelectionMode _listViewSelectionMode = ListViewSelectionMode.Single;
-    private bool _isMultipleSelectionEnabled;
-    private bool _areAppBarButtonsEnabled;
-    private ObservableCollection<OnlineIdentityViewModel> _selectedOnlineIdentities;
+    private MvpApi.Common.Models.ProfileViewModel mvp;
+    private string profileImagePath;
+    private ObservableCollection<OnlineIdentityViewModel> onlineIdentities;
+    private ListViewSelectionMode listViewSelectionMode = ListViewSelectionMode.Single;
+    private bool isMultipleSelectionEnabled;
+    private bool areAppBarButtonsEnabled;
+    private ObservableCollection<OnlineIdentityViewModel> selectedOnlineIdentities;
 
     public ProfileViewModel()
     {
@@ -42,20 +41,20 @@ public class ProfileViewModel : ViewModelBase
 
     public MvpApi.Common.Models.ProfileViewModel Mvp
     {
-        get => _mvp;
-        set => SetProperty(ref _mvp, value);
+        get => mvp;
+        set => SetProperty(ref mvp, value);
     }
 
     public ObservableCollection<OnlineIdentityViewModel> OnlineIdentities
     {
-        get => _onlineIdentities ?? (_onlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
-        set => SetProperty(ref _onlineIdentities, value);
+        get => onlineIdentities ??= new ObservableCollection<OnlineIdentityViewModel>();
+        set => SetProperty(ref onlineIdentities, value);
     }
 
     public ObservableCollection<OnlineIdentityViewModel> SelectedOnlineIdentities
     {
-        get => _selectedOnlineIdentities ?? (_selectedOnlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
-        set => SetProperty(ref _selectedOnlineIdentities, value);
+        get => selectedOnlineIdentities ??= new ObservableCollection<OnlineIdentityViewModel>();
+        set => SetProperty(ref selectedOnlineIdentities, value);
     }
 
     //public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
@@ -64,16 +63,16 @@ public class ProfileViewModel : ViewModelBase
 
     public string ProfileImagePath
     {
-        get => _profileImagePath;
-        set => SetProperty(ref _profileImagePath, value);
+        get => profileImagePath;
+        set => SetProperty(ref profileImagePath, value);
     }
 
     public bool IsMultipleSelectionEnabled
     {
-        get => _isMultipleSelectionEnabled;
+        get => isMultipleSelectionEnabled;
         set
         {
-            SetProperty(ref _isMultipleSelectionEnabled, value);
+            SetProperty(ref isMultipleSelectionEnabled, value);
                 
             ListViewSelectionMode = value
                 ? ListViewSelectionMode.Multiple
@@ -83,14 +82,14 @@ public class ProfileViewModel : ViewModelBase
 
     public ListViewSelectionMode ListViewSelectionMode
     {
-        get => _listViewSelectionMode;
-        set => SetProperty(ref _listViewSelectionMode, value);
+        get => listViewSelectionMode;
+        set => SetProperty(ref listViewSelectionMode, value);
     }
 
     public bool AreAppBarButtonsEnabled
     {
-        get => _areAppBarButtonsEnabled;
-        set => SetProperty(ref _areAppBarButtonsEnabled, value);
+        get => areAppBarButtonsEnabled;
+        set => SetProperty(ref areAppBarButtonsEnabled, value);
     }
 
     // Methods
@@ -266,8 +265,43 @@ public class ProfileViewModel : ViewModelBase
 
     #region Navigation
 
-    public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+    public async void OnLoaded()
     {
+        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        {
+            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+            return;
+        }
+
+        if (!App.ApiService.IsLoggedIn)
+        {
+            IsBusy = true;
+            IsBusyMessage = "signing in...";
+
+            await ShellView.Instance.LoginDialog.SignInAsync();
+
+            IsBusy = false;
+            IsBusyMessage = "";
+        }
+
+        this.Mvp = App.ApiService.Mvp;
+        this.ProfileImagePath = App.ApiService.ProfileImagePath;
+
+        await RefreshOnlineIdentitiesAsync();
+
+        //IsBusyMessage = "loading visibility options...";
+
+        //var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+        //visibilities.ForEach(visibility =>
+        //{
+        //    Visibilities.Add(visibility);
+        //});
+
+        IsBusyMessage = "";
+        IsBusy = false;
+
+
         if (ShellView.Instance.DataContext is ShellViewModel shellVm)
         {
             if (!shellVm.IsLoggedIn)
@@ -277,7 +311,7 @@ public class ProfileViewModel : ViewModelBase
 
                 await ShellView.Instance.LoginDialog.SignInAsync();
             }
-            
+
             this.Mvp = shellVm.Mvp;
             this.ProfileImagePath = shellVm.ProfileImagePath;
 
@@ -295,20 +329,9 @@ public class ProfileViewModel : ViewModelBase
             IsBusyMessage = "";
             IsBusy = false;
         }
-
-        if (!App.ApiService.IsLoggedIn)
-        {
-            IsBusy = true;
-            IsBusyMessage = "signing in...";
-
-            await ShellView.Instance.LoginDialog.SignInAsync();
-
-            IsBusy = false;
-            IsBusyMessage = "";
-        }
     }
 
-    public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+    public async void OnUnloaded()
     {
 
     }

@@ -12,8 +12,6 @@ using Windows.Storage.Provider;
 using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.WinUI.Common;
 using MvpCompanion.UI.WinUI.Dialogs;
@@ -31,11 +29,11 @@ public class HomeViewModel : ViewModelBase
 {
     #region Fields
 
-    private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
-    private bool _isMultipleSelectionEnabled;
-    private ObservableCollection<ContributionsModel> _contributions;
-    private bool _areAppBarButtonsEnabled;
-    private bool _isInternetDisabled;
+    private DataGridSelectionMode gridSelectionMode = DataGridSelectionMode.Single;
+    private bool isMultipleSelectionEnabled;
+    private ObservableCollection<ContributionsModel> contributions;
+    private bool areAppBarButtonsEnabled;
+    private bool isInternetDisabled;
 
     #endregion
 
@@ -72,8 +70,8 @@ public class HomeViewModel : ViewModelBase
 
     public ObservableCollection<ContributionsModel> Contributions
     {
-        get => _contributions;
-        set => SetProperty(ref _contributions, value);
+        get => contributions;
+        set => SetProperty(ref contributions, value);
     }
 
     public ObservableCollection<object> SelectedContributions { get; set; }
@@ -84,10 +82,10 @@ public class HomeViewModel : ViewModelBase
 
     public bool IsMultipleSelectionEnabled
     {
-        get => _isMultipleSelectionEnabled;
+        get => isMultipleSelectionEnabled;
         set
         {
-            SetProperty(ref _isMultipleSelectionEnabled, value);
+            SetProperty(ref isMultipleSelectionEnabled, value);
 
             GridSelectionMode = value
                 ? DataGridSelectionMode.Multiple
@@ -97,20 +95,20 @@ public class HomeViewModel : ViewModelBase
 
     public DataGridSelectionMode GridSelectionMode
     {
-        get => _gridSelectionMode;
-        set => SetProperty(ref _gridSelectionMode, value);
+        get => gridSelectionMode;
+        set => SetProperty(ref gridSelectionMode, value);
     }
 
     public bool AreAppBarButtonsEnabled
     {
-        get => _areAppBarButtonsEnabled;
-        set => SetProperty(ref _areAppBarButtonsEnabled, value);
+        get => areAppBarButtonsEnabled;
+        set => SetProperty(ref areAppBarButtonsEnabled, value);
     }
 
     public bool IsInternetDisabled
     {
-        get => _isInternetDisabled;
-        set => SetProperty(ref _isInternetDisabled, value);
+        get => isInternetDisabled;
+        set => SetProperty(ref isInternetDisabled, value);
     }
 
     #endregion
@@ -119,22 +117,22 @@ public class HomeViewModel : ViewModelBase
 
     public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
     {
-        if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-        {
-            //var editDialog = new ContributionEditorDialog();
+        //if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+        //{
+        //    //var editDialog = new ContributionEditorDialog();
 
-            //await editDialog.ShowAsync();
+        //    //await editDialog.ShowAsync();
 
-            //if (editDialog.ContributionResult != null)
-            //{
-            //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-            //}
-        }
-        else
-        {
-            // TODO navigation
-            //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
-        }
+        //    //if (editDialog.ContributionResult != null)
+        //    //{
+        //    //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
+        //    //}
+        //}
+        //else
+        //{
+        //    // TODO navigation
+        //    //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
+        //}
     }
 
     public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
@@ -200,21 +198,21 @@ public class HomeViewModel : ViewModelBase
         // When in single selection mode, go to the selected item's details page
         if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
         {
-            if(ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-            {
-                //var editDialog = new ContributionEditorDialog(contribution);
-                //await editDialog.ShowAsync();
+            //if(ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+            //{
+            //    //var editDialog = new ContributionEditorDialog(contribution);
+            //    //await editDialog.ShowAsync();
 
-                //if (editDialog.ContributionResult != null)
-                //{
-                //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-                //}
-            }
-            else
-            {
-                // TODO navigation
-                //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
-            }
+            //    //if (editDialog.ContributionResult != null)
+            //    //{
+            //    //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
+            //    //}
+            //}
+            //else
+            //{
+            //    // TODO navigation
+            //    //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
+            //}
         }
     }
 
@@ -375,55 +373,87 @@ public class HomeViewModel : ViewModelBase
 
     #region Navigation
 
-    public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+    public async void OnLoaded(bool refreshNeeded)
     {
-        IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
-
-        if (IsInternetDisabled)
+        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
         {
             await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
             return;
         }
 
-        if (ShellView.Instance.DataContext is ShellViewModel shellVm)
+        if (!App.ApiService.IsLoggedIn)
         {
-            if (!shellVm.IsLoggedIn)
-            {
-                await ShellView.Instance.LoginDialog.SignInAsync();
-            }
-
-            // Although user should be logged in at this point, still check
-            // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
-            if (shellVm.IsLoggedIn)
-            {
-                await LoadContributionsAsync();
-            }
-
-            if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-            {
-                var td = new TutorialDialog
-                {
-                    SettingsKey = "HomePageTutorialShown",
-                    MessageTitle = "Home Page",
-                    Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
-                              "- Group or sort the contributions by any column.\r\n" +
-                              "- Select a contribution to view its details or edit it.\r\n" +
-                              "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
-                              "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
-                };
-
-                await td.ShowAsync();
-            }
-
-            if (IsBusy)
-            {
-                IsBusy = false;
-                IsBusyMessage = "";
-            }
+            await ShellView.Instance.LoginDialog.SignInAsync();
         }
+
+        if (!App.ApiService.IsLoggedIn)
+        {
+            await new MessageDialog("You did not successfully complete the signin, this app requires an active MVP profile.", "Not Signed In").ShowAsync();
+            return;
+        }
+
+        if (refreshNeeded)
+        {
+            await LoadContributionsAsync();
+        }
+
+        if (ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is not bool tutorialShown || !tutorialShown)
+        {
+            var td = new TutorialDialog
+            {
+                XamlRoot = ShellView.Instance.XamlRoot,
+                SettingsKey = "HomePageTutorialShown",
+                MessageTitle = "Home Page",
+                Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
+                          "- Group or sort the contributions by any column.\r\n" +
+                          "- Select a contribution to view its details or edit it.\r\n" +
+                          "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
+                          "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
+            };
+
+            await td.ShowAsync();
+        }
+
+        IsBusy = false;
+        IsBusyMessage = "";
+
+
+        //if (ShellView.Instance.DataContext is ShellViewModel shellVm)
+        //{
+        //    if (!shellVm.IsLoggedIn)
+        //    {
+        //        await ShellView.Instance.LoginDialog.SignInAsync();
+        //    }
+
+        //    // Although user should be logged in at this point, still check
+        //    // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
+        //    if (shellVm.IsLoggedIn)
+        //    {
+        //        await LoadContributionsAsync();
+        //    }
+
+        //    if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+        //    {
+        //        var td = new TutorialDialog
+        //        {
+        //            SettingsKey = "HomePageTutorialShown",
+        //            MessageTitle = "Home Page",
+        //            Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
+        //                      "- Group or sort the contributions by any column.\r\n" +
+        //                      "- Select a contribution to view its details or edit it.\r\n" +
+        //                      "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
+        //                      "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
+        //        };
+
+        //        await td.ShowAsync();
+        //    }
+
+        //    IsBusy = false;
+        //    IsBusyMessage = "";
+        //}
     }
 
-    public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+    public async void OnUnloaded()
     {
 
     }

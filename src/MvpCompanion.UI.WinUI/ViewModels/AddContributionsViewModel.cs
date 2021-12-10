@@ -483,86 +483,134 @@ public class AddContributionsViewModel : ViewModelBase
 
     #region Navigation
 
-    public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+    public async void OnLoaded()
     {
         if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
         {
-            //if (BootStrapper.Current.NavigationService.CanGoBack)
-            //    BootStrapper.Current.NavigationService.GoBack();
+            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+            return;
         }
 
-        if (ShellView.Instance.DataContext is ShellViewModel shellVm)
+        if (!App.ApiService.IsLoggedIn)
         {
-            // Verify the user is logged in
-            if (!shellVm.IsLoggedIn)
-            {
-                var p = App.ApiService.IsLoggedIn;
-                IsBusy = true;
-                IsBusyMessage = "logging in...";
+            IsBusy = true;
+            IsBusyMessage = "logging in...";
 
-                await ShellView.Instance.LoginDialog.SignInAsync();
-
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
-
-            if (shellVm.IsLoggedIn)
-            {
-                try
-                {
-                    IsBusy = true;
-
-                    // ** Get the necessary associated data from the API **
-
-                    await LoadSupportingDataAsync();
-
-                    // Note: The Category Areas will not be loaded until the CollectionViewSource is does it's initially loading.
-                    SetupNextEntry();
-
-                    if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                    {
-                        var td = new TutorialDialog
-                        {
-                            SettingsKey = "AddContributionPageTutorialShown",
-                            MessageTitle = "Add Contribution Page",
-                            Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
-                                      "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
-                                      "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
-                                      "- Click 'Upload' to save the queue to your profile.\r\n" +
-                                      "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
-                                      "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
-                        };
-
-                        td.XamlRoot = ShellView.Instance.XamlRoot;
-
-                        await td.ShowAsync();
-                    }
-
-                    // To prevent accidental back navigation
-                    //if (BootStrapper.Current.NavigationService.FrameFacade != null)
-                    //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
-                }
-                finally
-                {
-                    IsBusyMessage = "";
-                    IsBusy = false;
-                }
-            }
+            await ShellView.Instance.LoginDialog.SignInAsync();
         }
+
+        try
+        {
+            IsBusy = true;
+
+            // ** Get the necessary associated data from the API **
+
+            await LoadSupportingDataAsync();
+
+            // Note: The Category Areas will not be loaded until the CollectionViewSource is does it's initially loading.
+            SetupNextEntry();
+
+            if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+            {
+                var td = new TutorialDialog
+                {
+                    XamlRoot = ShellView.Instance.XamlRoot,
+                    SettingsKey = "AddContributionPageTutorialShown",
+                    MessageTitle = "Add Contribution Page",
+                    Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
+                              "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
+                              "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
+                              "- Click 'Upload' to save the queue to your profile.\r\n" +
+                              "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
+                              "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
+                };
+                
+                await td.ShowAsync();
+            }
+
+            // To prevent accidental back navigation
+            //if (BootStrapper.Current.NavigationService.FrameFacade != null)
+            //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
+        }
+        catch (Exception ex)
+        {
+            Trace.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
+        }
+        finally
+        {
+            IsBusyMessage = "";
+            IsBusy = false;
+        }
+
+        //if (ShellView.Instance.DataContext is ShellViewModel shellVm)
+        //{
+        //    // Verify the user is logged in
+        //    if (!shellVm.IsLoggedIn)
+        //    {
+        //        IsBusy = true;
+        //        IsBusyMessage = "logging in...";
+
+        //        await ShellView.Instance.LoginDialog.SignInAsync();
+
+        //        IsBusyMessage = "";
+        //        IsBusy = false;
+        //    }
+
+        //    if (shellVm.IsLoggedIn)
+        //    {
+        //        try
+        //        {
+        //            IsBusy = true;
+
+        //            // ** Get the necessary associated data from the API **
+
+        //            await LoadSupportingDataAsync();
+
+        //            // Note: The Category Areas will not be loaded until the CollectionViewSource is does it's initially loading.
+        //            SetupNextEntry();
+
+        //            if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
+        //            {
+        //                var td = new TutorialDialog
+        //                {
+        //                    SettingsKey = "AddContributionPageTutorialShown",
+        //                    MessageTitle = "Add Contribution Page",
+        //                    Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
+        //                              "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
+        //                              "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
+        //                              "- Click 'Upload' to save the queue to your profile.\r\n" +
+        //                              "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
+        //                              "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
+        //                };
+
+        //                td.XamlRoot = ShellView.Instance.XamlRoot;
+
+        //                await td.ShowAsync();
+        //            }
+
+        //            // To prevent accidental back navigation
+        //            //if (BootStrapper.Current.NavigationService.FrameFacade != null)
+        //            //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
+        //        }
+        //        finally
+        //        {
+        //            IsBusyMessage = "";
+        //            IsBusy = false;
+        //        }
+        //    }
+        //}
     }
 
-    public async Task OnNavigatingFromAsync()
+    public void OnUnloaded()
     {
         //if (BootStrapper.Current.NavigationService.FrameFacade != null)
         //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
-
-
     }
-
+    
     // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
     //private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
     //{

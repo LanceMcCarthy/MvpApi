@@ -1,7 +1,6 @@
 ﻿using MvpApi.Common.Models;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.Foundation.Metadata;
@@ -9,17 +8,17 @@ using Windows.Services.Store;
 using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
 //using VungleSDK;
 using CommonHelpers.Common;
+using CommunityToolkit.WinUI.Connectivity;
 using MvpCompanion.UI.WinUI.Helpers;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
 public class KudosViewModel : ViewModelBase
 {
-    private StoreContext _context;
-    private Visibility _feedbackHubButtonVisibility;
+    private StoreContext storeContext;
+    private Visibility feedbackHubButtonVisibility;
     //VungleAd sdkInstance;
     private string vungleAppId = "5f765c14d870a360a1d6f906";
     private string vungleAdPlacementId = "KUDOSPAGEINTERSTITIAL-9395221";
@@ -37,8 +36,8 @@ public class KudosViewModel : ViewModelBase
 
     public Visibility FeedbackHubButtonVisibility
     {
-        get => _feedbackHubButtonVisibility;
-        set => SetProperty(ref _feedbackHubButtonVisibility, value);
+        get => feedbackHubButtonVisibility;
+        set => SetProperty(ref feedbackHubButtonVisibility, value);
     }
 
     public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
@@ -136,10 +135,10 @@ public class KudosViewModel : ViewModelBase
             IsBusy = true;
             IsBusyMessage = "in-app purchase in progress (you should see a separate window)...";
 
-            if (_context == null)
-                _context = StoreContext.GetDefault();
+            if (storeContext == null)
+                storeContext = StoreContext.GetDefault();
 
-            var result = await _context.RequestPurchaseAsync(storeId);
+            var result = await storeContext.RequestPurchaseAsync(storeId);
 
             IsBusyMessage = "action complete, reviewing result...";
 
@@ -204,8 +203,14 @@ public class KudosViewModel : ViewModelBase
 
     #region Navigation
 
-    public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+    public async void OnLoaded()
     {
+        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        {
+            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+            return;
+        }
+
         //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
         //    ? Visibility.Visible
         //    : Visibility.Collapsed;
@@ -213,14 +218,12 @@ public class KudosViewModel : ViewModelBase
         //sdkInstance = AdFactory.GetInstance(vungleAppId);
         //sdkInstance.OnAdPlayableChanged += SdkInstance_OnAdPlayableChanged;
         //sdkInstance.LoadAd(vungleAdPlacementId);
-
     }
 
-    public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
+    public async void OnUnloaded()
     {
         //sdkInstance.OnAdPlayableChanged -= SdkInstance_OnAdPlayableChanged;
-
     }
-
+    
     #endregion
 }

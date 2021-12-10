@@ -1,19 +1,19 @@
 ﻿using System;
 using Windows.ApplicationModel;
 using Windows.Storage;
+using Windows.UI.Popups;
 using MvpApi.Services.Utilities;
 using MvpCompanion.UI.WinUI.Helpers;
 using CommonHelpers.Common;
-using MvpCompanion.UI.WinUI.Views;
+using CommunityToolkit.WinUI.Connectivity;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
 public class ShellViewModel : ViewModelBase
 {
-    private MvpApi.Common.Models.ProfileViewModel _mvp;
-    private bool _useBetaEditor;
-    private DateTime _submissionStartDate = ServiceConstants.SubmissionStartDate;
-    private DateTime _submissionDeadline = ServiceConstants.SubmissionDeadline;
+    private MvpApi.Common.Models.ProfileViewModel mvp;
+    private DateTime submissionStartDate = ServiceConstants.SubmissionStartDate;
+    private DateTime submissionDeadline = ServiceConstants.SubmissionDeadline;
 
     public ShellViewModel()
     {
@@ -29,56 +29,32 @@ public class ShellViewModel : ViewModelBase
 
     public MvpApi.Common.Models.ProfileViewModel Mvp
     {
-        get => _mvp;
-        set => SetProperty(ref _mvp, value);
+        get => mvp;
+        set => SetProperty(ref mvp, value);
     }
 
     public bool IsLoggedIn => App.ApiService.IsLoggedIn;
-
-    public bool UseBetaEditor
-    {
-        get
-        {
-            if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(UseBetaEditor), out object rawValue))
-            {
-                _useBetaEditor = (bool)rawValue;
-            }
-            else
-            {
-                ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
-            }
-
-            return _useBetaEditor;
-        }
-        set
-        {
-            if (SetProperty(ref _useBetaEditor, value))
-            {
-                ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
-            }
-        }
-    }
-
+    
     public DateTime SubmissionStartDate
     {
         get
         {
             if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(SubmissionStartDate), out object rawValue))
             {
-                _submissionStartDate = DateTime.Parse((string)rawValue);
+                submissionStartDate = DateTime.Parse((string)rawValue);
             }
             else
             {
-                ApplicationData.Current.LocalSettings.Values[nameof(SubmissionStartDate)] = _submissionStartDate.ToLongDateString();
+                ApplicationData.Current.LocalSettings.Values[nameof(SubmissionStartDate)] = submissionStartDate.ToLongDateString();
             }
 
-            return _submissionStartDate;
+            return submissionStartDate;
         }
         set
         {
-            if (SetProperty(ref _submissionStartDate, value))
+            if (SetProperty(ref submissionStartDate, value))
             {
-                ApplicationData.Current.LocalSettings.Values[nameof(SubmissionStartDate)] = _submissionStartDate.ToLongDateString();
+                ApplicationData.Current.LocalSettings.Values[nameof(SubmissionStartDate)] = submissionStartDate.ToLongDateString();
             }
         }
     }
@@ -89,20 +65,20 @@ public class ShellViewModel : ViewModelBase
         {
             if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(SubmissionDeadline), out object rawValue))
             {
-                _submissionDeadline = DateTime.Parse((string)rawValue);
+                submissionDeadline = DateTime.Parse((string)rawValue);
             }
             else
             {
-                ApplicationData.Current.LocalSettings.Values[nameof(SubmissionDeadline)] = _submissionDeadline.ToLongDateString();
+                ApplicationData.Current.LocalSettings.Values[nameof(SubmissionDeadline)] = submissionDeadline.ToLongDateString();
             }
                 
-            return _submissionDeadline;
+            return submissionDeadline;
         }
         set
         {
-            if (SetProperty(ref _submissionDeadline, value))
+            if (SetProperty(ref submissionDeadline, value))
             {
-                ApplicationData.Current.LocalSettings.Values[nameof(SubmissionDeadline)] = _submissionDeadline.ToLongDateString();
+                ApplicationData.Current.LocalSettings.Values[nameof(SubmissionDeadline)] = submissionDeadline.ToLongDateString();
             }
         }
     }
@@ -111,5 +87,21 @@ public class ShellViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(IsLoggedIn));
         OnPropertyChanged(nameof(ProfileImagePath));
+    }
+
+    public async void OnLoaded()
+    {
+        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        {
+            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+            return;
+        }
+
+        RefreshProperties();
+    }
+
+    public async void OnUnloaded()
+    {
+
     }
 }
