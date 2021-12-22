@@ -14,7 +14,6 @@ using MvpCompanion.UI.WinUI.Helpers;
 using MvpCompanion.UI.WinUI.ViewModels;
 using MvpCompanion.UI.WinUI.Views;
 using Newtonsoft.Json;
-using Telerik.UI.Xaml.Controls;
 
 namespace MvpCompanion.UI.WinUI.Dialogs
 {
@@ -41,7 +40,6 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
         private void UpdateBusyIndicatorMessage(string message)
         {
-            //((SplashScreenDataContext)RadSplashScreenManager.SplashScreenDataContext).Content = message;
             ((ShellViewModel)ShellView.Instance.DataContext).IsBusyMessage = message;
         }
 

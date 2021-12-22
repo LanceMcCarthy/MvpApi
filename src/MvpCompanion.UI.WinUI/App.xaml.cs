@@ -1,8 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
 using MvpApi.Services.Apis;
-using MvpApi.Services.Utilities;
-using MvpCompanion.UI.WinUI.Dialogs;
-using MvpCompanion.UI.WinUI.Views;
 
 namespace MvpCompanion.UI.WinUI
 {
@@ -12,12 +9,12 @@ namespace MvpCompanion.UI.WinUI
 
         public App()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         public static MvpApiService ApiService { get; set; }
         
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             mainWindow = new MainWindow();
             mainWindow.Activate();

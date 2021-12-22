@@ -1,7 +1,9 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using System.Threading.Tasks;
+using Windows.Foundation.Metadata;
 using MvpApi.Services.Utilities;
 using MvpCompanion.UI.WinUI.Dialogs;
+using MvpCompanion.UI.WinUI.ViewModels;
 using Telerik.UI.Xaml;
 
 namespace MvpCompanion.UI.WinUI.Views;
@@ -15,12 +17,19 @@ public sealed partial class ShellView : UserControl
     public ShellView()
     {
         Instance = this;
+
         this.InitializeComponent();
-        LoginDialog.XamlRoot = this.XamlRoot;
+
+        LoginDialog = new LoginDialog(OnLoginCompleted);
+
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+        {
+            LoginDialog.XamlRoot = this.XamlRoot;
+        }
 
         this.Loaded += ShellView_Loaded;
     }
-    
+
     private void RadRibbonView_OnHelpRequested(object? sender, RadRoutedEventArgs e)
     {
 
@@ -48,6 +57,11 @@ public sealed partial class ShellView : UserControl
         // all other cases fall down to needing the user to sign back in
         await this.LoginDialog.SignInAsync();
 
-        ViewModel.OnLoaded();
+        (this.DataContext as ShellViewModel)?.OnLoaded();
+    }
+
+    private void OnLoginCompleted()
+    {
+        (this.DataContext as ShellViewModel).RefreshProperties();
     }
 }

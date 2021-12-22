@@ -25,7 +25,18 @@ public class ShellViewModel : ViewModelBase
         }
     }
 
-    public string ProfileImagePath => App.ApiService.ProfileImagePath;
+    public string ProfileImagePath
+    {
+       get
+       {
+           if (App.ApiService != null)
+           {
+               return App.ApiService.ProfileImagePath;
+           }
+
+           return "";
+       }
+    }
 
     public MvpApi.Common.Models.ProfileViewModel Mvp
     {
@@ -33,8 +44,19 @@ public class ShellViewModel : ViewModelBase
         set => SetProperty(ref mvp, value);
     }
 
-    public bool IsLoggedIn => App.ApiService.IsLoggedIn;
-    
+    public bool IsLoggedIn
+    {
+        get
+        {
+            if (App.ApiService != null)
+            {
+                return App.ApiService.IsLoggedIn;
+            }
+
+            return false;
+        }
+    }
+
     public DateTime SubmissionStartDate
     {
         get
@@ -71,7 +93,7 @@ public class ShellViewModel : ViewModelBase
             {
                 ApplicationData.Current.LocalSettings.Values[nameof(SubmissionDeadline)] = submissionDeadline.ToLongDateString();
             }
-                
+
             return submissionDeadline;
         }
         set
@@ -91,11 +113,11 @@ public class ShellViewModel : ViewModelBase
 
     public async void OnLoaded()
     {
-        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-        {
-            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
-            return;
-        }
+        //if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        //{
+        //    await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+        //    return;
+        //}
 
         RefreshProperties();
     }

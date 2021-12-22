@@ -13,10 +13,16 @@
         <viewModels:ShellViewModel x:Name="ViewModel" />
     </UserControl.DataContext>
 
-    <Grid RowDefinitions="Auto,*">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
         <controls:RadRibbonView ApplicationName="MVP Companion"
                                 Title="Home"
-                                HelpRequested="RadRibbonView_OnHelpRequested">
+                                HelpRequested="RadRibbonView_OnHelpRequested"
+                                Grid.Row="0">
             <controls:RadRibbonView.ApplicationButtonIcon>
                 <SymbolIcon Symbol="Admin" />
             </controls:RadRibbonView.ApplicationButtonIcon>
@@ -48,11 +54,13 @@
             </controls:RadRibbonView.Items>
         </controls:RadRibbonView>
 
-        <local:ShellView />
+        <local:HomeView Grid.Row="1" />
 
-        <primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+        <primitives:RadBusyIndicator IsActive="{Binding IsBusy}"
                                      Visibility="{Binding IsBusy}"
-                                     Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                                     Style="{StaticResource PageBusyIndicatorStyle}" />
+                                     Content="{Binding IsBusyMessage}"
+                                     Style="{StaticResource PageBusyIndicatorStyle}"
+                                     Grid.Row="0"
+                                     Grid.RowSpan="2" />
     </Grid>
 </UserControl>

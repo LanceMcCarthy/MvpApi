@@ -7,6 +7,8 @@
              mc:Ignorable="d">
 
     <Grid>
-
+        <TextBlock Text="Home View"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
     </Grid>
 </UserControl>
