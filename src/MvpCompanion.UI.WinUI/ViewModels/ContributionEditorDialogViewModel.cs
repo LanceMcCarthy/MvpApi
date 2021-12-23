@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Popups;
+using Microsoft.AppCenter.Crashes;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
@@ -144,7 +145,7 @@ public class ContributionEditorDialogViewModel : ViewModelBase
 
     public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
     {
-        if (e.NewDate < (ShellView.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellView.Instance.DataContext as ShellViewModel).SubmissionDeadline)
+        if (e.NewDate < (ShellView.Instance.DataContext as ShellViewModel)?.SubmissionStartDate || e.NewDate > (ShellView.Instance.DataContext as ShellViewModel)?.SubmissionDeadline)
         {
             WarningMessage = "The contribution date must be after the start of your current award period and before March 31st in order for it to count towards your evaluation";
         }
@@ -168,20 +169,27 @@ public class ContributionEditorDialogViewModel : ViewModelBase
 
     public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
     {
-        if (SelectedContribution.AdditionalTechnologies.Count < 2)
+        try
         {
-            AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
-        }
-        else
-        {
-            await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
-        }
+            if (SelectedContribution.AdditionalTechnologies.Count < 2)
+            {
+                AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
+            }
+            else
+            {
+                await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
+            }
             
-        // Manually find the flyout's popup to close it
-        var lv = sender as ListView;
-        var foPresenter = lv?.Parent as FlyoutPresenter;
-        var popup = foPresenter?.Parent as Popup;
-        popup.IsOpen = false;
+            // Manually find the flyout's popup to close it
+            var lv = sender as ListView;
+            var foPresenter = lv?.Parent as FlyoutPresenter;
+            var popup = foPresenter?.Parent as Popup;
+            popup.IsOpen = false;
+        }
+        catch (Exception ex)
+        {
+            await ex.LogExceptionAsync();
+        }
     }
 
     public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
@@ -244,6 +252,7 @@ public class ContributionEditorDialogViewModel : ViewModelBase
     //    catch (Exception ex)
     //    {
     //        await ex.LogExceptionAsync();
+    //        Crashes.TrackError(ex);
     //    }
     //}
 
@@ -326,7 +335,6 @@ public class ContributionEditorDialogViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
             await ex.LogExceptionAsync();
         }
         finally

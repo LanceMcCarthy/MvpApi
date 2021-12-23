@@ -96,7 +96,9 @@ public class AboutViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            await new MessageDialog($"Something went wrong trying to open your email application automatically. You can still manually send an email to awesome.apps@outlook.com. /r/n/nError: {ex.Message}")
+            await new MessageDialog(
+                    "No Default Email App", 
+                    $"Something went wrong trying to open your email application automatically. You can still manually send an email to awesome.apps@outlook.com. /r/n/nError: {ex.Message}")
                 .ShowAsync();
         }
         finally

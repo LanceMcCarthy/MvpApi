@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Popups;
+using Microsoft.AppCenter.Crashes;
 
 namespace MvpCompanion.UI.WinUI.Helpers;
 
@@ -12,6 +13,8 @@ public static class UwpExceptionLogger
     public static async Task LogExceptionAsync(this Exception currentException)
     {
         var exceptionMessage = CreateErrorMessage(currentException);
+
+        Crashes.TrackError(currentException);
 
         await LogFileWriteAsync(exceptionMessage);
     }

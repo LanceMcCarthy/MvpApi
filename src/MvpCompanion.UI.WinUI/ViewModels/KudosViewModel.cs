@@ -1,6 +1,7 @@
 ﻿using MvpApi.Common.Models;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.Foundation.Metadata;
@@ -11,6 +12,7 @@ using Microsoft.UI.Xaml.Controls;
 //using VungleSDK;
 using CommonHelpers.Common;
 using CommunityToolkit.WinUI.Connectivity;
+using Microsoft.AppCenter.Analytics;
 using MvpCompanion.UI.WinUI.Helpers;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
@@ -32,7 +34,7 @@ public class KudosViewModel : ViewModelBase
         KudosCollection.Add(new Kudos { Title = "Dinner", ProductId = "MvpCompanion_Dinner", StoreId = "9NB8SR731DM6", Price = "$9.49", ImageUrl = "/Images/DinnerKudo.png" });
     }
 
-    public ObservableCollection<Kudos> KudosCollection { get; set; } = new ObservableCollection<Kudos>();
+    public ObservableCollection<Kudos> KudosCollection { get; set; } = new();
 
     public Visibility FeedbackHubButtonVisibility
     {
@@ -43,15 +45,15 @@ public class KudosViewModel : ViewModelBase
     public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
     {
         if (!(e.ClickedItem is Kudos kudo)) return;
-
-        if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+        
+        Analytics.TrackEvent("Kudo Selection", new Dictionary<string, string>
         {
-            //StoreServicesCustomEventLogger.GetDefault().Log($"{kudo.Title} Kudos Item Selected");
-        }
+            {"Item", kudo.Title}
+        });
 
         if (!string.IsNullOrEmpty(kudo.StoreId))
         {
-            await PurchaseKudosAsync(kudo.StoreId);
+            await PurchaseKudosAsync(kudo.StoreId, kudo.Title);
         }
 
         if (kudo.Title == "Store Rating")
@@ -90,31 +92,34 @@ public class KudosViewModel : ViewModelBase
                 return;
 
             var jsonObject = JObject.Parse(result.Response);
-            var status = jsonObject.SelectToken("status").ToString();
+            var status = jsonObject.SelectToken("status")?.ToString();
 
             IsBusyMessage = "action complete, showing result...";
 
-            if (status == "success")
+            switch (status)
             {
-                await new MessageDialog("Thank you for taking the time to leave a rating! If you left 3 stars or lower, please let me know how I can improve the app (go to About page).", "Success").ShowAsync();
-            }
-            else if (status == "aborted")
-            {
-                var md = new MessageDialog("If you prefer not to leave a bad rating but still want to provide feedback, click the email button below. I work hard to make sure you have a great app experience and would love to hear from you.", "Review Aborted");
-
-                md.Commands.Add(new UICommand("send email"));
-                md.Commands.Add(new UICommand("not now"));
-
-                var mdResult = await md.ShowAsync();
-
-                if (mdResult.Label == "send email")
+                case "success":
+                    await new MessageDialog("Thank you for taking the time to leave a rating! If you left 3 stars or lower, please let me know how I can improve the app (go to About page).", "Success").ShowAsync();
+                    break;
+                case "aborted":
                 {
-                    await FeedbackHelpers.Current.EmailFeedbackMessageAsync();
+                    var md = new MessageDialog("If you prefer not to leave a bad rating but still want to provide feedback, click the email button below. I work hard to make sure you have a great app experience and would love to hear from you.", "Review Aborted");
+
+                    md.Commands.Add(new UICommand("send email"));
+                    md.Commands.Add(new UICommand("not now"));
+
+                    var mdResult = await md.ShowAsync();
+
+                    if (mdResult.Label == "send email")
+                    {
+                        await FeedbackHelpers.Current.EmailFeedbackMessageAsync();
+                    }
+
+                    break;
                 }
-            }
-            else
-            {
-                await new MessageDialog($"The rating or review did not complete, here's what Windows had to say: {jsonObject.SelectToken("status")}.\r\n\nIf you meant to leave a review, try again. If this keeps happening, contact us and share the error code above.", "Rating or Review was not successful").ShowAsync();
+                default:
+                    await new MessageDialog($"The rating or review did not complete, here's what Windows had to say: {jsonObject.SelectToken("status")}.\r\n\nIf you meant to leave a review, try again. If this keeps happening, contact us and share the error code above.", "Rating or Review was not successful").ShowAsync();
+                    break;
             }
         }
         catch (Exception ex)
@@ -128,7 +133,7 @@ public class KudosViewModel : ViewModelBase
         }
     }
 
-    public async Task PurchaseKudosAsync(string storeId)
+    public async Task PurchaseKudosAsync(string storeId, string name)
     {
         try
         {
@@ -149,27 +154,22 @@ public class KudosViewModel : ViewModelBase
 
             var resultMessage = "";
 
-            switch (result.Status)
+            Analytics.TrackEvent("Kudo Purchase Attempt", new Dictionary<string, string>
             {
-                case StorePurchaseStatus.AlreadyPurchased:
-                    resultMessage = "You have already purchased this kudos, thank you!";
-                    break;
-                case StorePurchaseStatus.Succeeded:
-                    resultMessage = "Kudos provided! Thank you for your support and help in keeping this app free.";
-                    break;
-                case StorePurchaseStatus.NotPurchased:
-                    resultMessage = "Kudos were not purchased. Don't worry, you were not charged for peeking ;)";
-                    break;
-                case StorePurchaseStatus.NetworkError:
-                    resultMessage = "The purchase was unsuccessful due to a network error.\r\n\nError:\r\n" + extendedError;
-                    break;
-                case StorePurchaseStatus.ServerError:
-                    resultMessage = "The purchase was unsuccessful due to a server error.\r\n\nError:\r\n" + extendedError;
-                    break;
-                default:
-                    resultMessage = "The purchase was unsuccessful due to an unknown error.\r\n\nError:\r\n" + extendedError;
-                    break;
-            }
+                {"StoreId", storeId},
+                {"Kudo Name", name},
+                {"Result", $"{result.Status}"}
+            });
+
+            resultMessage = result.Status switch
+            {
+                StorePurchaseStatus.AlreadyPurchased => "You have already purchased this kudos, thank you!",
+                StorePurchaseStatus.Succeeded => "Kudos provided! Thank you for your support and help in keeping this app free.",
+                StorePurchaseStatus.NotPurchased => "Kudos were not purchased. Don't worry, you were not charged for peeking ;)",
+                StorePurchaseStatus.NetworkError => "The purchase was unsuccessful due to a network error.\r\n\nError:\r\n" + extendedError,
+                StorePurchaseStatus.ServerError => "The purchase was unsuccessful due to a server error.\r\n\nError:\r\n" + extendedError,
+                _ => "The purchase was unsuccessful due to an unknown error.\r\n\nError:\r\n" + extendedError
+            };
 
             IsBusyMessage = "action complete, showing result...";
 

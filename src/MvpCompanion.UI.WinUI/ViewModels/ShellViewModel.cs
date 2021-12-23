@@ -113,11 +113,11 @@ public class ShellViewModel : ViewModelBase
 
     public async void OnLoaded()
     {
-        //if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-        //{
-        //    await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
-        //    return;
-        //}
+        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        {
+            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+            return;
+        }
 
         RefreshProperties();
     }

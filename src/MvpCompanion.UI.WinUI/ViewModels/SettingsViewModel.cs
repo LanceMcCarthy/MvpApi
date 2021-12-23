@@ -8,6 +8,7 @@ using Windows.ApplicationModel.Email;
 using System.Diagnostics;
 using Windows.UI.Popups;
 using CommunityToolkit.WinUI.Connectivity;
+using Microsoft.AppCenter.Crashes;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
@@ -94,7 +95,7 @@ public class SettingsViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            //Crashes.TrackError(ex);
+            Crashes.TrackError(ex);
 
             await new MessageDialog($"Something went wrong trying to open your email application automatically. You can still manually send an email to awesome.apps@outlook.com. /r/n/nError: {ex.Message}")
                 .ShowAsync();

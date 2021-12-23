@@ -169,7 +169,7 @@ public class ProfileViewModel : ViewModelBase
         if (result.Label == "DELETE")
         {
             // iterate over the selected items
-            foreach (OnlineIdentityViewModel onlineIdentity in SelectedOnlineIdentities)
+            foreach (var onlineIdentity in SelectedOnlineIdentities)
             {
                 IsBusyMessage = $"deleting {onlineIdentity.Url}...";
 

@@ -20,6 +20,7 @@ using MvpCompanion.UI.WinUI.Helpers;
 using MvpCompanion.UI.WinUI.Views;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
+using Microsoft.AppCenter.Analytics;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
@@ -27,18 +28,18 @@ public class AddContributionsViewModel : ViewModelBase
 {
     #region Fields
 
-    private ContributionsModel _selectedContribution;
-    private string _urlHeader = "Url";
-    private string _annualQuantityHeader = "Annual Quantity";
-    private string _secondAnnualQuantityHeader = "Second Annual Quantity";
-    private string _annualReachHeader = "Annual Reach";
-    private bool _isUrlRequired;
-    private bool _isAnnualQuantityRequired;
-    private bool _isSecondAnnualQuantityRequired;
-    private bool _isAnnualReachRequired;
-    private bool _canUpload = true;
-    private bool _isEditingQueuedItem;
-    private string _warningMessage;
+    private ContributionsModel selectedContribution;
+    private string urlHeader = "Url";
+    private string annualQuantityHeader = "Annual Quantity";
+    private string secondAnnualQuantityHeader = "Second Annual Quantity";
+    private string annualReachHeader = "Annual Reach";
+    private bool isUrlRequired;
+    private bool isAnnualQuantityRequired;
+    private bool isSecondAnnualQuantityRequired;
+    private bool isAnnualReachRequired;
+    private bool canUpload = true;
+    private bool isEditingQueuedItem;
+    private string warningMessage;
 
     #endregion
 
@@ -65,86 +66,86 @@ public class AddContributionsViewModel : ViewModelBase
 
     // Collections and SelectedItems
 
-    public ObservableCollection<ContributionsModel> UploadQueue { get; } = new ObservableCollection<ContributionsModel>();
+    public ObservableCollection<ContributionsModel> UploadQueue { get; } = new();
 
-    public ObservableCollection<ContributionTypeModel> Types { get; } = new ObservableCollection<ContributionTypeModel>();
+    public ObservableCollection<ContributionTypeModel> Types { get; } = new();
 
-    public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
+    public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new();
 
-    public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
+    public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new();
 
     public ContributionsModel SelectedContribution
     {
-        get => _selectedContribution;
-        set => SetProperty(ref _selectedContribution, value);
+        get => selectedContribution;
+        set => SetProperty(ref selectedContribution, value);
     }
 
     // Data entry control headers, using VM properties to alert validation violations
 
     public string AnnualQuantityHeader
     {
-        get => _annualQuantityHeader;
-        set => SetProperty(ref _annualQuantityHeader, value);
+        get => annualQuantityHeader;
+        set => SetProperty(ref annualQuantityHeader, value);
     }
 
     public string SecondAnnualQuantityHeader
     {
-        get => _secondAnnualQuantityHeader;
-        set => SetProperty(ref _secondAnnualQuantityHeader, value);
+        get => secondAnnualQuantityHeader;
+        set => SetProperty(ref secondAnnualQuantityHeader, value);
     }
 
     public string AnnualReachHeader
     {
-        get => _annualReachHeader;
-        set => SetProperty(ref _annualReachHeader, value);
+        get => annualReachHeader;
+        set => SetProperty(ref annualReachHeader, value);
     }
 
     public string UrlHeader
     {
-        get => _urlHeader;
-        set => SetProperty(ref _urlHeader, value);
+        get => urlHeader;
+        set => SetProperty(ref urlHeader, value);
     }
 
     public bool IsUrlRequired
     {
-        get => _isUrlRequired;
-        set => SetProperty(ref _isUrlRequired, value);
+        get => isUrlRequired;
+        set => SetProperty(ref isUrlRequired, value);
     }
 
     public bool IsAnnualQuantityRequired
     {
-        get => _isAnnualQuantityRequired;
-        set => SetProperty(ref _isAnnualQuantityRequired, value);
+        get => isAnnualQuantityRequired;
+        set => SetProperty(ref isAnnualQuantityRequired, value);
     }
 
     public bool IsSecondAnnualQuantityRequired
     {
-        get => _isSecondAnnualQuantityRequired;
-        set => SetProperty(ref _isSecondAnnualQuantityRequired, value);
+        get => isSecondAnnualQuantityRequired;
+        set => SetProperty(ref isSecondAnnualQuantityRequired, value);
     }
 
     public bool IsAnnualReachRequired
     {
-        get => _isAnnualReachRequired;
-        set => SetProperty(ref _isAnnualReachRequired, value);
+        get => isAnnualReachRequired;
+        set => SetProperty(ref isAnnualReachRequired, value);
     }
 
     public bool CanUpload
     {
-        get => _canUpload;
-        set => SetProperty(ref _canUpload, value);
+        get => canUpload;
+        set => SetProperty(ref canUpload, value);
     }
 
     public bool IsEditingQueuedItem
     {
-        get => _isEditingQueuedItem;
-        set => SetProperty(ref _isEditingQueuedItem, value);
+        get => isEditingQueuedItem;
+        set => SetProperty(ref isEditingQueuedItem, value);
     }
 
     public string WarningMessage
     {
-        get => _warningMessage;
-        set => SetProperty(ref _warningMessage, value);
+        get => warningMessage;
+        set => SetProperty(ref warningMessage, value);
     }
 
     // Commands
@@ -166,7 +167,7 @@ public class AddContributionsViewModel : ViewModelBase
 
     public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
     {
-        if (e.NewDate < (ShellView.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellView.Instance.DataContext as ShellViewModel).SubmissionDeadline)
+        if (e.NewDate < (ShellView.Instance.DataContext as ShellViewModel)?.SubmissionStartDate || e.NewDate > (ShellView.Instance.DataContext as ShellViewModel)?.SubmissionDeadline)
         {
             WarningMessage = "The date must be after the start of your current award period and before March 31st of the next award year.";
 
@@ -248,6 +249,7 @@ public class AddContributionsViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
+            await ex.LogExceptionAsync();
             await new MessageDialog($"Something went wrong clearing the queue, please try again. Error: {ex.Message}").ShowAsync();
         }
     }
@@ -323,7 +325,7 @@ public class AddContributionsViewModel : ViewModelBase
     public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
     {
         // Each activity type has a unique set of field names and which ones are required.
-        // This extension method will parse it and return a Tuple of the unqie requirements.
+        // This extension method will parse it and return a Tuple of the unique requirements.
         var contributionTypeRequirements = contributionType.GetContributionTypeRequirements();
 
         // Set the headers of the input boxes
@@ -409,7 +411,8 @@ public class AddContributionsViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            //await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
+            await ex.LogExceptionAsync();
+            await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
         }
     }
 
@@ -421,62 +424,72 @@ public class AddContributionsViewModel : ViewModelBase
 
             // copying back the ID which was created on the server once the item was added to the database
             contribution.ContributionId = submissionResult.ContributionId;
-
-            // Quality assurance, only logs a successful upload.
-            if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+            
+            // Quality assurance, only logs a successful upload and the type used
+            Analytics.TrackEvent("ContributionUploadSuccess", new Dictionary<string, string>
             {
-                //StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
-            }
+                { "ContributionTypeName", contribution.ContributionTypeName}
+            });
 
             return true;
         }
         catch (Exception ex)
         {
-
-            // Quality assurance, only logs a failed upload.
-            if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+            // Quality assurance, only logs a failed upload and cont type, not the details
+            Analytics.TrackEvent("ContributionUploadFailure", new Dictionary<string, string>
             {
-                //StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
-            }
+                { "Exception", ex.Message },
+                { "ContributionTypeName", contribution.ContributionTypeName}
+            });
 
-            //await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
+            await ex.LogExceptionAsync();
+
+            await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
+            
             return false;
         }
     }
 
     private async Task LoadSupportingDataAsync()
     {
-        IsBusyMessage = "loading types...";
-
-        var types = await App.ApiService.GetContributionTypesAsync();
-
-        types.ForEach(type =>
+        try
         {
-            Types.Add(type);
-        });
+            IsBusyMessage = "loading types...";
 
-        IsBusyMessage = "loading technologies...";
+            var types = await App.ApiService.GetContributionTypesAsync();
 
-        var areaRoots = await App.ApiService.GetContributionAreasAsync();
+            types.ForEach(type =>
+            {
+                Types.Add(type);
+            });
 
-        // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-        var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+            IsBusyMessage = "loading technologies...";
 
-        areas.ForEach(area =>
+            var areaRoots = await App.ApiService.GetContributionAreasAsync();
+
+            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
+            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+
+            areas.ForEach(area =>
+            {
+                CategoryAreas.Add(area);
+            });
+
+            // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
+
+            IsBusyMessage = "loading visibility options...";
+
+            var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+            visibilities.ForEach(visibility =>
+            {
+                Visibilities.Add(visibility);
+            });
+        }
+        catch (Exception ex)
         {
-            CategoryAreas.Add(area);
-        });
-
-        // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
-
-        IsBusyMessage = "loading visibility options...";
-
-        var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-        visibilities.ForEach(visibility =>
-        {
-            Visibilities.Add(visibility);
-        });
+            await ex.LogExceptionAsync();
+        }
     }
 
     #endregion
@@ -504,7 +517,6 @@ public class AddContributionsViewModel : ViewModelBase
             IsBusy = true;
 
             // ** Get the necessary associated data from the API **
-
             await LoadSupportingDataAsync();
 
             // Note: The Category Areas will not be loaded until the CollectionViewSource is does it's initially loading.
@@ -514,7 +526,7 @@ public class AddContributionsViewModel : ViewModelBase
             {
                 var td = new TutorialDialog
                 {
-                    XamlRoot = ShellView.Instance.XamlRoot,
+                    XamlRoot = App.CurrentWindow.Content.XamlRoot,
                     SettingsKey = "AddContributionPageTutorialShown",
                     MessageTitle = "Add Contribution Page",
                     Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
@@ -534,7 +546,7 @@ public class AddContributionsViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            Trace.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
+            await ex.LogExceptionAsync();
         }
         finally
         {
@@ -583,7 +595,7 @@ public class AddContributionsViewModel : ViewModelBase
         //                              "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
         //                };
 
-        //                td.XamlRoot = ShellView.Instance.XamlRoot;
+        //                td.XamlRoot = App.CurrentWindow.Content.XamlRoot;
 
         //                await td.ShowAsync();
         //            }

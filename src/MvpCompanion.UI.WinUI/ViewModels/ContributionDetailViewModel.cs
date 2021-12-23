@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
-using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
@@ -18,6 +17,8 @@ using MvpCompanion.UI.WinUI.Extensions;
 using MvpCompanion.UI.WinUI.Helpers;
 using MvpCompanion.UI.WinUI.Views;
 using CommonHelpers.Common;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
@@ -162,7 +163,7 @@ public class ContributionDetailViewModel : ViewModelBase
         
     public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
     {
-        if (e.NewDate < (ShellView.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellView.Instance.DataContext as ShellViewModel).SubmissionDeadline)
+        if (e.NewDate < (ShellView.Instance.DataContext as ShellViewModel)?.SubmissionStartDate || e.NewDate > (ShellView.Instance.DataContext as ShellViewModel)?.SubmissionDeadline)
         {
             WarningMessage = "The contribution date must be after the start of your current award period and before March 31, 2019 in order for it to count towards your evaluation";
         }
@@ -199,17 +200,11 @@ public class ContributionDetailViewModel : ViewModelBase
             return;
 
         SelectedContribution.UploadStatus = UploadStatus.InProgress;
-            
+
         var success = await UploadContributionAsync(SelectedContribution);
-            
+
         // Mark success or failure
         SelectedContribution.UploadStatus = success ? UploadStatus.Success : UploadStatus.Failed;
-
-        // Quality assurance, only logs a successful or failed upload.
-        if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-        {
-            //StoreServicesCustomEventLogger.GetDefault().Log($"EditContribution{SelectedContribution.UploadStatus}");
-        }
 
         if (SelectedContribution.UploadStatus == UploadStatus.Success)
         {
@@ -265,16 +260,21 @@ public class ContributionDetailViewModel : ViewModelBase
             else
             {
                 // Quality assurance, only logs a failed delete.
-                //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
+                Analytics.TrackEvent("DeleteContribution Failed", new Dictionary<string, string>
+                {
+                    { "ContributionTypeName", SelectedContribution.ContributionTypeName}
+                });
             }
         }
         catch (Exception ex)
         {
             // Quality assurance, only logs a failed delete.
-            //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-            //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionFailed");
-
+            Analytics.TrackEvent("DeleteContribution Exception", new Dictionary<string, string>
+            {
+                { "Exception", ex.Message },
+                { "ContributionTypeName", SelectedContribution.ContributionTypeName}
+            });
+            
             await ex.LogExceptionAsync();
         }
     }
@@ -376,27 +376,34 @@ public class ContributionDetailViewModel : ViewModelBase
 
     private async Task LoadSupportingDataAsync()
     {
-        IsBusyMessage = "loading category area technologies...";
-
-        var areaRoots = await App.ApiService.GetContributionAreasAsync();
-
-        // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-        var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-
-        areas.ForEach(area =>
+        try
         {
-            CategoryAreas.Add(area);
-        });
+            IsBusyMessage = "loading category area technologies...";
+
+            var areaRoots = await App.ApiService.GetContributionAreasAsync();
+
+            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
+            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+
+            areas.ForEach(area =>
+            {
+                CategoryAreas.Add(area);
+            });
 
 
-        IsBusyMessage = "loading visibility options...";
+            IsBusyMessage = "loading visibility options...";
 
-        var visibilities = await App.ApiService.GetVisibilitiesAsync();
+            var visibilities = await App.ApiService.GetVisibilitiesAsync();
 
-        visibilities.ForEach(visibility =>
+            visibilities.ForEach(visibility =>
+            {
+                Visibilities.Add(visibility);
+            });
+        }
+        catch (Exception ex)
         {
-            Visibilities.Add(visibility);
-        });
+            await ex.LogExceptionAsync();
+        }
     }
 
     public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
@@ -408,11 +415,27 @@ public class ContributionDetailViewModel : ViewModelBase
             // copying back the ID which was created on the server once the item was added to the database
             contribution.ContributionId = submissionResult.ContributionId;
 
+            // Quality assurance, only logs a successful or failed upload.
+            Analytics.TrackEvent("ContributionUploadSuccess", new Dictionary<string, string>
+            {
+                { "ContributionTypeName", SelectedContribution.ContributionTypeName}
+            });
+
             return true;
         }
         catch (Exception ex)
         {
+            // Quality assurance, only logs a failed upload and cont type, not the details
+            Analytics.TrackEvent("ContributionUploadFailure", new Dictionary<string, string>
+            {
+                { "Exception", ex.Message },
+                { "ContributionTypeName", SelectedContribution.ContributionTypeName}
+            });
+
+            await ex.LogExceptionAsync();
+
             await new MessageDialog($"Something went wrong saving the item, please try again. Error: {ex.Message}").ShowAsync();
+
             return false;
         }
     }
@@ -468,7 +491,7 @@ public class ContributionDetailViewModel : ViewModelBase
             {
                 var td = new TutorialDialog
                 {
-                    XamlRoot = ShellView.Instance.XamlRoot,
+                    XamlRoot = App.CurrentWindow.Content.XamlRoot,
                     SettingsKey = "ContributionDetailPageTutorialShown",
                     MessageTitle = "Contribution Details",
                     Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
@@ -486,7 +509,8 @@ public class ContributionDetailViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"LoadDataAsync Exception {ex}");
+            Trace.TraceError($"LoadDataAsync Exception {ex}");
+            await ex.LogExceptionAsync();
         }
         finally
         {

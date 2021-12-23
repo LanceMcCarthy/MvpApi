@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Popups;
+using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
@@ -64,7 +65,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
                 if (!string.IsNullOrEmpty(authorizationHeader))
                 {
-                    Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignInAsync - Seamless Signin Achieved");
+                    Analytics.TrackEvent("LoginWindow SignInAsync - Seamless Signin Achieved");
 
                     await CompleteSignInAsync(authorizationHeader);
 
@@ -73,7 +74,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
             }
 
             // important we let this fall through to avoid multiple else statements
-            Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignInAsync - Manual Signin Required");
+            Analytics.TrackEvent("LoginWindow SignInAsync - Manual Signin Required");
 
             AuthWebView.Source = signInUri;
 
@@ -83,7 +84,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
         public async Task SignOutAsync()
         {
-            Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignOutAsync");
+            Analytics.TrackEvent("LoginWindow SignOutAsync");
 
             await ShowAsync();
 
