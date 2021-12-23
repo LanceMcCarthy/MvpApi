@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.UI.Popups;
+using Microsoft.AppCenter.Crashes;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.Web.WebView2.Core;
 using MvpApi.Common.CustomEventArgs;
@@ -29,12 +30,12 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
         public LoginDialog()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
         public LoginDialog(Action loginCompleted)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             this.loginCompleted = loginCompleted;
         }
 
@@ -49,7 +50,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
             loginCompleted?.Invoke();
 
-            this.Hide();
+            Hide();
         }
 
         public async Task SignInAsync()
@@ -63,7 +64,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
                 if (!string.IsNullOrEmpty(authorizationHeader))
                 {
-                    //Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignInAsync - Seamless Signin Achieved");
+                    Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignInAsync - Seamless Signin Achieved");
 
                     await CompleteSignInAsync(authorizationHeader);
 
@@ -72,19 +73,19 @@ namespace MvpCompanion.UI.WinUI.Dialogs
             }
 
             // important we let this fall through to avoid multiple else statements
-            // Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignInAsync - Manual Signin Required");
+            Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignInAsync - Manual Signin Required");
 
             AuthWebView.Source = signInUri;
 
             // Needs fresh login, navigate to sign in page
-            await this.ShowAsync();
+            await ShowAsync();
         }
 
         public async Task SignOutAsync()
         {
-            //Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignOutAsync");
+            Microsoft.AppCenter.Analytics.Analytics.TrackEvent("LoginWindow SignOutAsync");
 
-            await this.ShowAsync();
+            await ShowAsync();
 
             try
             {
@@ -110,6 +111,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
             {
                 //Crashes.TrackError(ex);
                 await ex.LogExceptionWithUserMessage();
+                Trace.TraceError($"[LoginDialog] {ex}");
             }
             finally
             {
@@ -168,6 +170,8 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
         private static async void ApiService_RequestErrorOccurred(object sender, ApiServiceEventArgs e)
         {
+            Trace.TraceError($"[LoginDialog] ApiService_RequestErrorOccurred: {e.Message}");
+
             var message = "Unknown Server Error";
 
             if (e.IsBadRequest)
@@ -215,7 +219,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
                 var tokenData = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseTxt);
 
                 // Ensure response has access token
-                if (tokenData.ContainsKey("access_token"))
+                if (tokenData != null && tokenData.ContainsKey("access_token"))
                 {
                     // Store the expiration time of the token, currently 3600 seconds (an hour)
                     StorageHelpers.Instance.SaveSetting("expires_in", tokenData["expires_in"]);
@@ -235,7 +239,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
             }
             catch (HttpRequestException ex)
             {
-                //Crashes.TrackError(ex);
+                Crashes.TrackError(ex);
 
                 await ex.LogExceptionWithUserMessage();
 
@@ -243,14 +247,14 @@ namespace MvpCompanion.UI.WinUI.Dialogs
                 {
                     //TODO consider another message for HTTP specific errors
                 }
-
-                Debug.WriteLine($"LoginWindow HttpRequestException: {ex}");
             }
             catch (Exception ex)
             {
-                //Crashes.TrackError(ex);
+                Crashes.TrackError(ex);
 
                 await ex.LogExceptionWithUserMessage();
+
+                Trace.TraceError($"[WinUI LoginDialog] {ex}");
             }
 
             return authorizationHeader;
@@ -259,7 +263,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
         private async void AuthWebView_NavigationStarting(WebView2 sender, CoreWebView2NavigationStartingEventArgs e)
         {
-            Trace.WriteLine($"[LoginDialog] Navigation Starting - Is redirected: {e.IsRedirected}, Uri: {e.Uri}");
+            Trace.WriteLine($"[WinUI LoginDialog] Navigation Starting - Is redirected: {e.IsRedirected}, Uri: {e.Uri}");
             
             if (e.Uri.Contains("code="))
             {
@@ -289,11 +293,11 @@ namespace MvpCompanion.UI.WinUI.Dialogs
         {
             if (e.IsSuccess)
             {
-                Trace.WriteLine($"[LoginDialog] WebView Navigation Completed: {e.IsSuccess}");
+                Trace.WriteLine($"[WinUI LoginDialog] WebView Navigation Completed: {e.IsSuccess}");
             }
             else
             {
-                Trace.TraceError($"[LoginDialog] WebView Navigation Error: {e.WebErrorStatus}");
+                Trace.TraceError($"[WinUI LoginDialog] WebView Navigation Error: {e.WebErrorStatus}");
             }
             
         }

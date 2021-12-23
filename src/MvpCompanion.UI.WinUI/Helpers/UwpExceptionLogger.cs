@@ -30,6 +30,8 @@ public static class UwpExceptionLogger
             throw new ArgumentNullException(nameof(exception));
         }
 
+        Trace.TraceError(exception.Message);
+
         var exceptionMessage = CreateErrorMessage(exception);
 
         var logFile = await LogFileWriteAsync(exceptionMessage);
@@ -73,6 +75,8 @@ public static class UwpExceptionLogger
         if (exception == null)
             throw new ArgumentNullException(nameof(exception));
 
+        Trace.TraceError($"LogExceptionWithUserMessage {exception.Message}");
+
         if (string.IsNullOrEmpty(dialogTitle))
             throw new ArgumentNullException(nameof(dialogTitle));
 
@@ -95,19 +99,29 @@ public static class UwpExceptionLogger
 
         var result = await md.ShowAsync();
 
-        if (result.Label == "yes (summary)")
+        switch (result.Label)
         {
-            await FeedbackHelpers.Current.EmailErrorMessageAsync(exceptionMessage);
-        }
-        else if (result.Label == "yes (full)")
-        {
-            var text = await DiagnosticsHelper.DumpAsync(exception);
-            await FeedbackHelpers.Current.EmailErrorMessageAsync(exceptionMessage + "\r\n\n" + text);
+            case "yes (summary)":
+                await FeedbackHelpers.Current.EmailErrorMessageAsync(exceptionMessage);
+                break;
+            case "yes (full)":
+            {
+                var text = await DiagnosticsHelper.DumpAsync(exception);
+                await FeedbackHelpers.Current.EmailErrorMessageAsync(exceptionMessage + "\r\n\n" + text);
+                break;
+            }
         }
     }
 
     private static string CreateErrorMessage(Exception currentException)
     {
+        if (currentException == null)
+        {
+            Trace.TraceWarning($"Cannot Create Error Message - CreateErrorMessage() was passed a null Exception object");
+
+            return "No Error Message Available - CreateErrorMessage() was passed a null Exception object!";
+        }
+
         var messageBuilder = new StringBuilder();
 
         try
@@ -168,8 +182,8 @@ public static class UwpExceptionLogger
     private static async Task PurgeLogFilesAsync()
     {
         var localFolder = ApplicationData.Current.LocalFolder;
-        var settingsFolder = ApplicationData.Current.RoamingSettings;
-
+        var settingsFolder = ApplicationData.Current.LocalSettings;
+        
         try
         {
             var daysToKeepLog = 5;
@@ -182,9 +196,7 @@ public static class UwpExceptionLogger
             {
                 settingsFolder.Values["DaysToKeepErrorLogs"] = daysToKeepLog;
             }
-
-            var todaysDate = DateTime.Now.Date;
-
+            
             var files = await localFolder.GetFilesAsync();
 
             if (files.Count < 1)
@@ -194,13 +206,15 @@ public static class UwpExceptionLogger
             {
                 var basicProperties = await file.GetBasicPropertiesAsync();
 
-                if (file.FileType == ".log")
-                {
-                    if (DateTime.Compare(todaysDate, basicProperties.DateModified.AddDays(daysToKeepLog).DateTime.Date) >= 0)
-                    {
-                        await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
-                    }
-                }
+                if (file.FileType != ".log") 
+                    continue;
+
+                if (DateTime.Compare(DateTime.Now.Date, basicProperties.DateModified.AddDays(daysToKeepLog).DateTime.Date) < 0) 
+                    continue;
+
+                await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
+
+                Trace.TraceInformation($"Purged log file: {file.Name}");
             }
         }
         catch (Exception)

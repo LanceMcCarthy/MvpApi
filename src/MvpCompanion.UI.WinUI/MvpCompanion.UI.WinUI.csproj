@@ -107,9 +107,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="CommonHelpers" Version="1.1.3" />
+		<PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.4.0" />
+		<PackageReference Include="Microsoft.AppCenter.Crashes" Version="4.4.0" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.196" />
-		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="Telerik.WinUI.Controls" Version="0.7.1" />
 		<PackageReference Include="CommunityToolkit.WinUI.Connectivity" Version="7.1.2" />
 		<Manifest Include="$(ApplicationManifest)" />

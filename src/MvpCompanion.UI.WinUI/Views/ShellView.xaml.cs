@@ -18,16 +18,9 @@ public sealed partial class ShellView : UserControl
     {
         Instance = this;
 
-        this.InitializeComponent();
-
-        LoginDialog = new LoginDialog(OnLoginCompleted);
-
-        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-        {
-            LoginDialog.XamlRoot = this.XamlRoot;
-        }
-
-        this.Loaded += ShellView_Loaded;
+        InitializeComponent(); 
+        
+        Loaded += ShellView_Loaded;
     }
 
     private void RadRibbonView_OnHelpRequested(object? sender, RadRoutedEventArgs e)
@@ -37,6 +30,13 @@ public sealed partial class ShellView : UserControl
 
     private async void ShellView_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        LoginDialog = new LoginDialog(OnLoginCompleted);
+
+        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
+        {
+            LoginDialog.XamlRoot = App.CurrentWindow.Content.XamlRoot;
+        }
+
         var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
 
         // We have a refresh token from a previous session
@@ -48,20 +48,22 @@ public sealed partial class ShellView : UserControl
             // If the bearer token was returned, login
             if (!string.IsNullOrEmpty(authorizationHeader))
             {
-                await this.LoginDialog.InitializeMvpApiAsync(authorizationHeader);
+                await LoginDialog.InitializeMvpApiAsync(authorizationHeader);
+
+                ViewModel?.OnLoaded();
 
                 return;
             }
         }
 
         // all other cases fall down to needing the user to sign back in
-        await this.LoginDialog.SignInAsync();
+        await LoginDialog.SignInAsync();
 
-        (this.DataContext as ShellViewModel)?.OnLoaded();
+        ViewModel?.OnLoaded();
     }
 
     private void OnLoginCompleted()
     {
-        (this.DataContext as ShellViewModel).RefreshProperties();
+        ViewModel?.RefreshProperties();
     }
 }
