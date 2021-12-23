@@ -13,12 +13,12 @@ using CommonHelpers.Mvvm;
 using CommunityToolkit.WinUI.Connectivity;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.WinUI.Dialogs;
-using MvpCompanion.UI.WinUI.Extensions;
 using MvpCompanion.UI.WinUI.Helpers;
 using MvpCompanion.UI.WinUI.Views;
 using CommonHelpers.Common;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
+//using Microsoft.AppCenter.Analytics;
+//using Microsoft.AppCenter.Crashes;
+using MvpCompanion.UI.WinUI.Extensions;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
@@ -241,9 +241,10 @@ public class ContributionDetailViewModel : ViewModelBase
 
             if (result == true)
             {
-                // Quality assurance, only logs a successful delete.
-                //if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                //    StoreServicesCustomEventLogger.GetDefault().Log("DeleteContributionSuccess");
+                //Analytics.TrackEvent("DeleteContribution", new Dictionary<string, string>
+                //{
+                //    { "ContributionTypeName", SelectedContribution.ContributionTypeName}
+                //});
 
                 // Refresh the main cached contributions list because the details for this item has changed
                 IsBusy = true;
@@ -260,20 +261,20 @@ public class ContributionDetailViewModel : ViewModelBase
             else
             {
                 // Quality assurance, only logs a failed delete.
-                Analytics.TrackEvent("DeleteContribution Failed", new Dictionary<string, string>
-                {
-                    { "ContributionTypeName", SelectedContribution.ContributionTypeName}
-                });
+                //Analytics.TrackEvent("DeleteContribution Failed", new Dictionary<string, string>
+                //{
+                //    { "ContributionTypeName", SelectedContribution.ContributionTypeName}
+                //});
             }
         }
         catch (Exception ex)
         {
             // Quality assurance, only logs a failed delete.
-            Analytics.TrackEvent("DeleteContribution Exception", new Dictionary<string, string>
-            {
-                { "Exception", ex.Message },
-                { "ContributionTypeName", SelectedContribution.ContributionTypeName}
-            });
+            //Analytics.TrackEvent("DeleteContribution Exception", new Dictionary<string, string>
+            //{
+            //    { "Exception", ex.Message },
+            //    { "ContributionTypeName", SelectedContribution.ContributionTypeName}
+            //});
             
             await ex.LogExceptionAsync();
         }
@@ -416,21 +417,21 @@ public class ContributionDetailViewModel : ViewModelBase
             contribution.ContributionId = submissionResult.ContributionId;
 
             // Quality assurance, only logs a successful or failed upload.
-            Analytics.TrackEvent("ContributionUploadSuccess", new Dictionary<string, string>
-            {
-                { "ContributionTypeName", SelectedContribution.ContributionTypeName}
-            });
+            //Analytics.TrackEvent("ContributionUploadSuccess", new Dictionary<string, string>
+            //{
+            //    { "ContributionTypeName", SelectedContribution.ContributionTypeName}
+            //});
 
             return true;
         }
         catch (Exception ex)
         {
             // Quality assurance, only logs a failed upload and cont type, not the details
-            Analytics.TrackEvent("ContributionUploadFailure", new Dictionary<string, string>
-            {
-                { "Exception", ex.Message },
-                { "ContributionTypeName", SelectedContribution.ContributionTypeName}
-            });
+            //Analytics.TrackEvent("ContributionUploadFailure", new Dictionary<string, string>
+            //{
+            //    { "Exception", ex.Message },
+            //    { "ContributionTypeName", SelectedContribution.ContributionTypeName}
+            //});
 
             await ex.LogExceptionAsync();
 
@@ -485,7 +486,7 @@ public class ContributionDetailViewModel : ViewModelBase
             DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
 
             // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-            originalContribution = SelectedContribution.Clone();
+            originalContribution = MvpApi.Common.Extensions.ContributionExtensions.Clone(SelectedContribution);
 
             if (ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is not bool tutorialShown || !tutorialShown)
             {

@@ -1,26 +1,25 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-namespace MvpCompanion.UI.WinUI.Views
+namespace MvpCompanion.UI.WinUI.Views;
+
+public sealed partial class SettingsView : UserControl
 {
-    public sealed partial class SettingsView : UserControl
+    public SettingsView()
     {
-        public SettingsView()
-        {
-            this.InitializeComponent();
+        InitializeComponent();
 
-            Loaded += SettingsView_Loaded;
-            Unloaded += SettingsView_Unloaded;
-        }
+        Loaded += SettingsView_Loaded;
+        Unloaded += SettingsView_Unloaded;
+    }
 
-        private void SettingsView_Unloaded(object sender, RoutedEventArgs e)
-        {
-            ViewModel.OnUnloaded();
-        }
+    private void SettingsView_Unloaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.OnUnloaded();
+    }
 
-        private void SettingsView_Loaded(object sender, RoutedEventArgs e)
-        {
-            ViewModel.OnLoaded();
-        }
+    private void SettingsView_Loaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.OnLoaded();
     }
 }

@@ -22,6 +22,7 @@ using CommonHelpers.Common;
 using MvpCompanion.UI.WinUI.Helpers;
 using CommonHelpers.Mvvm;
 using CommunityToolkit.WinUI.Connectivity;
+//using Microsoft.AppCenter.Analytics;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
@@ -154,18 +155,29 @@ public class HomeViewModel : ViewModelBase
         try
         {
             IsBusy = true;
-            IsBusyMessage = "preparing to delete contributions...";
+            IsBusyMessage = "preparing to delete selected contributions...";
 
             foreach (ContributionsModel contribution in SelectedContributions)
             {
-                IsBusyMessage = $"deleting {contribution.Title}...";
-
-                var success = await App.ApiService.DeleteContributionAsync(contribution);
-
-                // Quality assurance, only logs a successful or failed delete.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                try
                 {
-                    //StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
+                    IsBusyMessage = $"deleting {contribution.Title}...";
+
+                    var success = await App.ApiService.DeleteContributionAsync(contribution);
+
+                    // Quality assurance, only logs a successful or failed delete and the type of contribution.
+                    //Analytics.TrackEvent(success == true ? "DeleteContribution" : "DeleteContribution Failed", new Dictionary<string, string>
+                    //{
+                    //    { "ContributionTypeName", contribution.ContributionTypeName }
+                    //});
+                }
+                catch (Exception ex)
+                {
+                    //Analytics.TrackEvent("DeleteContribution Exception", new Dictionary<string, string>
+                    //{
+                    //    { "Exception", ex.Message },
+                    //    { "ContributionTypeName", contribution.ContributionTypeName}
+                    //});
                 }
             }
 
@@ -178,7 +190,6 @@ public class HomeViewModel : ViewModelBase
         catch (Exception ex)
         {
             await ex.LogExceptionAsync();
-            Debug.WriteLine($"DeleteSelectedContributions Exception: {ex}");
         }
         finally
         {
@@ -187,7 +198,7 @@ public class HomeViewModel : ViewModelBase
         }
     }
 
-    public async void RadDataGrid_OnSelectionChanged(object sender, DataGridSelectionChangedEventArgs e)
+    public async void RadDataGrid_OnSelectionChanged(object? sender, DataGridSelectionChangedEventArgs e)
     {
         // When in multiple selection mode, enable/disable delete instead of navigating to details page
         if (GridSelectionMode == DataGridSelectionMode.Multiple)
@@ -199,20 +210,22 @@ public class HomeViewModel : ViewModelBase
         // When in single selection mode, go to the selected item's details page
         if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
         {
-            //if(ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-            //{
-            //    //var editDialog = new ContributionEditorDialog(contribution);
-            //    //await editDialog.ShowAsync();
+            ShellView.Instance.LoadView(new ContributionDetailView(contribution));
 
-            //    //if (editDialog.ContributionResult != null)
-            //    //{
-            //    //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-            //    //}
+            //if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+            //{
+                //var editDialog = new ContributionEditorDialog(contribution);
+                //await editDialog.ShowAsync();
+
+                //if (editDialog.ContributionResult != null)
+                //{
+                //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
+                //}
             //}
             //else
             //{
-            //    // TODO navigation
-            //    //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
+                // TODO navigation
+                //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
             //}
         }
     }

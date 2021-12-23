@@ -2,9 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 using Windows.UI.Popups;
 using MvpApi.Common.Models;
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 
 namespace MvpCompanion.UI.WinUI.Extensions;
 
@@ -299,12 +300,12 @@ public static class ContributionExtensions
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static ContributionsModel Clone(this ContributionsModel source)
-    {
+    //public static ContributionsModel Clone(this ContributionsModel source)
+    //{
         // Deep clone using json.net
-        var json = JsonConvert.SerializeObject(source);
-        return JsonConvert.DeserializeObject<ContributionsModel>(json);
-    }
+        //var json = JsonConvert.SerializeObject(source);
+        //return JsonConvert.DeserializeObject<ContributionsModel>(json);
+    //}
 
     /// <summary>
     /// Helper to remove items from a collection without collection modification issues

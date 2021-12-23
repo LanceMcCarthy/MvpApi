@@ -50,11 +50,18 @@
                 </controls:RadRibbonTab>
                 <controls:RadRibbonTab Header="Contributions" />
                 <controls:RadRibbonTab Header="Help" />
-                <controls:RadRibbonTab Header="About" />
+                <controls:RadRibbonTab Header="About" Tapped="AboutTab_OnTapped"/>
             </controls:RadRibbonView.Items>
         </controls:RadRibbonView>
 
-        <local:HomeView Grid.Row="1" />
+        <ContentPresenter x:Name="MainPresenter" 
+                          HorizontalContentAlignment="Stretch" 
+                          VerticalContentAlignment="Stretch" 
+                          Grid.Row="1">
+            <ContentPresenter.ContentTransitions>
+                <NavigationThemeTransition />
+            </ContentPresenter.ContentTransitions>
+        </ContentPresenter>
 
         <primitives:RadBusyIndicator IsActive="{Binding IsBusy}"
                                      Visibility="{Binding IsBusy}"

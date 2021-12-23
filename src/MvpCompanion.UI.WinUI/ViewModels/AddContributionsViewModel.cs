@@ -20,7 +20,6 @@ using MvpCompanion.UI.WinUI.Helpers;
 using MvpCompanion.UI.WinUI.Views;
 using CommonHelpers.Common;
 using CommonHelpers.Mvvm;
-using Microsoft.AppCenter.Analytics;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
@@ -426,21 +425,21 @@ public class AddContributionsViewModel : ViewModelBase
             contribution.ContributionId = submissionResult.ContributionId;
             
             // Quality assurance, only logs a successful upload and the type used
-            Analytics.TrackEvent("ContributionUploadSuccess", new Dictionary<string, string>
-            {
-                { "ContributionTypeName", contribution.ContributionTypeName}
-            });
+            //Analytics.TrackEvent("ContributionUploadSuccess", new Dictionary<string, string>
+            //{
+            //    { "ContributionTypeName", contribution.ContributionTypeName}
+            //});
 
             return true;
         }
         catch (Exception ex)
         {
             // Quality assurance, only logs a failed upload and cont type, not the details
-            Analytics.TrackEvent("ContributionUploadFailure", new Dictionary<string, string>
-            {
-                { "Exception", ex.Message },
-                { "ContributionTypeName", contribution.ContributionTypeName}
-            });
+            //Analytics.TrackEvent("ContributionUploadFailure", new Dictionary<string, string>
+            //{
+            //    { "Exception", ex.Message },
+            //    { "ContributionTypeName", contribution.ContributionTypeName}
+            //});
 
             await ex.LogExceptionAsync();
 

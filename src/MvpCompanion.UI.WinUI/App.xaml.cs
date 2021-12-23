@@ -1,6 +1,6 @@
-﻿using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
+﻿//using Microsoft.AppCenter;
+//using Microsoft.AppCenter.Analytics;
+//using Microsoft.AppCenter.Crashes;
 using Microsoft.UI.Xaml;
 using MvpApi.Services.Apis;
 using MvpCompanion.UI.WinUI.Common;
@@ -22,7 +22,7 @@ namespace MvpCompanion.UI.WinUI
         
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            AppCenter.Start(ExternalConstants.AppCenterId, typeof(Analytics), typeof(Crashes));
+            //AppCenter.Start(ExternalConstants.AppCenterId, typeof(Analytics), typeof(Crashes));
 
             CurrentWindow = new MainWindow();
             

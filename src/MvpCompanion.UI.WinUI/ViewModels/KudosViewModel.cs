@@ -1,9 +1,10 @@
 ﻿using MvpApi.Common.Models;
-using Newtonsoft.Json.Linq;
+//using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Windows.Data.Json;
 using Windows.Foundation.Metadata;
 using Windows.Services.Store;
 using Windows.UI.Popups;
@@ -13,7 +14,7 @@ using Microsoft.UI.Xaml.Controls;
 using MvpCompanion.UI.WinUI.Common;
 using CommonHelpers.Common;
 using CommunityToolkit.WinUI.Connectivity;
-using Microsoft.AppCenter.Analytics;
+//using Microsoft.AppCenter.Analytics;
 using MvpCompanion.UI.WinUI.Helpers;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
@@ -46,10 +47,10 @@ public class KudosViewModel : ViewModelBase
     {
         if (!(e.ClickedItem is Kudos kudo)) return;
         
-        Analytics.TrackEvent("Kudo Selection", new Dictionary<string, string>
-        {
-            {"Item", kudo.Title}
-        });
+        //Analytics.TrackEvent("Kudo Selection", new Dictionary<string, string>
+        //{
+        //    {"Item", kudo.Title}
+        //});
 
         if (!string.IsNullOrEmpty(kudo.StoreId))
         {
@@ -91,8 +92,8 @@ public class KudosViewModel : ViewModelBase
             if (result.ExtendedError != null)
                 return;
 
-            var jsonObject = JObject.Parse(result.Response);
-            var status = jsonObject.SelectToken("status")?.ToString();
+            var jsonObject = JsonObject.Parse(result.Response);
+            var status = jsonObject.GetNamedString("status");
 
             IsBusyMessage = "action complete, showing result...";
 
@@ -118,7 +119,7 @@ public class KudosViewModel : ViewModelBase
                     break;
                 }
                 default:
-                    await new MessageDialog($"The rating or review did not complete, here's what Windows had to say: {jsonObject.SelectToken("status")}.\r\n\nIf you meant to leave a review, try again. If this keeps happening, contact us and share the error code above.", "Rating or Review was not successful").ShowAsync();
+                    await new MessageDialog($"The rating or review did not complete, here's what Windows had to say: {jsonObject.GetNamedString("status")}.\r\n\nIf you meant to leave a review, try again. If this keeps happening, contact us and share the error code above.", "Rating or Review was not successful").ShowAsync();
                     break;
             }
         }
@@ -154,12 +155,12 @@ public class KudosViewModel : ViewModelBase
 
             var resultMessage = "";
 
-            Analytics.TrackEvent("Kudo Purchase Attempt", new Dictionary<string, string>
-            {
-                {"StoreId", storeId},
-                {"Kudo Name", name},
-                {"Result", $"{result.Status}"}
-            });
+            //Analytics.TrackEvent("Kudo Purchase Attempt", new Dictionary<string, string>
+            //{
+            //    {"StoreId", storeId},
+            //    {"Kudo Name", name},
+            //    {"Result", $"{result.Status}"}
+            //});
 
             resultMessage = result.Status switch
             {

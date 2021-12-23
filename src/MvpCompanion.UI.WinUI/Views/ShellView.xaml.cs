@@ -1,9 +1,8 @@
 ﻿using Microsoft.UI.Xaml.Controls;
-using System.Threading.Tasks;
 using Windows.Foundation.Metadata;
+using Microsoft.UI.Xaml.Input;
 using MvpApi.Services.Utilities;
 using MvpCompanion.UI.WinUI.Dialogs;
-using MvpCompanion.UI.WinUI.ViewModels;
 using Telerik.UI.Xaml;
 
 namespace MvpCompanion.UI.WinUI.Views;
@@ -18,9 +17,10 @@ public sealed partial class ShellView : UserControl
     {
         Instance = this;
 
-        InitializeComponent(); 
-        
+        InitializeComponent();
+
         Loaded += ShellView_Loaded;
+        Unloaded += ShellView_Unloaded;
     }
 
     private void RadRibbonView_OnHelpRequested(object? sender, RadRoutedEventArgs e)
@@ -31,11 +31,7 @@ public sealed partial class ShellView : UserControl
     private async void ShellView_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         LoginDialog = new LoginDialog(OnLoginCompleted);
-
-        if (ApiInformation.IsApiContractPresent("Windows.Foundation.UniversalApiContract", 8))
-        {
-            LoginDialog.XamlRoot = App.CurrentWindow.Content.XamlRoot;
-        }
+        LoginDialog.XamlRoot = App.CurrentWindow.Content.XamlRoot;
 
         var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
 
@@ -50,7 +46,7 @@ public sealed partial class ShellView : UserControl
             {
                 await LoginDialog.InitializeMvpApiAsync(authorizationHeader);
 
-                ViewModel?.OnLoaded();
+                ViewModel.OnLoaded();
 
                 return;
             }
@@ -60,10 +56,27 @@ public sealed partial class ShellView : UserControl
         await LoginDialog.SignInAsync();
 
         ViewModel?.OnLoaded();
+
+        LoadView(new HomeView());
     }
 
     private void OnLoginCompleted()
     {
-        ViewModel?.RefreshProperties();
+        ViewModel.RefreshProperties();
+    }
+
+    private void ShellView_Unloaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        ViewModel.OnUnloaded();
+    }
+
+    private void AboutTab_OnTapped(object sender, TappedRoutedEventArgs e)
+    {
+        LoadView(new AboutView());
+    }
+
+    public void LoadView(UserControl view)
+    {
+        MainPresenter.Content = view;
     }
 }

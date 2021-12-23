@@ -4,11 +4,222 @@
              xmlns:local="using:MvpCompanion.UI.WinUI.Views"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:telerikGrid="using:Telerik.UI.Xaml.Controls.Grid"
+             xmlns:telerikData="using:Telerik.Data.Core"
+             xmlns:telerikCore="using:Telerik.Core"
+             xmlns:selectors="using:MvpCompanion.UI.WinUI.Selectors"
+             xmlns:winUi="using:MvpCompanion.UI.WinUI"
+             xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
+             xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
              mc:Ignorable="d">
 
+    <UserControl.DataContext>
+        <viewModels:HomeViewModel x:Name="ViewModel" />
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+        <telerikCore:StringFormatConverter x:Key="StringFormatConverter" />
+        <Style x:Key="SmallCellContentStyle"
+               TargetType="TextBlock">
+            <Setter Property="MaxWidth"
+                    Value="100" />
+            <Setter Property="TextTrimming"
+                    Value="CharacterEllipsis" />
+            <Setter Property="Margin"
+                    Value="5" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+        </Style>
+
+        <Style x:Key="MediumCellContentStyle"
+               TargetType="TextBlock">
+            <Setter Property="MaxWidth"
+                    Value="250" />
+            <Setter Property="TextTrimming"
+                    Value="CharacterEllipsis" />
+            <Setter Property="Margin"
+                    Value="5" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+        </Style>
+
+        <Style x:Key="WideCellContentStyle"
+               TargetType="TextBlock">
+            <Setter Property="MaxWidth"
+                    Value="400" />
+            <Setter Property="TextTrimming"
+                    Value="CharacterEllipsis" />
+            <Setter Property="Margin"
+                    Value="5" />
+            <Setter Property="VerticalAlignment"
+                    Value="Center" />
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
-        <TextBlock Text="Home View"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="HeaderGrid"
+              Height="48"
+              Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
+
+            <TextBlock Text="Home"
+                       Style="{StaticResource TitleTextBlockStyle}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center" />
+
+            <Button HorizontalAlignment="Right"
+                    Background="Transparent"
+                    Margin="0,0,10,0">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Symbol="ShowBcc"
+                                    Margin="5" />
+                        <TextBlock Text="Group By"
+                                   Margin="5" />
+                    </StackPanel>
+                </Button.Content>
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel Margin="10,10,10,5">
+                            <TextBlock Text="Grouping" />
+                            <RadioButton Content="None"
+                                         IsChecked="True"
+                                         GroupName="DataGridGroup"
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                            <RadioButton Content="Contribution Type"
+                                         GroupName="DataGridGroup"
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                            <RadioButton Content="Award Area"
+                                         GroupName="DataGridGroup"
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                            <RadioButton Content="Date"
+                                         GroupName="DataGridGroup"
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
+
+        <telerikGrid:RadDataGrid x:Name="ContributionsGrid"
+                                 ItemsSource="{Binding Contributions}"
+                                 SelectionMode="{Binding GridSelectionMode}"
+                                 AutoGenerateColumns="False"
+                                 CanUserChooseColumns="False"
+                                 UserGroupMode="Disabled"
+                                 SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
+                                 GridLinesThickness="1"
+                                 Grid.Row="1">
+            <!--<animations:Implicit.ShowAnimations>
+                <animations:ScaleAnimation From="0.8"
+                                           To="1"
+                                           Duration="0:0:1" />
+                <animations:OpacityAnimation From="0"
+                                             To="1"
+                                             Duration="0:0:1" />
+            </animations:Implicit.ShowAnimations>
+            <animations:Implicit.HideAnimations>
+                <animations:ScaleAnimation From="1"
+                                           To="0.8"
+                                           Duration="0:0:0.6" />
+                <animations:OpacityAnimation From="1"
+                                             To="0"
+                                             Duration="0:0:0.6" />
+            </animations:Implicit.HideAnimations>-->
+            <telerikGrid:RadDataGrid.GroupHeaderTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Background="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToBackgroundConverter}}"
+                                    BorderThickness="2"
+                                    Width="20"
+                                    Height="10"
+                                    BorderBrush="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}" />
+                            <TextBlock Text="{Binding Group.Key}"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0" />
+                            <TextBlock Text="-"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Group.Items.Count}"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </telerikGrid:RadDataGrid.GroupHeaderTemplate>
+            <telerikGrid:RadDataGrid.Columns>
+                <telerikGrid:DataGridDateColumn PropertyName="StartDate"
+                                                CellContentFormat="{}{0:d}"
+                                                Header="Start Date" />
+                <telerikGrid:DataGridTextColumn PropertyName="Title"
+                                                Header="Title"
+                                                CellContentStyle="{StaticResource WideCellContentStyle}" />
+                <telerikGrid:DataGridTextColumn PropertyName="ContributionTypeName"
+                                                Header="Contribution Type"
+                                                CellContentStyle="{StaticResource WideCellContentStyle}" />
+                <telerikGrid:DataGridTextColumn PropertyName="Description"
+                                                Header="Description"
+                                                CellContentStyle="{StaticResource MediumCellContentStyle}" />
+                <telerikGrid:DataGridNumericalColumn PropertyName="AnnualQuantity"
+                                                     Header="Annual Quantity" />
+                <telerikGrid:DataGridNumericalColumn PropertyName="AnnualReach"
+                                                     Header="Annual Reach" />
+                <telerikGrid:DataGridTextColumn PropertyName="ReferenceUrl"
+                                                Width="100"
+                                                Header="Url"
+                                                CellContentStyle="{StaticResource MediumCellContentStyle}" />
+            </telerikGrid:RadDataGrid.Columns>
+        </telerikGrid:RadDataGrid>
+
+        <Button Content="Refresh Data (after internet connection is established)"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Command="{Binding RefreshAfterDisconnectCommand}"
+                Visibility="{Binding IsInternetDisabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                Grid.Row="1" />
+
+        <CommandBar Grid.Row="2"
+                    Background="{ThemeResource AppBarBackgroundThemeBrush}">
+            <CommandBar.SecondaryCommands>
+                <AppBarButton Label="Export All Contributions"
+                              Click="{x:Bind ViewModel.ExportButton_OnClick}" />
+            </CommandBar.SecondaryCommands>
+            <AppBarButton Label="clear selection"
+                          Icon="ClearSelection"
+                          Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                          IsEnabled="{Binding AreAppBarButtonsEnabled}"
+                          Click="{x:Bind ViewModel.ClearSelectionButton_Click}" />
+            <AppBarButton Label="delete"
+                          Icon="Delete"
+                          Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                          IsEnabled="{Binding AreAppBarButtonsEnabled}"
+                          Click="{x:Bind ViewModel.DeleteSelectionButton_Click}" />
+            <AppBarToggleButton Label="multiple selection"
+                                Icon="Bullets"
+                                IsChecked="{Binding IsMultipleSelectionEnabled, Mode=TwoWay}" />
+            <AppBarSeparator />
+            <AppBarButton Icon="Refresh"
+                          Label="refresh"
+                          Click="{x:Bind ViewModel.RefreshButton_Click}" />
+            <AppBarButton Label="add activity"
+                          Icon="Add"
+                          Click="{x:Bind ViewModel.AddActivityButton_Click}" />
+        </CommandBar>
+
+        <primitives:RadBusyIndicator Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                                     IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                     Visibility="{Binding IsBusy}"
+                                     Style="{StaticResource PageBusyIndicatorStyle}"
+                                     Grid.Row="1"
+                                     Grid.RowSpan="2"
+                                     Grid.Column="0" />
     </Grid>
 </UserControl>

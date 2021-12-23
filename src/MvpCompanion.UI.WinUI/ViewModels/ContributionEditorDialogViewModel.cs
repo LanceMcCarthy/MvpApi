@@ -14,7 +14,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.UI.Popups;
-using Microsoft.AppCenter.Crashes;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
