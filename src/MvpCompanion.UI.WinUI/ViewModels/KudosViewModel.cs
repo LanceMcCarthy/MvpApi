@@ -10,6 +10,7 @@ using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 //using VungleSDK;
+using MvpCompanion.UI.WinUI.Common;
 using CommonHelpers.Common;
 using CommunityToolkit.WinUI.Connectivity;
 using Microsoft.AppCenter.Analytics;
@@ -22,8 +23,7 @@ public class KudosViewModel : ViewModelBase
     private StoreContext storeContext;
     private Visibility feedbackHubButtonVisibility;
     //VungleAd sdkInstance;
-    private string vungleAppId = "5f765c14d870a360a1d6f906";
-    private string vungleAdPlacementId = "KUDOSPAGEINTERSTITIAL-9395221";
+    //private string vungleAdPlacementId = "KUDOSPAGEINTERSTITIAL-9395221";
 
     public KudosViewModel()
     {
@@ -215,7 +215,7 @@ public class KudosViewModel : ViewModelBase
         //    ? Visibility.Visible
         //    : Visibility.Collapsed;
 
-        //sdkInstance = AdFactory.GetInstance(vungleAppId);
+        //sdkInstance = AdFactory.GetInstance(ExternalConstants.VungleAppId);
         //sdkInstance.OnAdPlayableChanged += SdkInstance_OnAdPlayableChanged;
         //sdkInstance.LoadAd(vungleAdPlacementId);
     }
