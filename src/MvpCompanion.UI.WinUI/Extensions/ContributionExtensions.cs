@@ -91,7 +91,10 @@ public static class ContributionExtensions
 
         // If we're using this extension method for final validation and not fast validation, show error message to user
         if (!isValid && showErrorMessage)
-            await new MessageDialog($"The {failedFieldName} field is a required entry for this contribution type.").ShowAsync();
+        {
+            await App.ShowMessageAsync($"The {failedFieldName} field is a required entry for this contribution type.");
+           // await new MessageDialog($"The {failedFieldName} field is a required entry for this contribution type.").ShowAsync();
+        }
 
         return isValid;
     }

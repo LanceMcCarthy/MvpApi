@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Windows.Data.Json;
+//using Windows.Data.Json;
 using Windows.Storage;
 using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
@@ -13,9 +13,9 @@ using Microsoft.Web.WebView2.Core;
 using MvpApi.Common.CustomEventArgs;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
-using MvpCompanion.UI.WinUI.Helpers;
 using MvpCompanion.UI.WinUI.ViewModels;
 using MvpCompanion.UI.WinUI.Views;
+using Newtonsoft.Json;
 
 namespace MvpCompanion.UI.WinUI.Dialogs
 {
@@ -104,6 +104,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
                 // Clean up profile objects
                 UpdateBusyIndicatorMessage("resetting profile...");
+
                 App.ApiService.Mvp = null;
                 App.ApiService.ProfileImagePath = "";
 
@@ -116,7 +117,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
             catch (Exception ex)
             {
                 //Crashes.TrackError(ex);
-                await ex.LogExceptionWithUserMessage();
+                await ex.LogExceptionAsync();
                 Trace.TraceError($"[LoginDialog] {ex}");
             }
             finally
@@ -188,18 +189,14 @@ namespace MvpCompanion.UI.WinUI.Dialogs
             {
                 message = e.Message + "\r\n\nIf this continues to happen, please open a GitHub Issue and we'll investigate further (find the GitHub link on the About page).";
             }
-
-            await new MessageDialog(message, "MVP API Request Error").ShowAsync();
+            
+            await App.ShowMessageAsync(message, "MVP API Request Error");
         }
 
         public async Task<string> RequestAuthorizationAsync(string authCode, bool isRefresh = false)
         {
             Trace.WriteLine($"[LoginDialog] Request Authorization - Is Refresh: {isRefresh}.");
-
-            //var window = new Microsoft.UI.Xaml.Window();
-            //var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            //WinRT.Interop.InitializeWithWindow.Initialize(AuthWebView, hwnd);
-
+            
             var authorizationHeader = "";
 
             try
@@ -225,59 +222,31 @@ namespace MvpCompanion.UI.WinUI.Dialogs
                     responseTxt = await response.Content.ReadAsStringAsync();
                 }
 
-                // Without NewtonSoft approach
-                JsonObject jsonObject = JsonObject.Parse(responseTxt);
+                //Deserialize the parameters from the response
+                var tokenData = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseTxt);
 
-                var accessToken = jsonObject?.GetNamedString("access_token");
-
-                // Ensure response has access token
-                if (!string.IsNullOrEmpty(accessToken))
+                //Ensure response has access token
+                if (tokenData != null && tokenData.ContainsKey("access_token"))
                 {
-                    var refreshToken = jsonObject.GetNamedString("refresh_token");
-                    var expiresIn = jsonObject.GetNamedString("expires_in");
-                    var tokenType = jsonObject.GetNamedString("token_type");
-
                     // Store the expiration time of the token, currently 3600 seconds (an hour)
-                    StorageHelpers.Instance.SaveSetting("expires_in", expiresIn);
+                    StorageHelpers.Instance.SaveSetting("expires_in", tokenData["expires_in"]);
 
                     // Store tokens (NOTE: The tokens are encrypted with Rijindel before storing in LocalFolder)
-                    StorageHelpers.Instance.StoreToken("access_token", accessToken);
-                    StorageHelpers.Instance.StoreToken("refresh_token", refreshToken);
+                    StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
+                    StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
 
                     // We need to prefix the access token with the token type for the auth header. 
                     // Currently this is always "bearer", doing this to be more future proof
-                    var cleanedAccessToken = accessToken.Split('&')[0];
+                    var tokenType = tokenData["token_type"];
+                    var cleanedAccessToken = tokenData["access_token"].Split('&')[0];
 
                     // Build the Bearer authorization header
                     authorizationHeader = $"{tokenType} {cleanedAccessToken}";
                 }
-
-
-                // Deserialize the parameters from the response
-                //var tokenData = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseTxt);
-
-                // Ensure response has access token
-                //if (tokenData != null && tokenData.ContainsKey("access_token"))
-                //{
-                //    // Store the expiration time of the token, currently 3600 seconds (an hour)
-                //    StorageHelpers.Instance.SaveSetting("expires_in", tokenData["expires_in"]);
-
-                //    // Store tokens (NOTE: The tokens are encrypted with Rijindel before storing in LocalFolder)
-                //    StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
-                //    StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
-
-                //    // We need to prefix the access token with the token type for the auth header. 
-                //    // Currently this is always "bearer", doing this to be more future proof
-                //    var tokenType = tokenData["token_type"];
-                //    var cleanedAccessToken = tokenData["access_token"].Split('&')[0];
-
-                //    // Build the Bearer authorization header
-                //    authorizationHeader = $"{tokenType} {cleanedAccessToken}";
-                //}
             }
             catch (HttpRequestException ex)
             {
-                await ex.LogExceptionWithUserMessage();
+                await ex.LogExceptionAsync();
 
                 if (ex.Message.Contains("401"))
                 {
@@ -286,28 +255,26 @@ namespace MvpCompanion.UI.WinUI.Dialogs
             }
             catch (Exception ex)
             {
-                await ex.LogExceptionWithUserMessage();
+                await ex.LogExceptionAsync();
+                await App.ShowMessageAsync($"There was a problem signing you in: {ex.Message}", "Sign in Error");
             }
 
             return authorizationHeader;
         }
-        
+
         private async void AuthWebView_NavigationStarting(WebView2 sender, CoreWebView2NavigationStartingEventArgs e)
         {
             Trace.WriteLine($"[WinUI LoginDialog] Navigation Starting - Is redirected: {e.IsRedirected}, Uri: {e.Uri}");
-            
+
             if (e.Uri.Contains("code="))
             {
-                // original UWP WebView code
-                //var authCode = e.Uri.ExtractQueryValue("code");
-
-                // hack for WebView2
+                // WebView2 query parsing
                 var queryString = e.Uri.Split('?')[1];
                 var queryDictionary = System.Web.HttpUtility.ParseQueryString(queryString);
                 var authCode = queryDictionary["code"];
 
                 var authorizationHeader = await RequestAuthorizationAsync(authCode);
-
+                
                 if (!string.IsNullOrEmpty(authorizationHeader))
                 {
                     await CompleteSignInAsync(authorizationHeader);
@@ -319,7 +286,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
                 AuthWebView.Source = signInUri;
             }
         }
-        
+
         private void AuthWebView_NavigationCompleted(WebView2 sender, CoreWebView2NavigationCompletedEventArgs e)
         {
             if (e.IsSuccess)
@@ -330,7 +297,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
             {
                 Trace.TraceError($"[WinUI LoginDialog] WebView Navigation Error: {e.WebErrorStatus}");
             }
-            
+
         }
     }
 }

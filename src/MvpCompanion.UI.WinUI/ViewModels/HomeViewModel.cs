@@ -58,7 +58,8 @@ public class HomeViewModel : ViewModelBase
 
             if (IsInternetDisabled)
             {
-                await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
+                //await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
+                await App.ShowMessageAsync("Internet is still not available, please check your connection and try again.", "No Internet");
             }
             else
             {
@@ -138,14 +139,12 @@ public class HomeViewModel : ViewModelBase
 
     public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
     {
-        if (SelectedContributions.Any())
-            SelectedContributions.Clear();
+        ClearSelections();
     }
 
     public async void RefreshButton_Click(object sender, RoutedEventArgs e)
     {
-        if (SelectedContributions.Any())
-            SelectedContributions.Clear();
+        ClearSelections();
 
         await LoadContributionsAsync();
     }
@@ -185,6 +184,7 @@ public class HomeViewModel : ViewModelBase
 
             // After deleting contributions, we need to fetch updated list
             IsBusyMessage = "refreshing contributions...";
+
             await LoadContributionsAsync();
         }
         catch (Exception ex)
@@ -210,8 +210,10 @@ public class HomeViewModel : ViewModelBase
         // When in single selection mode, go to the selected item's details page
         if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
         {
-            ShellView.Instance.LoadView(new ContributionDetailView(contribution));
+            ShellView.Instance.AddDetailTab(contribution);
 
+
+            
             //if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
             //{
                 //var editDialog = new ContributionEditorDialog(contribution);
@@ -232,7 +234,7 @@ public class HomeViewModel : ViewModelBase
 
     public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
     {
-        if (!(sender is RadioButton rb) || rb.Content == null || GroupDescriptors == null) return;
+        if (sender is not RadioButton rb || rb.Content == null || GroupDescriptors == null) return;
 
         GroupDescriptors.Clear();
 
@@ -299,7 +301,8 @@ public class HomeViewModel : ViewModelBase
                                   "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
                                   "4. Now you can us 'Save As' to xlsx file or csv.";
 
-                    await new MessageDialog(message, "Export Saved").ShowAsync();
+                    //await new MessageDialog(message, "Export Saved").ShowAsync();
+                    await App.ShowMessageAsync(message, "Export Saved");
                 }
             }
 
@@ -308,7 +311,9 @@ public class HomeViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            await ex.LogExceptionWithUserMessage("There was an issue saving the exported data to a file. If this continues, please contact support awesome.apps@outlook.com", "Export Error");
+            //await ex.LogExceptionWithUserMessage("There was an issue saving the exported data to a file. If this continues, please contact support awesome.apps@outlook.com", "Export Error");
+            await ex.LogExceptionAsync();
+            await App.ShowMessageAsync("There was an issue saving the exported data to a file. If this continues, please contact support awesome.apps@outlook.com", "Export Error");
         }
     }
 
@@ -389,6 +394,14 @@ public class HomeViewModel : ViewModelBase
             IsBusy = false;
         }
     }
+    
+    private void ClearSelections()
+    {
+        if (SelectedContributions != null && SelectedContributions.Count > 0)
+        {
+            SelectedContributions.Clear();
+        }
+    }
 
     #endregion
 
@@ -396,11 +409,11 @@ public class HomeViewModel : ViewModelBase
 
     public async void OnLoaded(bool refreshNeeded)
     {
-        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-        {
-            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
-            return;
-        }
+        //if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        //{
+        //    await App.ShowMessageAsync("This application requires an internet connection. Please check your connection and try again.", "No Internet");
+        //    return;
+        //}
 
         if (!App.ApiService.IsLoggedIn)
         {
@@ -409,7 +422,7 @@ public class HomeViewModel : ViewModelBase
 
         if (!App.ApiService.IsLoggedIn)
         {
-            await new MessageDialog("You did not successfully complete the signin, this app requires an active MVP profile.", "Not Signed In").ShowAsync();
+            //await App.ShowMessageAsync("You did not successfully complete the signin, this app requires an active MVP profile.", "Not Signed In");
             return;
         }
 
@@ -431,6 +444,9 @@ public class HomeViewModel : ViewModelBase
                           "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
                           "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
             };
+
+            //var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
+            //WinRT.Interop.InitializeWithWindow.Initialize(td, hwnd);
 
             await td.ShowAsync();
         }

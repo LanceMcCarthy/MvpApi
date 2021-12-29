@@ -7,22 +7,27 @@
              xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
              xmlns:telerikInput="using:Telerik.UI.Xaml.Controls.Input"
              xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-             mc:Ignorable="d">
+             mc:Ignorable="d"
+             x:Name="Control">
 
     <UserControl.DataContext>
         <viewModels:AboutViewModel x:Name="ViewModel" />
     </UserControl.DataContext>
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
+            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid x:Name="HeaderGrid"
               Height="48"
+              Grid.ColumnSpan="2"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
             <TextBlock Text="About"
                        Style="{StaticResource TitleTextBlockStyle}"
@@ -32,7 +37,8 @@
 
         <Grid x:Name="GearsAndLogoGrid"
               Background="{ThemeResource AppBarBackgroundThemeBrush}"
-              Grid.Row="1">
+              Grid.Row="1"
+              Grid.Column="1">
             <Grid.Resources>
                 <Storyboard x:Name="GearsStory">
                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GearTwo"
@@ -52,8 +58,7 @@
                 </Storyboard>
             </Grid.Resources>
 
-            <Grid HorizontalAlignment="Left"
-                  Margin="10">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
                 <Grid x:Name="GearsLogo"
                       HorizontalAlignment="Center">
                     <Path x:Name="GearOne"
@@ -87,16 +92,14 @@
                 </Grid>
 
                 <Grid HorizontalAlignment="Center"
-                      VerticalAlignment="Center"
-                      Background="{Binding TextBackground,
-                                   ElementName=Control}">
+                      VerticalAlignment="Center">
                     <primitives:RadShadow BlurRadius="50"
                                           Color="Black"
                                           ShadowOpacity="0.90">
                         <TextBlock FontFamily="Century Gothic"
                                    FontSize="32"
-                                   FontWeight="{Binding FontWeight, ElementName=Control}"
-                                   Foreground="{Binding Foreground, ElementName=Control}"
+                                   FontWeight="{x:Bind Control.FontWeight}"
+                                   Foreground="{ThemeResource SystemControlHighlightAltListAccentLowBrush}"
                                    Text="Lancelot Software"
                                    TextWrapping="Wrap" />
                     </primitives:RadShadow>
@@ -105,7 +108,8 @@
         </Grid>
 
         <ScrollViewer x:Name="InfoViewer"
-                      Grid.Row="2"
+                      Grid.Column="0"
+                      Grid.Row="1"
                       Margin="20,10,20,0">
             <StackPanel x:Name="AboutInfoPanel">
                 <StackPanel Orientation="Horizontal">
@@ -185,7 +189,9 @@
             </StackPanel>
         </ScrollViewer>
 
-        <CommandBar Grid.Row="3">
+        <CommandBar Grid.Row="2"
+                    Grid.ColumnSpan="2" 
+                    Grid.Column="0">
             <AppBarButton x:Name="SettingsButton"
                           Label="diagnostics"
                           Icon="Setting">
@@ -199,7 +205,7 @@
                                        Style="{ThemeResource TitleTextBlockStyle}" />
 
                             <telerikInput:RadNumericBox Header="Days to Keep Error Logs"
-                                                        Value="{Binding DaysToKeepErrorLogs, Mode=TwoWay}"
+                                                        Value="{x:Bind ViewModel.DaysToKeepErrorLogs, Mode=TwoWay, Converter={StaticResource IntToDoubleConverter}}"
                                                         Minimum="2"
                                                         Maximum="10"
                                                         Margin="10" />

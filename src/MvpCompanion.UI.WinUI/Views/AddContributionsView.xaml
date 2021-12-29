@@ -8,7 +8,8 @@
              xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
              xmlns:telerikPrimitives="using:Telerik.UI.Xaml.Controls.Primitives"
              xmlns:telerikInput="using:Telerik.UI.Xaml.Controls.Input"
-             mc:Ignorable="d">
+             mc:Ignorable="d"
+             x:Name="ThisControl">
 
     <UserControl.DataContext>
         <viewModels:AddContributionsViewModel x:Name="ViewModel" />
@@ -32,14 +33,12 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition />
-            <RowDefinition x:Name="BottomRowDefinition"
-                           Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
-            <ColumnDefinition Width="1" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
@@ -56,24 +55,6 @@
         <Grid x:Name="FormGrid"
               Grid.Row="1"
               Grid.Column="0">
-            <!--<animations:Implicit.HideAnimations>
-                <animations:ScaleAnimation From="1"
-                                           To="0.7"
-                                           Duration="0:0:1.0" />
-                <animations:OpacityAnimation From="1"
-                                             To="0"
-                                             Duration="0:0:1.0" />
-            </animations:Implicit.HideAnimations>
-            <animations:Implicit.ShowAnimations>
-                <animations:ScaleAnimation From="0.7"
-                                           To="1"
-                                           Delay="0:0:0.2"
-                                           Duration="0:0:0.8" />
-                <animations:OpacityAnimation From="0"
-                                             To="1"
-                                             Delay="0:0:0.2"
-                                             Duration="0:0:0.8" />
-            </animations:Implicit.ShowAnimations>-->
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -175,7 +156,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Button Content="X"
-                                            Command="{Binding ElementName=Page, Path=DataContext.RemoveAdditionalTechAreaCommand}"
+                                            Command="{Binding ElementName=ThisControl, Path=DataContext.RemoveAdditionalTechAreaCommand}"
                                             CommandParameter="{Binding}"
                                             VerticalAlignment="Stretch"
                                             Foreground="White"
@@ -364,24 +345,6 @@
         <Grid x:Name="QueueGrid"
               Grid.Row="1"
               Grid.Column="2">
-            <!--<animations:Implicit.HideAnimations>
-                <animations:ScaleAnimation From="1"
-                                           To="0.7"
-                                           Duration="0:0:1.0" />
-                <animations:OpacityAnimation From="1"
-                                             To="0"
-                                             Duration="0:0:1.0" />
-            </animations:Implicit.HideAnimations>
-            <animations:Implicit.ShowAnimations>
-                <animations:ScaleAnimation From="0.7"
-                                           To="1"
-                                           Delay="0:0:0.2"
-                                           Duration="0:0:0.8" />
-                <animations:OpacityAnimation From="0"
-                                             To="1"
-                                             Delay="0:0:0.2"
-                                             Duration="0:0:0.8" />
-            </animations:Implicit.ShowAnimations>-->
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -433,7 +396,7 @@
                             </StackPanel>
 
                             <StackPanel Grid.Column="1">
-                                <Button Command="{Binding ElementName=Page, Path=DataContext.EditQueuedContributionCommand}"
+                                <Button Command="{Binding ElementName=ThisControl, Path=DataContext.EditQueuedContributionCommand}"
                                         CommandParameter="{Binding}"
                                         Margin="5">
                                     <Button.Content>
@@ -441,7 +404,7 @@
                                                     Foreground="White" />
                                     </Button.Content>
                                 </Button>
-                                <Button Command="{Binding ElementName=Page, Path=DataContext.RemoveQueuedContributionCommand}"
+                                <Button Command="{Binding ElementName=ThisControl, Path=DataContext.RemoveQueuedContributionCommand}"
                                         CommandParameter="{Binding}"
                                         Margin="5">
                                     <Button.Content>
@@ -482,89 +445,17 @@
             </CommandBar>
         </Grid>
 
-        <Rectangle x:Name="SplitterRectangle"
-                   VerticalAlignment="Stretch"
-                   HorizontalAlignment="Stretch"
-                   Fill="{ThemeResource SystemControlForegroundBaseHighBrush}"
-                   Grid.Row="1"
-                   Grid.RowSpan="2"
-                   Grid.Column="1" />
-
+        <telerikPrimitives:RadGridSplitter Grid.Column="1"
+                                           Grid.Row="0" 
+                                           Background="{ThemeResource SystemControlForegroundBaseHighBrush}" />
+        
         <telerikPrimitives:RadBusyIndicator Content="{Binding IsBusyMessage}"
-                                     IsActive="{Binding IsBusy}"
-                                     Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
-                                     Style="{StaticResource PageBusyIndicatorStyle}"
-                                     Grid.Row="1"
-                                     Grid.RowSpan="2"
-                                     Grid.ColumnSpan="3"
-                                     Grid.Column="0" />
-
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="WindowStates">
-                <VisualState x:Name="WideState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="940" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TitleTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="DescriptionTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="UrlTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="SecondAnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="AnnualReachNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="NumericInputStackPanel.Orientation"
-                                Value="Horizontal" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="IntermediateState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="641" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TitleTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="DescriptionTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="UrlTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="SecondAnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="AnnualReachNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="NumericInputStackPanel.Orientation"
-                                Value="Vertical" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TitleTextBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="DescriptionTextBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="UrlTextBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="SecondAnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="AnnualReachNumericBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="NumericInputStackPanel.Orientation"
-                                Value="Vertical" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
+                                            IsActive="{Binding IsBusy}"
+                                            Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
+                                            Style="{StaticResource PageBusyIndicatorStyle}"
+                                            Grid.Row="0"
+                                            Grid.RowSpan="2"
+                                            Grid.ColumnSpan="3"
+                                            Grid.Column="0" />
     </Grid>
 </UserControl>

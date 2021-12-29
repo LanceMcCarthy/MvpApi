@@ -93,7 +93,9 @@
                                                   IsInverted="True" />
             <converters:PathToBitmapImageConverter x:Key="BitmapImageConverter" />
             <converters:DateTimeToDateTimeOffsetConverter x:Key="DateTimeOffsetConverter" />
+
             <converters:DoubleToIntConverter x:Key="DoubleToIntConverter" />
+            <converters:IntToDoubleConverter x:Key="IntToDoubleConverter" />
 
             <converters:UploadStatusToBrushConverter x:Key="UploadStatusBackgroundConverter" />
 

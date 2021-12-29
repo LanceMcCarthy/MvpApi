@@ -171,7 +171,7 @@ public class AddContributionsViewModel : ViewModelBase
             WarningMessage = "The date must be after the start of your current award period and before March 31st of the next award year.";
 
             //await new MessageDialog(WarningMessage, "Notice: Out of range").ShowAsync();
-
+            
             CanUpload = false;
         }
         else
@@ -201,7 +201,7 @@ public class AddContributionsViewModel : ViewModelBase
         }
         else
         {
-            await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
+            await App.ShowMessageAsync("You can only have two additional areas selected, remove one and try again.");
         }
     }
 
@@ -237,6 +237,9 @@ public class AddContributionsViewModel : ViewModelBase
             md.Commands.Add(new UICommand("YES"));
             md.Commands.Add(new UICommand("whoa, no!"));
 
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(md, hwnd);
+
             var dialogResult = await md.ShowAsync();
 
             if (dialogResult.Label != "YES")
@@ -249,7 +252,8 @@ public class AddContributionsViewModel : ViewModelBase
         catch (Exception ex)
         {
             await ex.LogExceptionAsync();
-            await new MessageDialog($"Something went wrong clearing the queue, please try again. Error: {ex.Message}").ShowAsync();
+            //await new MessageDialog($"Something went wrong clearing the queue, please try again. Error: {ex.Message}").ShowAsync();
+            await App.ShowMessageAsync($"Something went wrong clearing the queue, please try again. Error: {ex.Message}");
         }
     }
 
@@ -370,6 +374,9 @@ public class AddContributionsViewModel : ViewModelBase
             md.Commands.Add(new UICommand("edit"));
             md.Commands.Add(new UICommand("cancel"));
 
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(md, hwnd);
+
             var dialogResult = await md.ShowAsync();
 
             if (dialogResult.Label == "cancel")
@@ -390,6 +397,9 @@ public class AddContributionsViewModel : ViewModelBase
             var md = new MessageDialog("Are you sure you want to remove this contribution from the queue?", "Remove Contribution?");
             md.Commands.Add(new UICommand("yes"));
             md.Commands.Add(new UICommand("cancel"));
+
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(md, hwnd);
 
             var dialogResult = await md.ShowAsync();
 
@@ -443,8 +453,8 @@ public class AddContributionsViewModel : ViewModelBase
 
             await ex.LogExceptionAsync();
 
-            await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
-            
+            //await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
+            await App.ShowMessageAsync($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}");
             return false;
         }
     }
@@ -499,7 +509,8 @@ public class AddContributionsViewModel : ViewModelBase
     {
         if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
         {
-            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+            //await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+            await App.ShowMessageAsync("This application requires an internet connection. Please check your connection and try again.", "No Internet");
             return;
         }
 
@@ -535,7 +546,10 @@ public class AddContributionsViewModel : ViewModelBase
                               "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
                               "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
                 };
-                
+
+                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
+                WinRT.Interop.InitializeWithWindow.Initialize(td, hwnd);
+
                 await td.ShowAsync();
             }
 

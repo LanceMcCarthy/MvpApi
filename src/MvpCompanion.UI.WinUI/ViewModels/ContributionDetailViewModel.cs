@@ -188,7 +188,7 @@ public class ContributionDetailViewModel : ViewModelBase
         }
         else
         {
-            await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
+            await App.ShowMessageAsync("You can only have two additional areas selected, remove one and try again.");
         }
     }
         
@@ -231,6 +231,9 @@ public class ContributionDetailViewModel : ViewModelBase
             var md = new MessageDialog("Are you sure you want to delete this contribution? Deleting a contribution from the MVP database cannot be undone.", "Delete Contribution?");
             md.Commands.Add(new UICommand("DELETE"));
             md.Commands.Add(new UICommand("cancel"));
+
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(md, hwnd);
 
             var dialogResult = await md.ShowAsync();
 
@@ -434,8 +437,8 @@ public class ContributionDetailViewModel : ViewModelBase
             //});
 
             await ex.LogExceptionAsync();
-
-            await new MessageDialog($"Something went wrong saving the item, please try again. Error: {ex.Message}").ShowAsync();
+            
+            await App.ShowMessageAsync($"Something went wrong saving the item, please try again. Error: {ex.Message}", "Error");
 
             return false;
         }
@@ -445,22 +448,19 @@ public class ContributionDetailViewModel : ViewModelBase
 
     #region Navigation
 
-    public async void OnLoaded(ContributionsModel param = null)
+    public async void OnLoaded()
     {
         if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
         {
-            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+            await App.ShowMessageAsync("This application requires an internet connection. Please check your connection and try again.", "No Internet");
             return;
         }
 
-        if (param == null)
-        {
-            await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
-            return;
-
-            //if (BootStrapper.Current.NavigationService.CanGoBack)
-            //    BootStrapper.Current.NavigationService.GoBack();
-        }
+        //if (SelectedContribution == null)
+        //{
+        //    await App.ShowMessageAsync("Something went wrong loading your selection, going back to Home page");
+        //    return;
+        //}
 
         if (!App.ApiService.IsLoggedIn)
         {
@@ -478,8 +478,8 @@ public class ContributionDetailViewModel : ViewModelBase
             await LoadSupportingDataAsync();
 
             // Read the passed contribution parameter
-            SelectedContribution = param;
-
+            // SelectedContribution = param;
+            
             SelectedContribution.UploadStatus = UploadStatus.None;
 
             // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
@@ -518,81 +518,6 @@ public class ContributionDetailViewModel : ViewModelBase
             IsBusyMessage = "";
             IsBusy = false;
         }
-
-        //if (ShellView.Instance.DataContext is ShellViewModel shellVm)
-        //{
-        //    // Verify the user is logged in
-        //    if (!shellVm.IsLoggedIn)
-        //    {
-        //        IsBusy = true;
-        //        IsBusyMessage = "logging in...";
-
-        //        await ShellView.Instance.LoginDialog.SignInAsync();
-
-        //        IsBusyMessage = "";
-        //        IsBusy = false;
-        //    }
-
-        //if (shellVm.IsLoggedIn)
-        //{
-        //    try
-        //    {
-        //        IsBusy = true;
-
-        //        // Get the associated lists from the API
-        //        await LoadSupportingDataAsync();
-
-        //        // Read the passed contribution parameter
-        //        if (parameter is ContributionsModel param)
-        //        {
-        //            SelectedContribution = param;
-
-        //            SelectedContribution.UploadStatus = UploadStatus.None;
-
-        //            // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
-        //            DetermineContributionTypeRequirements(SelectedContribution.ContributionType);
-
-        //            // cloning the object to serve as a clean original to compare against when editing and determine if the item is dirty or not.
-        //            _originalContribution = SelectedContribution.Clone();
-
-        //            if (!(ApplicationData.Current.LocalSettings.Values["ContributionDetailPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-        //            {
-        //                var td = new TutorialDialog
-        //                {
-        //                    SettingsKey = "ContributionDetailPageTutorialShown",
-        //                    MessageTitle = "Contribution Details",
-        //                    Message = "This page shows an existing contribution's details, you cannot change the Activity Type, but other fields are editable.\r\n\n" +
-        //                              "- Click 'Save' button to save changes.\r\n" +
-        //                              "- Click 'Delete' button to permanently delete the contribution.\r\n" +
-        //                              "- Click the back button to leave and cancel any changes.\r\n\n" +
-        //                              "Note: Pay attention to how the 'required' fields change depending on the technology selection."
-        //                };
-
-        //                await td.ShowAsync();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            await new MessageDialog("Something went wrong loading your selection, going back to Home page").ShowAsync();
-
-        //            //if (BootStrapper.Current.NavigationService.CanGoBack)
-        //            //    BootStrapper.Current.NavigationService.GoBack();
-        //        }
-
-        //        // To prevent accidental back navigation
-        //        //NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Debug.WriteLine($"LoadDataAsync Exception {ex}");
-        //    }
-        //    finally
-        //    {
-        //        IsBusyMessage = "";
-        //        IsBusy = false;
-        //    }
-        //}
-        //}
     }
 
     public async void OnUnloaded()

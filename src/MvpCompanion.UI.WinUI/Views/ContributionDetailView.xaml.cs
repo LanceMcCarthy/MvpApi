@@ -20,21 +20,24 @@ public sealed partial class ContributionDetailView : UserControl
         AnnualReachNumericBox.Maximum = int.MaxValue;
     }
 
-    public ContributionDetailView(ContributionsModel contribution)
+    public static readonly DependencyProperty ContributionProperty = DependencyProperty.Register(
+        "Contribution", 
+        typeof(ContributionsModel), 
+        typeof(ContributionDetailView), 
+        new PropertyMetadata(default(ContributionsModel), OnContributionChanged));
+
+    private static void OnContributionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-        InitializeComponent();
+        if (d is ContributionDetailView self)
+        {
+            self.ViewModel.SelectedContribution = e.NewValue as ContributionsModel;
+        }
+    }
 
-        ViewModel.SelectedContribution = contribution;
-
-        Loaded += ContributionDetailView_Loaded;
-        Unloaded += ContributionDetailView_Unloaded;
-
-        AnnualReachNumericBox.Minimum = 0;
-        SecondAnnualQuantityNumericBox.Minimum = 0;
-        AnnualReachNumericBox.Minimum = 0;
-        AnnualQuantityNumericBox.Maximum = int.MaxValue;
-        SecondAnnualQuantityNumericBox.Maximum = int.MaxValue;
-        AnnualReachNumericBox.Maximum = int.MaxValue;
+    public ContributionsModel Contribution
+    {
+        get => (ContributionsModel)GetValue(ContributionProperty);
+        set => SetValue(ContributionProperty, value);
     }
 
     private void ContributionDetailView_Loaded(object sender, RoutedEventArgs e)

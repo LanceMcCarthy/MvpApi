@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
-             xmlns:controls="using:Telerik.UI.Xaml.Controls"
              xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
              mc:Ignorable="d">
 
@@ -14,60 +13,48 @@
     </UserControl.DataContext>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-
-        <controls:RadRibbonView ApplicationName="MVP Companion"
-                                Title="Home"
-                                HelpRequested="RadRibbonView_OnHelpRequested"
-                                Grid.Row="0">
-            <controls:RadRibbonView.ApplicationButtonIcon>
-                <SymbolIcon Symbol="Admin" />
-            </controls:RadRibbonView.ApplicationButtonIcon>
-            <controls:RadRibbonView.Backstage>
-                <controls:RadRibbonBackstage>
-                    <controls:RadRibbonBackstageItem Header="Save"
-                                                     IsSelectable="False" />
-                    <controls:RadRibbonBackstageItem Header="Open"
-                                                     IsSelectable="False" />
-                    <controls:RadRibbonBackstageItem Header="Recent">
-                        <StackPanel Margin="10">
-                            <TextBlock Text="Recent files: "
-                                       Margin="0 0 0 5" />
-                        </StackPanel>
-                    </controls:RadRibbonBackstageItem>
-                </controls:RadRibbonBackstage>
-            </controls:RadRibbonView.Backstage>
-            <controls:RadRibbonView.Items>
-                <controls:RadRibbonTab Header="Home">
-                    <controls:RadRibbonGroup Header="Clipboard">
-                        <controls:RadRibbonButton Text="Copy" />
-                        <controls:RadRibbonButton Text="Paste" />
-                    </controls:RadRibbonGroup>
-                    <controls:RadRibbonGroup Header="Font" />
-                </controls:RadRibbonTab>
-                <controls:RadRibbonTab Header="Contributions" />
-                <controls:RadRibbonTab Header="Help" />
-                <controls:RadRibbonTab Header="About" Tapped="AboutTab_OnTapped"/>
-            </controls:RadRibbonView.Items>
-        </controls:RadRibbonView>
-
-        <ContentPresenter x:Name="MainPresenter" 
-                          HorizontalContentAlignment="Stretch" 
-                          VerticalContentAlignment="Stretch" 
-                          Grid.Row="1">
-            <ContentPresenter.ContentTransitions>
-                <NavigationThemeTransition />
-            </ContentPresenter.ContentTransitions>
-        </ContentPresenter>
+        <TabView x:Name="ShellTabView"
+                 TabCloseRequested="ShellTabView_OnTabCloseRequested"
+                 CloseButtonOverlayMode="OnPointerOver"
+                 CanReorderTabs="True"
+                 CanDragTabs="True">
+            <TabView.TabItems>
+                <TabViewItem x:Name="HomeTab"
+                             Header="Home"
+                             Tag="Home">
+                    <local:HomeView x:Name="HomeView1" />
+                </TabViewItem>
+                <TabViewItem x:Name="UploadTab"
+                             Header="Upload"
+                             Tag="Upload">
+                    <local:AddContributionsView x:Name="AddContributionsView1" />
+                </TabViewItem>
+                <TabViewItem x:Name="ProfileTab"
+                             Header="Profile"
+                             Tag="Profile">
+                    <local:ProfileView x:Name="ProfileView1" />
+                </TabViewItem>
+                <TabViewItem x:Name="KudosTab"
+                             Header="Kudos"
+                             Tag="Kudos">
+                    <local:KudosView x:Name="KudosView1" />
+                </TabViewItem>
+                <TabViewItem x:Name="SettingsTab"
+                             Header="Settings"
+                             Tag="Settings">
+                    <local:SettingsView x:Name="SettingsView1" />
+                </TabViewItem>
+                <TabViewItem x:Name="AboutTab"
+                             Header="About"
+                             Tag="About">
+                    <local:AboutView x:Name="AboutView1" />
+                </TabViewItem>
+            </TabView.TabItems>
+        </TabView>
 
         <primitives:RadBusyIndicator IsActive="{Binding IsBusy}"
                                      Visibility="{Binding IsBusy}"
                                      Content="{Binding IsBusyMessage}"
-                                     Style="{StaticResource PageBusyIndicatorStyle}"
-                                     Grid.Row="0"
-                                     Grid.RowSpan="2" />
+                                     Style="{StaticResource PageBusyIndicatorStyle}"/>
     </Grid>
 </UserControl>

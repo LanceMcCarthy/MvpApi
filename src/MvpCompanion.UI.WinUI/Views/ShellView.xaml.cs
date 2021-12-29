@@ -1,9 +1,11 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using Windows.Foundation.Metadata;
-using Microsoft.UI.Xaml.Input;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.UI.Xaml.Controls;
+using MvpApi.Common.Models;
+using MvpApi.Common.Models.Navigation;
 using MvpApi.Services.Utilities;
 using MvpCompanion.UI.WinUI.Dialogs;
-using Telerik.UI.Xaml;
 
 namespace MvpCompanion.UI.WinUI.Views;
 
@@ -22,12 +24,7 @@ public sealed partial class ShellView : UserControl
         Loaded += ShellView_Loaded;
         Unloaded += ShellView_Unloaded;
     }
-
-    private void RadRibbonView_OnHelpRequested(object? sender, RadRoutedEventArgs e)
-    {
-
-    }
-
+    
     private async void ShellView_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         LoginDialog = new LoginDialog(OnLoginCompleted);
@@ -57,7 +54,7 @@ public sealed partial class ShellView : UserControl
 
         ViewModel?.OnLoaded();
 
-        LoadView(new HomeView());
+        SelectTab(ViewType.Home);
     }
 
     private void OnLoginCompleted()
@@ -70,13 +67,37 @@ public sealed partial class ShellView : UserControl
         ViewModel.OnUnloaded();
     }
 
-    private void AboutTab_OnTapped(object sender, TappedRoutedEventArgs e)
+    public void SelectTab(ViewType viewType)
     {
-        LoadView(new AboutView());
+        var desiredTab = ShellTabView.TabItems.FirstOrDefault(t => (t as TabViewItem)?.Tag.ToString() == viewType.ToString());
+
+        if (desiredTab != null)
+        {
+            ShellTabView.SelectedItem = desiredTab;
+        }
     }
 
-    public void LoadView(UserControl view)
+    private async void ShellTabView_OnTabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
     {
-        MainPresenter.Content = view;
+        if (args.Item is TabViewItem tab && (ViewType)tab.Tag == ViewType.Detail)
+        {
+            sender.TabItems.Remove(args.Item);
+        }
+        else
+        {
+            await App.ShowMessageAsync("Only dynamically-added (contribution detail) tabs can be removed.", "Non-removable Tab");
+        }
+    }
+
+    public void AddDetailTab(ContributionsModel contribution)
+    {
+        var tvi = new TabViewItem
+        {
+            Header = contribution.ContributionId,
+            Tag = ViewType.Detail,
+            Content = new ContributionDetailView { Contribution = contribution }
+        };
+
+        ShellTabView.TabItems.Insert(1, tvi);
     }
 }
