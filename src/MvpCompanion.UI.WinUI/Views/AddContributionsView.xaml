@@ -42,7 +42,7 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <Grid x:Name="HeaderGrid"
+        <!--<Grid x:Name="HeaderGrid"
               Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}"
               Grid.ColumnSpan="3">
@@ -50,10 +50,10 @@
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
-        </Grid>
+        </Grid>-->
 
         <Grid x:Name="FormGrid"
-              Grid.Row="1"
+              Grid.Row="0"
               Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -241,14 +241,14 @@
                     <StackPanel x:Name="NumericInputStackPanel"
                                 Orientation="Horizontal">
                         <telerikInput:RadNumericBox x:Name="AnnualQuantityNumericBox"
-                                             Value="{Binding SelectedContribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             Visibility="{Binding AnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
-                                             AcceptsDecimalSeparator="False"
-                                             ValueFormat="{}{0:N0}"
-                                             SmallChange="1"
-                                             LargeChange="5"
-                                             HorizontalAlignment="Left"
-                                             Margin="10">
+                                                    Value="{Binding SelectedContribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
+                                                    Visibility="{Binding AnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
+                                                    AcceptsDecimalSeparator="False"
+                                                    ValueFormat="{}{0:N0}"
+                                                    SmallChange="1"
+                                                    LargeChange="5"
+                                                    HorizontalAlignment="Left"
+                                                    Margin="10">
                             <telerikInput:RadNumericBox.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding AnnualQuantityHeader}"
@@ -264,14 +264,14 @@
                         </telerikInput:RadNumericBox>
 
                         <telerikInput:RadNumericBox x:Name="SecondAnnualQuantityNumericBox"
-                                             Value="{Binding SelectedContribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             Visibility="{Binding SecondAnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
-                                             AcceptsDecimalSeparator="False"
-                                             ValueFormat="{}{0:N0}"
-                                             SmallChange="1"
-                                             LargeChange="5"
-                                             HorizontalAlignment="Left"
-                                             Margin="10">
+                                                    Value="{Binding SelectedContribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
+                                                    Visibility="{Binding SecondAnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
+                                                    AcceptsDecimalSeparator="False"
+                                                    ValueFormat="{}{0:N0}"
+                                                    SmallChange="1"
+                                                    LargeChange="5"
+                                                    HorizontalAlignment="Left"
+                                                    Margin="10">
                             <telerikInput:RadNumericBox.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding SecondAnnualQuantityHeader}"
@@ -287,14 +287,14 @@
                         </telerikInput:RadNumericBox>
 
                         <telerikInput:RadNumericBox x:Name="AnnualReachNumericBox"
-                                             Value="{Binding SelectedContribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             Visibility="{Binding AnnualReachHeader, Converter={StaticResource NullToVisibilityConverter}}"
-                                             AcceptsDecimalSeparator="False"
-                                             ValueFormat="{}{0:N0}"
-                                             SmallChange="1"
-                                             LargeChange="5"
-                                             HorizontalAlignment="Left"
-                                             Margin="10">
+                                                    Value="{Binding SelectedContribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay}"
+                                                    Visibility="{Binding AnnualReachHeader, Converter={StaticResource NullToVisibilityConverter}}"
+                                                    AcceptsDecimalSeparator="False"
+                                                    ValueFormat="{}{0:N0}"
+                                                    SmallChange="1"
+                                                    LargeChange="5"
+                                                    HorizontalAlignment="Left"
+                                                    Margin="10">
                             <telerikInput:RadNumericBox.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding AnnualReachHeader}"
@@ -343,7 +343,7 @@
         </Grid>
 
         <Grid x:Name="QueueGrid"
-              Grid.Row="1"
+              Grid.Row="0"
               Grid.Column="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -446,9 +446,9 @@
         </Grid>
 
         <telerikPrimitives:RadGridSplitter Grid.Column="1"
-                                           Grid.Row="0" 
-                                           Background="{ThemeResource SystemControlForegroundBaseHighBrush}" />
-        
+                                           Grid.Row="0"
+                                           VerticalAlignment="Stretch" />
+
         <telerikPrimitives:RadBusyIndicator Content="{Binding IsBusyMessage}"
                                             IsActive="{Binding IsBusy}"
                                             Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"

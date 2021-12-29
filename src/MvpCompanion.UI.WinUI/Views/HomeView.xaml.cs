@@ -28,7 +28,7 @@ public sealed partial class HomeView : UserControl
     }
 
     private ContributionsModel lastExpanded;
-    
+
     private void ExpandButton_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button btn && btn.DataContext is ContributionsModel contribution)

@@ -24,7 +24,7 @@ public sealed partial class ShellView : UserControl
         Loaded += ShellView_Loaded;
         Unloaded += ShellView_Unloaded;
     }
-    
+
     private async void ShellView_Loaded(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
         LoginDialog = new LoginDialog(OnLoginCompleted);

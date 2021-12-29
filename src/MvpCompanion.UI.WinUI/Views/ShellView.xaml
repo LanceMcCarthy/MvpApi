@@ -55,6 +55,6 @@
         <primitives:RadBusyIndicator IsActive="{Binding IsBusy}"
                                      Visibility="{Binding IsBusy}"
                                      Content="{Binding IsBusyMessage}"
-                                     Style="{StaticResource PageBusyIndicatorStyle}"/>
+                                     Style="{StaticResource PageBusyIndicatorStyle}" />
     </Grid>
 </UserControl>

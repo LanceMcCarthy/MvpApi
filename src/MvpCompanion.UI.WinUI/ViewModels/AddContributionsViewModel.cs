@@ -171,7 +171,7 @@ public class AddContributionsViewModel : ViewModelBase
             WarningMessage = "The date must be after the start of your current award period and before March 31st of the next award year.";
 
             //await new MessageDialog(WarningMessage, "Notice: Out of range").ShowAsync();
-            
+
             CanUpload = false;
         }
         else
@@ -433,7 +433,7 @@ public class AddContributionsViewModel : ViewModelBase
 
             // copying back the ID which was created on the server once the item was added to the database
             contribution.ContributionId = submissionResult.ContributionId;
-            
+
             // Quality assurance, only logs a successful upload and the type used
             //Analytics.TrackEvent("ContributionUploadSuccess", new Dictionary<string, string>
             //{
@@ -635,7 +635,7 @@ public class AddContributionsViewModel : ViewModelBase
         //if (BootStrapper.Current.NavigationService.FrameFacade != null)
         //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
     }
-    
+
     // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
     //private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
     //{

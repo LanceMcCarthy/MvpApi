@@ -58,7 +58,9 @@
                 </Storyboard>
             </Grid.Resources>
 
-            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+            <Grid HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Margin="10">
                 <Grid x:Name="GearsLogo"
                       HorizontalAlignment="Center">
                     <Path x:Name="GearOne"
@@ -190,7 +192,7 @@
         </ScrollViewer>
 
         <CommandBar Grid.Row="2"
-                    Grid.ColumnSpan="2" 
+                    Grid.ColumnSpan="2"
                     Grid.Column="0">
             <AppBarButton x:Name="SettingsButton"
                           Label="diagnostics"

@@ -159,7 +159,7 @@
                                     Click="ExpandButton_Click"
                                     Padding="2">
                                 <Button.Content>
-                                    <SymbolIcon Symbol="ShowBcc"/>
+                                    <SymbolIcon Symbol="ShowBcc" />
                                 </Button.Content>
                             </Button>
                         </DataTemplate>

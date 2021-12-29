@@ -213,21 +213,21 @@ public class HomeViewModel : ViewModelBase
             ShellView.Instance.AddDetailTab(contribution);
 
 
-            
+
             //if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
             //{
-                //var editDialog = new ContributionEditorDialog(contribution);
-                //await editDialog.ShowAsync();
+            //var editDialog = new ContributionEditorDialog(contribution);
+            //await editDialog.ShowAsync();
 
-                //if (editDialog.ContributionResult != null)
-                //{
-                //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-                //}
+            //if (editDialog.ContributionResult != null)
+            //{
+            //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
+            //}
             //}
             //else
             //{
-                // TODO navigation
-                //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
+            // TODO navigation
+            //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
             //}
         }
     }
@@ -394,7 +394,7 @@ public class HomeViewModel : ViewModelBase
             IsBusy = false;
         }
     }
-    
+
     private void ClearSelections()
     {
         if (SelectedContributions != null && SelectedContributions.Count > 0)
