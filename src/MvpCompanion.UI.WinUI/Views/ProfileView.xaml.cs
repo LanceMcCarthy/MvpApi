@@ -14,11 +14,11 @@ public sealed partial class ProfileView : UserControl
 
     private void ProfileView_Loaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnLoaded();
+        ViewModel.OnLoadedAsync();
     }
 
     private void ProfileView_Unloaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnUnloaded();
+        ViewModel.OnUnloadedAsync();
     }
 }

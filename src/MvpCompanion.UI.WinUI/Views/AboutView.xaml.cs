@@ -15,14 +15,14 @@ public sealed partial class AboutView : UserControl
 
     private void AboutView_Loaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnLoaded();
+        ViewModel.OnLoadedAsync();
 
         GearsStory.RepeatBehavior = RepeatBehavior.Forever;
         GearsStory.Begin();
     }
 
-    private void AboutView_Unloaded(object sender, RoutedEventArgs e)
+    private async void AboutView_Unloaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnUnloaded();
+        await ViewModel.OnUnloadedAsync();
     }
 }

@@ -23,7 +23,7 @@ using CommonHelpers.Mvvm;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
-public class AddContributionsViewModel : ViewModelBase
+public class AddContributionsViewModel : TabViewModelBase
 {
     #region Fields
 
@@ -505,14 +505,13 @@ public class AddContributionsViewModel : ViewModelBase
 
     #region Navigation
 
-    public async void OnLoaded()
+    public override async Task OnLoadedAsync()
     {
-        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-        {
-            //await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
-            await App.ShowMessageAsync("This application requires an internet connection. Please check your connection and try again.", "No Internet");
-            return;
-        }
+        //if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        //{
+        //    await App.ShowMessageAsync("This application requires an internet connection. Please check your connection and try again.", "No Internet");
+        //    return;
+        //}
 
         if (!App.ApiService.IsLoggedIn)
         {
@@ -546,16 +545,9 @@ public class AddContributionsViewModel : ViewModelBase
                               "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
                               "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
                 };
-
-                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
-                WinRT.Interop.InitializeWithWindow.Initialize(td, hwnd);
-
+                
                 await td.ShowAsync();
             }
-
-            // To prevent accidental back navigation
-            //if (BootStrapper.Current.NavigationService.FrameFacade != null)
-            //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
         }
         catch (Exception ex)
         {
@@ -567,108 +559,45 @@ public class AddContributionsViewModel : ViewModelBase
             IsBusy = false;
         }
 
-        //if (ShellView.Instance.DataContext is ShellViewModel shellVm)
-        //{
-        //    // Verify the user is logged in
-        //    if (!shellVm.IsLoggedIn)
-        //    {
-        //        IsBusy = true;
-        //        IsBusyMessage = "logging in...";
-
-        //        await ShellView.Instance.LoginDialog.SignInAsync();
-
-        //        IsBusyMessage = "";
-        //        IsBusy = false;
-        //    }
-
-        //    if (shellVm.IsLoggedIn)
-        //    {
-        //        try
-        //        {
-        //            IsBusy = true;
-
-        //            // ** Get the necessary associated data from the API **
-
-        //            await LoadSupportingDataAsync();
-
-        //            // Note: The Category Areas will not be loaded until the CollectionViewSource is does it's initially loading.
-        //            SetupNextEntry();
-
-        //            if (!(ApplicationData.Current.LocalSettings.Values["AddContributionPageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-        //            {
-        //                var td = new TutorialDialog
-        //                {
-        //                    SettingsKey = "AddContributionPageTutorialShown",
-        //                    MessageTitle = "Add Contribution Page",
-        //                    Message = "This page allows you to add contributions to your MVP profile.\r\n\n" +
-        //                              "- Complete the form and the click the 'Add' button to add the completed contribution to the upload queue.\r\n" +
-        //                              "- You can edit or remove items that are already in the queue using the item's 'Edit' or 'Remove' buttons.\r\n" +
-        //                              "- Click 'Upload' to save the queue to your profile.\r\n" +
-        //                              "- You can clear the form, or the entire queue, using the 'Clear' buttons.\r\n\n" +
-        //                              "TIP: Watch the queue items color change as the items are uploaded and save is confirmed."
-        //                };
-
-        //                td.XamlRoot = App.CurrentWindow.Content.XamlRoot;
-
-        //                await td.ShowAsync();
-        //            }
-
-        //            // To prevent accidental back navigation
-        //            //if (BootStrapper.Current.NavigationService.FrameFacade != null)
-        //            //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
-        //        }
-        //        finally
-        //        {
-        //            IsBusyMessage = "";
-        //            IsBusy = false;
-        //        }
-        //    }
-        //}
+        await base.OnLoadedAsync();
     }
-
-    public void OnUnloaded()
+    
+    public override async Task<bool> OnCloseRequestedAsync()
     {
-        //if (BootStrapper.Current.NavigationService.FrameFacade != null)
-        //    BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
+        var navigationApproved = false;
+
+        try
+        {
+            var itemsQueued = UploadQueue.Any();
+
+            if (itemsQueued)
+            {
+                var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
+                md.Commands.Add(new UICommand("yes"));
+                md.Commands.Add(new UICommand("no"));
+                md.CancelCommandIndex = 1;
+                md.DefaultCommandIndex = 1;
+
+                var result = await md.ShowAsync();
+
+                if (result.Label == "yes")
+                {
+                    navigationApproved = true;
+                }
+                else
+                {
+                    navigationApproved = false;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await ex.LogExceptionAsync();
+            navigationApproved = false;
+        }
+        
+        return navigationApproved;
     }
-
-    // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
-    //private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
-    //{
-    //    try
-    //    {
-    //        var itemsQueued = UploadQueue.Any();
-
-    //        e.Handled = itemsQueued;
-
-    //        if (itemsQueued)
-    //        {
-    //            var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
-    //            md.Commands.Add(new UICommand("yes"));
-    //            md.Commands.Add(new UICommand("no"));
-    //            md.CancelCommandIndex = 1;
-    //            md.DefaultCommandIndex = 1;
-
-    //            var result = await md.ShowAsync();
-
-    //            if (result.Label == "yes")
-    //            {
-    //                if (NavigationService.CanGoBack)
-    //                {
-    //                    NavigationService.GoBack();
-    //                }
-    //            }
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        await ex.LogExceptionAsync();
-    //    }
-    //}
 
     #endregion
 }

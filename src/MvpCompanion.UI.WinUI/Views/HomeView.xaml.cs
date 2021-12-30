@@ -2,13 +2,13 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MvpApi.Common.Models;
-using Telerik.UI.Xaml.Controls.Grid;
-using Telerik.UI.Xaml.Controls.Grid.Primitives;
 
 namespace MvpCompanion.UI.WinUI.Views;
 
 public sealed partial class HomeView : UserControl
 {
+    private ContributionsModel lastExpanded;
+
     public HomeView()
     {
         InitializeComponent();
@@ -16,18 +16,17 @@ public sealed partial class HomeView : UserControl
         Unloaded += HomeView_Unloaded;
     }
 
-    private void HomeView_Loaded(object sender, RoutedEventArgs e)
+    private async void HomeView_Loaded(object sender, RoutedEventArgs e)
     {
         ViewModel.SelectedContributions = ContributionsGrid.SelectedItems;
-        //ViewModel.OnLoaded(false);
+
+        //await ViewModel.OnLoadedAsync();
     }
 
-    private void HomeView_Unloaded(object sender, RoutedEventArgs e)
+    private async void HomeView_Unloaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnUnloaded();
+        await ViewModel.OnUnloadedAsync();
     }
-
-    private ContributionsModel lastExpanded;
 
     private void ExpandButton_Click(object sender, RoutedEventArgs e)
     {
@@ -43,6 +42,14 @@ public sealed partial class HomeView : UserControl
             }
 
             lastExpanded = contribution;
+        }
+    }
+
+    private void GoButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.DataContext is ContributionsModel contribution)
+        {
+            ShellView.Instance.AddDetailTab(contribution);
         }
     }
 }

@@ -1,28 +1,24 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Data;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Navigation;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+namespace MvpCompanion.UI.WinUI.Views;
 
-namespace MvpCompanion.UI.WinUI.Views
+public sealed partial class KudosView : UserControl
 {
-    public sealed partial class KudosView : UserControl
+    public KudosView()
     {
-        public KudosView()
-        {
-            this.InitializeComponent();
-        }
+        this.InitializeComponent();
+        Loaded += KudosView_Loaded;
+        Unloaded += KudosView_Unloaded;
+    }
+
+    private async void KudosView_Loaded(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.OnLoadedAsync();
+    }
+
+    private async void KudosView_Unloaded(object sender, RoutedEventArgs e)
+    {
+        await ViewModel.OnUnloadedAsync();
     }
 }

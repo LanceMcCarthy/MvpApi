@@ -13,13 +13,13 @@ public sealed partial class SettingsView : UserControl
         Unloaded += SettingsView_Unloaded;
     }
 
-    private void SettingsView_Unloaded(object sender, RoutedEventArgs e)
+    private async void SettingsView_Unloaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnUnloaded();
+        await ViewModel.OnUnloadedAsync();
     }
 
-    private void SettingsView_Loaded(object sender, RoutedEventArgs e)
+    private async void SettingsView_Loaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnLoaded();
+        await ViewModel.OnLoadedAsync();
     }
 }

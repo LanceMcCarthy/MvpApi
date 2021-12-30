@@ -1,10 +1,9 @@
 ﻿using MvpApi.Common.Models;
-//using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.Foundation.Metadata;
 using Windows.Services.Store;
 using Windows.UI.Popups;
@@ -19,7 +18,7 @@ using MvpCompanion.UI.WinUI.Helpers;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
-public class KudosViewModel : ViewModelBase
+public class KudosViewModel : TabViewModelBase
 {
     private StoreContext storeContext;
     private Visibility feedbackHubButtonVisibility;
@@ -45,7 +44,8 @@ public class KudosViewModel : ViewModelBase
 
     public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
     {
-        if (!(e.ClickedItem is Kudos kudo)) return;
+        if (e.ClickedItem is not Kudos kudo) 
+            return;
         
         //Analytics.TrackEvent("Kudo Selection", new Dictionary<string, string>
         //{
@@ -66,7 +66,7 @@ public class KudosViewModel : ViewModelBase
         {
             if (kudo.IsBusy)
             {
-                await new MessageDialog("Ad is being fetched right now, wait for busy indicator disappear and try again.").ShowAsync();
+                await App.ShowMessageAsync("Ad is being fetched right now, wait for busy indicator disappear and try again.");
             }
             else
             {
@@ -92,15 +92,15 @@ public class KudosViewModel : ViewModelBase
             if (result.ExtendedError != null)
                 return;
 
-            var jsonObject = JsonObject.Parse(result.Response);
-            var status = jsonObject.GetNamedString("status");
+            var jsonObject = JObject.Parse(result.Response);
+            var status = jsonObject.SelectToken("status").ToString();
 
             IsBusyMessage = "action complete, showing result...";
 
             switch (status)
             {
                 case "success":
-                    await new MessageDialog("Thank you for taking the time to leave a rating! If you left 3 stars or lower, please let me know how I can improve the app (go to About page).", "Success").ShowAsync();
+                    await App.ShowMessageAsync("Thank you for taking the time to leave a rating! If you left 3 stars or lower, please let me know how I can improve the app (go to About page).", "Success");
                     break;
                 case "aborted":
                 {
@@ -119,7 +119,7 @@ public class KudosViewModel : ViewModelBase
                     break;
                 }
                 default:
-                    await new MessageDialog($"The rating or review did not complete, here's what Windows had to say: {jsonObject.GetNamedString("status")}.\r\n\nIf you meant to leave a review, try again. If this keeps happening, contact us and share the error code above.", "Rating or Review was not successful").ShowAsync();
+                    await App.ShowMessageAsync($"The rating or review did not complete, here's what Windows had to say: {status}.\r\n\nIf you meant to leave a review, try again. If this keeps happening, contact us and share the error code above.", "Rating or Review was not successful");
                     break;
             }
         }
@@ -174,7 +174,7 @@ public class KudosViewModel : ViewModelBase
 
             IsBusyMessage = "action complete, showing result...";
 
-            await new MessageDialog(resultMessage).ShowAsync();
+            await App.ShowMessageAsync(resultMessage);
         }
         catch (Exception ex)
         {
@@ -204,13 +204,13 @@ public class KudosViewModel : ViewModelBase
 
     #region Navigation
 
-    public async void OnLoaded()
+    public override async Task OnLoadedAsync()
     {
-        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-        {
-            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
-            return;
-        }
+        //if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        //{
+        //    await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+        //    return;
+        //}
 
         //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
         //    ? Visibility.Visible
@@ -219,11 +219,20 @@ public class KudosViewModel : ViewModelBase
         //sdkInstance = AdFactory.GetInstance(ExternalConstants.VungleAppId);
         //sdkInstance.OnAdPlayableChanged += SdkInstance_OnAdPlayableChanged;
         //sdkInstance.LoadAd(vungleAdPlacementId);
+
+        await base.OnLoadedAsync();
     }
 
-    public async void OnUnloaded()
+    public override async Task OnUnloadedAsync()
     {
         //sdkInstance.OnAdPlayableChanged -= SdkInstance_OnAdPlayableChanged;
+
+        await base.OnLoadedAsync();
+    }
+
+    public override Task<bool> OnCloseRequestedAsync()
+    {
+        return base.OnCloseRequestedAsync();
     }
     
     #endregion

@@ -18,7 +18,6 @@ using MvpCompanion.UI.WinUI.Dialogs;
 using MvpCompanion.UI.WinUI.Views;
 using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
-using CommonHelpers.Common;
 using MvpCompanion.UI.WinUI.Helpers;
 using CommonHelpers.Mvvm;
 using CommunityToolkit.WinUI.Connectivity;
@@ -26,7 +25,7 @@ using CommunityToolkit.WinUI.Connectivity;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
-public class HomeViewModel : ViewModelBase
+public class HomeViewModel : TabViewModelBase
 {
     #region Fields
 
@@ -211,9 +210,7 @@ public class HomeViewModel : ViewModelBase
         if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
         {
             ShellView.Instance.AddDetailTab(contribution);
-
-
-
+            
             //if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
             //{
             //var editDialog = new ContributionEditorDialog(contribution);
@@ -279,6 +276,9 @@ public class HomeViewModel : ViewModelBase
 
             savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
 
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hwnd);
+
             var file = await savePicker.PickSaveFileAsync();
 
             if (file != null)
@@ -300,8 +300,7 @@ public class HomeViewModel : ViewModelBase
                                   "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
                                   "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
                                   "4. Now you can us 'Save As' to xlsx file or csv.";
-
-                    //await new MessageDialog(message, "Export Saved").ShowAsync();
+                    
                     await App.ShowMessageAsync(message, "Export Saved");
                 }
             }
@@ -311,7 +310,6 @@ public class HomeViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            //await ex.LogExceptionWithUserMessage("There was an issue saving the exported data to a file. If this continues, please contact support awesome.apps@outlook.com", "Export Error");
             await ex.LogExceptionAsync();
             await App.ShowMessageAsync("There was an issue saving the exported data to a file. If this continues, please contact support awesome.apps@outlook.com", "Export Error");
         }
@@ -378,7 +376,7 @@ public class HomeViewModel : ViewModelBase
             }
 
             // Load the items into the DataGrid
-            //Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);
+            Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);
 
             IsBusyMessage = "";
             IsBusy = false;
@@ -407,7 +405,7 @@ public class HomeViewModel : ViewModelBase
 
     #region Navigation
 
-    public async void OnLoaded(bool refreshNeeded)
+    public override async Task OnLoadedAsync()
     {
         //if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
         //{
@@ -420,16 +418,10 @@ public class HomeViewModel : ViewModelBase
             await ShellView.Instance.LoginDialog.SignInAsync();
         }
 
-        if (!App.ApiService.IsLoggedIn)
-        {
-            //await App.ShowMessageAsync("You did not successfully complete the signin, this app requires an active MVP profile.", "Not Signed In");
-            return;
-        }
-
-        if (refreshNeeded)
-        {
-            await LoadContributionsAsync();
-        }
+        //if (refreshNeeded)
+        //{
+        //    await LoadContributionsAsync();
+        //}
 
         if (ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is not bool tutorialShown || !tutorialShown)
         {
@@ -444,55 +436,14 @@ public class HomeViewModel : ViewModelBase
                           "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
                           "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
             };
-
-            //var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
-            //WinRT.Interop.InitializeWithWindow.Initialize(td, hwnd);
-
+            
             await td.ShowAsync();
         }
 
         IsBusy = false;
         IsBusyMessage = "";
 
-
-        //if (ShellView.Instance.DataContext is ShellViewModel shellVm)
-        //{
-        //    if (!shellVm.IsLoggedIn)
-        //    {
-        //        await ShellView.Instance.LoginDialog.SignInAsync();
-        //    }
-
-        //    // Although user should be logged in at this point, still check
-        //    // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
-        //    if (shellVm.IsLoggedIn)
-        //    {
-        //        await LoadContributionsAsync();
-        //    }
-
-        //    if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-        //    {
-        //        var td = new TutorialDialog
-        //        {
-        //            SettingsKey = "HomePageTutorialShown",
-        //            MessageTitle = "Home Page",
-        //            Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
-        //                      "- Group or sort the contributions by any column.\r\n" +
-        //                      "- Select a contribution to view its details or edit it.\r\n" +
-        //                      "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
-        //                      "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
-        //        };
-
-        //        await td.ShowAsync();
-        //    }
-
-        //    IsBusy = false;
-        //    IsBusyMessage = "";
-        //}
-    }
-
-    public async void OnUnloaded()
-    {
-
+        await base.OnLoadedAsync();
     }
 
     #endregion

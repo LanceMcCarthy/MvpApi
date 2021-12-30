@@ -9,7 +9,7 @@ using Windows.UI.Popups;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
-public class AboutViewModel : ViewModelBase
+public class AboutViewModel : TabViewModelBase
 {
     private readonly ApplicationDataContainer roamingSettings;
     private string appVersion;
@@ -30,12 +30,7 @@ public class AboutViewModel : ViewModelBase
 
     public string AppVersion
     {
-        get
-        {
-            appVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
-
-            return appVersion;
-        }
+        get => appVersion;
         set => SetProperty(ref appVersion, value);
     }
 
@@ -108,19 +103,13 @@ public class AboutViewModel : ViewModelBase
         }
     }
 
-    #region Navigation
-
-    public async void OnLoaded()
+    public override Task OnLoadedAsync()
     {
-        //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
-        //    ? Visibility.Visible
-        //    : Visibility.Collapsed;
+        if(string.IsNullOrEmpty(AppVersion))
+        {
+            AppVersion = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
+        }
+
+        return base.OnLoadedAsync();
     }
-
-    public async void OnUnloaded()
-    {
-
-    }
-
-    #endregion
 }

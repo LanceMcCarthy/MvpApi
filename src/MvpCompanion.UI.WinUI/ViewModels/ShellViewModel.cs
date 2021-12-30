@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.UI.Popups;
@@ -9,8 +10,10 @@ using CommunityToolkit.WinUI.Connectivity;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
-public class ShellViewModel : ViewModelBase
+public class ShellViewModel : TabViewModelBase
 {
+    private string profileImagePath;
+    private bool isLoggedIn;
     private MvpApi.Common.Models.ProfileViewModel mvp;
     private DateTime submissionStartDate = ServiceConstants.SubmissionStartDate;
     private DateTime submissionDeadline = ServiceConstants.SubmissionDeadline;
@@ -20,22 +23,15 @@ public class ShellViewModel : ViewModelBase
         if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
         {
             Mvp = DesignTimeHelpers.GenerateSampleMvp();
-            //IsLoggedIn = true;
-            //ProfileImagePath = "/Images/MvpIcon.png";
+            IsLoggedIn = true;
+            ProfileImagePath = "/Images/MvpIcon.png";
         }
     }
 
     public string ProfileImagePath
     {
-       get
-       {
-           if (App.ApiService != null)
-           {
-               return App.ApiService.ProfileImagePath;
-           }
-
-           return "";
-       }
+       get => App.ApiService != null ? App.ApiService.ProfileImagePath : "";
+       private set => SetProperty(ref profileImagePath, value);
     }
 
     public MvpApi.Common.Models.ProfileViewModel Mvp
@@ -46,15 +42,8 @@ public class ShellViewModel : ViewModelBase
 
     public bool IsLoggedIn
     {
-        get
-        {
-            if (App.ApiService != null)
-            {
-                return App.ApiService.IsLoggedIn;
-            }
-
-            return false;
-        }
+        get => App.ApiService != null && App.ApiService.IsLoggedIn;
+        private set => SetProperty(ref isLoggedIn, value);
     }
 
     public DateTime SubmissionStartDate
@@ -111,19 +100,16 @@ public class ShellViewModel : ViewModelBase
         OnPropertyChanged(nameof(ProfileImagePath));
     }
 
-    public async void OnLoaded()
+    public override async Task OnLoadedAsync()
     {
-        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-        {
-            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
-            return;
-        }
+        //if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        //{
+        //    await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+        //    return;
+        //}
 
         RefreshProperties();
-    }
 
-    public async void OnUnloaded()
-    {
-
+        await base.OnLoadedAsync();
     }
 }

@@ -20,7 +20,7 @@ using MvpCompanion.UI.WinUI.Views;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
-public class ProfileViewModel : ViewModelBase
+public class ProfileViewModel : TabViewModelBase
 {
     private MvpApi.Common.Models.ProfileViewModel mvp;
     private string profileImagePath;
@@ -94,7 +94,7 @@ public class ProfileViewModel : ViewModelBase
 
     // Methods
 
-    private async Task RefreshOnlineIdentitiesAsync()
+    private async Task FetchOnlineIdentitiesAsync()
     {
         IsBusy = true;
         IsBusyMessage = "loading Online Identities...";
@@ -146,7 +146,7 @@ public class ProfileViewModel : ViewModelBase
 
     public async void RefreshOnlineIdentitiesButton_Click(object sender, RoutedEventArgs e)
     {
-        await RefreshOnlineIdentitiesAsync();
+        await FetchOnlineIdentitiesAsync();
     }
 
     public async void ShowQuestionnaireButton_Click(object sender, RoutedEventArgs e)
@@ -187,7 +187,7 @@ public class ProfileViewModel : ViewModelBase
             AreAppBarButtonsEnabled = false;
 
             // Refresh the list
-            await RefreshOnlineIdentitiesAsync();
+            await FetchOnlineIdentitiesAsync();
         }
 
         IsBusyMessage = "";
@@ -211,6 +211,9 @@ public class ProfileViewModel : ViewModelBase
         };
 
         savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
+
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
+        WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hwnd);
 
         var file = await savePicker.PickSaveFileAsync();
 
@@ -265,13 +268,13 @@ public class ProfileViewModel : ViewModelBase
 
     #region Navigation
 
-    public async void OnLoaded()
+    public override async Task OnLoadedAsync()
     {
-        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-        {
-            await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
-            return;
-        }
+        //if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        //{
+        //    await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+        //    return;
+        //}
 
         if (!App.ApiService.IsLoggedIn)
         {
@@ -287,7 +290,10 @@ public class ProfileViewModel : ViewModelBase
         this.Mvp = App.ApiService.Mvp;
         this.ProfileImagePath = App.ApiService.ProfileImagePath;
 
-        await RefreshOnlineIdentitiesAsync();
+        if (!OnlineIdentities.Any())
+        {
+            await FetchOnlineIdentitiesAsync();
+        }
 
         //IsBusyMessage = "loading visibility options...";
 
@@ -301,40 +307,8 @@ public class ProfileViewModel : ViewModelBase
         IsBusyMessage = "";
         IsBusy = false;
 
-
-        if (ShellView.Instance.DataContext is ShellViewModel shellVm)
-        {
-            if (!shellVm.IsLoggedIn)
-            {
-                IsBusy = true;
-                IsBusyMessage = "signing in...";
-
-                await ShellView.Instance.LoginDialog.SignInAsync();
-            }
-
-            this.Mvp = shellVm.Mvp;
-            this.ProfileImagePath = shellVm.ProfileImagePath;
-
-            await RefreshOnlineIdentitiesAsync();
-
-            //IsBusyMessage = "loading visibility options...";
-
-            //var visibilities = await App.ApiService.GetVisibilitiesAsync();
-
-            //visibilities.ForEach(visibility =>
-            //{
-            //    Visibilities.Add(visibility);
-            //});
-
-            IsBusyMessage = "";
-            IsBusy = false;
-        }
+        await base.OnLoadedAsync();
     }
-
-    public async void OnUnloaded()
-    {
-
-    }
-
+    
     #endregion
 }

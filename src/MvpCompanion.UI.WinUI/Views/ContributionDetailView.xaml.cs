@@ -40,13 +40,13 @@ public sealed partial class ContributionDetailView : UserControl
         set => SetValue(ContributionProperty, value);
     }
 
-    private void ContributionDetailView_Loaded(object sender, RoutedEventArgs e)
+    private async void ContributionDetailView_Loaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnLoaded();
+        await ViewModel.OnLoadedAsync();
     }
 
-    private void ContributionDetailView_Unloaded(object sender, RoutedEventArgs e)
+    private async void ContributionDetailView_Unloaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnUnloaded();
+        await ViewModel.OnUnloadedAsync();
     }
 }

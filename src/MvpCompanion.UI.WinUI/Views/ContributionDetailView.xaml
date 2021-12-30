@@ -20,25 +20,15 @@
                               IsSourceGrouped="True" />
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid x:Name="HeaderGrid"
-              Height="48"
-              Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
-            <TextBlock Text="Contribution Detail"
-                       Style="{StaticResource TitleTextBlockStyle}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
-        </Grid>
-
         <Grid Background="{Binding SelectedContribution.UploadStatus, Converter={StaticResource UploadStatusBackgroundConverter}}"
-              Grid.Row="1">
+              Grid.Row="0">
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -58,14 +48,14 @@
             </Grid>
         </Grid>
 
-        <ScrollViewer Grid.Row="2">
+        <ScrollViewer Grid.Row="1">
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Type:"
-                               Style="{ThemeResource TitleTextBlockStyle}"
+                               Style="{ThemeResource SubtitleTextBlockStyle}"
                                Margin="10,0" />
                     <TextBlock Text="{Binding SelectedContribution.ContributionTypeName}"
-                               Style="{ThemeResource TitleTextBlockStyle}"
+                               Style="{ThemeResource SubtitleTextBlockStyle}"
                                FontWeight="SemiBold"
                                Margin="0,0" />
                 </StackPanel>
@@ -383,7 +373,7 @@
             </StackPanel>
         </ScrollViewer>
 
-        <CommandBar Grid.Row="3">
+        <CommandBar Grid.Row="2">
             <AppBarButton Label="delete"
                           Icon="delete"
                           Click="{x:Bind ViewModel.DeleteContributionButton_Click}" />
@@ -397,75 +387,7 @@
                                      IsActive="{Binding IsBusy}"
                                      Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"
                                      Style="{StaticResource PageBusyIndicatorStyle}"
-                                     Grid.Row="1"
+                                     Grid.Row="0"
                                      Grid.RowSpan="2" />
-
-        <VisualStateManager.VisualStateGroups>
-            <VisualStateGroup x:Name="WindowStates">
-                <VisualState x:Name="WideState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="940" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TitleTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="DescriptionTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="UrlTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="SecondAnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="AnnualReachNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="NumericInputStackPanel.Orientation"
-                                Value="Horizontal" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="IntermediateState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="641" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TitleTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="DescriptionTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="UrlTextBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="SecondAnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="AnnualReachNumericBox.HorizontalAlignment"
-                                Value="Left" />
-                        <Setter Target="NumericInputStackPanel.Orientation"
-                                Value="Vertical" />
-                    </VisualState.Setters>
-                </VisualState>
-                <VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="0" />
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="TitleTextBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="DescriptionTextBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="UrlTextBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="SecondAnnualQuantityNumericBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="AnnualReachNumericBox.HorizontalAlignment"
-                                Value="Stretch" />
-                        <Setter Target="NumericInputStackPanel.Orientation"
-                                Value="Vertical" />
-                    </VisualState.Setters>
-                </VisualState>
-            </VisualStateGroup>
-        </VisualStateManager.VisualStateGroups>
     </Grid>
 </UserControl>

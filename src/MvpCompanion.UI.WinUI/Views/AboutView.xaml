@@ -14,7 +14,7 @@
         <viewModels:AboutViewModel x:Name="ViewModel" />
     </UserControl.DataContext>
 
-    <Grid>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />

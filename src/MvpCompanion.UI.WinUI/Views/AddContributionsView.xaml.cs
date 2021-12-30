@@ -20,13 +20,13 @@ public sealed partial class AddContributionsView : UserControl
         Unloaded += AddContributionsView_Unloaded;
     }
     
-    private void AddContributionsView_Loaded(object sender, RoutedEventArgs e)
+    private async void AddContributionsView_Loaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnLoaded();
+        await ViewModel.OnLoadedAsync();
     }
 
-    private void AddContributionsView_Unloaded(object sender, RoutedEventArgs e)
+    private async void AddContributionsView_Unloaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.OnUnloaded();
+        await ViewModel.OnUnloadedAsync();
     }
 }

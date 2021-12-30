@@ -6,7 +6,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
              xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
-             mc:Ignorable="d">
+             mc:Ignorable="d" >
 
     <UserControl.DataContext>
         <viewModels:SettingsViewModel x:Name="ViewModel" />
@@ -320,24 +320,13 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid x:Name="HeaderGrid"
-              Height="48"
-              Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
-
-            <TextBlock Text="Settings"
-                       Style="{StaticResource TitleTextBlockStyle}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
-        </Grid>
-
-        <StackPanel Grid.Row="1">
+        <StackPanel>
             <Expander IsExpanded="True"
                       Background="Transparent"
                       HorizontalContentAlignment="Stretch">
@@ -351,24 +340,7 @@
                                Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                VerticalAlignment="Center"
                                TextWrapping="Wrap"
-                               Margin="0,0,0,5">
-                        <!--<animations:Implicit.ShowAnimations>
-                            <animations:ScaleAnimation From="0.8"
-                                                       To="1"
-                                                       Duration="0:0:0.4" />
-                            <animations:OpacityAnimation From="0"
-                                                         To="1"
-                                                         Duration="0:0:0.4" />
-                        </animations:Implicit.ShowAnimations>
-                        <animations:Implicit.HideAnimations>
-                            <animations:ScaleAnimation From="1"
-                                                       To="0.8"
-                                                       Duration="0:0:0.6" />
-                            <animations:OpacityAnimation From="1"
-                                                         To="0"
-                                                         Duration="0:0:0.6" />
-                        </animations:Implicit.HideAnimations>-->
-                    </TextBlock>
+                               Margin="0,0,0,5"/>
 
                     <ToggleSwitch IsOn="{Binding UseBetaEditor, Mode=TwoWay}"
                                   Header="Use Experimental Editor"

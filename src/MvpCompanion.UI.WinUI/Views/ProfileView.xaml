@@ -11,25 +11,15 @@
     <UserControl.DataContext>
         <viewModels:ProfileViewModel x:Name="ViewModel" />
     </UserControl.DataContext>
-    <Grid>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="260" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid x:Name="HeaderGrid"
-              Height="48"
-              Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
-            <TextBlock Text="Profile"
-                       Style="{StaticResource TitleTextBlockStyle}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
-        </Grid>
-
-        <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}"
-              Grid.Row="1">
+        <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
@@ -40,22 +30,6 @@
                      Margin="20"
                      Width="220"
                      Height="220">
-                <!--<animations:Implicit.ShowAnimations>
-                    <animations:ScaleAnimation From="0.6"
-                                               To="1"
-                                               Duration="0:0:1" />
-                    <animations:OpacityAnimation From="0"
-                                                 To="1"
-                                                 Duration="0:0:1" />
-                </animations:Implicit.ShowAnimations>
-                <animations:Implicit.HideAnimations>
-                    <animations:ScaleAnimation From="1"
-                                               To="0.8"
-                                               Duration="0:0:0.6" />
-                    <animations:OpacityAnimation From="1"
-                                                 To="0"
-                                                 Duration="0:0:0.6" />
-                </animations:Implicit.HideAnimations>-->
                 <Ellipse.Fill>
                     <ImageBrush x:Name="ProfileImageBrush"
                                 ImageSource="{Binding ProfileImagePath}" />
@@ -67,24 +41,6 @@
                 <StackPanel Margin="20"
                             Grid.Row="0"
                             VerticalAlignment="Top">
-                    <!--<animations:Implicit.ShowAnimations>
-                        <animations:TranslationAnimation Delay="0:0:0.3"
-                                                         From="40,0,0"
-                                                         To="0,0,0"
-                                                         Duration="0:0:0.8" />
-                        <animations:OpacityAnimation Delay="0:0:0.2"
-                                                     From="0"
-                                                     To="1"
-                                                     Duration="0:0:1" />
-                    </animations:Implicit.ShowAnimations>
-                    <animations:Implicit.HideAnimations>
-                        <animations:TranslationAnimation From="0,0,0"
-                                                         To="0,40,0"
-                                                         Duration="0:0:0.6" />
-                        <animations:OpacityAnimation From="1"
-                                                     To="0"
-                                                     Duration="0:0:0.6" />
-                    </animations:Implicit.HideAnimations>-->
                     <TextBlock Text="{Binding Mvp.FullName}"
                                Style="{ThemeResource HeaderTextBlockStyle}"
                                TextWrapping="Wrap" />
@@ -95,24 +51,6 @@
                 <StackPanel Margin="20"
                             Grid.Row="0"
                             VerticalAlignment="Bottom">
-                    <!--<animations:Implicit.ShowAnimations>
-                        <animations:TranslationAnimation Delay="0:0:0.3"
-                                                         From="20,0,0"
-                                                         To="0,0,0"
-                                                         Duration="0:0:0.8" />
-                        <animations:OpacityAnimation Delay="0:0:0.2"
-                                                     From="0"
-                                                     To="1"
-                                                     Duration="0:0:0.8" />
-                    </animations:Implicit.ShowAnimations>
-                    <animations:Implicit.HideAnimations>
-                        <animations:TranslationAnimation From="0,0,0"
-                                                         To="0,40,0"
-                                                         Duration="0:0:0.6" />
-                        <animations:OpacityAnimation From="1"
-                                                     To="0"
-                                                     Duration="0:0:0.6" />
-                    </animations:Implicit.HideAnimations>-->
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="First MVP award in:"
                                    Style="{ThemeResource SubtitleTextBlockStyle}"
@@ -135,7 +73,7 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
@@ -175,22 +113,6 @@
                 <TextBlock Text="{Binding Mvp.Biography}"
                            TextWrapping="Wrap"
                            Margin="10,10,10,0">
-                    <!--<animations:Implicit.ShowAnimations>
-                        <animations:ScaleAnimation From="0.6"
-                                                   To="1"
-                                                   Duration="0:0:1" />
-                        <animations:OpacityAnimation From="0"
-                                                     To="1"
-                                                     Duration="0:0:1" />
-                    </animations:Implicit.ShowAnimations>
-                    <animations:Implicit.HideAnimations>
-                        <animations:ScaleAnimation From="1"
-                                                   To="0.8"
-                                                   Duration="0:0:0.6" />
-                        <animations:OpacityAnimation From="1"
-                                                     To="0"
-                                                     Duration="0:0:0.6" />
-                    </animations:Implicit.HideAnimations>-->
                 </TextBlock>
             </ScrollViewer>
 
@@ -328,7 +250,7 @@
                                          Grid.Column="1" />
         </Grid>
 
-        <CommandBar Grid.Row="3">
+        <CommandBar Grid.Row="2">
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export Online Identities"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />

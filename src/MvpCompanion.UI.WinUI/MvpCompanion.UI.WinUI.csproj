@@ -11,6 +11,7 @@
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
 		<PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<ApplicationIcon>Images\MainIcon.ico</ApplicationIcon>
 	</PropertyGroup>
 	<ItemGroup>
 	  <None Remove="Views\AboutView.xaml" />

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
 using MvpApi.Services.Apis;
-using MvpCompanion.UI.WinUI.Common;
 using MvpCompanion.UI.WinUI.Helpers;
 using WinUIEx;
 
@@ -34,9 +33,8 @@ namespace MvpCompanion.UI.WinUI
             
             CurrentWindow.Activate();
 
-            CurrentWindow.CenterOnScreen();
             CurrentWindow.SetWindowSize(1200, 900);
-            // CurrentWindow.SetForegroundWindow();
+            CurrentWindow.CenterOnScreen();
         }
 
         private async void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
@@ -48,10 +46,12 @@ namespace MvpCompanion.UI.WinUI
 
         public static async Task ShowMessageAsync(string body, string title = "")
         {
-            var md = string.IsNullOrEmpty(title) ? new MessageDialog(body) : new MessageDialog(body, title);
+            var md = string.IsNullOrEmpty(title) 
+                ? new MessageDialog(body) 
+                : new MessageDialog(body, title);
 
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(CurrentWindow);
-            WinRT.Interop.InitializeWithWindow.Initialize(md, hwnd);
+            //var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(CurrentWindow);
+            //WinRT.Interop.InitializeWithWindow.Initialize(md, hwnd);
 
             await md.ShowAsync();
         }

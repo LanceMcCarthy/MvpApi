@@ -22,7 +22,7 @@ using MvpCompanion.UI.WinUI.Extensions;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
-public class ContributionDetailViewModel : ViewModelBase
+public class ContributionDetailViewModel : TabViewModelBase
 {
     #region Fields
 
@@ -382,27 +382,32 @@ public class ContributionDetailViewModel : ViewModelBase
     {
         try
         {
-            IsBusyMessage = "loading category area technologies...";
-
-            var areaRoots = await App.ApiService.GetContributionAreasAsync();
-
-            // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-            var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-
-            areas.ForEach(area =>
+            if (!CategoryAreas.Any())
             {
-                CategoryAreas.Add(area);
-            });
+                IsBusyMessage = "loading category area technologies...";
 
+                var areaRoots = await App.ApiService.GetContributionAreasAsync();
 
-            IsBusyMessage = "loading visibility options...";
+                // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
+                var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
 
-            var visibilities = await App.ApiService.GetVisibilitiesAsync();
+                areas.ForEach(area =>
+                {
+                    CategoryAreas.Add(area);
+                });
+            }
 
-            visibilities.ForEach(visibility =>
+            if (!Visibilities.Any())
             {
-                Visibilities.Add(visibility);
-            });
+                IsBusyMessage = "loading visibility options...";
+
+                var visibilities = await App.ApiService.GetVisibilitiesAsync();
+
+                visibilities.ForEach(visibility =>
+                {
+                    Visibilities.Add(visibility);
+                });
+            }
         }
         catch (Exception ex)
         {
@@ -448,20 +453,14 @@ public class ContributionDetailViewModel : ViewModelBase
 
     #region Navigation
 
-    public async void OnLoaded()
+    public override async Task OnLoadedAsync()
     {
-        if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-        {
-            await App.ShowMessageAsync("This application requires an internet connection. Please check your connection and try again.", "No Internet");
-            return;
-        }
-
-        //if (SelectedContribution == null)
+        //if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
         //{
-        //    await App.ShowMessageAsync("Something went wrong loading your selection, going back to Home page");
+        //    await App.ShowMessageAsync("This application requires an internet connection. Please check your connection and try again.", "No Internet");
         //    return;
         //}
-
+        
         if (!App.ApiService.IsLoggedIn)
         {
             IsBusy = true;
@@ -476,10 +475,13 @@ public class ContributionDetailViewModel : ViewModelBase
 
             // Get the associated lists from the API
             await LoadSupportingDataAsync();
-
-            // Read the passed contribution parameter
-            // SelectedContribution = param;
             
+            if (SelectedContribution == null)
+            {
+                await App.ShowMessageAsync("Something went wrong loading your selection, going back to Home page");
+                return;
+            }
+
             SelectedContribution.UploadStatus = UploadStatus.None;
 
             // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
@@ -504,9 +506,6 @@ public class ContributionDetailViewModel : ViewModelBase
 
                 await td.ShowAsync();
             }
-
-            // To prevent accidental back navigation
-            //NavigationService.FrameFacade.BackRequested += FrameFacadeBackRequested;
         }
         catch (Exception ex)
         {
@@ -518,42 +517,44 @@ public class ContributionDetailViewModel : ViewModelBase
             IsBusyMessage = "";
             IsBusy = false;
         }
+
+        await base.OnLoadedAsync();
     }
 
-    public async void OnUnloaded()
+    public override async Task<bool> OnCloseRequestedAsync()
     {
+        var navigationApproved = false;
 
+        try
+        {
+            if (IsSelectedContributionDirty)
+            {
+                var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
+                md.Commands.Add(new UICommand("yes"));
+                md.Commands.Add(new UICommand("no"));
+                md.CancelCommandIndex = 1;
+                md.DefaultCommandIndex = 1;
+
+                var result = await md.ShowAsync();
+
+                if (result.Label == "yes")
+                {
+                    navigationApproved = true;
+                }
+                else
+                {
+                    navigationApproved = false;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await ex.LogExceptionAsync();
+            navigationApproved = false;
+        }
+
+        return navigationApproved;
     }
-
-    //public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
-    //{
-    //    NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
-    //}
-
-    // Prevent back key press. Credit Daren May https://github.com/Windows-XAML/Template10/issues/737
-    //private async void FrameFacadeBackRequested(object sender, HandledEventArgs e)
-    //{
-    //    e.Handled = IsSelectedContributionDirty;
-            
-    //    if (IsSelectedContributionDirty)
-    //    {
-    //        var md = new MessageDialog("Navigating away now will lose your changes, continue?", "Warning: Unsaved Changes");
-    //        md.Commands.Add(new UICommand("yes"));
-    //        md.Commands.Add(new UICommand("no"));
-    //        md.CancelCommandIndex = 1;
-    //        md.DefaultCommandIndex = 1;
-
-    //        var result = await md.ShowAsync();
-
-    //        if (result.Label == "yes")
-    //        {
-    //            if (NavigationService.CanGoBack)
-    //            {
-    //                NavigationService.GoBack();
-    //            }
-    //        }
-    //    }
-    //}
 
     #endregion
 }
