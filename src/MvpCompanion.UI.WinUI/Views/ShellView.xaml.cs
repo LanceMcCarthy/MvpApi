@@ -67,9 +67,16 @@ public sealed partial class ShellView : UserControl
         await ViewModel.OnUnloadedAsync();
     }
 
-    private void OnLoginCompleted()
+    private async void OnLoginCompleted()
     {
         ViewModel.RefreshProperties();
+
+        var homeTab = ShellTabView.TabItems.FirstOrDefault(t => t is TabViewItem t2 && t2.Tag.ToString() == ViewType.Home.ToString()) as TabViewItem;
+
+        if (homeTab != null && homeTab.Content is HomeView hv && hv.DataContext is HomeViewModel vm)
+        {
+            await vm.OnLoadedAsync();
+        }
     }
 
     public void SelectTab(ViewType viewType)
@@ -96,7 +103,7 @@ public sealed partial class ShellView : UserControl
         {
             sender.TabItems.Remove(args.Item);
 
-            ShellTabView.SelectedItem = ShellTabView.TabItems.FirstOrDefault(t => t is TabViewItem t2 && (ViewType)t2.Tag == ViewType.Home);
+            ShellTabView.SelectedItem = ShellTabView.TabItems.FirstOrDefault(t => t is TabViewItem t2 && t2.Tag.ToString() == ViewType.Home.ToString());
         }
         else
         {

@@ -8,7 +8,7 @@ namespace MvpCompanion.UI.WinUI
         {
             this.InitializeComponent();
             this.Title = "MVP Companion";
-            this.ExtendsContentIntoTitleBar = true;
+            //this.ExtendsContentIntoTitleBar = true;
         }
     }
 }

@@ -51,20 +51,22 @@ public class HomeViewModel : TabViewModelBase
             }
         }
 
-        RefreshAfterDisconnectCommand = new DelegateCommand(async () =>
-        {
-            IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
+        //RefreshAfterDisconnectCommand = new DelegateCommand(async () =>
+        //{
+        //    IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
 
-            if (IsInternetDisabled)
-            {
-                //await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
-                await App.ShowMessageAsync("Internet is still not available, please check your connection and try again.", "No Internet");
-            }
-            else
-            {
+        //    if (IsInternetDisabled)
+        //    {
+        //        //await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
+        //        await App.ShowMessageAsync("Internet is still not available, please check your connection and try again.", "No Internet");
+        //    }
+        //    else
+        //    {
 
-            }
-        });
+        //    }
+        //});
+
+        Contributions = new ObservableCollection<ContributionsModel>();
     }
 
     #region Properties
@@ -231,7 +233,16 @@ public class HomeViewModel : TabViewModelBase
 
     public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
     {
-        if (sender is not RadioButton rb || rb.Content == null || GroupDescriptors == null) return;
+        if (GroupDescriptors == null)
+            return;
+
+        //if (sender is not RadioButton rb 
+        //    || rb.Content == null 
+        //    || GroupDescriptors == null) 
+        //    return;
+
+        if (sender is not RadioButton rb)
+            return;
 
         GroupDescriptors.Clear();
 
@@ -239,6 +250,7 @@ public class HomeViewModel : TabViewModelBase
 
         switch (groupName)
         {
+            default:
             case "None":
                 // do nothing because we've already cleared the GroupDescriptors
                 break;
@@ -364,26 +376,22 @@ public class HomeViewModel : TabViewModelBase
         {
             IsBusy = true;
             IsBusyMessage = "loading contributions...";
-
-            Contributions = new ObservableCollection<ContributionsModel>();
-
+            
             // Get all the contributions for the currently signed in MVP.
             var result = await App.ApiService.GetAllContributionsAsync();
+
+            Contributions.Clear();
 
             foreach (var cont in result.Contributions)
             {
                 Contributions.Add(cont);
             }
-
-            // Load the items into the DataGrid
-            Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);
-
+            
             IsBusyMessage = "";
             IsBusy = false;
         }
         catch (Exception ex)
         {
-            // BUG
             await ex.LogExceptionWithUserMessage();
         }
         finally
@@ -413,15 +421,20 @@ public class HomeViewModel : TabViewModelBase
         //    return;
         //}
 
-        if (!App.ApiService.IsLoggedIn)
+        // If this is true, it means the app is on first launch.
+        // The signin process will fire completed event that re-calls this OnLoadedasync method
+        if (App.ApiService == null)
+            return;
+
+        if (App.ApiService.IsLoggedIn == false)
         {
             await ShellView.Instance.LoginDialog.SignInAsync();
         }
 
-        //if (refreshNeeded)
-        //{
-        //    await LoadContributionsAsync();
-        //}
+        if (!Contributions.Any())
+        {
+            await LoadContributionsAsync();
+        }
 
         if (ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is not bool tutorialShown || !tutorialShown)
         {
@@ -436,7 +449,7 @@ public class HomeViewModel : TabViewModelBase
                           "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
                           "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
             };
-            
+
             await td.ShowAsync();
         }
 

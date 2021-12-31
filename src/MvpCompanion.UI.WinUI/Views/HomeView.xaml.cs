@@ -20,7 +20,10 @@ public sealed partial class HomeView : UserControl
     {
         ViewModel.SelectedContributions = ContributionsGrid.SelectedItems;
 
-        //await ViewModel.OnLoadedAsync();
+        //if(ViewModel != null)
+        //{
+        //    await ViewModel.OnLoadedAsync();
+        //}
     }
 
     private async void HomeView_Unloaded(object sender, RoutedEventArgs e)
