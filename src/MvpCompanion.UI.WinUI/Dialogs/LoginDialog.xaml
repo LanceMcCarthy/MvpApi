@@ -4,10 +4,87 @@
                xmlns:local="using:MvpCompanion.UI.WinUI.Views"
                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+               xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+               xmlns:indicator="using:Telerik.UI.Xaml.Controls.Primitives.BusyIndicator"
                mc:Ignorable="d">
-    <WebView2 x:Name="AuthWebView"
-              NavigationStarting="AuthWebView_NavigationStarting"
-              NavigationCompleted="AuthWebView_NavigationCompleted"
-              Width="400"
-              Height="600" />
+    <Grid>
+        <WebView2 x:Name="AuthWebView"
+                  NavigationStarting="AuthWebView_NavigationStarting"
+                  NavigationCompleted="AuthWebView_NavigationCompleted"
+                  Width="400"
+                  Height="600" />
+
+        <primitives:RadBusyIndicator x:Name="BusyIndicator"
+                                     IsActive="False"
+                                     Visibility="Collapsed"
+                                     Content="Loading..."
+                                     Foreground="#000000"
+                                     Background="#FFFFFFFF"
+                                     Grid.Row="1">
+            <primitives:RadBusyIndicator.IndicatorAnimationStyle>
+                <Style TargetType="indicator:BusyIndicatorAnimation">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Grid VerticalAlignment="Center"
+                                      x:Name="PART_LayoutRoot">
+                                    <Grid.Resources>
+                                        <Storyboard x:Name="PART_Animation">
+                                            <DoubleAnimation From="0"
+                                                             To="359"
+                                                             Duration="0:0:1"
+                                                             RepeatBehavior="Forever"
+                                                             Storyboard.TargetName="LoadingVisualAngleTransform"
+                                                             Storyboard.TargetProperty="Angle" />
+                                        </Storyboard>
+                                    </Grid.Resources>
+                                    
+                                    <Grid x:Name="LoadingVisual" 
+                                          Width="40"
+                                          Height="40"
+                                          RenderTransformOrigin="0.5,0.5"
+                                          HorizontalAlignment="Center"
+                                          Margin="10,0,0,0" 
+                                          ColumnDefinitions="*,*" 
+                                          RowDefinitions="*,*"
+                                          ColumnSpacing="2"
+                                          RowSpacing="2">
+                                        <Grid.RenderTransform>
+                                            <TransformGroup>
+                                                <RotateTransform x:Name="LoadingVisualAngleTransform"
+                                                                 Angle="0"
+                                                                 CenterX="0.5"
+                                                                 CenterY="0.5" />
+                                            </TransformGroup>
+                                        </Grid.RenderTransform>
+
+                                        <Rectangle Fill="#f74e1e"
+                                                   Grid.Row="0"
+                                                   Grid.Column="0"
+                                                   HorizontalAlignment="Stretch"
+                                                   VerticalAlignment="Stretch" />
+                                        <Rectangle Fill="#7fba00"
+                                                   Grid.Row="0"
+                                                   Grid.Column="1"
+                                                   HorizontalAlignment="Stretch"
+                                                   VerticalAlignment="Stretch" />
+                                        <Rectangle Fill="#00a4ef"
+                                                   Grid.Row="1"
+                                                   Grid.Column="0"
+                                                   HorizontalAlignment="Stretch"
+                                                   VerticalAlignment="Stretch" />
+                                        <Rectangle Fill="#ffb900"
+                                                   Grid.Row="1"
+                                                   Grid.Column="1"
+                                                   HorizontalAlignment="Stretch"
+                                                   VerticalAlignment="Stretch" />
+                                    </Grid>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </primitives:RadBusyIndicator.IndicatorAnimationStyle>
+        </primitives:RadBusyIndicator>
+    </Grid>
 </ContentDialog>

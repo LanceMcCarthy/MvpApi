@@ -40,16 +40,6 @@ namespace MvpCompanion.UI.WinUI.Dialogs
             this.loginCompleted = loginCompleted;
         }
 
-        protected override void OnBringIntoViewRequested(BringIntoViewRequestedEventArgs e)
-        {
-            base.OnBringIntoViewRequested(e);
-        }
-
-        private void UpdateBusyIndicatorMessage(string message)
-        {
-            ((ShellViewModel)ShellView.Instance.DataContext).IsBusyMessage = message;
-        }
-
         private async Task CompleteSignInAsync(string authorizationHeader)
         {
             await InitializeMvpApiAsync(authorizationHeader);
@@ -150,7 +140,7 @@ namespace MvpCompanion.UI.WinUI.Dialogs
             App.ApiService.IsLoggedIn = true;
 
             // Get MVP profile
-            UpdateBusyIndicatorMessage("downloading profile info...");
+            UpdateBusyIndicatorMessage("downloading profile information...");
             App.ApiService.Mvp = await App.ApiService.GetProfileAsync();
 
             // Get MVP profile image
@@ -298,6 +288,25 @@ namespace MvpCompanion.UI.WinUI.Dialogs
                 Trace.TraceError($"[WinUI LoginDialog] WebView Navigation Error: {e.WebErrorStatus}");
             }
 
+        }
+
+        private void UpdateBusyIndicatorMessage(string message)
+        {
+            BusyIndicator.Content = message;
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                BusyIndicator.IsActive = false;
+                BusyIndicator.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                BusyIndicator.IsActive = true;
+                BusyIndicator.Visibility = Visibility.Visible;
+            }
+
+            // Also update the MainWindow's awareness
+            ((ShellViewModel)ShellView.Instance.DataContext).IsBusyMessage = message;
         }
     }
 }
