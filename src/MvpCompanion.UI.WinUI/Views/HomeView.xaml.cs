@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using MvpApi.Common.Models;
 
@@ -12,18 +11,19 @@ public sealed partial class HomeView : UserControl
     public HomeView()
     {
         InitializeComponent();
+
+        // This is because WinUI3 and UWP do not support OneWayToSource binding mode
+        ViewModel.SelectedContributions = ContributionsGrid.SelectedItems;
+        ViewModel.GroupDescriptors = ContributionsGrid.GroupDescriptors;
+
         Loaded += HomeView_Loaded;
         Unloaded += HomeView_Unloaded;
     }
 
-    private async void HomeView_Loaded(object sender, RoutedEventArgs e)
+    private void HomeView_Loaded(object sender, RoutedEventArgs e)
     {
-        ViewModel.SelectedContributions = ContributionsGrid.SelectedItems;
-
-        //if(ViewModel != null)
-        //{
-        //    await ViewModel.OnLoadedAsync();
-        //}
+        // DO NOT USE! This is called in the ShellView.xaml.cs in OnLoginCompleted() event
+        // await ViewModel.OnLoadedAsync();
     }
 
     private async void HomeView_Unloaded(object sender, RoutedEventArgs e)

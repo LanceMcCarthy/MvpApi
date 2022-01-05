@@ -12,7 +12,8 @@
              xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
              xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
              xmlns:models="using:MvpApi.Common.Models"
-             mc:Ignorable="d">
+             mc:Ignorable="d"
+             x:Name="ThisControl">
 
     <UserControl.DataContext>
         <viewModels:HomeViewModel x:Name="ViewModel" />
@@ -65,8 +66,8 @@
         </Grid.RowDefinitions>
 
         <telerikGrid:RadDataGrid x:Name="ContributionsGrid"
-                                 ItemsSource="{Binding Contributions}"
-                                 SelectionMode="{Binding GridSelectionMode}"
+                                 ItemsSource="{x:Bind ViewModel.Contributions, Mode=OneWay}"
+                                 SelectionMode="{x:Bind ViewModel.GridSelectionMode, Mode=OneWay}"
                                  IncrementalLoadingMode="Explicit"
                                  RowDetailsDisplayMode="Single"
                                  AutoGenerateColumns="False"
@@ -111,7 +112,8 @@
                 </DataTemplate>
             </telerikGrid:RadDataGrid.GroupHeaderTemplate>
             <telerikGrid:RadDataGrid.Columns>
-                <telerikGrid:DataGridTemplateColumn Header="Options"
+                <telerikGrid:DataGridTemplateColumn x:Name="ActionsColumn"
+                                                    Header="Options"
                                                     SizeMode="Auto">
                     <telerikGrid:DataGridTemplateColumn.CellContentTemplate>
                         <DataTemplate>
@@ -143,18 +145,8 @@
                                                 SizeMode="Stretch"/>
                 <telerikGrid:DataGridTextColumn PropertyName="ContributionTypeName"
                                                 Header="Contribution Type"
-                                                CellContentStyle="{StaticResource WideCellContentStyle}" />
-                <!--<telerikGrid:DataGridTextColumn PropertyName="Description"
-                                                Header="Description"
-                                                CellContentStyle="{StaticResource MediumCellContentStyle}" />
-                <telerikGrid:DataGridNumericalColumn PropertyName="AnnualQuantity"
-                                                     Header="Annual Quantity" />
-                <telerikGrid:DataGridNumericalColumn PropertyName="AnnualReach"
-                                                     Header="Annual Reach" />
-                <telerikGrid:DataGridTextColumn PropertyName="ReferenceUrl"
-                                                Width="100"
-                                                Header="Url"
-                                                CellContentStyle="{StaticResource MediumCellContentStyle}" />-->
+                                                CellContentStyle="{StaticResource WideCellContentStyle}"
+                                                SizeMode="Auto" />
             </telerikGrid:RadDataGrid.Columns>
         </telerikGrid:RadDataGrid>
 
@@ -172,7 +164,7 @@
                 <AppBarButton Label="Export All Contributions"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
             </CommandBar.SecondaryCommands>
-            <AppBarButton>
+            <AppBarButton x:Name="GroupingButton">
                 <AppBarButton.Content>
                     <StackPanel Orientation="Horizontal">
                         <SymbolIcon Symbol="ShowBcc"
@@ -188,16 +180,16 @@
                             <RadioButton Content="None"
                                          IsChecked="True"
                                          GroupName="DataGridGroup"
-                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}"/>
                             <RadioButton Content="Contribution Type"
                                          GroupName="DataGridGroup"
-                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}"/>
                             <RadioButton Content="Award Area"
                                          GroupName="DataGridGroup"
-                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}"/>
                             <RadioButton Content="Date"
                                          GroupName="DataGridGroup"
-                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}" />
+                                         Checked="{x:Bind ViewModel.GroupingToggleButton_OnChecked}"/>
                         </StackPanel>
                     </Flyout>
                 </AppBarButton.Flyout>
