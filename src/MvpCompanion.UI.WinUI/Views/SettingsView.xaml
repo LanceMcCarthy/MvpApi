@@ -342,8 +342,12 @@
                                TextWrapping="Wrap"
                                Margin="0,0,0,5"/>
 
-                    <ToggleSwitch IsOn="{Binding UseBetaEditor, Mode=TwoWay}"
+                    <!--<ToggleSwitch IsOn="{Binding UseBetaEditor, Mode=TwoWay}"
                                   Header="Use Experimental Editor"
+                                  VerticalAlignment="Center" />-->
+
+                    <ToggleSwitch IsOn="{Binding UseDarkTheme, Mode=TwoWay}"
+                                  Header="Use Dark Theme"
                                   VerticalAlignment="Center" />
                 </StackPanel>
             </Expander>

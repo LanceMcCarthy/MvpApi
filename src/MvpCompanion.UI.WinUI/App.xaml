@@ -7,7 +7,8 @@
              xmlns:indicator="using:Telerik.UI.Xaml.Controls.Primitives.BusyIndicator"
              xmlns:converters="using:MvpCompanion.UI.WinUI.Converters"
              xmlns:selectors="using:MvpCompanion.UI.WinUI.Selectors"
-             xmlns:models="using:MvpApi.Common.Models">
+             xmlns:models="using:MvpApi.Common.Models"
+             RequestedTheme="Light">
 
     <Application.Resources>
         <ResourceDictionary>

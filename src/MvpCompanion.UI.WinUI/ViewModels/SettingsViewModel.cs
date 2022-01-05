@@ -14,10 +14,10 @@ public class SettingsViewModel : TabViewModelBase
 {
     public SettingsViewModel()
     {
-        if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
-        {
+        //if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
+        //{
 
-        }
+        //}
     }
 
     public DateTime SubmissionStartDate
@@ -30,6 +30,12 @@ public class SettingsViewModel : TabViewModelBase
     {
         get => ((ShellViewModel)ShellView.Instance.DataContext).SubmissionDeadline;
         set => ((ShellViewModel)ShellView.Instance.DataContext).SubmissionDeadline = value;
+    }
+
+    public bool UseDarkTheme
+    {
+        get => ((ShellViewModel)ShellView.Instance.DataContext).UseDarkTheme;
+        set => ((ShellViewModel)ShellView.Instance.DataContext).UseDarkTheme = value;
     }
 
     private void OpenUrl(string url)

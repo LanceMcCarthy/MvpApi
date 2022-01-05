@@ -7,6 +7,7 @@ using MvpApi.Services.Utilities;
 using MvpCompanion.UI.WinUI.Helpers;
 using CommonHelpers.Common;
 using CommunityToolkit.WinUI.Connectivity;
+using Microsoft.UI.Xaml;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
@@ -90,6 +91,34 @@ public class ShellViewModel : TabViewModelBase
             if (SetProperty(ref submissionDeadline, value))
             {
                 ApplicationData.Current.LocalSettings.Values[nameof(SubmissionDeadline)] = submissionDeadline.ToLongDateString();
+            }
+        }
+    }
+
+    private bool useDarkTheme;
+    public bool UseDarkTheme
+    {
+        get
+        {
+            if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(UseDarkTheme), out var rawValue))
+            {
+                useDarkTheme = (bool)rawValue;
+            }
+            else
+            {
+                ApplicationData.Current.LocalSettings.Values[nameof(UseDarkTheme)] = useDarkTheme;
+            }
+
+            return useDarkTheme;
+        }
+        set
+        {
+            if (SetProperty(ref useDarkTheme, value))
+            {
+                ApplicationData.Current.LocalSettings.Values[nameof(UseDarkTheme)] = useDarkTheme;
+
+                // WIP
+                // Application.Current.RequestedTheme = value ? ApplicationTheme.Dark : ApplicationTheme.Light;
             }
         }
     }
