@@ -21,6 +21,8 @@ using Telerik.UI.Xaml.Controls.Grid;
 using MvpCompanion.UI.WinUI.Helpers;
 using CommonHelpers.Mvvm;
 using CommunityToolkit.WinUI.Connectivity;
+using Telerik.Core.Data;
+
 //using Microsoft.AppCenter.Analytics;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
@@ -31,9 +33,13 @@ public class HomeViewModel : TabViewModelBase
 
     private DataGridSelectionMode gridSelectionMode = DataGridSelectionMode.Single;
     private bool isMultipleSelectionEnabled;
-    private ObservableCollection<ContributionsModel> contributions;
+    private IncrementalLoadingCollection<ContributionsModel> contributions;
     private bool areAppBarButtonsEnabled;
     private bool isInternetDisabled;
+
+    // LoD features
+    private int currentItemsOffset;
+    private string displayTotal;
 
     #endregion
 
@@ -43,7 +49,7 @@ public class HomeViewModel : TabViewModelBase
         {
             var designItems = DesignTimeHelpers.GenerateContributions();
 
-            Contributions = new ObservableCollection<ContributionsModel>();
+            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
 
             foreach (var contribution in designItems)
             {
@@ -65,13 +71,11 @@ public class HomeViewModel : TabViewModelBase
 
         //    }
         //});
-
-        Contributions = new ObservableCollection<ContributionsModel>();
     }
 
     #region Properties
 
-    public ObservableCollection<ContributionsModel> Contributions
+    public IncrementalLoadingCollection<ContributionsModel> Contributions
     {
         get => contributions;
         set => SetProperty(ref contributions, value);
@@ -114,6 +118,12 @@ public class HomeViewModel : TabViewModelBase
         set => SetProperty(ref isInternetDisabled, value);
     }
 
+    public string DisplayTotal
+    {
+        get => displayTotal;
+        set => SetProperty(ref displayTotal, value);
+    }
+
     #endregion
 
     #region Event Handlers
@@ -147,7 +157,10 @@ public class HomeViewModel : TabViewModelBase
     {
         ClearSelections();
 
-        await LoadContributionsAsync();
+        //await LoadContributionsAsync();
+
+        currentItemsOffset = 0;
+        Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 10 };
     }
 
     public async void DeleteSelectionButton_Click(object sender, RoutedEventArgs e)
@@ -157,6 +170,8 @@ public class HomeViewModel : TabViewModelBase
             IsBusy = true;
             IsBusyMessage = "preparing to delete selected contributions...";
 
+            var successfullyDeletedContributions = new List<ContributionsModel>();
+
             foreach (ContributionsModel contribution in SelectedContributions)
             {
                 try
@@ -165,6 +180,13 @@ public class HomeViewModel : TabViewModelBase
 
                     var success = await App.ApiService.DeleteContributionAsync(contribution);
 
+                    // Here, I've switched to tracking individual items that hve been deleted 
+                    // This allows to locally cache the items that need to be removed forom the collection. 
+                    if (success == true)
+                    {
+                        successfullyDeletedContributions.Add(contribution);
+                    }
+                    
                     // Quality assurance, only logs a successful or failed delete and the type of contribution.
                     //Analytics.TrackEvent(success == true ? "DeleteContribution" : "DeleteContribution Failed", new Dictionary<string, string>
                     //{
@@ -178,15 +200,22 @@ public class HomeViewModel : TabViewModelBase
                     //    { "Exception", ex.Message },
                     //    { "ContributionTypeName", contribution.ContributionTypeName}
                     //});
+
+                    Debug.WriteLine($"Delete Item Exception: {ex}");
                 }
             }
 
             SelectedContributions.Clear();
 
+            foreach (var contribution in successfullyDeletedContributions)
+            {
+                this.Contributions.Remove(contribution);
+            }
+            
+            // No longer needed after keeping a local cache of successfully deleted items and removing them locally. This old approach was really slow
             // After deleting contributions, we need to fetch updated list
-            IsBusyMessage = "refreshing contributions...";
-
-            await LoadContributionsAsync();
+            //IsBusyMessage = "refreshing contributions...";
+            //await LoadContributionsAsync();
         }
         catch (Exception ex)
         {
@@ -199,37 +228,37 @@ public class HomeViewModel : TabViewModelBase
         }
     }
 
-    public async void RadDataGrid_OnSelectionChanged(object? sender, DataGridSelectionChangedEventArgs e)
-    {
-        // When in multiple selection mode, enable/disable delete instead of navigating to details page
-        if (GridSelectionMode == DataGridSelectionMode.Multiple)
-        {
-            AreAppBarButtonsEnabled = e?.AddedItems.Any() == true;
-            return;
-        }
+    //public async void RadDataGrid_OnSelectionChanged(object? sender, DataGridSelectionChangedEventArgs e)
+    //{
+    //    // When in multiple selection mode, enable/disable delete instead of navigating to details page
+    //    if (GridSelectionMode == DataGridSelectionMode.Multiple)
+    //    {
+    //        AreAppBarButtonsEnabled = e?.AddedItems.Any() == true;
+    //        return;
+    //    }
 
-        // When in single selection mode, go to the selected item's details page
-        if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
-        {
-            ShellView.Instance.AddDetailTab(contribution);
+    //    // When in single selection mode, go to the selected item's details page
+    //    if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
+    //    {
+    //        ShellView.Instance.AddDetailTab(contribution);
             
-            //if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-            //{
-            //var editDialog = new ContributionEditorDialog(contribution);
-            //await editDialog.ShowAsync();
+    //        //if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+    //        //{
+    //        //var editDialog = new ContributionEditorDialog(contribution);
+    //        //await editDialog.ShowAsync();
 
-            //if (editDialog.ContributionResult != null)
-            //{
-            //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-            //}
-            //}
-            //else
-            //{
-            // TODO navigation
-            //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
-            //}
-        }
-    }
+    //        //if (editDialog.ContributionResult != null)
+    //        //{
+    //        //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
+    //        //}
+    //        //}
+    //        //else
+    //        //{
+    //        // TODO navigation
+    //        //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
+    //        //}
+    //    }
+    //}
 
     public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
     {
@@ -331,75 +360,76 @@ public class HomeViewModel : TabViewModelBase
 
     #region Methods
 
-    //private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
-    //{
-    //    try
-    //    {
-    //        // Here we use a different flag when the view model is busy loading items because we don't want to cover the UI
-    //        // The IsBusy flag is used for when deleting items, when we want to block the UI
-    //        IsLoadingMoreItems = true;
-
-    //        var result = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
-
-    //        Debug.WriteLine($"** LoadMoreItems **\nPagingIndex: {result.PagingIndex}, Count: {result.Contributions.Count}, TotalContributions: {result.TotalContributions}");
-
-    //        _currentOffset = result.PagingIndex;
-
-    //        DisplayTotal = $"{_currentOffset} of {result.TotalContributions}";
-
-    //        // If we've received all the contributions, return null to stop automatic loading
-    //        if (result.PagingIndex == result.TotalContributions)
-    //            return null;
-
-    //        return result.Contributions;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        // Only log this exception after the user is logged in
-    //        if (App.ShellPage?.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
-    //        {
-    //            await ex.LogExceptionAsync();
-    //            Debug.WriteLine($"LoadMoreItems Exception: {ex}");
-    //        }
-
-    //        return null;
-    //    }
-    //    finally
-    //    {
-    //        IsLoadingMoreItems = false;
-    //    }
-    //}
-
-    private async Task LoadContributionsAsync()
+    private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
     {
         try
         {
+            // Here we use a different flag when the view model is busy loading items because we don't want to cover the UI
+            // The IsBusy flag is used for when deleting items, when we want to block the UI
             IsBusy = true;
-            IsBusyMessage = "loading contributions...";
-            
-            // Get all the contributions for the currently signed in MVP.
-            var result = await App.ApiService.GetAllContributionsAsync();
+            IsBusyMessage = "[Load on Demand] fetching items from API...";
 
-            Contributions.Clear();
+            var result = await App.ApiService.GetContributionsAsync(currentItemsOffset, (int)count);
 
-            foreach (var cont in result.Contributions)
-            {
-                Contributions.Add(cont);
-            }
-            
-            IsBusyMessage = "";
-            IsBusy = false;
+            Debug.WriteLine($"** LoadMoreItems ** PagingIndex: {result.PagingIndex}, Count: {result.Contributions.Count}, TotalContributions: {result.TotalContributions}");
+
+            currentItemsOffset = result.PagingIndex ?? 0;
+
+            DisplayTotal = $"{currentItemsOffset} of {result.TotalContributions}";
+
+            // Compare the PagingIndex (how many items have been delivered) with the TotalContributions
+            return result.PagingIndex == result.TotalContributions 
+                ? null // return null to turn off load on demand
+                : result.Contributions; // return the current set of items
         }
         catch (Exception ex)
         {
-            await ex.LogExceptionWithUserMessage();
+            // Only log this exception after the user is logged in
+            if (App.ApiService.IsLoggedIn)
+            {
+                await ex.LogExceptionAsync();
+                Debug.WriteLine($"LoadMoreItems Exception: {ex}");
+            }
+
+            return null;
         }
         finally
         {
-            IsBusyMessage = "";
             IsBusy = false;
+            IsBusyMessage = $"";
         }
     }
+
+    //private async Task LoadContributionsAsync()
+    //{
+    //    try
+    //    {
+    //        IsBusy = true;
+    //        IsBusyMessage = "loading contributions...";
+            
+    //        // Get all the contributions for the currently signed in MVP.
+    //        var result = await App.ApiService.GetAllContributionsAsync();
+
+    //        Contributions.Clear();
+
+    //        foreach (var cont in result.Contributions)
+    //        {
+    //            Contributions.Add(cont);
+    //        }
+            
+    //        IsBusyMessage = "";
+    //        IsBusy = false;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        await ex.LogExceptionWithUserMessage();
+    //    }
+    //    finally
+    //    {
+    //        IsBusyMessage = "";
+    //        IsBusy = false;
+    //    }
+    //}
 
     private void ClearSelections()
     {
@@ -431,12 +461,10 @@ public class HomeViewModel : TabViewModelBase
             await ShellView.Instance.LoginDialog.SignInAsync();
         }
 
-        if (!Contributions.Any())
-        {
-            await LoadContributionsAsync();
-        }
+        // If this is the first time the page loads, the contributions property will be null
+        Contributions ??= new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
 
-        if (ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is not bool tutorialShown || !tutorialShown)
+        if (ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is not true)
         {
             var td = new TutorialDialog
             {

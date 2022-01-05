@@ -67,6 +67,7 @@
         <telerikGrid:RadDataGrid x:Name="ContributionsGrid"
                                  ItemsSource="{Binding Contributions}"
                                  SelectionMode="{Binding GridSelectionMode}"
+                                 IncrementalLoadingMode="Explicit"
                                  RowDetailsDisplayMode="Single"
                                  AutoGenerateColumns="False"
                                  CanUserChooseColumns="False"
