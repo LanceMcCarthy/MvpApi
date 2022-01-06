@@ -8,6 +8,8 @@ using MvpCompanion.UI.WinUI.Helpers;
 using CommonHelpers.Common;
 using CommunityToolkit.WinUI.Connectivity;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using MvpCompanion.UI.WinUI.Views;
 
 namespace MvpCompanion.UI.WinUI.ViewModels;
 
@@ -118,7 +120,8 @@ public class ShellViewModel : TabViewModelBase
                 ApplicationData.Current.LocalSettings.Values[nameof(UseDarkTheme)] = useDarkTheme;
 
                 // WIP
-                // Application.Current.RequestedTheme = value ? ApplicationTheme.Dark : ApplicationTheme.Light;
+                //Application.Current.RequestedTheme = value ? ApplicationTheme.Dark : ApplicationTheme.Light;
+                ((App.CurrentWindow.Content as ShellView)!).RequestedTheme = value ? ElementTheme.Dark : ElementTheme.Light;
             }
         }
     }

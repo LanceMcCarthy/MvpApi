@@ -9,9 +9,9 @@
              xmlns:telerikCore="using:Telerik.Core"
              xmlns:selectors="using:MvpCompanion.UI.WinUI.Selectors"
              xmlns:winUi="using:MvpCompanion.UI.WinUI"
-             xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
              xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
              xmlns:models="using:MvpApi.Common.Models"
+             xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
              mc:Ignorable="d"
              x:Name="ThisControl">
 

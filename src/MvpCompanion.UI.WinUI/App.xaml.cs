@@ -5,6 +5,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
 using MvpApi.Services.Apis;
@@ -21,6 +22,7 @@ namespace MvpCompanion.UI.WinUI
 
         public App()
         {
+            SetTheme();
             InitializeComponent();
             UnhandledException += App_UnhandledException;
         }
@@ -54,6 +56,18 @@ namespace MvpCompanion.UI.WinUI
             //WinRT.Interop.InitializeWithWindow.Initialize(md, hwnd);
 
             await md.ShowAsync();
+        }
+
+        public static void SetTheme()
+        {
+            if (ApplicationData.Current.LocalSettings.Values.TryGetValue("UseDarkTheme", out var rawValue))
+            {
+                Application.Current.RequestedTheme = (bool)rawValue ? ApplicationTheme.Dark : ApplicationTheme.Light;
+            }
+            else
+            {
+                Application.Current.RequestedTheme = ApplicationTheme.Light;
+            }
         }
     }
 }
