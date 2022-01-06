@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
@@ -119,13 +120,21 @@ public class ShellViewModel : TabViewModelBase
     private async void OnUseDarkThemeChanged()
     {
         ApplicationData.Current.LocalSettings.Values[nameof(UseDarkTheme)] = UseDarkTheme;
+        
+        var md = new MessageDialog($"Theme change can only take effect after an app restart. Would you like to restart the app now?", "Theme Changed");
+        md.Commands.Add(new UICommand("Restart"));
+        md.Commands.Add(new UICommand("No, I'll wait until next time"));
 
-        // TODO - Runtime changes only work on Window content and not app level.
-        //((App.CurrentWindow.Content as ShellView)!).RequestedTheme = value ? ElementTheme.Dark : ElementTheme.Light;
+        var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
+        WinRT.Interop.InitializeWithWindow.Initialize(md, hwnd);
 
-        var requestedTheme = UseDarkTheme ? "Dark" : "Light";
+        var dialogResult = await md.ShowAsync();
 
-        await App.ShowMessageAsync($"Theme will change to {requestedTheme} after app restart.", "Theme changed");
+        if (dialogResult.Label == "Restart")
+        {
+            Process.Start(Process.GetCurrentProcess().MainModule.FileName);
+            Application.Current.Exit();
+        }
     }
 
 
