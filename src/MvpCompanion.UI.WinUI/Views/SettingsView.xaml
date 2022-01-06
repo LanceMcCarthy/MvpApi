@@ -331,20 +331,16 @@
                       Background="Transparent"
                       HorizontalContentAlignment="Stretch">
                 <Expander.Header>
-                    <TextBlock Text="Editor"
+                    <TextBlock Text="Theme Settings"
                                Style="{ThemeResource SubtitleTextBlockStyle}" />
                 </Expander.Header>
 
                 <StackPanel Margin="20">
-                    <TextBlock Text="Enables the new experimental popup editor instead of navigating to a separate page."
+                    <TextBlock Text="Change the Default App Theme"
                                Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                VerticalAlignment="Center"
                                TextWrapping="Wrap"
-                               Margin="0,0,0,5"/>
-
-                    <!--<ToggleSwitch IsOn="{Binding UseBetaEditor, Mode=TwoWay}"
-                                  Header="Use Experimental Editor"
-                                  VerticalAlignment="Center" />-->
+                               Margin="0,0,0,5" />
 
                     <ToggleSwitch IsOn="{Binding UseDarkTheme, Mode=TwoWay}"
                                   Header="Use Dark Theme"

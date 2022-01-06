@@ -20,9 +20,7 @@
     </UserControl.DataContext>
 
     <UserControl.Resources>
-        <telerikCore:StringFormatConverter x:Key="StringFormatConverter" />
-
-        <Style x:Key="SmallCellContentStyle"
+        <!--<Style x:Key="SmallCellContentStyle"
                TargetType="TextBlock">
             <Setter Property="MaxWidth"
                     Value="100" />
@@ -56,7 +54,7 @@
                     Value="5" />
             <Setter Property="VerticalAlignment"
                     Value="Center" />
-        </Style>
+        </Style>-->
     </UserControl.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">

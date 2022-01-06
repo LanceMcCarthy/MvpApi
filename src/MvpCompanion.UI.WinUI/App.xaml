@@ -7,13 +7,15 @@
              xmlns:indicator="using:Telerik.UI.Xaml.Controls.Primitives.BusyIndicator"
              xmlns:converters="using:MvpCompanion.UI.WinUI.Converters"
              xmlns:selectors="using:MvpCompanion.UI.WinUI.Selectors"
-             xmlns:models="using:MvpApi.Common.Models">
+             xmlns:models="using:MvpApi.Common.Models"
+             xmlns:core="using:Telerik.Core">
 
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <ResourceDictionary Source="ms-appx:///Telerik.WinUI.Controls/Themes/Generic.xaml" />
+                <ResourceDictionary Source="Styles/CustomDataGridStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <SolidColorBrush x:Key="LightTextColor">#FFFFFF</SolidColorBrush>
@@ -32,6 +34,8 @@
 
             <SolidColorBrush x:Key="TelerikBusyIndicator_OverlayBackground"
                              Color="{ThemeResource SystemControlChromeMediumAcrylicElementMediumBrush}" />
+
+            <core:StringFormatConverter x:Key="StringFormatConverter" />
 
             <converters:ValueWhenConverter x:Key="InvertBoolConverter">
                 <converters:ValueWhenConverter.When>

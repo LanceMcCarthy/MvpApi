@@ -38,7 +38,7 @@ public class AboutViewModel : TabViewModelBase
     {
         get
         {
-            if (roamingSettings.Values.TryGetValue("DaysToKeepErrorLogs", out object rawValue))
+            if (roamingSettings.Values.TryGetValue("DaysToKeepErrorLogs", out var rawValue))
             {
                 daysToKeepErrorLogs = Convert.ToInt32(rawValue);
             }

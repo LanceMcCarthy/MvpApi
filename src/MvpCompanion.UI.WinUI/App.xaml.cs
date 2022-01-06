@@ -32,11 +32,11 @@ namespace MvpCompanion.UI.WinUI
             //AppCenter.Start(ExternalConstants.AppCenterId, typeof(Analytics), typeof(Crashes));
 
             CurrentWindow = new MainWindow();
-            
-            CurrentWindow.Activate();
 
             CurrentWindow.SetWindowSize(1200, 900);
             CurrentWindow.CenterOnScreen();
+            
+            CurrentWindow.Activate();
         }
 
         private async void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
@@ -52,8 +52,8 @@ namespace MvpCompanion.UI.WinUI
                 ? new MessageDialog(body) 
                 : new MessageDialog(body, title);
 
-            //var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(CurrentWindow);
-            //WinRT.Interop.InitializeWithWindow.Initialize(md, hwnd);
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(CurrentWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(md, hwnd);
 
             await md.ShowAsync();
         }

@@ -49,10 +49,10 @@ public class SettingsViewModel : TabViewModelBase
         {
             IsBusy = true;
             IsBusyMessage = "opening email...";
-
+            
             var email = new EmailMessage();
             email.To.Add(new EmailRecipient("awesome.apps@outlook.com", "Lancelot Software"));
-            //email.Subject = $"MVP Companion {AppVersion}";
+            email.Subject = $"MVP Companion v{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
             email.Body = "[write your message here]\r\n\n";
 
             await EmailManager.ShowComposeNewEmailAsync(email);

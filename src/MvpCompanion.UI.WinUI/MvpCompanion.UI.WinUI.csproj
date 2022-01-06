@@ -14,6 +14,7 @@
 		<ApplicationIcon>Images\MainIcon.ico</ApplicationIcon>
 	</PropertyGroup>
 	<ItemGroup>
+	  <None Remove="Styles\CustomDataGridStyles.xaml" />
 	  <None Remove="Views\AboutView.xaml" />
 	  <None Remove="Views\AddContributionsView.xaml" />
 	  <None Remove="Views\ContributionDetailView.xaml" />
@@ -182,5 +183,11 @@
 		<Page Update="Dialogs\LoginDialog.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Page>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Styles\CustomDataGridStyles.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
 	</ItemGroup>
 </Project>

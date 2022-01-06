@@ -113,18 +113,21 @@ public class ShellViewModel : TabViewModelBase
 
             return useDarkTheme;
         }
-        set
-        {
-            if (SetProperty(ref useDarkTheme, value))
-            {
-                ApplicationData.Current.LocalSettings.Values[nameof(UseDarkTheme)] = useDarkTheme;
-
-                // WIP
-                //Application.Current.RequestedTheme = value ? ApplicationTheme.Dark : ApplicationTheme.Light;
-                ((App.CurrentWindow.Content as ShellView)!).RequestedTheme = value ? ElementTheme.Dark : ElementTheme.Light;
-            }
-        }
+        set => SetProperty(ref useDarkTheme, value, onChanged: OnUseDarkThemeChanged);
     }
+
+    private async void OnUseDarkThemeChanged()
+    {
+        ApplicationData.Current.LocalSettings.Values[nameof(UseDarkTheme)] = UseDarkTheme;
+
+        // TODO - Runtime changes only work on Window content and not app level.
+        //((App.CurrentWindow.Content as ShellView)!).RequestedTheme = value ? ElementTheme.Dark : ElementTheme.Light;
+
+        var requestedTheme = UseDarkTheme ? "Dark" : "Light";
+
+        await App.ShowMessageAsync($"Theme will change to {requestedTheme} after app restart.", "Theme changed");
+    }
+
 
     public void RefreshProperties()
     {
