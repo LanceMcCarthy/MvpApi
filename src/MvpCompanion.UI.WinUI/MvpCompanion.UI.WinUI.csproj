@@ -122,7 +122,7 @@
 		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
 		<PackageReference Include="Telerik.WinUI.Controls" Version="0.7.1" />
 		<PackageReference Include="CommunityToolkit.WinUI.Connectivity" Version="7.1.2" />
-		<PackageReference Include="WinUIEx" Version="1.0.0" />
+		<PackageReference Include="WinUIEx" Version="1.1.0" />
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
 

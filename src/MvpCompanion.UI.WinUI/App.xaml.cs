@@ -16,7 +16,7 @@ namespace MvpCompanion.UI.WinUI
 {
     public partial class App : Application
     {
-        public static Window CurrentWindow { get; private set; }
+        public static WindowEx CurrentWindow { get; private set; }
 
         public static MvpApiService ApiService { get; set; }
 
@@ -33,8 +33,7 @@ namespace MvpCompanion.UI.WinUI
 
             CurrentWindow = new MainWindow();
 
-            CurrentWindow.SetWindowSize(1200, 900);
-            CurrentWindow.CenterOnScreen();
+            ConfigureAppWindow(CurrentWindow);
             
             CurrentWindow.Activate();
         }
@@ -68,6 +67,17 @@ namespace MvpCompanion.UI.WinUI
             {
                 Application.Current.RequestedTheme = ApplicationTheme.Light;
             }
+        }
+
+        private static void ConfigureAppWindow(WindowEx wnd)
+        {
+            wnd.MinWidth = 900;
+            wnd.MinHeight = 600;
+            wnd.TaskBarIcon = Icon.FromFile("Images/MainIcon.ico");
+            wnd.Title = "MVP Companion";
+
+            wnd.SetWindowSize(1200, 900);
+            wnd.CenterOnScreen();
         }
     }
 }
