@@ -2,60 +2,59 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace MvpCompanion.UI.WinUI.Extensions
+namespace MvpCompanion.UI.WinUI.Extensions;
+
+public static class EnumerableExtensions
 {
-    public static class IEnumerableExtensions
+    public static ObservableCollection<T> ToObservableCollection<T>(this IEnumerable<T> list)
     {
-        public static ObservableCollection<T> ToObservableCollection<T>(this IEnumerable<T> list)
+        return new ObservableCollection<T>(list);
+    }
+
+    public static bool TryAdd<K, V>(this IDictionary<K, V> dictionary, K key, V value)
+    {
+        if (dictionary.ContainsKey(key))
         {
-            return new ObservableCollection<T>(list);
+            return false;
         }
 
-        public static bool TryAdd<K, V>(this IDictionary<K, V> dictionary, K key, V value)
+        try
         {
-            if (dictionary.ContainsKey(key))
-            {
-                return false;
-            }
+            dictionary.Add(key, value);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
-            try
-            {
-                dictionary.Add(key, value);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+    public static int AddRange<T>(this ObservableCollection<T> list, IEnumerable<T> items, bool clearFirst = false)
+    {
+        if (clearFirst)
+        {
+            list.Clear();
         }
 
-        public static int AddRange<T>(this ObservableCollection<T> list, IEnumerable<T> items, bool clearFirst = false)
-        {
-            if (clearFirst)
-            {
-                list.Clear();
-            }
-
-            foreach (T item in items)
-            {
-                list.Add(item);
-            }
-
-            return list.Count;
-        }
-
-        public static T AddAndReturn<T>(this IList<T> list, T item)
+        foreach (T item in items)
         {
             list.Add(item);
-            return item;
         }
 
-        public static void ForEach<T>(this IEnumerable<T> list, Action<T> action)
+        return list.Count;
+    }
+
+    public static T AddAndReturn<T>(this IList<T> list, T item)
+    {
+        list.Add(item);
+        return item;
+    }
+
+    public static void ForEach<T>(this IEnumerable<T> list, Action<T> action)
+    {
+        foreach (T item in list)
         {
-            foreach (T item in list)
-            {
-                action?.Invoke(item);
-            }
+            action?.Invoke(item);
         }
     }
 }

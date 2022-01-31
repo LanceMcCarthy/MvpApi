@@ -1,36 +1,31 @@
 ﻿using System;
 using Microsoft.UI.Xaml.Data;
 
-namespace MvpCompanion.UI.WinUI.Converters
+namespace MvpCompanion.UI.WinUI.Converters;
+
+public class ThresholdConverter : IValueConverter
 {
-    /// <inheritdoc />
     /// <summary>
-    /// Returns one of two objects depending on a set threshold amount
+    /// OverResult will be returned when the value is larger than the threshold amount (UnderResult is used when Threshold is equal to value)
     /// </summary>
-    public class ThresholdConverter : IValueConverter
+    public int Threshold { get; set; }
+
+    public object UnderResult { get; set; }
+
+    public object OverResult { get; set; }
+
+    public object Convert(object value, Type targetType, object parameter, string language)
     {
-        /// <summary>
-        /// OverResult will be returned when the value is larger than the threshold amount (UnderResult is used when Threshold is equal to value)
-        /// </summary>
-        public int Threshold { get; set; }
-
-        public object UnderResult { get; set; }
-
-        public object OverResult { get; set; }
-
-        public object Convert(object value, Type targetType, object parameter, string language)
+        if (value is int val)
         {
-            if (value is int val)
-            {
-                return val <= Threshold ? UnderResult : OverResult;
-            }
-
-            return null;
+            return val <= Threshold ? UnderResult : OverResult;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
+        return null;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        throw new NotImplementedException();
     }
 }

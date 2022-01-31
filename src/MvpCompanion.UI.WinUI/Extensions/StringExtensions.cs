@@ -1,42 +1,41 @@
-﻿namespace MvpCompanion.UI.WinUI.Extensions
+﻿namespace MvpCompanion.UI.WinUI.Extensions;
+
+public static class StringExtensions
 {
-    public static class StringExtensions
+    /// <summary>
+    ///     A string extension method that truncates.
+    /// </summary>
+    /// <param name="this">The @this to act on.</param>
+    /// <param name="maxLength">The maximum length.</param>
+    /// <returns>A string.</returns>
+    public static string Truncate(this string @this, int maxLength)
     {
-        /// <summary>
-        ///     A string extension method that truncates.
-        /// </summary>
-        /// <param name="this">The @this to act on.</param>
-        /// <param name="maxLength">The maximum length.</param>
-        /// <returns>A string.</returns>
-        public static string Truncate(this string @this, int maxLength)
+        const string suffix = "...";
+
+        if (@this == null || @this.Length <= maxLength)
         {
-            const string suffix = "...";
-
-            if (@this == null || @this.Length <= maxLength)
-            {
-                return @this;
-            }
-
-            int strLength = maxLength - suffix.Length;
-            return @this.Substring(0, strLength) + suffix;
+            return @this;
         }
 
-        /// <summary>
-        ///     A string extension method that truncates.
-        /// </summary>
-        /// <param name="this">The @this to act on.</param>
-        /// <param name="maxLength">The maximum length.</param>
-        /// <param name="suffix">The suffix.</param>
-        /// <returns>A string.</returns>
-        public static string Truncate(this string @this, int maxLength, string suffix)
-        {
-            if (@this == null || @this.Length <= maxLength)
-            {
-                return @this;
-            }
+        int strLength = maxLength - suffix.Length;
+        return @this.Substring(0, strLength) + suffix;
+    }
 
-            int strLength = maxLength - suffix.Length;
-            return @this.Substring(0, strLength) + suffix;
+    /// <summary>
+    ///     A string extension method that truncates.
+    /// </summary>
+    /// <param name="this">The @this to act on.</param>
+    /// <param name="maxLength">The maximum length.</param>
+    /// <param name="suffix">The suffix.</param>
+    /// <returns>A string.</returns>
+    public static string Truncate(this string @this, int maxLength, string suffix)
+    {
+        if (@this == null || @this.Length <= maxLength)
+        {
+            return @this;
         }
+
+        int strLength = maxLength - suffix.Length;
+        return @this.Substring(0, strLength) + suffix;
     }
 }

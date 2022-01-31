@@ -1,252 +1,377 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Windows.ApplicationModel;
-using Windows.Foundation.Metadata;
-using Windows.Storage;
-using Windows.Storage.Pickers;
-using Windows.Storage.Provider;
-using Windows.UI.Popups;
+﻿using CommonHelpers.Mvvm;
 using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Animation;
-using Microsoft.UI.Xaml.Navigation;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.WinUI.Common;
 using MvpCompanion.UI.WinUI.Dialogs;
+using MvpCompanion.UI.WinUI.Helpers;
 using MvpCompanion.UI.WinUI.Views;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Telerik.Core.Data;
 using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
-using CommonHelpers.Common;
-using MvpCompanion.UI.WinUI.Helpers;
-using CommonHelpers.Mvvm;
-using CommunityToolkit.WinUI.Connectivity;
+using Windows.ApplicationModel;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.Storage.Provider;
+using Microsoft.UI.Xaml.Controls;
+using Telerik.Core;
 
-namespace MvpCompanion.UI.WinUI.ViewModels
+//using Microsoft.AppCenter.Analytics;
+
+namespace MvpCompanion.UI.WinUI.ViewModels;
+
+public class HomeViewModel : TabViewModelBase
 {
-    public class HomeViewModel : ViewModelBase
+    #region Fields
+
+    private DataGridSelectionMode gridSelectionMode = DataGridSelectionMode.Single;
+    private bool isMultipleSelectionEnabled;
+    private IncrementalLoadingCollection<ContributionsModel> contributions;
+    private bool areAppBarButtonsEnabled;
+    private bool isInternetDisabled;
+
+    // LoD features
+    private int currentItemsOffset;
+    private string displayTotal;
+
+    #endregion
+
+    public HomeViewModel()
     {
-        #region Fields
+        //if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
+        //{
+        //    var designItems = DesignTimeHelpers.GenerateContributions();
 
-        private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
-        private bool _isMultipleSelectionEnabled;
-        private ObservableCollection<ContributionsModel> _contributions;
-        private bool _areAppBarButtonsEnabled;
-        private bool _isInternetDisabled;
+        //    Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
 
-        #endregion
+        //    foreach (var contribution in designItems)
+        //    {
+        //        Contributions.Add(contribution);
+        //    }
+        //}
 
-        public HomeViewModel()
+        //RefreshAfterDisconnectCommand = new DelegateCommand(async () =>
+        //{
+        //    IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
+
+        //    if (IsInternetDisabled)
+        //    {
+        //        //await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
+        //        await App.ShowMessageAsync("Internet is still not available, please check your connection and try again.", "No Internet");
+        //    }
+        //    else
+        //    {
+
+        //    }
+        //});
+
+        GroupingOptionCommand = new DelegateCommand<string>(SelectGrouping);
+    }
+
+    #region Properties
+
+    public IncrementalLoadingCollection<ContributionsModel> Contributions
+    {
+        get => contributions;
+        set => SetProperty(ref contributions, value);
+    }
+
+    public BindableCollection<object> SelectedContributions { get; set; }
+
+    public GroupDescriptorCollection GroupDescriptors { get; set; }
+
+    public DelegateCommand RefreshAfterDisconnectCommand { get; }
+
+    public DelegateCommand<string> GroupingOptionCommand { get; }
+
+    public bool IsMultipleSelectionEnabled
+    {
+        get => isMultipleSelectionEnabled;
+        set => SetProperty(ref isMultipleSelectionEnabled, value, onChanged: IsMultipleSelectionEnabledChanged);
+    }
+    
+    public DataGridSelectionMode GridSelectionMode
+    {
+        get => gridSelectionMode;
+        set => SetProperty(ref gridSelectionMode, value);
+    }
+
+    public bool AreAppBarButtonsEnabled
+    {
+        get => areAppBarButtonsEnabled;
+        set => SetProperty(ref areAppBarButtonsEnabled, value);
+    }
+
+    public bool IsInternetDisabled
+    {
+        get => isInternetDisabled;
+        set => SetProperty(ref isInternetDisabled, value);
+    }
+
+    public string DisplayTotal
+    {
+        get => displayTotal;
+        set => SetProperty(ref displayTotal, value);
+    }
+
+    #endregion
+
+    #region Methods
+
+    private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
+    {
+        try
         {
-            if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
+            // Here we use a different flag when the view model is busy loading items because we don't want to cover the UI
+            // The IsBusy flag is used for when deleting items, when we want to block the UI
+            IsBusy = true;
+            IsBusyMessage = "[Load on Demand] fetching items from API...";
+
+            var result = await App.ApiService.GetContributionsAsync(currentItemsOffset, (int)count);
+
+            Debug.WriteLine($"** LoadMoreItems ** PagingIndex: {result.PagingIndex}, Count: {result.Contributions.Count}, TotalContributions: {result.TotalContributions}");
+
+            currentItemsOffset = result.PagingIndex ?? 0;
+
+            DisplayTotal = $"{currentItemsOffset} of {result.TotalContributions}";
+
+            // Compare the PagingIndex (how many items have been delivered) with the TotalContributions
+            return result.PagingIndex == result.TotalContributions 
+                ? null // return null to turn off load on demand
+                : result.Contributions; // return the current set of items
+        }
+        catch (Exception ex)
+        {
+            // Only log this exception after the user is logged in
+            if (App.ApiService.IsLoggedIn)
             {
-                var designItems = DesignTimeHelpers.GenerateContributions();
-
-                Contributions = new ObservableCollection<ContributionsModel>();
-
-                foreach (var contribution in designItems)
-                {
-                    Contributions.Add(contribution);
-                }
+                await ex.LogExceptionAsync();
+                Debug.WriteLine($"LoadMoreItems Exception: {ex}");
             }
 
-            RefreshAfterDisconnectCommand = new DelegateCommand(async () =>
+            return null;
+        }
+        finally
+        {
+            IsBusy = false;
+            IsBusyMessage = $"";
+        }
+    }
+
+    //private async Task LoadContributionsAsync()
+    //{
+    //    try
+    //    {
+    //        IsBusy = true;
+    //        IsBusyMessage = "loading contributions...";
+            
+    //        // Get all the contributions for the currently signed in MVP.
+    //        var result = await App.ApiService.GetAllContributionsAsync();
+
+    //        Contributions.Clear();
+
+    //        foreach (var cont in result.Contributions)
+    //        {
+    //            Contributions.Add(cont);
+    //        }
+            
+    //        IsBusyMessage = "";
+    //        IsBusy = false;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        await ex.LogExceptionWithUserMessage();
+    //    }
+    //    finally
+    //    {
+    //        IsBusyMessage = "";
+    //        IsBusy = false;
+    //    }
+    //}
+
+    private void ClearSelections()
+    {
+        if (SelectedContributions != null && SelectedContributions.Count > 0)
+        {
+            SelectedContributions.Clear();
+        }
+    }
+
+    private void SelectGrouping(string groupBy)
+    {
+        if (GroupDescriptors == null)
+            return;
+
+        GroupDescriptors.Clear();
+
+        switch (groupBy)
+        {
+            case "Date":
+                // Custom group descriptor to group by DateTime.Date  
+                GroupDescriptors.Add(new DelegateGroupDescriptor { DisplayContent = "Start Date", KeyLookup = new DateTimeMonthKeyLookup() });
+                break;
+            case "Award Area":
+                // Need a custom descriptor to group by ContributionTechnology.Name
+                GroupDescriptors.Add(new DelegateGroupDescriptor { DisplayContent = "Award Name", KeyLookup = new TechnologyKeyLookup() });
+                break;
+            case "Contribution Type":
+                GroupDescriptors.Add(new PropertyGroupDescriptor { DisplayContent = "Contribution Type", PropertyName = nameof(ContributionsModel.ContributionTypeName) });
+                break;
+            case "None":
+            default:
+                // do nothing because we've already cleared the GroupDescriptors
+                break;
+        }
+    }
+
+    private void IsMultipleSelectionEnabledChanged()
+    {
+        GridSelectionMode = IsMultipleSelectionEnabled
+            ? DataGridSelectionMode.Multiple
+            : DataGridSelectionMode.None;
+    }
+
+    #endregion
+
+    #region Event Handlers
+
+    public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
+    {
+        //if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+        //{
+        //    //var editDialog = new ContributionEditorDialog();
+
+        //    //await editDialog.ShowAsync();
+
+        //    //if (editDialog.ContributionResult != null)
+        //    //{
+        //    //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
+        //    //}
+        //}
+        //else
+        //{
+        //    // TODO navigation
+        //    //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
+        //}
+    }
+
+    public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
+    {
+        ClearSelections();
+    }
+
+    public async void RefreshButton_Click(object sender, RoutedEventArgs e)
+    {
+        ClearSelections();
+        
+        currentItemsOffset = 0;
+        Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
+        await Contributions.LoadMoreItemsAsync(50);
+    }
+
+    public async void DeleteSelectionButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            IsBusy = true;
+            IsBusyMessage = "preparing to delete selected contributions...";
+
+            var successfullyDeletedContributions = new List<ContributionsModel>();
+
+            foreach (ContributionsModel contribution in SelectedContributions)
             {
-                IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
-
-                if (IsInternetDisabled)
-                {
-                    await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
-                }
-                else
-                {
-
-                }
-            });
-        }
-
-        #region Properties
-
-        public ObservableCollection<ContributionsModel> Contributions
-        {
-            get => _contributions;
-            set => SetProperty(ref _contributions, value);
-        }
-
-        public ObservableCollection<object> SelectedContributions { get; set; }
-
-        public GroupDescriptorCollection GroupDescriptors { get; set; }
-
-        public DelegateCommand RefreshAfterDisconnectCommand { get; }
-
-        public bool IsMultipleSelectionEnabled
-        {
-            get => _isMultipleSelectionEnabled;
-            set
-            {
-                SetProperty(ref _isMultipleSelectionEnabled, value);
-
-                GridSelectionMode = value
-                    ? DataGridSelectionMode.Multiple
-                    : DataGridSelectionMode.Single;
-            }
-        }
-
-        public DataGridSelectionMode GridSelectionMode
-        {
-            get => _gridSelectionMode;
-            set => SetProperty(ref _gridSelectionMode, value);
-        }
-
-        public bool AreAppBarButtonsEnabled
-        {
-            get => _areAppBarButtonsEnabled;
-            set => SetProperty(ref _areAppBarButtonsEnabled, value);
-        }
-
-        public bool IsInternetDisabled
-        {
-            get => _isInternetDisabled;
-            set => SetProperty(ref _isInternetDisabled, value);
-        }
-
-        #endregion
-
-        #region Event Handlers
-
-        public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-            {
-                var editDialog = new ContributionEditorDialog();
-
-                await editDialog.ShowAsync();
-
-                if (editDialog.ContributionResult != null)
-                {
-                    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-                }
-            }
-            else
-            {
-                // TODO navigation
-                //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
-            }
-        }
-
-        public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedContributions.Any())
-                SelectedContributions.Clear();
-        }
-
-        public async void RefreshButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedContributions.Any())
-                SelectedContributions.Clear();
-
-            await LoadContributionsAsync();
-        }
-
-        public async void DeleteSelectionButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                IsBusy = true;
-                IsBusyMessage = "preparing to delete contributions...";
-
-                foreach (ContributionsModel contribution in SelectedContributions)
+                try
                 {
                     IsBusyMessage = $"deleting {contribution.Title}...";
 
                     var success = await App.ApiService.DeleteContributionAsync(contribution);
 
-                    // Quality assurance, only logs a successful or failed delete.
-                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                    // Here, I've switched to tracking individual items that hve been deleted 
+                    // This allows to locally cache the items that need to be removed forom the collection. 
+                    if (success == true)
                     {
-                        //StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
+                        successfullyDeletedContributions.Add(contribution);
                     }
+
+                    // Quality assurance, only logs a successful or failed delete and the type of contribution.
+                    //Analytics.TrackEvent(success == true ? "DeleteContribution" : "DeleteContribution Failed", new Dictionary<string, string>
+                    //{
+                    //    { "ContributionTypeName", contribution.ContributionTypeName }
+                    //});
                 }
-
-                SelectedContributions.Clear();
-
-                // After deleting contributions, we need to fetch updated list
-                IsBusyMessage = "refreshing contributions...";
-                await LoadContributionsAsync();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"DeleteSelectedContributions Exception: {ex}");
-            }
-            finally
-            {
-                IsBusy = false;
-                IsBusyMessage = "";
-            }
-        }
-
-        public async void RadDataGrid_OnSelectionChanged(object sender, DataGridSelectionChangedEventArgs e)
-        {
-            // When in multiple selection mode, enable/disable delete instead of navigating to details page
-            if (GridSelectionMode == DataGridSelectionMode.Multiple)
-            {
-                AreAppBarButtonsEnabled = e?.AddedItems.Any() == true;
-                return;
-            }
-
-            // When in single selection mode, go to the selected item's details page
-            if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
-            {
-                if(ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+                catch (Exception ex)
                 {
-                    var editDialog = new ContributionEditorDialog(contribution);
+                    //Analytics.TrackEvent("DeleteContribution Exception", new Dictionary<string, string>
+                    //{
+                    //    { "Exception", ex.Message },
+                    //    { "ContributionTypeName", contribution.ContributionTypeName}
+                    //});
 
-                    await editDialog.ShowAsync();
-
-                    if (editDialog.ContributionResult != null)
-                    {
-                        Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-                    }
-                }
-                else
-                {
-                    // TODO navigation
-                    //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
+                    Debug.WriteLine($"Delete Item Exception: {ex}");
                 }
             }
-        }
 
-        public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
-        {
-            if (!(sender is RadioButton rb) || rb.Content == null || GroupDescriptors == null) return;
+            SelectedContributions.Clear();
 
-            GroupDescriptors.Clear();
-
-            var groupName = rb.Content.ToString();
-
-            switch (groupName)
+            foreach (var contribution in successfullyDeletedContributions)
             {
-                case "None":
-                    // do nothing because we've already cleared the GroupDescriptors
-                    break;
-                case "Date":
-                    // Custom group descriptor to group by DateTime.Date  
-                    GroupDescriptors.Add(new DelegateGroupDescriptor { DisplayContent = "Start Date", KeyLookup = new DateTimeMonthKeyLookup() });
-                    break;
-                case "Award Area":
-                    // Need a custom descriptor to group by ContributionTechnology.Name
-                    GroupDescriptors.Add(new DelegateGroupDescriptor { DisplayContent = "Award Name", KeyLookup = new TechnologyKeyLookup() });
-                    break;
-                case "Contribution Type":
-                    GroupDescriptors.Add(new PropertyGroupDescriptor { DisplayContent = "Contribution Type", PropertyName = nameof(ContributionsModel.ContributionTypeName) });
-                    break;
+                this.Contributions.Remove(contribution);
             }
-        }
 
-        public async void ExportButton_OnClick(object sender, RoutedEventArgs e)
+            // No longer needed after keeping a local cache of successfully deleted items and removing them locally. This old approach was really slow
+            // After deleting contributions, we need to fetch updated list
+            //IsBusyMessage = "refreshing contributions...";
+            //await LoadContributionsAsync();
+        }
+        catch (Exception ex)
+        {
+            await ex.LogExceptionAsync();
+        }
+        finally
+        {
+            IsBusy = false;
+            IsBusyMessage = "";
+        }
+    }
+    
+    public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
+    {
+        if (sender is not RadioButton rb
+            || rb.Content == null
+            || GroupDescriptors == null)
+            return;
+        
+        GroupDescriptors.Clear();
+
+        var groupName = rb.Content.ToString();
+
+        switch (groupName)
+        {
+            default:
+            case "None":
+                // do nothing because we've already cleared the GroupDescriptors
+                break;
+            case "Date":
+                // Custom group descriptor to group by DateTime.Date  
+                GroupDescriptors.Add(new DelegateGroupDescriptor { DisplayContent = "Start Date", KeyLookup = new DateTimeMonthKeyLookup() });
+                break;
+            case "Award Area":
+                // Need a custom descriptor to group by ContributionTechnology.Name
+                GroupDescriptors.Add(new DelegateGroupDescriptor { DisplayContent = "Award Name", KeyLookup = new TechnologyKeyLookup() });
+                break;
+            case "Contribution Type":
+                GroupDescriptors.Add(new PropertyGroupDescriptor { DisplayContent = "Contribution Type", PropertyName = nameof(ContributionsModel.ContributionTypeName) });
+                break;
+        }
+    }
+
+    public async void ExportButton_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
         {
             IsBusy = true;
             IsBusyMessage = "exporting all contributions...";
@@ -263,6 +388,9 @@ namespace MvpCompanion.UI.WinUI.ViewModels
             };
 
             savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
+
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.CurrentWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(savePicker, hwnd);
 
             var file = await savePicker.PickSaveFileAsync();
 
@@ -286,149 +414,103 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                                   "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
                                   "4. Now you can us 'Save As' to xlsx file or csv.";
 
-                    await new MessageDialog(message, "Export Saved").ShowAsync();
+                    await App.ShowMessageAsync(message, "Export Saved");
                 }
             }
 
             IsBusyMessage = "";
             IsBusy = false;
         }
+        catch (Exception ex)
+        {
+            await ex.LogExceptionAsync();
+            await App.ShowMessageAsync("There was an issue saving the exported data to a file. If this continues, please contact support awesome.apps@outlook.com", "Export Error");
+        }
+    }
+    
+    //public async void RadDataGrid_OnSelectionChanged(object? sender, DataGridSelectionChangedEventArgs e)
+    //{
+    //    // When in multiple selection mode, enable/disable delete instead of navigating to details page
+    //    if (GridSelectionMode == DataGridSelectionMode.Multiple)
+    //    {
+    //        AreAppBarButtonsEnabled = e?.AddedItems.Any() == true;
+    //        return;
+    //    }
 
-        #endregion
+    //    // When in single selection mode, go to the selected item's details page
+    //    if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
+    //    {
+    //        ShellView.Instance.AddDetailTab(contribution);
 
-        #region Methods
+    //        //if (ShellView.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+    //        //{
+    //        //var editDialog = new ContributionEditorDialog(contribution);
+    //        //await editDialog.ShowAsync();
 
-        //private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
+    //        //if (editDialog.ContributionResult != null)
+    //        //{
+    //        //    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
+    //        //}
+    //        //}
+    //        //else
+    //        //{
+    //        // TODO navigation
+    //        //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
+    //        //}
+    //    }
+    //}
+
+    #endregion
+
+    #region Navigation
+
+    public override async Task OnLoadedAsync()
+    {
+        //if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
         //{
-        //    try
-        //    {
-        //        // Here we use a different flag when the view model is busy loading items because we don't want to cover the UI
-        //        // The IsBusy flag is used for when deleting items, when we want to block the UI
-        //        IsLoadingMoreItems = true;
-
-        //        var result = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
-
-        //        Debug.WriteLine($"** LoadMoreItems **\nPagingIndex: {result.PagingIndex}, Count: {result.Contributions.Count}, TotalContributions: {result.TotalContributions}");
-
-        //        _currentOffset = result.PagingIndex;
-
-        //        DisplayTotal = $"{_currentOffset} of {result.TotalContributions}";
-
-        //        // If we've received all the contributions, return null to stop automatic loading
-        //        if (result.PagingIndex == result.TotalContributions)
-        //            return null;
-
-        //        return result.Contributions;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Only log this exception after the user is logged in
-        //        if (App.ShellPage?.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
-        //        {
-        //            await ex.LogExceptionAsync();
-        //            Debug.WriteLine($"LoadMoreItems Exception: {ex}");
-        //        }
-
-        //        return null;
-        //    }
-        //    finally
-        //    {
-        //        IsLoadingMoreItems = false;
-        //    }
+        //    await App.ShowMessageAsync("This application requires an internet connection. Please check your connection and try again.", "No Internet");
+        //    return;
         //}
 
-        private async Task LoadContributionsAsync()
+        // If this is true, it means the app is on first launch.
+        // The signin process will fire completed event that re-calls this OnLoadedasync method
+        if (App.ApiService == null)
+            return;
+
+        if (App.ApiService.IsLoggedIn == false)
         {
-            try
-            {
-                IsBusy = true;
-                IsBusyMessage = "loading contributions...";
-
-                Contributions = new ObservableCollection<ContributionsModel>();
-
-                // Get all the contributions for the currently signed in MVP.
-                var result = await App.ApiService.GetAllContributionsAsync();
-
-                foreach (var cont in result.Contributions)
-                {
-                    Contributions.Add(cont);
-                }
-
-                // Load the items into the DataGrid
-                //Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);
-
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
-            catch (Exception ex)
-            {
-                // BUG
-                await ex.LogExceptionWithUserMessage();
-            }
-            finally
-            {
-                IsBusyMessage = "";
-                IsBusy = false;
-            }
+            await ShellView.Instance.LoginDialog.SignInAsync();
         }
 
-        #endregion
-
-        #region Navigation
-
-        public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
+        // If this is the first time the page loads, the contributions property will be null
+        if (Contributions == null)
         {
-            IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
-
-            if (IsInternetDisabled)
+            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
+            await Contributions.LoadMoreItemsAsync(50);
+        }
+        
+        if (ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is not true)
+        {
+            var td = new TutorialDialog
             {
-                await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
-                return;
-            }
+                XamlRoot = App.CurrentWindow.Content.XamlRoot,
+                SettingsKey = "HomePageTutorialShown",
+                MessageTitle = "Home Page",
+                Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
+                          "- Group or sort the contributions by any column.\r\n" +
+                          "- Select a contribution to view its details or edit it.\r\n" +
+                          "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
+                          "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
+            };
 
-            if (ShellView.Instance.DataContext is ShellViewModel shellVm)
-            {
-                if (!shellVm.IsLoggedIn)
-                {
-                    await ShellView.Instance.SignInAsync();
-                }
-
-                // Although user should be logged in at this point, still check
-                // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
-                if (shellVm.IsLoggedIn)
-                {
-                    await LoadContributionsAsync();
-                }
-
-                if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
-                {
-                    var td = new TutorialDialog
-                    {
-                        SettingsKey = "HomePageTutorialShown",
-                        MessageTitle = "Home Page",
-                        Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
-                                  "- Group or sort the contributions by any column.\r\n" +
-                                  "- Select a contribution to view its details or edit it.\r\n" +
-                                  "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
-                                  "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
-                    };
-
-                    await td.ShowAsync();
-                }
-
-                if (IsBusy)
-                {
-                    IsBusy = false;
-                    IsBusyMessage = "";
-                }
-            }
+            await td.ShowAsync();
         }
 
-        public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
+        IsBusy = false;
+        IsBusyMessage = "";
 
-        }
-
-        #endregion
+        await base.OnLoadedAsync();
     }
+
+    #endregion
 }

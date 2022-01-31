@@ -1,29 +1,24 @@
 ﻿using System;
 using Microsoft.UI.Xaml.Data;
 
-namespace MvpCompanion.UI.WinUI.Converters
+namespace MvpCompanion.UI.WinUI.Converters;
+
+public class DoubleToIntConverter : IValueConverter
 {
-    /// <inheritdoc />
-    /// <summary>
-    /// Converts between Double and Int32
-    /// </summary>
-    public class DoubleToIntConverter : IValueConverter
+    public object Convert(object value, Type targetType, object parameter, string language)
     {
-        public object Convert(object value, Type targetType, object parameter, string language)
+        return value;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, string language)
+    {
+        if (value is double source)
+        {
+            return System.Convert.ToInt32(source);
+        }
+        else
         {
             return value;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            if (value is double source)
-            {
-                return System.Convert.ToInt32(source);
-            }
-            else
-            {
-                return value;
-            }
         }
     }
 }

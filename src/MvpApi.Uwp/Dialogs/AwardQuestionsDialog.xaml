@@ -7,7 +7,7 @@
                xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
                xmlns:controls="using:Telerik.UI.Xaml.Controls"
                mc:Ignorable="d"
-               Title="MVP Award Questionnaire (BETA)"
+               Title="MVP Award Renewal Questionnaire"
                PrimaryButtonText="Save Answers"
                SecondaryButtonText="Cancel"
                PrimaryButtonClick="SaveAnswersButton_Click"
@@ -58,39 +58,46 @@
         <Grid HorizontalAlignment="Center"
               Padding="10"
               Background="WhiteSmoke"
-              Margin="0,0,0,20"
+              Margin="0,0,0,0"
               Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Button x:Name="SubmitButton"
-                    Content="Submit Answers"
-                    IsEnabled="False"
-                    Background="Green"
-                    Foreground="White"
-                    Click="SubmitButton_Clicked"
-                    HorizontalAlignment="Center" />
-
 
             <CheckBox x:Name="ConfirmationCheckBox"
                       Checked="ConfirmationCheckBox_OnChecked"
                       Unchecked="ConfirmationCheckBox_OnUnchecked"
                       HorizontalAlignment="Center"
-                      Content="Enable Submission (answers are not editable after submission!)."
-                      Margin="0,10,0,0"
-                      Grid.Row="1" />
+                      Margin="0,10,0,10">
+                <CheckBox.Content>
+                    <TextBlock>
+                        <Run Text="Enable Final Submission?" />
+                        <Run Text="Answers are not editable after submission!"
+                             Foreground="Red"/>
+                    </TextBlock>
+                </CheckBox.Content>
+            </CheckBox>
 
-            <Grid Background="#99000000"
+            <Button x:Name="SubmitButton"
+                    Content="Submit Final Answers"
+                    IsEnabled="False"
+                    Background="Green"
+                    Foreground="White"
+                    Click="SubmitButton_Clicked"
+                    HorizontalAlignment="Stretch"
+                    Grid.Row="1" />
+
+            <!--<Grid Background="#99000000"
                   Grid.RowSpan="2">
-                <TextBlock Text="Due to the permanence of submitting answers, only 'Save Answers' is enabled during the beta. You can submit your saved answers on the MVP portal."
+                <TextBlock Text="While in preview, this will save your answers to your MVP profile, but not submit them. You can do your final submission on the MVP portal."
                            TextWrapping="WrapWholeWords"
                            HorizontalTextAlignment="Center"
                            Foreground="White"
                            VerticalAlignment="Center"
                            Margin="20" />
-            </Grid>
+            </Grid>-->
         </Grid>
 
         <Grid x:Name="LoadingGrid"

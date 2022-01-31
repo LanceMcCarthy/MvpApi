@@ -1,58 +1,83 @@
-﻿using Microsoft.UI.Xaml;
+﻿//using Microsoft.AppCenter;
+//using Microsoft.AppCenter.Analytics;
+//using Microsoft.AppCenter.Crashes;
+
+using System;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.UI.Popups;
+using Microsoft.UI.Xaml;
 using MvpApi.Services.Apis;
-using MvpApi.Services.Utilities;
+using MvpCompanion.UI.WinUI.Helpers;
+using WinUIEx;
 
 namespace MvpCompanion.UI.WinUI
 {
     public partial class App : Application
     {
-        public static MvpApiService ApiService { get; set; }
+        public static WindowEx CurrentWindow { get; private set; }
 
-        public static LoginWindow MainLoginWindow { get; private set; }
+        public static MvpApiService ApiService { get; set; }
 
         public App()
         {
-            this.InitializeComponent();
-            MainLoginWindow = new LoginWindow();
+            SetTheme();
+            InitializeComponent();
+            UnhandledException += App_UnhandledException;
+        }
+        
+        protected override void OnLaunched(LaunchActivatedEventArgs args)
+        {
+            //AppCenter.Start(ExternalConstants.AppCenterId, typeof(Analytics), typeof(Crashes));
+
+            CurrentWindow = new MainWindow();
+
+            ConfigureAppWindow(CurrentWindow);
+            
+            CurrentWindow.Activate();
         }
 
-        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        private async void App_UnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
         {
-            var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
+            e.Handled = true;
 
-            // We have a refresh token from a previous session
-            if (!string.IsNullOrEmpty(refreshToken))
+            await e.Exception.LogExceptionWithUserMessage();
+        }
+
+        public static async Task ShowMessageAsync(string body, string title = "")
+        {
+            var md = string.IsNullOrEmpty(title) 
+                ? new MessageDialog(body) 
+                : new MessageDialog(body, title);
+
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(CurrentWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(md, hwnd);
+
+            await md.ShowAsync();
+        }
+
+        public static void SetTheme()
+        {
+            if (ApplicationData.Current.LocalSettings.Values.TryGetValue("UseDarkTheme", out var rawValue))
             {
-                var authorizationHeader = await LoginWindow.RequestAuthorizationAsync(refreshToken);
-
-                // If the bearer token was returned
-                if (!string.IsNullOrEmpty(authorizationHeader))
-                {
-                    await MainLoginWindow.InitializeMvpApiAsync(authorizationHeader);
-                }
-                else
-                {
-                    await MainLoginWindow.SignInAsync();
-                }
+                Application.Current.RequestedTheme = (bool)rawValue ? ApplicationTheme.Dark : ApplicationTheme.Light;
             }
             else
             {
-                await MainLoginWindow.SignInAsync();
+                Application.Current.RequestedTheme = ApplicationTheme.Light;
             }
-
-            m_window = new MainWindow();
-            m_window.Activate();
-
-            // TODO Ask user to send crash report from previous crash
-
-            //bool didAppCrash = await Crashes.HasCrashedInLastSessionAsync();
-
-            //if (didAppCrash)
-            //{
-            //    ErrorReport crashReport = await Crashes.GetLastSessionCrashReportAsync();
-            //}
         }
 
-        private Window m_window;
+        private static void ConfigureAppWindow(WindowEx wnd)
+        {
+            wnd.MinWidth = 900;
+            wnd.MinHeight = 600;
+            wnd.TaskBarIcon = Icon.FromFile("Images/MainIcon.ico");
+            wnd.Title = "MVP Companion";
+
+            wnd.SetWindowSize(1200, 900);
+            wnd.CenterOnScreen();
+        }
     }
 }

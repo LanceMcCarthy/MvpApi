@@ -1,6 +1,6 @@
-﻿{
+{
   "profiles": {
-    "MyApp": {
+    "MvpCompanionWinUI3": {
       "commandName": "MsixPackage",
       "commandLineArgs": "", /* Command line arguments to pass to the app. */
       "alwaysReinstallApp": false, /* Uninstall and then reinstall the app. All information about the app state is deleted. */

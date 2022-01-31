@@ -1,7 +1,7 @@
 ﻿using System;
 using Telerik.Core;
 
-namespace MvpCompanion.UI.WinUI.Models
+namespace MvpCompanion.UI.WinUI
 {
     public class Product : ViewModelBase
     {
@@ -34,12 +34,12 @@ namespace MvpCompanion.UI.WinUI.Models
         {
             get
             {
-                return id;
+                return this.id;
             }
             set
             {
-                id = value;
-                OnPropertyChanged();
+                this.id = value;
+                this.OnPropertyChanged();
             }
         }
 
@@ -47,12 +47,12 @@ namespace MvpCompanion.UI.WinUI.Models
         {
             get
             {
-                return name;
+                return this.name;
             }
             set
             {
-                name = value;
-                OnPropertyChanged();
+                this.name = value;
+                this.OnPropertyChanged();
             }
         }
 
@@ -60,12 +60,12 @@ namespace MvpCompanion.UI.WinUI.Models
         {
             get
             {
-                return unitPrice;
+                return this.unitPrice;
             }
             set
             {
-                unitPrice = value;
-                OnPropertyChanged();
+                this.unitPrice = value;
+                this.OnPropertyChanged();
             }
         }
 
@@ -73,12 +73,12 @@ namespace MvpCompanion.UI.WinUI.Models
         {
             get
             {
-                return date;
+                return this.date;
             }
             set
             {
-                date = value;
-                OnPropertyChanged();
+                this.date = value;
+                this.OnPropertyChanged();
             }
         }
 
@@ -86,12 +86,12 @@ namespace MvpCompanion.UI.WinUI.Models
         {
             get
             {
-                return discontinued;
+                return this.discontinued;
             }
             set
             {
-                discontinued = value;
-                OnPropertyChanged();
+                this.discontinued = value;
+                this.OnPropertyChanged();
             }
         }
     }

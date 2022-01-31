@@ -1,6 +1,6 @@
 ﻿using Telerik.Data.Core;
 
-namespace MvpCompanion.UI.WinUI.Models
+namespace MvpCompanion.UI.WinUI
 {
     public class CustomIKeyLookup : IKeyLookup
     {

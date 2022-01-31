@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
+		<TargetFramework>net6.0-windows10.0.18362.0</TargetFramework>
 		<TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
 		<RootNamespace>MvpCompanion.UI.WinUI</RootNamespace>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -10,84 +10,183 @@
 		<UseWinUI>true</UseWinUI>
 		<EnablePreviewMsixTooling>true</EnablePreviewMsixTooling>
 		<PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<ApplicationIcon>Images\MainIcon.ico</ApplicationIcon>
 	</PropertyGroup>
 	<ItemGroup>
-		<None Remove="Dialogs\AdditionalTechnologyAreasPicker.xaml" />
-		<None Remove="Dialogs\AwardQuestionsDialog.xaml" />
-		<None Remove="Dialogs\ContributionEditorDialog.xaml" />
-		<None Remove="Dialogs\TutorialDialog.xaml" />
-		<None Remove="Images\4starStar.png" />
-		<None Remove="Images\CoffeeKudo.png" />
-		<None Remove="Images\DinnerKudo.png" />
-		<None Remove="Images\LockScreenLogo.scale-200.png" />
-		<None Remove="Images\LunchKudo.png" />
-		<None Remove="Images\MvpIcon.png" />
-		<None Remove="Images\SplashScreen.scale-200.png" />
-		<None Remove="Images\Square150x150Logo.scale-200.png" />
-		<None Remove="Images\Square44x44Logo.scale-200.png" />
-		<None Remove="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
-		<None Remove="Images\StoreLogo.png" />
-		<None Remove="Images\VideoAd.png" />
-		<None Remove="Images\Wide310x150Logo.scale-200.png" />
-		<None Remove="LoginWindow.xaml" />
-		<None Remove="Package.appxmanifest" />
-		<None Remove="Views\ShellView.xaml" />
+	  <None Remove="Styles\CustomDataGridStyles.xaml" />
+	  <None Remove="Views\AboutView.xaml" />
+	  <None Remove="Views\AddContributionsView.xaml" />
+	  <None Remove="Views\ContributionDetailView.xaml" />
+	  <None Remove="Views\KudosView.xaml" />
+	  <None Remove="Views\ProfileView.xaml" />
 	</ItemGroup>
+	
 	<ItemGroup>
 		<AppxManifest Include="Package.appxmanifest">
 			<SubType>Designer</SubType>
 		</AppxManifest>
 	</ItemGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'">
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
+		<LangVersion>latest</LangVersion>
+	</PropertyGroup>
+
 	<ItemGroup>
-		<Content Include="Images\4starStar.png" />
-		<Content Include="Images\CoffeeKudo.png" />
-		<Content Include="Images\DinnerKudo.png" />
-		<Content Include="Images\LockScreenLogo.scale-200.png" />
-		<Content Include="Images\LunchKudo.png" />
-		<Content Include="Images\MvpIcon.png" />
-		<Content Include="Images\SplashScreen.scale-200.png" />
-		<Content Include="Images\Square150x150Logo.scale-200.png" />
-		<Content Include="Images\Square44x44Logo.scale-200.png" />
-		<Content Include="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
-		<Content Include="Images\StoreLogo.png" />
-		<Content Include="Images\VideoAd.png" />
-		<Content Include="Images\Wide310x150Logo.scale-200.png" />
+	  <Content Include="Images\4starStar.png" />
+	  <Content Include="Images\CoffeeKudo.png" />
+	  <Content Include="Images\DinnerKudo.png" />
+	  <Content Include="Images\HeroBackground.png" />
+	  <Content Include="Images\LargeTile.png" />
+	  <Content Include="Images\LargeTile.scale-100.png" />
+	  <Content Include="Images\LargeTile.scale-125.png" />
+	  <Content Include="Images\LargeTile.scale-150.png" />
+	  <Content Include="Images\LargeTile.scale-200.png" />
+	  <Content Include="Images\LargeTile.scale-400.png" />
+	  <Content Include="Images\LockScreenLogo.scale-200.png" />
+	  <Content Include="Images\LunchKudo.png" />
+	  <Content Include="Images\MainIcon.ico" />
+	  <Content Include="Images\MvpCompanionIcon.png" />
+	  <Content Include="Images\MvpIcon.png" />
+	  <Content Include="Images\SmallTile.scale-100.png" />
+	  <Content Include="Images\SmallTile.scale-125.png" />
+	  <Content Include="Images\SmallTile.scale-150.png" />
+	  <Content Include="Images\SmallTile.scale-200.png" />
+	  <Content Include="Images\SmallTile.scale-400.png" />
+	  <Content Include="Images\SplashScreen.png" />
+	  <Content Include="Images\SplashScreen.scale-100.png" />
+	  <Content Include="Images\SplashScreen.scale-125.png" />
+	  <Content Include="Images\SplashScreen.scale-150.png" />
+	  <Content Include="Images\SplashScreen.scale-200.png" />
+	  <Content Include="Images\SplashScreen.scale-400.png" />
+	  <Content Include="Images\Square150x150Logo.scale-100.png" />
+	  <Content Include="Images\Square150x150Logo.scale-125.png" />
+	  <Content Include="Images\Square150x150Logo.scale-150.png" />
+	  <Content Include="Images\Square150x150Logo.scale-200.png" />
+	  <Content Include="Images\Square150x150Logo.scale-400.png" />
+	  <Content Include="Images\Square44x44Logo.altform-lightunplated_targetsize-16.png" />
+	  <Content Include="Images\Square44x44Logo.altform-lightunplated_targetsize-24.png" />
+	  <Content Include="Images\Square44x44Logo.altform-lightunplated_targetsize-256.png" />
+	  <Content Include="Images\Square44x44Logo.altform-lightunplated_targetsize-32.png" />
+	  <Content Include="Images\Square44x44Logo.altform-lightunplated_targetsize-48.png" />
+	  <Content Include="Images\Square44x44Logo.altform-unplated_targetsize-16.png" />
+	  <Content Include="Images\Square44x44Logo.altform-unplated_targetsize-256.png" />
+	  <Content Include="Images\Square44x44Logo.altform-unplated_targetsize-32.png" />
+	  <Content Include="Images\Square44x44Logo.altform-unplated_targetsize-48.png" />
+	  <Content Include="Images\Square44x44Logo.scale-100.png" />
+	  <Content Include="Images\Square44x44Logo.scale-125.png" />
+	  <Content Include="Images\Square44x44Logo.scale-150.png" />
+	  <Content Include="Images\Square44x44Logo.scale-200.png" />
+	  <Content Include="Images\Square44x44Logo.scale-400.png" />
+	  <Content Include="Images\Square44x44Logo.targetsize-16.png" />
+	  <Content Include="Images\Square44x44Logo.targetsize-24.png" />
+	  <Content Include="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
+	  <Content Include="Images\Square44x44Logo.targetsize-256.png" />
+	  <Content Include="Images\Square44x44Logo.targetsize-32.png" />
+	  <Content Include="Images\Square44x44Logo.targetsize-48.png" />
+	  <Content Include="Images\StoreLogo.backup(1).png" />
+	  <Content Include="Images\StoreLogo.backup.png" />
+	  <Content Include="Images\StoreLogo.scale-100.png" />
+	  <Content Include="Images\StoreLogo.scale-125.png" />
+	  <Content Include="Images\StoreLogo.scale-150.png" />
+	  <Content Include="Images\StoreLogo.scale-200.png" />
+	  <Content Include="Images\StoreLogo.scale-400.png" />
+	  <Content Include="Images\VideoAd.png" />
+	  <Content Include="Images\Wide310x150Logo.png" />
+	  <Content Include="Images\Wide310x150Logo.scale-100.png" />
+	  <Content Include="Images\Wide310x150Logo.scale-125.png" />
+	  <Content Include="Images\Wide310x150Logo.scale-150.png" />
+	  <Content Include="Images\Wide310x150Logo.scale-200.png" />
+	  <Content Include="Images\Wide310x150Logo.scale-400.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.WinUI.Connectivity" Version="7.0.3" />
-		<PackageReference Include="Microsoft.ProjectReunion" Version="0.8.5" />
-		<PackageReference Include="Microsoft.ProjectReunion.Foundation" Version="0.8.5" />
-		<PackageReference Include="Microsoft.ProjectReunion.WinUI" Version="0.8.5" />
-		<PackageReference Include="Telerik.WinUI.Controls" Version="*" />
+		<PackageReference Include="CommonHelpers" Version="1.1.3" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22000.196" />
+		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+		<PackageReference Include="Telerik.WinUI.Controls" Version="0.7.1" />
+		<PackageReference Include="CommunityToolkit.WinUI.Connectivity" Version="7.1.2" />
+		<PackageReference Include="WinUIEx" Version="1.1.0" />
 		<Manifest Include="$(ApplicationManifest)" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj" />
-	  <ProjectReference Include="..\MvpApi.Services\MvpApi.Services.csproj" />
+		<ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj" />
+		<ProjectReference Include="..\MvpApi.Services\MvpApi.Services.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Page Update="Dialogs\AdditionalTechnologyAreasPicker.xaml">
-	    <SubType>Designer</SubType>
-	  </Page>
-	  <Page Update="Dialogs\AwardQuestionsDialog.xaml">
-	    <SubType>Designer</SubType>
-	  </Page>
-	  <Page Update="Dialogs\ContributionEditorDialog.xaml">
-	    <SubType>Designer</SubType>
-	  </Page>
-	  <Page Update="Dialogs\TutorialDialog.xaml">
-	    <SubType>Designer</SubType>
-	  </Page>
-	  <Page Update="LoginWindow.xaml">
-	    <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+	  <Page Update="Views\KudosView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
 	  </Page>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Page Update="Views\ShellView.xaml">
+	  <Page Update="Views\AboutView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Views\AddContributionsView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Views\ContributionDetailView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Views\ProfileView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Views\SettingsView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </Page>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Page Update="Dialogs\TutorialDialog.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Page Update="Views\HomeView.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Page Update="Dialogs\LoginDialog.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Page Update="Styles\CustomDataGridStyles.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </Page>
 	</ItemGroup>

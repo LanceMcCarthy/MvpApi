@@ -9,97 +9,100 @@ using Windows.Services.Store;
 using Windows.UI.Popups;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Navigation;
 //using VungleSDK;
+using MvpCompanion.UI.WinUI.Common;
 using CommonHelpers.Common;
+using CommunityToolkit.WinUI.Connectivity;
+//using Microsoft.AppCenter.Analytics;
 using MvpCompanion.UI.WinUI.Helpers;
 
-namespace MvpCompanion.UI.WinUI.ViewModels
+namespace MvpCompanion.UI.WinUI.ViewModels;
+
+public class KudosViewModel : TabViewModelBase
 {
-    public class KudosViewModel : ViewModelBase
+    private StoreContext storeContext;
+    private Visibility feedbackHubButtonVisibility;
+    //VungleAd sdkInstance;
+    //private string vungleAdPlacementId = "KUDOSPAGEINTERSTITIAL-9395221";
+
+    public KudosViewModel()
     {
-        private StoreContext _context;
-        private Visibility _feedbackHubButtonVisibility;
-        //VungleAd sdkInstance;
-        private string vungleAppId = "5f765c14d870a360a1d6f906";
-        private string vungleAdPlacementId = "KUDOSPAGEINTERSTITIAL-9395221";
+        KudosCollection.Add(new Kudos { Title = "Video Ad", Price = "Free", ImageUrl = "/Images/VideoAd.png" });
+        KudosCollection.Add(new Kudos { Title = "Store Rating", Price = "Free", ImageUrl = "/Images/4starStar.png" });
+        KudosCollection.Add(new Kudos { Title = "Small Coffee", ProductId = "MvpCompanion_SmallCoffee", StoreId = "9NJ9NKHQF7C4", Price = "$1.49", ImageUrl = "/Images/CoffeeKudo.png" });
+        KudosCollection.Add(new Kudos { Title = "Lunch", ProductId = "MvpCompanion_Lunch", StoreId = "9N999Z3H3GPK", Price = "$4.89", ImageUrl = "/Images/LunchKudo.png" });
+        KudosCollection.Add(new Kudos { Title = "Dinner", ProductId = "MvpCompanion_Dinner", StoreId = "9NB8SR731DM6", Price = "$9.49", ImageUrl = "/Images/DinnerKudo.png" });
+    }
 
-        public KudosViewModel()
+    public ObservableCollection<Kudos> KudosCollection { get; set; } = new();
+
+    public Visibility FeedbackHubButtonVisibility
+    {
+        get => feedbackHubButtonVisibility;
+        set => SetProperty(ref feedbackHubButtonVisibility, value);
+    }
+
+    public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
+    {
+        if (e.ClickedItem is not Kudos kudo) 
+            return;
+        
+        //Analytics.TrackEvent("Kudo Selection", new Dictionary<string, string>
+        //{
+        //    {"Item", kudo.Title}
+        //});
+
+        if (!string.IsNullOrEmpty(kudo.StoreId))
         {
-            KudosCollection.Add(new Kudos { Title = "Video Ad", Price = "Free", ImageUrl = "/Images/VideoAd.png" });
-            KudosCollection.Add(new Kudos { Title = "Store Rating", Price = "Free", ImageUrl = "/Images/4starStar.png" });
-            KudosCollection.Add(new Kudos { Title = "Small Coffee", ProductId = "MvpCompanion_SmallCoffee", StoreId = "9NJ9NKHQF7C4", Price = "$1.49", ImageUrl = "/Images/CoffeeKudo.png" });
-            KudosCollection.Add(new Kudos { Title = "Lunch", ProductId = "MvpCompanion_Lunch", StoreId = "9N999Z3H3GPK", Price = "$4.89", ImageUrl = "/Images/LunchKudo.png" });
-            KudosCollection.Add(new Kudos { Title = "Dinner", ProductId = "MvpCompanion_Dinner", StoreId = "9NB8SR731DM6", Price = "$9.49", ImageUrl = "/Images/DinnerKudo.png" });
+            await PurchaseKudosAsync(kudo.StoreId, kudo.Title);
         }
 
-        public ObservableCollection<Kudos> KudosCollection { get; set; } = new ObservableCollection<Kudos>();
-
-        public Visibility FeedbackHubButtonVisibility
+        if (kudo.Title == "Store Rating")
         {
-            get => _feedbackHubButtonVisibility;
-            set => SetProperty(ref _feedbackHubButtonVisibility, value);
+            await ShowRatingReviewDialog();
         }
 
-        public async void KudosGridView_OnItemClick(object sender, ItemClickEventArgs e)
+        if (kudo.Title == "Video Ad")
         {
-            if (!(e.ClickedItem is Kudos kudo)) return;
-
-            if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+            if (kudo.IsBusy)
             {
-                //StoreServicesCustomEventLogger.GetDefault().Log($"{kudo.Title} Kudos Item Selected");
+                await App.ShowMessageAsync("Ad is being fetched right now, wait for busy indicator disappear and try again.");
             }
-
-            if (!string.IsNullOrEmpty(kudo.StoreId))
+            else
             {
-                await PurchaseKudosAsync(kudo.StoreId);
-            }
+                //AdConfig adConfig = new AdConfig();
+                //adConfig.SoundEnabled = false;
 
-            if (kudo.Title == "Store Rating")
-            {
-                await ShowRatingReviewDialog();
-            }
-
-            if (kudo.Title == "Video Ad")
-            {
-                if (kudo.IsBusy)
-                {
-                    await new MessageDialog("Ad is being fetched right now, wait for busy indicator disappear and try again.").ShowAsync();
-                }
-                else
-                {
-                    //AdConfig adConfig = new AdConfig();
-                    //adConfig.SoundEnabled = false;
-
-                    //sdkInstance.PlayAdAsync(adConfig, vungleAdPlacementId);
-                }
+                //sdkInstance.PlayAdAsync(adConfig, vungleAdPlacementId);
             }
         }
+    }
 
-        public async Task ShowRatingReviewDialog()
+    public async Task ShowRatingReviewDialog()
+    {
+        try
         {
-            try
+            IsBusy = true;
+            IsBusyMessage = "rating and review in progress (you should see a separate window)...";
+
+            var result = await StoreRequestHelper.SendRequestAsync(StoreContext.GetDefault(), 16, "");
+
+            IsBusyMessage = "action complete, reviewing result...";
+
+            if (result.ExtendedError != null)
+                return;
+
+            var jsonObject = JObject.Parse(result.Response);
+            var status = jsonObject.SelectToken("status").ToString();
+
+            IsBusyMessage = "action complete, showing result...";
+
+            switch (status)
             {
-                IsBusy = true;
-                IsBusyMessage = "rating and review in progress (you should see a separate window)...";
-
-                var result = await StoreRequestHelper.SendRequestAsync(StoreContext.GetDefault(), 16, "");
-
-                IsBusyMessage = "action complete, reviewing result...";
-
-                if (result.ExtendedError != null)
-                    return;
-
-                var jsonObject = JObject.Parse(result.Response);
-                var status = jsonObject.SelectToken("status").ToString();
-
-                IsBusyMessage = "action complete, showing result...";
-
-                if (status == "success")
-                {
-                    await new MessageDialog("Thank you for taking the time to leave a rating! If you left 3 stars or lower, please let me know how I can improve the app (go to About page).", "Success").ShowAsync();
-                }
-                else if (status == "aborted")
+                case "success":
+                    await App.ShowMessageAsync("Thank you for taking the time to leave a rating! If you left 3 stars or lower, please let me know how I can improve the app (go to About page).", "Success");
+                    break;
+                case "aborted":
                 {
                     var md = new MessageDialog("If you prefer not to leave a bad rating but still want to provide feedback, click the email button below. I work hard to make sure you have a great app experience and would love to hear from you.", "Review Aborted");
 
@@ -112,116 +115,125 @@ namespace MvpCompanion.UI.WinUI.ViewModels
                     {
                         await FeedbackHelpers.Current.EmailFeedbackMessageAsync();
                     }
+
+                    break;
                 }
-                else
-                {
-                    await new MessageDialog($"The rating or review did not complete, here's what Windows had to say: {jsonObject.SelectToken("status")}.\r\n\nIf you meant to leave a review, try again. If this keeps happening, contact us and share the error code above.", "Rating or Review was not successful").ShowAsync();
-                }
-            }
-            catch (Exception ex)
-            {
-                await ex.LogExceptionWithUserMessage();
-            }
-            finally
-            {
-                IsBusy = false;
-                IsBusyMessage = "";
+                default:
+                    await App.ShowMessageAsync($"The rating or review did not complete, here's what Windows had to say: {status}.\r\n\nIf you meant to leave a review, try again. If this keeps happening, contact us and share the error code above.", "Rating or Review was not successful");
+                    break;
             }
         }
-
-        public async Task PurchaseKudosAsync(string storeId)
+        catch (Exception ex)
         {
-            try
-            {
-                IsBusy = true;
-                IsBusyMessage = "in-app purchase in progress (you should see a separate window)...";
-
-                if (_context == null)
-                    _context = StoreContext.GetDefault();
-
-                var result = await _context.RequestPurchaseAsync(storeId);
-
-                IsBusyMessage = "action complete, reviewing result...";
-
-                var extendedError = "";
-
-                if (result.ExtendedError != null)
-                    extendedError = result.ExtendedError.Message;
-
-                var resultMessage = "";
-
-                switch (result.Status)
-                {
-                    case StorePurchaseStatus.AlreadyPurchased:
-                        resultMessage = "You have already purchased this kudos, thank you!";
-                        break;
-                    case StorePurchaseStatus.Succeeded:
-                        resultMessage = "Kudos provided! Thank you for your support and help in keeping this app free.";
-                        break;
-                    case StorePurchaseStatus.NotPurchased:
-                        resultMessage = "Kudos were not purchased. Don't worry, you were not charged for peeking ;)";
-                        break;
-                    case StorePurchaseStatus.NetworkError:
-                        resultMessage = "The purchase was unsuccessful due to a network error.\r\n\nError:\r\n" + extendedError;
-                        break;
-                    case StorePurchaseStatus.ServerError:
-                        resultMessage = "The purchase was unsuccessful due to a server error.\r\n\nError:\r\n" + extendedError;
-                        break;
-                    default:
-                        resultMessage = "The purchase was unsuccessful due to an unknown error.\r\n\nError:\r\n" + extendedError;
-                        break;
-                }
-
-                IsBusyMessage = "action complete, showing result...";
-
-                await new MessageDialog(resultMessage).ShowAsync();
-            }
-            catch (Exception ex)
-            {
-                await ex.LogExceptionWithUserMessage();
-            }
-            finally
-            {
-                IsBusy = false;
-                IsBusyMessage = "";
-            }
+            await ex.LogExceptionWithUserMessage();
         }
+        finally
+        {
+            IsBusy = false;
+            IsBusyMessage = "";
+        }
+    }
 
-        //private async void SdkInstance_OnAdPlayableChanged(object sender, AdPlayableEventArgs e)
+    public async Task PurchaseKudosAsync(string storeId, string name)
+    {
+        try
+        {
+            IsBusy = true;
+            IsBusyMessage = "in-app purchase in progress (you should see a separate window)...";
+
+            if (storeContext == null)
+                storeContext = StoreContext.GetDefault();
+
+            var result = await storeContext.RequestPurchaseAsync(storeId);
+
+            IsBusyMessage = "action complete, reviewing result...";
+
+            var extendedError = "";
+
+            if (result.ExtendedError != null)
+                extendedError = result.ExtendedError.Message;
+
+            var resultMessage = "";
+
+            //Analytics.TrackEvent("Kudo Purchase Attempt", new Dictionary<string, string>
+            //{
+            //    {"StoreId", storeId},
+            //    {"Kudo Name", name},
+            //    {"Result", $"{result.Status}"}
+            //});
+
+            resultMessage = result.Status switch
+            {
+                StorePurchaseStatus.AlreadyPurchased => "You have already purchased this kudos, thank you!",
+                StorePurchaseStatus.Succeeded => "Kudos provided! Thank you for your support and help in keeping this app free.",
+                StorePurchaseStatus.NotPurchased => "Kudos were not purchased. Don't worry, you were not charged for peeking ;)",
+                StorePurchaseStatus.NetworkError => "The purchase was unsuccessful due to a network error.\r\n\nError:\r\n" + extendedError,
+                StorePurchaseStatus.ServerError => "The purchase was unsuccessful due to a server error.\r\n\nError:\r\n" + extendedError,
+                _ => "The purchase was unsuccessful due to an unknown error.\r\n\nError:\r\n" + extendedError
+            };
+
+            IsBusyMessage = "action complete, showing result...";
+
+            await App.ShowMessageAsync(resultMessage);
+        }
+        catch (Exception ex)
+        {
+            await ex.LogExceptionWithUserMessage();
+        }
+        finally
+        {
+            IsBusy = false;
+            IsBusyMessage = "";
+        }
+    }
+
+    //private async void SdkInstance_OnAdPlayableChanged(object sender, AdPlayableEventArgs e)
+    //{
+    //    Debug.WriteLine($"AdPlayable changed: {e.Placement}, Playable: {e.AdPlayable}");
+
+    //    var kudo = KudosCollection.FirstOrDefault(a => a.Title == "Video Ad");
+
+    //    await CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+    //    {
+    //        if (kudo != null)
+    //        {
+    //            kudo.IsBusy = !e.AdPlayable;
+    //        }
+    //    });
+    //}
+
+    #region Navigation
+
+    public override async Task OnLoadedAsync()
+    {
+        //if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
         //{
-        //    Debug.WriteLine($"AdPlayable changed: {e.Placement}, Playable: {e.AdPlayable}");
-
-        //    var kudo = KudosCollection.FirstOrDefault(a => a.Title == "Video Ad");
-
-        //    await CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-        //    {
-        //        if (kudo != null)
-        //        {
-        //            kudo.IsBusy = !e.AdPlayable;
-        //        }
-        //    });
+        //    await new MessageDialog("This application requires an internet connection. Please check your connection and try again.", "No Internet").ShowAsync();
+        //    return;
         //}
 
-        #region Navigation
+        //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
+        //    ? Visibility.Visible
+        //    : Visibility.Collapsed;
 
-        public async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
-        {
-            //FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
-            //    ? Visibility.Visible
-            //    : Visibility.Collapsed;
+        //sdkInstance = AdFactory.GetInstance(ExternalConstants.VungleAppId);
+        //sdkInstance.OnAdPlayableChanged += SdkInstance_OnAdPlayableChanged;
+        //sdkInstance.LoadAd(vungleAdPlacementId);
 
-            //sdkInstance = AdFactory.GetInstance(vungleAppId);
-            //sdkInstance.OnAdPlayableChanged += SdkInstance_OnAdPlayableChanged;
-            //sdkInstance.LoadAd(vungleAdPlacementId);
-
-        }
-
-        public async Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            //sdkInstance.OnAdPlayableChanged -= SdkInstance_OnAdPlayableChanged;
-
-        }
-
-        #endregion
+        await base.OnLoadedAsync();
     }
+
+    public override async Task OnUnloadedAsync()
+    {
+        //sdkInstance.OnAdPlayableChanged -= SdkInstance_OnAdPlayableChanged;
+
+        await base.OnLoadedAsync();
+    }
+
+    public override Task<bool> OnCloseRequestedAsync()
+    {
+        return base.OnCloseRequestedAsync();
+    }
+    
+    #endregion
 }

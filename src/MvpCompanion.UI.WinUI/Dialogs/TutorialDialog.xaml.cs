@@ -1,6 +1,6 @@
-﻿using Windows.Storage;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.Storage;
 
 namespace MvpCompanion.UI.WinUI.Dialogs
 {
@@ -17,16 +17,16 @@ namespace MvpCompanion.UI.WinUI.Dialogs
 
         public string MessageTitle
         {
-            get => (string) GetValue(MessageTitleProperty);
+            get => (string)GetValue(MessageTitleProperty);
             set => SetValue(MessageTitleProperty, value);
         }
-        
+
         public static readonly DependencyProperty MessageProperty = DependencyProperty.Register(
             "Message", typeof(string), typeof(TutorialDialog), new PropertyMetadata("Message"));
 
         public string Message
         {
-            get => (string) GetValue(MessageProperty);
+            get => (string)GetValue(MessageProperty);
             set => SetValue(MessageProperty, value);
         }
 
