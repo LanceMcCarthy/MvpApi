@@ -146,14 +146,6 @@
             "Active": false
           },
           {
-            "Id": "90c301bb-189a-e411-93f2-9cb65495d3c4",
-            "Name": "Enterprise Security",
-            "AwardName": "Cloud and Datacenter Management",
-            "AwardCategory": "Other Award Category",
-            "Statuscode": 0,
-            "Active": false
-          },
-          {
             "Id": "7ac301bb-189a-e411-93f2-9cb65495d3c4",
             "Name": "Group Policy",
             "AwardName": "Cloud and Datacenter Management",
@@ -255,6 +247,14 @@
             "Active": false
           },
           {
+            "Id": "9a4b2adf-9f72-ec11-8943-000d3a53ba10",
+            "Name": "Azure Data Explorer",
+            "AwardName": "Data Platform",
+            "AwardCategory": "Other Award Category",
+            "Statuscode": 0,
+            "Active": false
+          },
+          {
             "Id": "9a03f4ef-066b-e511-810b-fc15b428ced0",
             "Name": "Azure Data Lake",
             "AwardName": "Data Platform",
@@ -295,6 +295,14 @@
             "Active": false
           },
           {
+            "Id": "e2bc2807-a072-ec11-8943-000d3a53ba10",
+            "Name": "Azure Purview",
+            "AwardName": "Data Platform",
+            "AwardCategory": "Other Award Category",
+            "Statuscode": 0,
+            "Active": false
+          },
+          {
             "Id": "a603f4ef-066b-e511-810b-fc15b428ced0",
             "Name": "Azure Search",
             "AwardName": "Data Platform",
@@ -304,7 +312,7 @@
           },
           {
             "Id": "bcc13df4-a633-eb11-a813-000d3a8ccd71",
-            "Name": "Azure SQL (Database, Pools, Serverless, Hyperscale, Managed Instance, Virtual Machines)\u00a0",
+            "Name": "Azure SQL (Database, Pools, Serverless, Hyperscale, Managed Instance, Virtual Machines) ",
             "AwardName": "Data Platform",
             "AwardCategory": "Other Award Category",
             "Statuscode": 0,
@@ -428,14 +436,6 @@
             "Active": false
           },
           {
-            "Id": "84c301bb-189a-e411-93f2-9cb65495d3c4",
-            "Name": "Azure DevOps",
-            "AwardName": "Developer Technologies",
-            "AwardCategory": "Other Award Category",
-            "Statuscode": 0,
-            "Active": false
-          },
-          {
             "Id": "8cc301bb-189a-e411-93f2-9cb65495d3c4",
             "Name": "C++",
             "AwardName": "Developer Technologies",
@@ -454,6 +454,14 @@
           {
             "Id": "cc03f4ef-066b-e511-810b-fc15b428ced0",
             "Name": "Front End Web Dev",
+            "AwardName": "Developer Technologies",
+            "AwardCategory": "Other Award Category",
+            "Statuscode": 0,
+            "Active": false
+          },
+          {
+            "Id": "84c301bb-189a-e411-93f2-9cb65495d3c4",
+            "Name": "GitHub & Azure DevOps",
             "AwardName": "Developer Technologies",
             "AwardCategory": "Other Award Category",
             "Statuscode": 0,
@@ -975,6 +983,14 @@
           {
             "Id": "1183268f-7773-e511-8110-fc15b4285d7c",
             "Name": "Surface for IT",
+            "AwardName": "Windows and Devices for IT",
+            "AwardCategory": "Other Award Category",
+            "Statuscode": 0,
+            "Active": false
+          },
+          {
+            "Id": "ac699959-fc2a-ec11-b6e6-000d3a54f950",
+            "Name": "Windows 365",
             "AwardName": "Windows and Devices for IT",
             "AwardCategory": "Other Award Category",
             "Statuscode": 0,
