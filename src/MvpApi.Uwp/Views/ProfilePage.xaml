@@ -334,7 +334,7 @@
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export Online Identities"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
-                <AppBarButton Label="Complete Award Questionnaire (beta)"
+                <AppBarButton Label="Renewal Award Questionnaire"
                               Icon="OpenWith"
                               Click="{x:Bind ViewModel.ShowQuestionnaireButton_Click}" />
             </CommandBar.SecondaryCommands>

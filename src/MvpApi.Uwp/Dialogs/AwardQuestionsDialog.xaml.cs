@@ -1,4 +1,5 @@
-﻿using MvpApi.Common.Models;
+﻿using System;
+using MvpApi.Common.Models;
 using MvpApi.Services.Apis;
 using MvpCompanion.UI.Common.Helpers;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Template10.Utils;
 using Windows.ApplicationModel;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -15,7 +17,7 @@ namespace MvpApi.Uwp.Dialogs
     {
         private readonly MvpApiService apiService;
 
-        private ObservableCollection<QuestionnaireItem> Items { get; set; } = new ObservableCollection<QuestionnaireItem>();
+        private ObservableCollection<QuestionnaireItem> QuestionnaireItems { get; } = new ObservableCollection<QuestionnaireItem>();
 
         public AwardQuestionsDialog(MvpApiService service)
         {
@@ -25,10 +27,10 @@ namespace MvpApi.Uwp.Dialogs
             
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                Items = DesignTimeHelpers.GenerateQuestionnaireItems();
+                QuestionnaireItems = DesignTimeHelpers.GenerateQuestionnaireItems();
             }
 
-            ItemsListView.ItemsSource = Items;
+            ItemsListView.ItemsSource = QuestionnaireItems;
 
             Loaded += AwardQuestionsDialog_Loaded;
         }
@@ -38,12 +40,11 @@ namespace MvpApi.Uwp.Dialogs
             ShowProgress("getting questions...");
 
             // Go through the questions and populate the ListView.
-
-            var questions = new List<AwardConsiderationQuestionModel>(await apiService.GetAwardConsiderationQuestionsAsync());
-
-            foreach (var question in questions)
+            var readOnlyQuestions = await apiService.GetAwardConsiderationQuestionsAsync();
+            
+            foreach (var question in readOnlyQuestions)
             {
-                Items.Add(new QuestionnaireItem { QuestionItem = question });
+                QuestionnaireItems.Add(new QuestionnaireItem { QuestionItem = question });
             }
 
             // Check for saved answers an update the matching questions.
@@ -51,15 +52,13 @@ namespace MvpApi.Uwp.Dialogs
             ShowProgress("getting saved answers...");
 
             var savedAnswers = await apiService.GetAwardConsiderationAnswersAsync();
-
-            var answers = new List<AwardConsiderationAnswerModel>();
             
             // If there is a 400 error, this means the MVP has already submitted their answers.
             if (savedAnswers == null)
             {
                 ShowProgress("You've likely already submitted your answers. If not, try again later.");
 
-                Items.ForEach(item=>item.AnswerItem = new AwardConsiderationAnswerModel());
+                QuestionnaireItems.ForEach(item => item.AnswerItem = new AwardConsiderationAnswerModel());
 
                 SubmitButton.IsEnabled = false;
                 ConfirmationCheckBox.IsEnabled = false;
@@ -68,14 +67,14 @@ namespace MvpApi.Uwp.Dialogs
             else
             {
                 // Go through the questions and see if there is already an Answer for it.
-                foreach (var item in Items)
+                foreach (var questionnaireItem in QuestionnaireItems)
                 {
-                    var matchingAnswer = answers.FirstOrDefault(a => a.AwardQuestionId == item.QuestionItem.AwardQuestionId);
+                    var matchingAnswer = savedAnswers.FirstOrDefault(a => a.AwardQuestionId == questionnaireItem.QuestionItem.AwardQuestionId);
 
                     if (matchingAnswer != null)
                     {
                         // If there is a preexisting answer, set it
-                        item.AnswerItem = matchingAnswer;
+                        questionnaireItem.AnswerItem = matchingAnswer;
                     }
                 }
             }
@@ -92,11 +91,13 @@ namespace MvpApi.Uwp.Dialogs
                 var answers = new List<AwardConsiderationAnswerModel>();
 
                 if (answers.Count == 0)
-                    return;
-
-                foreach (var item in Items)
                 {
-                    answers.Add(item.AnswerItem);
+                    return;
+                }
+
+                foreach (var questionnaireItem in QuestionnaireItems)
+                {
+                    answers.Add(questionnaireItem.AnswerItem);
                 }
 
                 await apiService.SaveAwardConsiderationAnswerAsync(answers);
@@ -117,27 +118,71 @@ namespace MvpApi.Uwp.Dialogs
 
         private async void SubmitButton_Clicked(object sender, RoutedEventArgs e)
         {
-            // Need to get double confirmation from user, this is not undoable!!!
             if (ConfirmationCheckBox.IsChecked == true)
             {
-                ShowProgress("submitting answers...");
+                // Get final, explicit, permission to submit the answers because this is not undoable!!!
 
-                var result = true; //await App.ApiService.SubmitAwardConsiderationAnswerAsync();
+                var md = new MessageDialog("Once you submit the answers, you cannot change them. Are you Sure you want to submit your saved answers?", "Final Confirmation!");
+                md.Commands.Add(new UICommand("SUBMIT (final)"));
+                md.Commands.Add(new UICommand("CANCEL"));
+
+                var mdResult = await md.ShowAsync();
+
+                if (mdResult.Label == "CANCEL")
+                {
+                    return;
+                }
+
+                ShowProgress("permanently submitting answers...");
+
+                var result = await apiService.SubmitAwardConsiderationAnswerAsync();
                 
                 if (result)
                 {
-                    SubmitButton.Content = "success";
+                    SubmitButton.Content = "DONE";
                     SubmitButton.IsEnabled = false;
                     ConfirmationCheckBox.IsEnabled = false;
+
+                    await new MessageDialog("You have successfully submitted your answers for the current MVP renewal year.", "Success!").ShowAsync();
+                }
+                else
+                {
+                    await new MessageDialog("The answers were not sent for final submission. If this happens again, you may need to use the MVP portal to do final submission (your answers are saved in the portal).").ShowAsync();
                 }
 
                 HideProgress();
             }
         }
 
+        private async void ConfirmationCheckBox_OnChecked(object sender, RoutedEventArgs e)
+        {
+            // Make sure the user has saved answers for all the questions.
+
+            ShowProgress("Double checking all answers have been saved...");
+
+            var questions = await apiService.GetAwardConsiderationQuestionsAsync();
+            var savedAnswers = await apiService.GetAwardConsiderationAnswersAsync();
+
+            HideProgress();
+
+            if (savedAnswers.Count == questions.Count)
+            {
+                SubmitButton.IsEnabled = true;
+            }
+            else
+            {
+                await new MessageDialog("You need to save all your answers before you can submit them.").ShowAsync();
+            }
+        }
+
+        private void ConfirmationCheckBox_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            SubmitButton.IsEnabled = false;
+        }
+
         private void ShowProgress(string text)
         {
-            if(LoadingGrid.Visibility != Visibility.Visible)
+            if (LoadingGrid.Visibility != Visibility.Visible)
             {
                 LoadingGrid.Visibility = Visibility.Visible;
             }
@@ -163,16 +208,6 @@ namespace MvpApi.Uwp.Dialogs
             }
 
             StatusTextBlock.Text = string.Empty;
-        }
-
-        private void ConfirmationCheckBox_OnChecked(object sender, RoutedEventArgs e)
-        {
-            SubmitButton.IsEnabled = true;
-        }
-
-        private void ConfirmationCheckBox_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            SubmitButton.IsEnabled = false;
         }
     }
 }
