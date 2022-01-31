@@ -11,20 +11,28 @@
     <AssemblyName>MvpApi.Uwp</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.18362.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.16299.0</TargetPlatformMinVersion>
-    <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
+    <TargetPlatformVersion>10.0.19041.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
+    <MinimumVisualStudioVersion>16</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>MvpApi.Uwp_StoreKey.pfx</PackageCertificateKeyFile>
-    <RuntimeIdentifiers>win10-arm;win10-arm-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
-    <PackageCertificateThumbprint>7536EF90BE346D0D1ECF0C621C3174C7081B9147</PackageCertificateThumbprint>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <RuntimeIdentifiers>win10-arm;win10-arm-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot;win10-arm64-aot</RuntimeIdentifiers>
+    <PackageCertificateThumbprint>F59E815B12EB302AFB967D855BDEC315D27DB6B3</PackageCertificateThumbprint>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x86|x64|arm|arm64</AppxBundlePlatforms>
+    <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-    <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
-    <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <GenerateTestArtifacts>False</GenerateTestArtifacts>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <!--<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppInstallerUpdateFrequency>6</AppInstallerUpdateFrequency>
+    <AppInstallerCheckForUpdateFrequency>Hourly</AppInstallerCheckForUpdateFrequency>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppInstallerUri>https://dvlup.blob.core.windows.net/general-app-files/Installers/MvpCompanion/</AppInstallerUri>
+    <HoursBetweenUpdateChecks>6</HoursBetweenUpdateChecks>-->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -125,21 +133,20 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\DateTimeMonthKeyLookup.cs" />
-    <Compile Include="Common\LoginChangedEventArgs.cs" />
     <Compile Include="Common\TechnologyKeyLookup.cs" />
     <Compile Include="Controls\TechnologyAreasListView.cs" />
     <Compile Include="Converters\BoolToIconConverter.cs" />
     <Compile Include="Converters\ContributionTypeNameToBrushConverter.cs" />
+    <Compile Include="Converters\DateTimeToDateTimeOffsetConverter.cs" />
+    <Compile Include="Converters\DoubleToIntConverter.cs" />
     <Compile Include="Converters\MvcContentUrlConverter.cs" />
+    <Compile Include="Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Converters\PathToBitmapImageConverter.cs" />
     <Compile Include="Converters\PrivacyLevelToBrushConverter.cs" />
     <Compile Include="Converters\StringToUriConverter.cs" />
     <Compile Include="Converters\ThresholdConverter.cs" />
-    <Compile Include="Converters\DoubleToIntConverter.cs" />
-    <Compile Include="Converters\DateTimeToDateTimeOffsetConverter.cs" />
-    <Compile Include="Converters\NullToVisibilityConverter.cs" />
-    <Compile Include="Converters\PathToBitmapImageConverter.cs" />
-    <Compile Include="Converters\UploadStatusToBrushConverter.cs" />
     <Compile Include="Converters\UploadStatusToBoolConverter.cs" />
+    <Compile Include="Converters\UploadStatusToBrushConverter.cs" />
     <Compile Include="Dialogs\AdditionalTechnologyAreasPicker.xaml.cs">
       <DependentUpon>AdditionalTechnologyAreasPicker.xaml</DependentUpon>
     </Compile>
@@ -152,13 +159,6 @@
     <Compile Include="Dialogs\TutorialDialog.xaml.cs">
       <DependentUpon>TutorialDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Extensions\ContributionExtensions.cs" />
-    <Compile Include="Helpers\DiagnosticsHelper.cs" />
-    <Compile Include="Helpers\ExceptionLogger.cs" />
-    <Compile Include="Helpers\FeedbackHelpers.cs" />
-    <Compile Include="Helpers\PaletteHelper.cs" />
-    <Compile Include="Helpers\TaskUtilities.cs" />
-    <Compile Include="Helpers\DesignTimeHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Selectors\ContributionTypeNameCellStyleSelector.cs" />
     <Compile Include="Selectors\TechAreaGroupStyleSelector.cs" />
@@ -210,7 +210,6 @@
     <Content Include="Assets\LottieFiles\PaperPlane.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="MvpApi.Uwp_StoreKey.pfx" />
     <None Include="MvpApi.Uwp_TemporaryKey.pfx" />
     <None Include="ViewModels\readme.md" />
   </ItemGroup>
@@ -327,37 +326,43 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommonHelpers">
-      <Version>1.0.12</Version>
+      <Version>1.1.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.8</Version>
+      <Version>6.2.13</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp">
-      <Version>5.1.1</Version>
+      <Version>7.1.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Connectivity">
-      <Version>5.1.1</Version>
+      <Version>7.1.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
-      <Version>5.1.1</Version>
+      <Version>7.1.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI">
-      <Version>5.1.1</Version>
+      <Version>7.1.2</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Animations">
+      <Version>7.1.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
-      <Version>5.1.1</Version>
+      <Version>7.1.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.UI.Xaml">
-      <Version>2.1.190606001</Version>
+      <Version>2.7.0</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>10.0.3</Version>
     </PackageReference>
     <PackageReference Include="Telerik.UI.for.UniversalWindowsPlatform">
-      <Version>2019.2.618.1</Version>
+      <Version>2022.1.111.1</Version>
     </PackageReference>
     <PackageReference Include="Template10">
       <Version>1.1.12</Version>
+    </PackageReference>
+    <PackageReference Include="VungleSDK">
+      <Version>6.10.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -369,15 +374,12 @@
       <Project>{edc2d11b-fe53-454b-a7e5-6c74e89fa479}</Project>
       <Name>MvpApi.Services</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MvpApi.UwpBackgroundTasks\MvpApi.UwpBackgroundTasks.csproj">
-      <Project>{9d7ff5ea-20d9-40e3-9704-e3e7b5e2dc25}</Project>
-      <Name>MvpApi.UwpBackgroundTasks</Name>
+    <ProjectReference Include="..\MvpCompanion.UI.Common\MvpCompanion.UI.Common.csproj">
+      <Project>{89abf6d8-e6b8-4f86-aaa3-10a23dd0dc19}</Project>
+      <Name>MvpCompanion.UI.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="Microsoft.Advertising.Xaml, Version=10.0">
-      <Name>Microsoft Advertising SDK for XAML</Name>
-    </SDKReference>
     <SDKReference Include="Microsoft.Services.Store.Engagement, Version=10.0">
       <Name>Microsoft Engagement Framework</Name>
     </SDKReference>

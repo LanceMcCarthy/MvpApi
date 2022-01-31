@@ -15,16 +15,14 @@ using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpApi.Services.Utilities;
 using MvpApi.Uwp.Dialogs;
-using MvpApi.Uwp.Extensions;
-using MvpApi.Uwp.Helpers;
+using MvpCompanion.UI.Common.Extensions;
+using MvpCompanion.UI.Common.Helpers;
 using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Mvvm;
 using Template10.Services.NavigationService;
 using Template10.Utils;
-using ExceptionLogger = MvpApi.Uwp.Helpers.ExceptionLogger;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -61,7 +59,6 @@ namespace MvpApi.Uwp.ViewModels
 
             EditQueuedContributionCommand = new DelegateCommand<ContributionsModel>(async cont => await EditContribution(cont));
             RemoveQueuedContributionCommand = new DelegateCommand<ContributionsModel>(async cont => await RemoveContribution(cont));
-
             RemoveAdditionalTechAreaCommand = new DelegateCommand<ContributionTechnologyModel>(RemoveAdditionalArea);
 
             UploadQueue.CollectionChanged += UploadQueue_CollectionChanged;
@@ -553,7 +550,6 @@ namespace MvpApi.Uwp.ViewModels
                 }
             }
         }
-        
 
         public override Task OnNavigatingFromAsync(NavigatingEventArgs args)
         {
@@ -593,7 +589,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
-                await ExceptionLogger.LogExceptionAsync(ex);
+                await ex.LogExceptionAsync();
             }
         }
 

@@ -12,18 +12,20 @@
              x:Class="MvpApi.Forms.Portable.MainPage">
 
     <ContentPage.BindingContext>
-        <viewModels:MainPageViewModel x:Name="ViewModel"/>
+        <viewModels:MainPageViewModel x:Name="ViewModel" />
     </ContentPage.BindingContext>
 
     <Grid>
         <primitives:RadSideDrawer x:Name="SideDrawer"
+                                  DrawerLength="250"
                                   IsOpen="{Binding IsDrawerOpen, Mode=TwoWay}"
-                                  DrawerTransitionType="SlideInOnTop">
+                                  DrawerTransitionDuration="0.25"
+                                  DrawerTransitionType="Fade">
             <primitives:RadSideDrawer.DrawerContent>
                 <Grid BackgroundColor="{StaticResource LightBackgroundColor}">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="200"/>
-                        <RowDefinition/>
+                        <RowDefinition Height="200" />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
 
                     <Grid BackgroundColor="{StaticResource DarkBlueColor}"
@@ -42,7 +44,7 @@
                                               WidthRequest="120"
                                               Margin="40,20,40,20">
                             <Image x:Name="ProfileImage"
-                                   Source="{Binding ProfileImagePath}"/>
+                                   Source="{Binding ProfileImagePath}" />
                         </primitives:RadBorder>
 
                         <Label Text="{Binding Mvp.DisplayName}"
@@ -54,33 +56,57 @@
                     </Grid>
 
                     <StackLayout Grid.Row="1">
-                        <Button Text="Home"
-                                TextColor="{StaticResource LightTextColor}"
-                                BackgroundColor="{StaticResource MediumBlueColor}"
-                                Command="{Binding GoToViewCommand}"
-                                CommandParameter="{x:Static models:ViewType.Home}"
-                                Margin="5" />
-                        <Button Text="Profile"
-                                TextColor="{StaticResource LightTextColor}"
-                                BackgroundColor="{StaticResource MediumBlueColor}"
-                                Command="{Binding GoToViewCommand}"
-                                CommandParameter="{x:Static models:ViewType.Profile}"
-                                Margin="5" />
-                        <Button Text="About"
-                                TextColor="{StaticResource LightTextColor}"
-                                BackgroundColor="{StaticResource MediumBlueColor}"
-                                Command="{Binding GoToViewCommand}"
-                                CommandParameter="{x:Static models:ViewType.About}"
-                                Margin="5" />
-                        <Button Text="Signout"
-                                TextColor="{StaticResource LightTextColor}"
-                                BackgroundColor="{StaticResource MediumBlueColor}"
-                                Clicked="SignOutButton_OnClicked"
-                                Margin="5" />
+                        <input:RadButton Text="Home"
+                                         TextColor="{StaticResource DarkTextColor}"
+                                         BackgroundColor="{StaticResource LightBlueColor}"
+                                         Command="{Binding GoToViewCommand}"
+                                         CommandParameter="{x:Static models:ViewType.Home}"
+                                         CornerRadius="15"
+                                         BorderThickness="0"
+                                         Margin="5" />
+                        <input:RadButton Text="Profile"
+                                         TextColor="{StaticResource DarkTextColor}"
+                                         BackgroundColor="{StaticResource LightBlueColor}"
+                                         Command="{Binding GoToViewCommand}"
+                                         CommandParameter="{x:Static models:ViewType.Profile}"
+                                         CornerRadius="15"
+                                         BorderThickness="0"
+                                         Margin="5" />
+                        <input:RadButton Text="About"
+                                         TextColor="{StaticResource DarkTextColor}"
+                                         BackgroundColor="{StaticResource LightBlueColor}"
+                                         Command="{Binding GoToViewCommand}"
+                                         CommandParameter="{x:Static models:ViewType.About}"
+                                         CornerRadius="15"
+                                         BorderThickness="0"
+                                         Margin="5" />
+                        <input:RadButton Text="Sign out"
+                                         TextColor="{StaticResource LightBlueColor}"
+                                         BackgroundColor="{StaticResource DarkTextColor}"
+                                         CornerRadius="15"
+                                         BorderThickness="0"
+                                         Clicked="SignOutButton_OnClicked"
+                                         Margin="5" />
                     </StackLayout>
                 </Grid>
             </primitives:RadSideDrawer.DrawerContent>
         </primitives:RadSideDrawer>
+
+        <input:RadButton x:Name="MenuButton"
+                         Command="{Binding ToggleDrawerCommand}"
+                         Text="{StaticResource RightArrowEnclosedIcon}"
+                         Style="{StaticResource LargeIconRadButtonStyle}"
+                         HorizontalOptions="Start"
+                         VerticalOptions="End">
+            <input:RadButton.Triggers>
+                <DataTrigger TargetType="input:RadButton"
+                             Binding="{Binding IsDrawerOpen}"
+                             Value="True">
+                    <Setter Property="Text"
+                            Value="{StaticResource LeftArrowEnclosedIcon}" />
+                </DataTrigger>
+            </input:RadButton.Triggers>
+        </input:RadButton>
 
         <primitives:RadBusyIndicator x:Name="BusyIndicator"
                                      IsVisible="{Binding IsBusy}"
@@ -88,6 +114,7 @@
                                      Style="{StaticResource TopPageBusyIndicatorStyle}">
             <primitives:RadBusyIndicator.BusyContent>
                 <Label Text="{Binding IsBusyMessage}"
+                       TextColor="{StaticResource MediumTextColor}"
                        BindingContext="{Binding BindingContext, Source={x:Reference Page}}"
                        HorizontalTextAlignment="Center" />
             </primitives:RadBusyIndicator.BusyContent>

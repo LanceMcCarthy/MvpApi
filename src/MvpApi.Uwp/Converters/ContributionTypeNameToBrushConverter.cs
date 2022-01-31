@@ -2,11 +2,11 @@
 using Windows.UI;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
-using MvpApi.Uwp.Helpers;
+using MvpCompanion.UI.Common.Helpers;
 
 namespace MvpApi.Uwp.Converters
 {
-    internal class ContributionTypeNameToBrushConverter : IValueConverter
+    public class ContributionTypeNameToBrushConverter : IValueConverter
     {
         public bool IsForegroundColor { get; set; }
 
@@ -20,7 +20,7 @@ namespace MvpApi.Uwp.Converters
             return IsForegroundColor ? new SolidColorBrush(Colors.Black) : new SolidColorBrush(Colors.Transparent);
         }
 
-        private static SolidColorBrush GetForegroundColor(string contributionTypeName)
+        public static SolidColorBrush GetForegroundColor(string contributionTypeName)
         {
             switch (contributionTypeName)
             {
@@ -79,7 +79,7 @@ namespace MvpApi.Uwp.Converters
             }
         }
 
-        private static SolidColorBrush GetBackgroundColor(string contributionTypeName)
+        public static SolidColorBrush GetBackgroundColor(string contributionTypeName)
         {
             switch (contributionTypeName)
             {

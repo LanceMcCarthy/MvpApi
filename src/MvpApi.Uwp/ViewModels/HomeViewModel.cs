@@ -19,8 +19,8 @@ using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
-using MvpApi.Uwp.Helpers;
 using MvpApi.Uwp.Views;
+using MvpCompanion.UI.Common.Helpers;
 using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
 using Template10.Common;
@@ -340,18 +340,26 @@ namespace MvpApi.Uwp.ViewModels
             {
                 IsBusy = true;
                 IsBusyMessage = "loading contributions...";
-                
+
+                Contributions = new ObservableCollection<ContributionsModel>();
+
                 // Get all the contributions for the currently signed in MVP.
                 var result = await App.ApiService.GetAllContributionsAsync();
 
+                foreach (var cont in result.Contributions)
+                {
+                    Contributions.Add(cont);
+                }
+
                 // Load the items into the DataGrid
-                Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);
+                //Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);
 
                 IsBusyMessage = "";
                 IsBusy = false;
             }
             catch (Exception ex)
             {
+                // BUG
                 await ex.LogExceptionWithUserMessage();
             }
             finally

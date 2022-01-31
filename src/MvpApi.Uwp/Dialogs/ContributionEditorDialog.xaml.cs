@@ -2,7 +2,7 @@
 using Windows.UI.Xaml.Controls;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
-using MvpApi.Uwp.Extensions;
+using MvpCompanion.UI.Common.Extensions;
 
 namespace MvpApi.Uwp.Dialogs
 {

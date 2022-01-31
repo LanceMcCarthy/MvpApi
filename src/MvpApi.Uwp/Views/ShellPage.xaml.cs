@@ -13,7 +13,7 @@ using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Extensions;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
-using MvpApi.Uwp.Helpers;
+using MvpCompanion.UI.Common.Helpers;
 using Newtonsoft.Json;
 using Template10.Common;
 using Template10.Controls;

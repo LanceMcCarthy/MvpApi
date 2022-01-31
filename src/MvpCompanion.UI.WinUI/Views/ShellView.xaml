@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="MvpCompanion.UI.WinUI.Views.ShellView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:MvpCompanion.UI.WinUI.Views"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="using:MvpCompanion.UI.WinUI.ViewModels"
+             xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
+             mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="SmallTabHeaderTemplate">
+            <TextBlock Text="{Binding}"
+                       Margin="10,0" />
+        </DataTemplate>
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <viewModels:ShellViewModel x:Name="ViewModel" />
+    </UserControl.DataContext>
+
+    <Grid Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
+        <TabView x:Name="ShellTabView"
+                 SelectionChanged="ShellTabView_OnSelectionChanged"
+                 TabCloseRequested="ShellTabView_OnTabCloseRequested"
+                 CloseButtonOverlayMode="OnPointerOver"
+                 CanReorderTabs="True"
+                 CanDragTabs="True"
+                 IsAddTabButtonVisible="False" TabWidthMode="SizeToContent">
+            <TabView.TabItems>
+                <TabViewItem x:Name="HomeTab"
+                             Header="Home"
+                             Tag="Home"
+                             IsClosable="False"
+                             HeaderTemplate="{StaticResource SmallTabHeaderTemplate}">
+                    <local:HomeView x:Name="HomeView1" />
+                </TabViewItem>
+                <TabViewItem x:Name="UploadTab"
+                             Header="Upload"
+                             Tag="Upload"
+                             IsClosable="False">
+                    <local:AddContributionsView x:Name="AddContributionsView1" />
+                </TabViewItem>
+                <TabViewItem x:Name="ProfileTab"
+                             Header="Profile"
+                             Tag="Profile"
+                             IsClosable="False"
+                             HeaderTemplate="{StaticResource SmallTabHeaderTemplate}">
+                    <local:ProfileView x:Name="ProfileView1" />
+                </TabViewItem>
+                <TabViewItem x:Name="KudosTab"
+                             Header="Kudos"
+                             Tag="Kudos"
+                             IsClosable="False"
+                             HeaderTemplate="{StaticResource SmallTabHeaderTemplate}">
+                    <local:KudosView x:Name="KudosView1" />
+                </TabViewItem>
+                <TabViewItem x:Name="SettingsTab"
+                             Header="Settings"
+                             Tag="Settings"
+                             IsClosable="False"
+                             HeaderTemplate="{StaticResource SmallTabHeaderTemplate}">
+                    <local:SettingsView x:Name="SettingsView1" />
+                </TabViewItem>
+                <TabViewItem x:Name="AboutTab"
+                             Header="About"
+                             Tag="About"
+                             IsClosable="False"
+                             HeaderTemplate="{StaticResource SmallTabHeaderTemplate}">
+                    <local:AboutView x:Name="AboutView1" />
+                </TabViewItem>
+            </TabView.TabItems>
+        </TabView>
+
+        <primitives:RadBusyIndicator IsActive="{Binding IsBusy}"
+                                     Visibility="{Binding IsBusy}"
+                                     Content="{Binding IsBusyMessage}"
+                                     Style="{StaticResource PageBusyIndicatorStyle}" />
+    </Grid>
+</UserControl>

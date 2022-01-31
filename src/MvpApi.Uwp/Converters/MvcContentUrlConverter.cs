@@ -6,7 +6,7 @@ namespace MvpApi.Uwp.Converters
     /// <summary>
     /// // Because the IconURls are using MVC content path, we need to prefix with the domain to get valid images. This converter does that automatically.
     /// </summary>
-    internal class MvcContentUrlConverter : IValueConverter
+    public class MvcContentUrlConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {

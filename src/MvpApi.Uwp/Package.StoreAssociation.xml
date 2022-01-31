@@ -241,6 +241,8 @@
     <Language Code="no-no" InMinimumRequirementSet="true" />
     <Language Code="nso" InMinimumRequirementSet="true" />
     <Language Code="nso-za" InMinimumRequirementSet="true" />
+    <Language Code="om" InMinimumRequirementSet="false" />
+    <Language Code="om-et" InMinimumRequirementSet="false" />
     <Language Code="or" InMinimumRequirementSet="true" />
     <Language Code="or-in" InMinimumRequirementSet="true" />
     <Language Code="pa" InMinimumRequirementSet="true" />
@@ -365,13 +367,80 @@
     </ReservedNames>
   </ProductReservedInfo>
   <AccountPackageIdentityNames>
-    <MainPackageIdentityName>61469LanceLotSoftware.AwesomeBand</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.Barcodes</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.Strobe</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.AwesomeBandBackgrounds</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.AwesomeBarcode</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.AwesomeMosaic</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.BandWallpaper</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.BiometricLieDetector</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.DevReachCompanion</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.DVLUP</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.Fail</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.FundRunner</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.Hacked</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.HeyTaxi</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.InstaLockscreen</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.InventoryScanner</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.iSmack</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.MediaFileManager</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.RemixDownloader</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.StarbucksLocator</MainPackageIdentityName>
+    <MainPackageIdentityName>61469LanceLotSoftware.UberMe</MainPackageIdentityName>
     <MainPackageIdentityName>61469LanceLotSoftware.VideoDiary</MainPackageIdentityName>
-    <MainPackageIdentityName>61469LanceLotSoftware.XKCDComicViewer</MainPackageIdentityName>
   </AccountPackageIdentityNames>
-  <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9NRXNX3WLH77" />
+  <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9NRXNX3WLH77">
+    <BundleInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>X86</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2021.8.31.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>X64</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2021.8.31.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Arm</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2021.8.31.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2021.8.31.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2021.8.31.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2021.8.31.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2021.8.31.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2021.8.31.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2021.8.31.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+      <PackageInfo>
+        <OsMinVersion>0.0.0.0</OsMinVersion>
+        <PackageArchitecture>Neutral</PackageArchitecture>
+        <PackageMaxArchitectureVersion>2021.8.31.0</PackageMaxArchitectureVersion>
+      </PackageInfo>
+    </BundleInfo>
+  </PackageInfoList>
 </StoreAssociation>

@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+﻿using Xamarin.Forms;
 
 namespace MvpApi.Forms.Portable.Views
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
-	public partial class ProfileView : ContentView
+    public partial class ProfileView : ContentView
 	{
 		public ProfileView ()
 		{
-			InitializeComponent ();
-		}
-	}
+			InitializeComponent();
+        }
+    }
 }

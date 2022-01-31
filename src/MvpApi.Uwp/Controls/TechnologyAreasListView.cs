@@ -19,7 +19,7 @@
 //using MvpApi.Common.Models;
 //using MvpApi.Uwp.Helpers;
 
-namespace MvpApi.Uwp.Controls
+namespace MvpCompanion.UI.Common.Controls
 {
     //public class TechnologyAreasListView : ListView
     //{

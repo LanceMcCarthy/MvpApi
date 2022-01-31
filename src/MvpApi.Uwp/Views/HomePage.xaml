@@ -7,7 +7,6 @@
       xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
-      xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       xmlns:controls="using:Microsoft.UI.Xaml.Controls"
       mc:Ignorable="d">
@@ -112,8 +111,7 @@
                           UserGroupMode="Disabled"
                           SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
                           GridLinesThickness="1"
-                          Grid.Row="1"
-                          extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0">
+                          Grid.Row="1">
             <animations:Implicit.ShowAnimations>
                 <animations:ScaleAnimation From="0.8"
                                            To="1"
@@ -132,20 +130,22 @@
             </animations:Implicit.HideAnimations>
             <grid:RadDataGrid.GroupHeaderTemplate>
                 <DataTemplate>
-                    <Grid Background="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToBackgroundConverter}}">
+                    <Grid>
                         <StackPanel Orientation="Horizontal">
+                            <Border Background="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToBackgroundConverter}}"
+                                    BorderThickness="2"
+                                    Width="20"
+                                    Height="10"
+                                    BorderBrush="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}" />
                             <TextBlock Text="{Binding Group.Key}"
                                        Style="{ThemeResource BodyTextBlockStyle}"
-                                       Foreground="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}"
                                        VerticalAlignment="Center"
                                        Margin="10,0" />
                             <TextBlock Text="-"
                                        Style="{ThemeResource BodyTextBlockStyle}"
-                                       Foreground="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}"
                                        VerticalAlignment="Center" />
                             <TextBlock Text="{Binding Group.Items.Count}"
                                        Style="{ThemeResource BodyTextBlockStyle}"
-                                       Foreground="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}"
                                        VerticalAlignment="Center"
                                        Margin="10,0" />
                         </StackPanel>
@@ -217,9 +217,6 @@
                                      Style="{StaticResource PageBusyIndicatorStyle}"
                                      Grid.Row="1"
                                      Grid.RowSpan="2"
-                                     Grid.Column="0"
-                                     extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0"
-                                     animations:Implicit.ShowAnimations="{StaticResource CommonShowAnimations}"
-                                     animations:Implicit.HideAnimations="{StaticResource CommonHideAnimations}" />
+                                     Grid.Column="0" />
     </Grid>
 </Page>

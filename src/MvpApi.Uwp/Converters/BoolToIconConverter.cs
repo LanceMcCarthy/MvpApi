@@ -8,7 +8,7 @@ namespace MvpApi.Uwp.Converters
     /// <summary>
     /// Returns a chosen IconElement depending on the boolean value
     /// </summary>
-    internal class BoolToIconConverter : IValueConverter
+    public class BoolToIconConverter : IValueConverter
     {
         public IconElement TrueIcon { get; set; }
         public IconElement FalseIcon { get; set; }

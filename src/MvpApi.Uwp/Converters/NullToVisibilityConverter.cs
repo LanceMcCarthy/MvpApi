@@ -8,7 +8,7 @@ namespace MvpApi.Uwp.Converters
     /// <summary>
     /// Value Converter that can be used for empty strings as well as objects
     /// </summary>
-    internal class NullToVisibilityConverter : IValueConverter
+    public class NullToVisibilityConverter : IValueConverter
     {
         public bool IsInverted { get; set; }
 

@@ -6,7 +6,6 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
       xmlns:controls="using:Telerik.UI.Xaml.Controls"
-      xmlns:extensions="using:Microsoft.Toolkit.Uwp.UI.Extensions"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       mc:Ignorable="d">
 
@@ -42,8 +41,7 @@
                      Stroke="{ThemeResource ApplicationForegroundThemeBrush}"
                      Margin="20"
                      Width="220"
-                     Height="220"
-                     extensions:VisualExtensions.NormalizedCenterPoint="0.5,0.5,0">
+                     Height="220">
                 <animations:Implicit.ShowAnimations>
                     <animations:ScaleAnimation From="0.6"
                                                To="1"
@@ -73,12 +71,10 @@
                             VerticalAlignment="Top">
                     <animations:Implicit.ShowAnimations>
                         <animations:TranslationAnimation Delay="0:0:0.3"
-                                                         SetInitialValueBeforeDelay="True"
                                                          From="40,0,0"
                                                          To="0,0,0"
                                                          Duration="0:0:0.8" />
                         <animations:OpacityAnimation Delay="0:0:0.2"
-                                                     SetInitialValueBeforeDelay="True"
                                                      From="0"
                                                      To="1"
                                                      Duration="0:0:1" />
@@ -103,12 +99,10 @@
                             VerticalAlignment="Bottom">
                     <animations:Implicit.ShowAnimations>
                         <animations:TranslationAnimation Delay="0:0:0.3"
-                                                         SetInitialValueBeforeDelay="True"
                                                          From="20,0,0"
                                                          To="0,0,0"
                                                          Duration="0:0:0.8" />
                         <animations:OpacityAnimation Delay="0:0:0.2"
-                                                     SetInitialValueBeforeDelay="True"
                                                      From="0"
                                                      To="1"
                                                      Duration="0:0:0.8" />
@@ -210,17 +204,14 @@
                       Grid.Column="1">
                 <animations:Implicit.ShowAnimations>
                     <animations:ScaleAnimation Delay="0:0:0.3"
-                                               SetInitialValueBeforeDelay="True"
                                                From="0.8"
                                                To="1"
                                                Duration="0:0:1.2" />
                     <animations:TranslationAnimation Delay="0:0:0.3"
-                                                     SetInitialValueBeforeDelay="True"
                                                      From="0,80,0"
                                                      To="0,0,0"
                                                      Duration="0:0:1.2" />
                     <animations:OpacityAnimation Delay="0:0:0.3"
-                                                 SetInitialValueBeforeDelay="True"
                                                  From="0"
                                                  To="1"
                                                  Duration="0:0:1.2" />
@@ -343,7 +334,7 @@
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export Online Identities"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
-                <AppBarButton Label="Complete Award Questionnaire (beta)"
+                <AppBarButton Label="Renewal Award Questionnaire"
                               Icon="OpenWith"
                               Click="{x:Bind ViewModel.ShowQuestionnaireButton_Click}" />
             </CommandBar.SecondaryCommands>
