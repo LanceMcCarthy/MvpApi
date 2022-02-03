@@ -1101,17 +1101,46 @@ namespace MvpApi.Services.Apis
 
         #region Utilities
 
-        public async Task<string> ExportContributionsAsync()
+        public async Task<string> ExportContributionsAsync(bool useOriginalJson = false)
         {
+            string json = string.Empty;
+
             try
             {
-                var allContributions = await GetAllContributionsAsync();
-                return JsonConvert.SerializeObject(allContributions);
+                if(useOriginalJson)
+                {
+                    using (var response = await client.GetAsync($"contributions/0/0"))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            json = await response.Content.ReadAsStringAsync();
+                        }
+                    }
+                }
+                else
+                {
+                    var allContributions = await GetAllContributionsAsync();
+
+                    json = JsonConvert.SerializeObject(allContributions);
+                }
             }
-            catch
+            catch (HttpRequestException e)
             {
-                return "";
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"ExportContributionsAsync HttpRequestException: {e}");
             }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"ExportContributionsAsync Exception: {e}");
+            }
+
+            return json;
         }
 
         public async Task<string> ExportOnlineIdentitiesAsync()

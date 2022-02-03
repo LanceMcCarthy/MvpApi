@@ -347,6 +347,51 @@
                                       HeaderStyle="{StaticResource MyHeaderToggleButtonStyle}"
                                       HorizontalContentAlignment="Stretch">
                 <toolkitControls:Expander.Header>
+                    <TextBlock Text="Diagnostic Tools"
+                               Style="{ThemeResource SubtitleTextBlockStyle}" />
+                </toolkitControls:Expander.Header>
+
+                <StackPanel Margin="20">
+                    <TextBlock Text="The following features can be used to help diagnose problems with the app, or if you're just a data nerd 🤓🐱‍🏍"
+                               Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,5">
+                        <!--<animations:Implicit.ShowAnimations>
+                            <animations:ScaleAnimation From="0.8"
+                                                       To="1"
+                                                       Duration="0:0:0.4" />
+                            <animations:OpacityAnimation From="0"
+                                                         To="1"
+                                                         Duration="0:0:0.4" />
+                        </animations:Implicit.ShowAnimations>
+                        <animations:Implicit.HideAnimations>
+                            <animations:ScaleAnimation From="1"
+                                                       To="0.8"
+                                                       Duration="0:0:0.6" />
+                            <animations:OpacityAnimation From="1"
+                                                         To="0"
+                                                         Duration="0:0:0.6" />
+                        </animations:Implicit.HideAnimations>-->
+                    </TextBlock>
+
+                    <Button Content="Download Contributions JSON Data"
+                            Command="{Binding ExportContributionsJsonCommand}" />
+                    <Button Content="Download Contributions Areas JSON Data (coming soon)"
+                            IsEnabled="False"
+                            Command="{Binding ExportContributionsJsonCommand}" />
+                    <Button Content="Download Contribution Types JSON Data (coming soon)"
+                            IsEnabled="False"
+                            Command="{Binding ExportContributionsJsonCommand}" />
+
+                </StackPanel>
+            </toolkitControls:Expander>
+
+            <toolkitControls:Expander IsExpanded="False"
+                                      Background="Transparent"
+                                      HeaderStyle="{StaticResource MyHeaderToggleButtonStyle}"
+                                      HorizontalContentAlignment="Stretch">
+                <toolkitControls:Expander.Header>
                     <TextBlock Text="Editor"
                                Style="{ThemeResource SubtitleTextBlockStyle}" />
                 </toolkitControls:Expander.Header>
@@ -381,7 +426,7 @@
                 </StackPanel>
             </toolkitControls:Expander>
 
-            <toolkitControls:Expander IsExpanded="True"
+            <toolkitControls:Expander IsExpanded="False"
                                       Background="Transparent"
                                       HeaderStyle="{StaticResource MyHeaderToggleButtonStyle}"
                                       HorizontalContentAlignment="Stretch">
