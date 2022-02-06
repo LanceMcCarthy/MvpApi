@@ -339,27 +339,23 @@ namespace MvpApi.Uwp.ViewModels
             try
             {
                 IsBusy = true;
-                IsBusyMessage = "loading contributions...";
+                IsBusyMessage = "loading current award cycle's contributions...";
 
                 Contributions = new ObservableCollection<ContributionsModel>();
 
                 // Get all the contributions for the currently signed in MVP.
-                var result = await App.ApiService.GetAllContributionsAsync();
+                //var result = await App.ApiService.GetAllContributionsAsync();
+
+                // Get only the current cycle's contributions
+                var result = await App.ApiService.GetAllCurrentCycleContributionsAsync();
 
                 foreach (var cont in result.Contributions)
                 {
                     Contributions.Add(cont);
                 }
-
-                // Load the items into the DataGrid
-                //Contributions = new ObservableCollection<ContributionsModel>(result.Contributions);
-
-                IsBusyMessage = "";
-                IsBusy = false;
             }
             catch (Exception ex)
             {
-                // BUG
                 await ex.LogExceptionWithUserMessage();
             }
             finally
