@@ -10,17 +10,14 @@ namespace MvpApi.Common.Models
     /// <summary>
     /// The account certification view model for edit.
     /// </summary>
-    public partial class CertificationViewModel
+    public class CertificationViewModel
     {
         /// <summary>
         /// Initializes a new instance of the CertificationViewModel class.
         /// </summary>
         public CertificationViewModel() { }
 
-        /// <summary>
-        /// Initializes a new instance of the CertificationViewModel class.
-        /// </summary>
-        public CertificationViewModel(int? privateSiteId = default(int?), Guid? id = default(Guid?), string title = default(string), VisibilityViewModel certificationVisibility = default(VisibilityViewModel))
+        public CertificationViewModel(int? privateSiteId, string id, string title, VisibilityViewModel certificationVisibility)
         {
             PrivateSiteId = privateSiteId;
             Id = id;
@@ -31,25 +28,27 @@ namespace MvpApi.Common.Models
         /// <summary>
         /// Gets or sets the private site id.
         /// </summary>
-        [JsonProperty(PropertyName = "PrivateSiteId")]
-        public int? PrivateSiteId { get; set; }
+        [Newtonsoft.Json.JsonProperty(PropertyName = "PrivateSiteId")]
+		public System.Int32? PrivateSiteId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the id.
-        /// </summary>
-        [JsonProperty(PropertyName = "Id")]
-        public Guid? Id { get; set; }
+		/// <summary>
+		/// Gets or sets the id.
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Id")]
+		public string Id { get; set; }
 
-        /// <summary>
-        /// Gets or sets the title.
-        /// </summary>
-        [JsonProperty(PropertyName = "Title")]
-        public string Title { get; set; }
+		/// <summary>
+		/// Gets or sets the title.
+		/// Max length: 100
+		/// Min length: 0
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Title")]
+		public string Title { get; set; }
 
-        /// <summary>
-        /// Gets or sets the certification visibility.
-        /// </summary>
-        [JsonProperty(PropertyName = "CertificationVisibility")]
-        public VisibilityViewModel CertificationVisibility { get; set; }
-    }
+		/// <summary>
+		/// The visibility.
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "CertificationVisibility")]
+		public VisibilityViewModel CertificationVisibility { get; set; }
+	}
 }

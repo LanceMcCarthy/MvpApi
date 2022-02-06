@@ -7,13 +7,19 @@ namespace MvpApi.Common.Models
     /// </summary>
     public class QuestionnaireItem : BindableBase
     {
-        private AwardConsiderationQuestionModel _questionItem;
-        private AwardConsiderationAnswerModel _answerItem;
+        private AwardQuestionViewModel _questionItem;
+        private AwardAnswerViewModel _answerItem;
+
+        public QuestionnaireItem(AwardQuestionViewModel questionItem, AwardAnswerViewModel answerItem)
+        {
+            QuestionItem = questionItem;
+            AnswerItem = answerItem;
+        }
 
         /// <summary>
         /// Gets or sets the Question object.
         /// </summary>
-        public AwardConsiderationQuestionModel QuestionItem
+        public AwardQuestionViewModel QuestionItem
         {
             get => _questionItem;
             set => SetProperty(ref _questionItem, value);
@@ -22,7 +28,7 @@ namespace MvpApi.Common.Models
         /// <summary>
         /// Gets or sets the Answer object.
         /// </summary>
-        public AwardConsiderationAnswerModel AnswerItem
+        public AwardAnswerViewModel AnswerItem
         {
             get => _answerItem;
             set => SetProperty(ref _answerItem, value);

@@ -7,17 +7,11 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class ProfileViewModel
+    public class ProfileViewModel
     {
-        /// <summary>
-        /// Initializes a new instance of the ProfileViewModel class.
-        /// </summary>
         public ProfileViewModel() { }
 
-        /// <summary>
-        /// Initializes a new instance of the ProfileViewModel class.
-        /// </summary>
-        public ProfileViewModel(ContentMetadata metadata = default(ContentMetadata), string mvpId = default(string), int? yearsAsMvp = default(int?), string firstAwardYear = default(string), string awardCategoryDisplay = default(string), string technicalExpertise = default(string), bool? inTheSpotlight = default(bool?), string headline = default(string), string biography = default(string), string displayName = default(string), string fullName = default(string), string primaryEmailAddress = default(string), string shippingCountry = default(string), string shippingStateCity = default(string), string languages = default(string), IList<OnlineIdentityViewModel> onlineIdentities = default(IList<OnlineIdentityViewModel>), IList<CertificationViewModel> certifications = default(IList<CertificationViewModel>), IList<ActivityViewModel> activities = default(IList<ActivityViewModel>), IList<AwardRecognitionViewModel> communityAwards = default(IList<AwardRecognitionViewModel>), IList<MvpHighlightViewModel> newsHighlights = default(IList<MvpHighlightViewModel>), IList<MvpHighlightViewModel> upcomingEvent = default(IList<MvpHighlightViewModel>))
+        public ProfileViewModel(ContentMetadata metadata, string mvpId, int? yearsAsMvp, string firstAwardYear, string awardCategoryDisplay, string technicalExpertise, bool? inTheSpotlight, string headline, string biography, string displayName, string fullName, string primaryEmailAddress, string shippingCountry, string shippingStateCity, string languages, IList<OnlineIdentityViewModel> onlineIdentities, IList<CertificationViewModel> certifications, IList<ActivityViewModel> activities, IList<AwardRecognitionViewModel> communityAwards, IList<MvpHighlightViewModel> newsHighlights, IList<MvpHighlightViewModel> upcomingEvent)
         {
             Metadata = metadata;
             MvpId = mvpId;
@@ -42,109 +36,67 @@ namespace MvpApi.Common.Models
             UpcomingEvent = upcomingEvent;
         }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Metadata")]
-        public ContentMetadata Metadata { get; set; }
+        [Newtonsoft.Json.JsonProperty(PropertyName = "Metadata")]
+		public ContentMetadata Metadata { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "MvpId")]
-        public string MvpId { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "MvpId")]
+		public string MvpId { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "YearsAsMvp")]
-        public int? YearsAsMvp { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "YearsAsMvp")]
+		public System.Int32? YearsAsMvp { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "FirstAwardYear")]
-        public string FirstAwardYear { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "FirstAwardYear")]
+		public string FirstAwardYear { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "AwardCategoryDisplay")]
-        public string AwardCategoryDisplay { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "AwardCategoryDisplay")]
+		public string AwardCategoryDisplay { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "TechnicalExpertise")]
-        public string TechnicalExpertise { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "TechnicalExpertise")]
+		public string TechnicalExpertise { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "InTheSpotlight")]
-        public bool? InTheSpotlight { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "InTheSpotlight")]
+		public System.Boolean? InTheSpotlight { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Headline")]
-        public string Headline { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Headline")]
+		public string Headline { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Biography")]
-        public string Biography { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Biography")]
+		public string Biography { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "DisplayName")]
-        public string DisplayName { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "DisplayName")]
+		public string DisplayName { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "FullName")]
-        public string FullName { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "FullName")]
+		public string FullName { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "PrimaryEmailAddress")]
-        public string PrimaryEmailAddress { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "PrimaryEmailAddress")]
+		public string PrimaryEmailAddress { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "ShippingCountry")]
-        public string ShippingCountry { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "ShippingCountry")]
+		public string ShippingCountry { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "ShippingStateCity")]
-        public string ShippingStateCity { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "ShippingStateCity")]
+		public string ShippingStateCity { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Languages")]
-        public string Languages { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Languages")]
+		public string Languages { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "OnlineIdentities")]
-        public IList<OnlineIdentityViewModel> OnlineIdentities { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "OnlineIdentities")]
+		public IList<OnlineIdentityViewModel> OnlineIdentities { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Certifications")]
-        public IList<CertificationViewModel> Certifications { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Certifications")]
+		public IList<CertificationViewModel> Certifications { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Activities")]
-        public IList<ActivityViewModel> Activities { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Activities")]
+		public IList<ActivityViewModel> Activities { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "CommunityAwards")]
-        public IList<AwardRecognitionViewModel> CommunityAwards { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "CommunityAwards")]
+		public IList<AwardRecognitionViewModel> CommunityAwards { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "NewsHighlights")]
-        public IList<MvpHighlightViewModel> NewsHighlights { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "NewsHighlights")]
+		public IList<MvpHighlightViewModel> NewsHighlights { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "UpcomingEvent")]
-        public IList<MvpHighlightViewModel> UpcomingEvent { get; set; }
-    }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "UpcomingEvent")]
+		public IList<MvpHighlightViewModel> UpcomingEvent { get; set; }
+	}
 }

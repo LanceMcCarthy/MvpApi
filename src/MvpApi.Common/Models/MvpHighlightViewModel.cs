@@ -7,17 +7,14 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class MvpHighlightViewModel
+    public class MvpHighlightViewModel
     {
         /// <summary>
         /// Initializes a new instance of the MvpHighlightViewModel class.
         /// </summary>
         public MvpHighlightViewModel() { }
 
-        /// <summary>
-        /// Initializes a new instance of the MvpHighlightViewModel class.
-        /// </summary>
-        public MvpHighlightViewModel(string title = default(string), DateTime? date = default(DateTime?), string dateFormatted = default(string), string url = default(string), string type = default(string), string language = default(string))
+        public MvpHighlightViewModel(string title, DateTimeOffset? date, string dateFormatted, string url, string type, string language)
         {
             Title = title;
             Date = date;
@@ -27,34 +24,22 @@ namespace MvpApi.Common.Models
             Language = language;
         }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Title")]
-        public string Title { get; set; }
+        [Newtonsoft.Json.JsonProperty(PropertyName = "Title")]
+		public string Title { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Date")]
-        public DateTime? Date { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Date")]
+		public System.DateTimeOffset? Date { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "DateFormatted")]
-        public string DateFormatted { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "DateFormatted")]
+		public string DateFormatted { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Url")]
-        public string Url { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Url")]
+		public string Url { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Type")]
-        public string Type { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Type")]
+		public string Type { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Language")]
-        public string Language { get; set; }
-    }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Language")]
+		public string Language { get; set; }
+	}
 }

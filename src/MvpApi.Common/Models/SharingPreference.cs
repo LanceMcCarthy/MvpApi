@@ -6,30 +6,23 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class SharingPreference
+    public class SharingPreference
     {
         /// <summary>
         /// Initializes a new instance of the SharingPreference class.
         /// </summary>
         public SharingPreference() { }
 
-        /// <summary>
-        /// Initializes a new instance of the SharingPreference class.
-        /// </summary>
-        public SharingPreference(int? id = default(int?), string description = default(string))
+        public SharingPreference(int? id, string description)
         {
             Id = id;
             Description = description;
         }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Id")]
-        public int? Id { get; set; }
+        [Newtonsoft.Json.JsonProperty(PropertyName = "Id")]
+        public System.Int32? Id { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Description")]
+        [Newtonsoft.Json.JsonProperty(PropertyName = "Description")]
         public string Description { get; set; }
     }
 }

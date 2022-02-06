@@ -8,257 +8,191 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    /// <summary>
-    /// The activity view model.
-    /// Note:
-    /// The logic of acticity is a little complicate.
-    /// While edit activity, the ActivityType should be non-editable;
-    /// While add activity, the dispalyname of
-    /// AnnualQuantity/SecondAnnualQuantity/ReachScore should change with
-    /// ActivityType changing,
-    /// and validation rule is different while ActivityType change.
-    /// Following is the logic details.
-    /// &lt;remarks&gt;
-    /// Book (Author):
-    /// [msft_title: required, 'Title']
-    /// [msft_startdate: required,'Start Date']
-    /// [msft_annualquantity: required, 'Books']
-    /// Book (Co-Author): same as Book (Author)
-    /// Conference (booth presenter):
-    /// [msft_title: required, 'Title']
-    /// [msft_startdate: required,'Start Date']
-    /// [msft_annualquantity: required, 'Conferences']
-    /// Conference (organizer): same as Conference (booth presenter)
-    /// Speaking (Conference):
-    /// [msft_title: required, 'Title']
-    /// [msft_startdate: required,'Start Date']
-    /// [msft_annualquantity: required, 'Talks']
-    /// Speaking (Local):Same as Speaking (Conference)
-    /// Speaking (User group):Same as Speaking (Conference)
-    /// Forum Moderator:
-    /// [msft_title: required, 'Title']
-    /// [msft_startdate: required,'Start Date']
-    /// [msft_annualquantity: required, 'Threads Moderated']
-    /// Forum Participation (Microsoft Forums):
-    /// [msft_title: recommend, 'Title']
-    /// [msft_startdate: required,'Start Date']
-    /// [msft_url: required, 'Url']
-    /// [msft_annualquantity: required, 'Answers']
-    /// Forum Participation (3rd Party forums):
-    /// [msft_title: recommend, 'Title']
-    /// [msft_startdate: required,'Start Date']
-    /// [msft_url: required, 'Url']
-    /// [msft_annualquantity: required, 'Answers']
-    /// [msft_secondannualquantity: required, 'Posts']
-    /// &lt;/remarks&gt;
-    /// </summary>
-    public partial class ActivityViewModel
-    {
-        /// <summary>
-        /// Initializes a new instance of the ActivityViewModel class.
-        /// </summary>
-        public ActivityViewModel() { }
+	/// <summary>
+	/// The activity view model.
+	///Note:
+	///The logic of acticity is a little complicate.
+	///While edit activity, the ActivityType should be non-editable;
+	///While add activity, the dispalyname of AnnualQuantity/SecondAnnualQuantity/ReachScore should change with ActivityType changing,
+	///and validation rule is different while ActivityType change.
+	///Following is the logic details.
+	///<remarks>
+	///Book (Author):
+	///    [msft_title: required, 'Title']
+	///    [msft_startdate: required,'Start Date']
+	///    [msft_annualquantity: required, 'Books']
+	///Book (Co-Author): same as Book (Author)
+	///Conference (booth presenter):
+	///    [msft_title: required, 'Title']
+	///    [msft_startdate: required,'Start Date']
+	///    [msft_annualquantity: required, 'Conferences']
+	///Conference (organizer): same as Conference (booth presenter)
+	///Speaking (Conference):
+	///    [msft_title: required, 'Title']
+	///    [msft_startdate: required,'Start Date']
+	///    [msft_annualquantity: required, 'Talks']
+	///Speaking (Local):Same as Speaking (Conference)
+	///Speaking (User group):Same as Speaking (Conference)
+	///Forum Moderator:
+	///    [msft_title: required, 'Title']
+	///    [msft_startdate: required,'Start Date']
+	///    [msft_annualquantity: required, 'Threads Moderated']
+	///Forum Participation (Microsoft Forums):
+	///    [msft_title: recommend, 'Title']
+	///    [msft_startdate: required,'Start Date']
+	///    [msft_url: required, 'Url']
+	///    [msft_annualquantity: required, 'Answers']
+	///Forum Participation (3rd Party forums):
+	///    [msft_title: recommend, 'Title']
+	///    [msft_startdate: required,'Start Date']
+	///    [msft_url: required, 'Url']
+	///    [msft_annualquantity: required, 'Answers']
+	///    [msft_secondannualquantity: required, 'Posts']
+	///</remarks>
+	/// </summary>
+	public class ActivityViewModel
+	{
 
-        /// <summary>
-        /// Initializes a new instance of the ActivityViewModel class.
-        /// </summary>
-        public ActivityViewModel(ActivityTypeViewModel activityType, ActivityTechnologyViewModel applicableTechnology, DateTime dateOfActivity, string titleOfActivity, int? privateSiteId = default(int?), string dateOfActivityFormatted = default(string), DateTime? endDate = default(DateTime?), string endDateFormatted = default(string), string referenceUrl = default(string), VisibilityViewModel activityVisibility = default(VisibilityViewModel), int? annualQuantity = default(int?), int? secondAnnualQuantity = default(int?), int? annualReach = default(int?), string description = default(string), OnlineIdentityViewModel onlineIdentity = default(OnlineIdentityViewModel), SocialNetworkViewModel socialNetwork = default(SocialNetworkViewModel), string allAnswersUrl = default(string), string allPostsUrl = default(string), bool? isSystemCollected = default(bool?), bool? isBelongToLatestAwardCycle = default(bool?), string displayMode = default(string), IList<int?> chartColumnIndexes = default(IList<int?>), string descriptionSummaryFormat = default(string), string dataTableTitle = default(string), string subtitleHeader = default(string), bool? isAllowEdit = default(bool?), bool? isAllowDelete = default(bool?), bool? isFromBookmarklet = default(bool?), bool? submitted = default(bool?))
-        {
-            PrivateSiteId = privateSiteId;
-            ActivityType = activityType;
-            ApplicableTechnology = applicableTechnology;
-            DateOfActivity = dateOfActivity;
-            DateOfActivityFormatted = dateOfActivityFormatted;
-            EndDate = endDate;
-            EndDateFormatted = endDateFormatted;
-            TitleOfActivity = titleOfActivity;
-            ReferenceUrl = referenceUrl;
-            ActivityVisibility = activityVisibility;
-            AnnualQuantity = annualQuantity;
-            SecondAnnualQuantity = secondAnnualQuantity;
-            AnnualReach = annualReach;
-            Description = description;
-            OnlineIdentity = onlineIdentity;
-            SocialNetwork = socialNetwork;
-            AllAnswersUrl = allAnswersUrl;
-            AllPostsUrl = allPostsUrl;
-            IsSystemCollected = isSystemCollected;
-            IsBelongToLatestAwardCycle = isBelongToLatestAwardCycle;
-            DisplayMode = displayMode;
-            ChartColumnIndexes = chartColumnIndexes;
-            DescriptionSummaryFormat = descriptionSummaryFormat;
-            DataTableTitle = dataTableTitle;
-            SubtitleHeader = subtitleHeader;
-            IsAllowEdit = isAllowEdit;
-            IsAllowDelete = isAllowDelete;
-            IsFromBookmarklet = isFromBookmarklet;
-            Submitted = submitted;
-        }
+		/// <summary>
+		/// Gets or sets the private site id.
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "PrivateSiteId")]
+		public System.Int32? PrivateSiteId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the private site id.
-        /// </summary>
-        [JsonProperty(PropertyName = "PrivateSiteId")]
-        public int? PrivateSiteId { get; set; }
+		/// <summary>
+		/// The activity type.
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "ActivityType")]
+		public ActivityTypeViewModel ActivityType { get; set; }
 
-        /// <summary>
-        /// Gets or sets the contribution type.
-        /// </summary>
-        [JsonProperty(PropertyName = "ActivityType")]
-        public ActivityTypeViewModel ActivityType { get; set; }
+		/// <summary>
+		/// The activity technology model.
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "ApplicableTechnology")]
+		public ActivityTechnologyViewModel ApplicableTechnology { get; set; }
 
-        /// <summary>
-        /// Gets or sets the contribution technology.
-        /// </summary>
-        [JsonProperty(PropertyName = "ApplicableTechnology")]
-        public ActivityTechnologyViewModel ApplicableTechnology { get; set; }
+		/// <summary>
+		/// Gets or sets the start date.
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "DateOfActivity")]
+		public System.DateTimeOffset DateOfActivity { get; set; }
 
-        /// <summary>
-        /// Gets or sets the start date.
-        /// </summary>
-        [JsonProperty(PropertyName = "DateOfActivity")]
-        public DateTime DateOfActivity { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "DateOfActivityFormatted")]
+		public string DateOfActivityFormatted { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "DateOfActivityFormatted")]
-        public string DateOfActivityFormatted { get; set; }
+		/// <summary>
+		/// End Date for system auto contribution
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "EndDate")]
+		public System.DateTimeOffset? EndDate { get; set; }
 
-        /// <summary>
-        /// End Date for system auto contribution
-        /// </summary>
-        [JsonProperty(PropertyName = "EndDate")]
-        public DateTime? EndDate { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "EndDateFormatted")]
+		public string EndDateFormatted { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "EndDateFormatted")]
-        public string EndDateFormatted { get; set; }
+		/// <summary>
+		/// Gets or sets the title.
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "TitleOfActivity")]
+		public string TitleOfActivity { get; set; }
 
-        /// <summary>
-        /// Gets or sets the title.
-        /// </summary>
-        [JsonProperty(PropertyName = "TitleOfActivity")]
-        public string TitleOfActivity { get; set; }
+		/// <summary>
+		/// Gets or sets the url.
+		/// Pattern: ^((https?|ftp):\/\/)?(((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)+(\/(([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|\/|\?)*)?$
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "ReferenceUrl")]
+		public string ReferenceUrl { get; set; }
 
-        /// <summary>
-        /// Gets or sets the url.
-        /// </summary>
-        [JsonProperty(PropertyName = "ReferenceUrl")]
-        public string ReferenceUrl { get; set; }
+		/// <summary>
+		/// The visibility.
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "ActivityVisibility")]
+		public VisibilityViewModel ActivityVisibility { get; set; }
 
-        /// <summary>
-        /// Gets or sets the visibility.
-        /// </summary>
-        [JsonProperty(PropertyName = "ActivityVisibility")]
-        public VisibilityViewModel ActivityVisibility { get; set; }
+		/// <summary>
+		/// Gets or sets the annual quantity.
+		/// Pattern: ^[0-9]*$
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "AnnualQuantity")]
+		public System.Int32? AnnualQuantity { get; set; }
 
-        /// <summary>
-        /// Gets or sets the annual quantity.
-        /// </summary>
-        [JsonProperty(PropertyName = "AnnualQuantity")]
-        public int? AnnualQuantity { get; set; }
+		/// <summary>
+		/// Gets or sets the second annual quantity.
+		/// Pattern: ^[0-9]*$
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "SecondAnnualQuantity")]
+		public System.Int32? SecondAnnualQuantity { get; set; }
 
-        /// <summary>
-        /// Gets or sets the second annual quantity.
-        /// </summary>
-        [JsonProperty(PropertyName = "SecondAnnualQuantity")]
-        public int? SecondAnnualQuantity { get; set; }
+		/// <summary>
+		/// Gets or sets the reach score.
+		/// Pattern: ^[0-9]*$
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "AnnualReach")]
+		public System.Int32? AnnualReach { get; set; }
 
-        /// <summary>
-        /// Gets or sets the reach score.
-        /// </summary>
-        [JsonProperty(PropertyName = "AnnualReach")]
-        public int? AnnualReach { get; set; }
+		/// <summary>
+		/// Gets or sets the description.
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Description")]
+		public string Description { get; set; }
 
-        /// <summary>
-        /// Gets or sets the description.
-        /// </summary>
-        [JsonProperty(PropertyName = "Description")]
-        public string Description { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "OnlineIdentity")]
+		public OnlineIdentityViewModel OnlineIdentity { get; set; }
 
-        /// <summary>
-        /// Online identity by which this contribution was collected. Should
-        /// be null if the contribution was not system collected
-        /// </summary>
-        [JsonProperty(PropertyName = "OnlineIdentity")]
-        public OnlineIdentityViewModel OnlineIdentity { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "SocialNetwork")]
+		public SocialNetworkViewModel SocialNetwork { get; set; }
 
-        /// <summary>
-        /// Social network. Should be null or ignore for non system collected
-        /// contribution
-        /// </summary>
-        [JsonProperty(PropertyName = "SocialNetwork")]
-        public SocialNetworkViewModel SocialNetwork { get; set; }
+		/// <summary>
+		/// AllAnswersUrl
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "AllAnswersUrl")]
+		public string AllAnswersUrl { get; set; }
 
-        /// <summary>
-        /// AllAnswersUrl
-        /// </summary>
-        [JsonProperty(PropertyName = "AllAnswersUrl")]
-        public string AllAnswersUrl { get; set; }
+		/// <summary>
+		/// AllAnswersUrl
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "AllPostsUrl")]
+		public string AllPostsUrl { get; set; }
 
-        /// <summary>
-        /// AllAnswersUrl
-        /// </summary>
-        [JsonProperty(PropertyName = "AllPostsUrl")]
-        public string AllPostsUrl { get; set; }
+		/// <summary>
+		/// If this contribution is system collected
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "IsSystemCollected")]
+		public System.Boolean? IsSystemCollected { get; set; }
 
-        /// <summary>
-        /// If this contribution is system collected
-        /// </summary>
-        [JsonProperty(PropertyName = "IsSystemCollected")]
-        public bool? IsSystemCollected { get; set; }
+		/// <summary>
+		/// If this contribution belongs to latest award cycle.
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "IsBelongToLatestAwardCycle")]
+		public System.Boolean? IsBelongToLatestAwardCycle { get; set; }
 
-        /// <summary>
-        /// If this contribution belongs to latest award cycle.
-        /// </summary>
-        [JsonProperty(PropertyName = "IsBelongToLatestAwardCycle")]
-        public bool? IsBelongToLatestAwardCycle { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "DisplayMode")]
+		public string DisplayMode { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "DisplayMode")]
-        public string DisplayMode { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "ChartColumnIndexes")]
+		public int[] ChartColumnIndexes { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "ChartColumnIndexes")]
-        public IList<int?> ChartColumnIndexes { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "DescriptionSummaryFormat")]
+		public string DescriptionSummaryFormat { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "DescriptionSummaryFormat")]
-        public string DescriptionSummaryFormat { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "DataTableTitle")]
+		public string DataTableTitle { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "DataTableTitle")]
-        public string DataTableTitle { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "SubtitleHeader")]
+		public string SubtitleHeader { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "SubtitleHeader")]
-        public string SubtitleHeader { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "IsAllowEdit")]
+		public System.Boolean? IsAllowEdit { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "IsAllowEdit")]
-        public bool? IsAllowEdit { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "IsAllowDelete")]
+		public System.Boolean? IsAllowDelete { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "IsAllowDelete")]
-        public bool? IsAllowDelete { get; set; }
+		/// <summary>
+		/// IsBookmarklet: If the call is initiated from bookmarklet
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "IsFromBookmarklet")]
+		public System.Boolean? IsFromBookmarklet { get; set; }
 
-        /// <summary>
-        /// IsBookmarklet: If the call is initiated from bookmarklet
-        /// </summary>
-        [JsonProperty(PropertyName = "IsFromBookmarklet")]
-        public bool? IsFromBookmarklet { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Submitted")]
-        public bool? Submitted { get; set; }
-    }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Submitted")]
+		public System.Boolean? Submitted { get; set; }
+	}
 }

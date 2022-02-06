@@ -10,7 +10,7 @@ namespace MvpApi.Common.Models
 {
     public partial class ContributionTechnologyModel : BindableBase
     {
-        private Guid? id;
+        private string id;
         private string awardCategory;
         private string awardName;
         private string name;
@@ -27,7 +27,7 @@ namespace MvpApi.Common.Models
         /// 
         /// If this model is instantiated from MvpApiService.GetContributionsAsync, it will use this CTOR
         /// </summary>
-        public ContributionTechnologyModel(Guid? id = default(Guid?), string name = default(string), string awardName = default(string), string awardCategory = default(string))
+        public ContributionTechnologyModel(string id = default, string name = default, string awardName = default, string awardCategory = default)
         {
             Id = id;
             Name = name;
@@ -40,7 +40,7 @@ namespace MvpApi.Common.Models
         /// 
         /// If this model is instantiated from MvpApiService.GetContributionAreasAsync(), it will use this CTOR
         /// </summary>
-        public ContributionTechnologyModel(Guid? id = default(Guid?), string name = default(string), string awardName = default(string), string awardCategory = default(string), int statusCode = default(int), bool active = default(bool))
+        public ContributionTechnologyModel(string id = default, string name = default, string awardName = default, string awardCategory = default, int statusCode = default, bool active = default)
         {
             Id = id;
             Name = name;
@@ -54,7 +54,7 @@ namespace MvpApi.Common.Models
         /// Gets or sets the id.
         /// </summary>
         [JsonProperty(PropertyName = "Id")]
-        public Guid? Id
+        public string Id
         {
             get => id;
             set => SetProperty(ref id, value);
