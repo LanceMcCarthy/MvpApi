@@ -1,0 +1,16 @@
+{
+	"ClientNamespace": "MvpApi.Common.Models",
+	"ClientLibraryProjectFolderName": "./Test4",
+	"ContainerClassName": "MvpApiClient",
+	"ClientLibraryFileName": "Root.cs",
+	"ActionNameStrategy": 4,
+	"UseEnsureSuccessStatusCodeEx": true,
+	"DecorateDataModelWithDataContract": false,
+	"DecorateDataModelWithPropertyName": true,
+	"GenerateModelsOnly": true,
+	"DataAnnotationsEnabled": false,
+	"DataAnnotationsToComments": true,
+	"HandleHttpRequestHeaders": false,
+	"CreateFolder": true,
+	"UseNullableQuestionMark": true
+}
