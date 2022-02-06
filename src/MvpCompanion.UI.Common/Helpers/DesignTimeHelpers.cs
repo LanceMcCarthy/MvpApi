@@ -25,13 +25,13 @@ namespace MvpCompanion.UI.Common.Helpers
             {
                 Title = "CERT1",
                 CertificationVisibility = new VisibilityViewModel { Description = "The visibility", Id = 1 },
-                Id = Guid.NewGuid()
+                Id = Guid.NewGuid().ToString()
             },
             new CertificationViewModel
             {
                 Title = "CERT2",
                 CertificationVisibility = new VisibilityViewModel { Description = "The visibility", Id = 2 },
-                Id = Guid.NewGuid()
+                Id = Guid.NewGuid().ToString()
             }
         };
 
@@ -62,26 +62,26 @@ namespace MvpCompanion.UI.Common.Helpers
                  ActivityVisibility = new VisibilityViewModel { Description = "The visibility", Id = 1 },
                  Description = "This is an activity",
                  ReferenceUrl = "http://bing.com",
-                 ActivityType = new ActivityTypeViewModel() { Name = "Name Here", EnglishName = "English name here", Id = Guid.NewGuid()},
+                 ActivityType = new ActivityTypeViewModel() { Name = "Name Here", EnglishName = "English name here", Id = Guid.NewGuid().ToString()},
                  AnnualQuantity = 100,
                  SecondAnnualQuantity = 100,
                  AllAnswersUrl = "http://stackoverflow.com",
                  AnnualReach = 100,
                  AllPostsUrl = "http://stackoverflow.com",
-                 ApplicableTechnology = new ActivityTechnologyViewModel() {AwardName = "Award name", AwardCategory = "WinDev", Name = "Windows Dev", Active = true, Id = Guid.NewGuid(), Statuscode = 1}
+                 ApplicableTechnology = new ActivityTechnologyViewModel() {AwardName = "Award name", AwardCategory = "WinDev", Name = "Windows Dev", Active = true, Id = Guid.NewGuid().ToString(), Statuscode = 1}
             },
             new ActivityViewModel()
             {
                  ActivityVisibility = new VisibilityViewModel { Description = "The visibility", Id = 1 },
                  Description = "This is an activity",
                  ReferenceUrl = "http://bing.com",
-                 ActivityType = new ActivityTypeViewModel() { Name = "Name Here", EnglishName = "English name here", Id = Guid.NewGuid()},
+                 ActivityType = new ActivityTypeViewModel() { Name = "Name Here", EnglishName = "English name here", Id = Guid.NewGuid().ToString()},
                  AnnualQuantity = 100,
                  SecondAnnualQuantity = 100,
                  AllAnswersUrl = "http://stackoverflow.com",
                  AnnualReach = 100,
                  AllPostsUrl = "http://stackoverflow.com",
-                 ApplicableTechnology = new ActivityTechnologyViewModel() {AwardName = "Award name", AwardCategory = "WinDev", Name = "Windows Dev", Active = true, Id = Guid.NewGuid(), Statuscode = 1}
+                 ApplicableTechnology = new ActivityTechnologyViewModel() {AwardName = "Award name", AwardCategory = "WinDev", Name = "Windows Dev", Active = true, Id = Guid.NewGuid().ToString(), Statuscode = 1}
             },
         };
 
@@ -170,16 +170,16 @@ namespace MvpCompanion.UI.Common.Helpers
 
         public static ObservableCollection<ContributionTechnologyModel> GenerateAreaTechnologies() => new ObservableCollection<ContributionTechnologyModel>()
         {
-            new ContributionTechnologyModel(new Guid("153fc913-6025-4ac1-99bc-79ffd5f34281"),"Tech Name 1","Tech Award Name 1","Tech Award Category 1"),
-            new ContributionTechnologyModel(new Guid("253fc913-6025-4ac1-99bc-79ffd5f34281"),"Tech Name 2","Tech Award Name 2","Tech Award Category 2"),
-            new ContributionTechnologyModel(new Guid("353fc913-6025-4ac1-99bc-79ffd5f34281"),"Tech Name 3","Tech Award Name 3","Tech Award Category 3")
+            new ContributionTechnologyModel("153fc913-6025-4ac1-99bc-79ffd5f34281","Tech Name 1","Tech Award Name 1","Tech Award Category 1"),
+            new ContributionTechnologyModel("253fc913-6025-4ac1-99bc-79ffd5f34281","Tech Name 2","Tech Award Name 2","Tech Award Category 2"),
+            new ContributionTechnologyModel("353fc913-6025-4ac1-99bc-79ffd5f34281","Tech Name 3","Tech Award Name 3","Tech Award Category 3")
         };
 
         public static ObservableCollection<ContributionTypeModel> GenerateContributionTypes() => new ObservableCollection<ContributionTypeModel>()
         {
-            new ContributionTypeModel(new Guid("13062caa-6a7b-47a9-b58f-2b6a85b2cbb9"), "Type Name 1", "English Type Name 1"),
-            new ContributionTypeModel(new Guid("23062caa-6a7b-47a9-b58f-2b6a85b2cbb9"), "Type Name 2", "English Type Name 2"),
-            new ContributionTypeModel(new Guid("33062caa-6a7b-47a9-b58f-2b6a85b2cbb9"), "Type Name 3", "English Type Name 3"),
+            new ContributionTypeModel("13062caa-6a7b-47a9-b58f-2b6a85b2cbb9", "Type Name 1", "English Type Name 1"),
+            new ContributionTypeModel("23062caa-6a7b-47a9-b58f-2b6a85b2cbb9", "Type Name 2", "English Type Name 2"),
+            new ContributionTypeModel("33062caa-6a7b-47a9-b58f-2b6a85b2cbb9", "Type Name 3", "English Type Name 3"),
         };
 
         public static ObservableCollection<ContributionAreaContributionModel> GenerateTechnologyAreas() => new ObservableCollection<ContributionAreaContributionModel>()
@@ -211,7 +211,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 96470,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Exchange DL Subscription Email",
                     IconUrl = "~/Content/Images/socialGeneric.png",
                     SystemCollectionEnabled = false
@@ -233,7 +233,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 130761,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Exchange DL Subscription Email",
                     IconUrl = "~/Content/Images/socialGeneric.png",
                     SystemCollectionEnabled = false
@@ -256,7 +256,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 96471,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Xbox Live gamertag",
                     IconUrl = "~/Content/Images/xbox.png",
                     SystemCollectionEnabled = false
@@ -278,7 +278,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 96471,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Klout",
                     IconUrl = "~/Content/Images/socialKlout.png",
                     SystemCollectionEnabled = false
@@ -300,7 +300,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 40775,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "LinkedIn",
                     IconUrl = "~/Content/Images/socialLi.png",
                     SystemCollectionEnabled = false
@@ -322,7 +322,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 40777,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "MSDN/Technet",
                     IconUrl = "~/Content/Images/socialTN.png",
                     SystemCollectionEnabled = true
@@ -344,7 +344,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 40772,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Microsoft Connect",
                     IconUrl = "~/Content/Images/socialGeneric.png",
                     SystemCollectionEnabled = true
@@ -366,7 +366,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 40773,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Twitter",
                     IconUrl = "~/Content/Images/socialTwitter.png",
                     SystemCollectionEnabled = true
@@ -388,7 +388,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 40782,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "YouTube",
                     IconUrl = "~/Content/Images/socialYT.png",
                     SystemCollectionEnabled = false
@@ -410,7 +410,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 130762,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "YouTube",
                     IconUrl = "~/Content/Images/socialYT.png",
                     SystemCollectionEnabled = false
@@ -432,7 +432,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 96469,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "GitHub",
                     IconUrl = "~/Content/Images/github.png",
                     SystemCollectionEnabled = false
@@ -454,7 +454,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 96578,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "StackOverflow",
                     IconUrl = "~/Content/Images/StackOverflow.png",
                     SystemCollectionEnabled = false
@@ -476,7 +476,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 96578,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "StackOverflow",
                     IconUrl = "~/Content/Images/StackOverflow.png",
                     SystemCollectionEnabled = false
@@ -498,7 +498,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 96472,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Windows/Windows Phone Dev Center ID",
                     IconUrl = "~/Content/Images/windowsPhone.png",
                     SystemCollectionEnabled = false
@@ -520,7 +520,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 40776,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Blog",
                     IconUrl = "~/Content/Images/socialGeneric.png",
                     SystemCollectionEnabled = false
@@ -542,7 +542,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 130760,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Meetup",
                     IconUrl = "~/Content/Images/socialGeneric.png",
                     SystemCollectionEnabled = false
@@ -564,7 +564,7 @@ namespace MvpCompanion.UI.Common.Helpers
                 PrivateSiteId = 130759,
                 SocialNetwork = new SocialNetworkViewModel
                 {
-                    Id = Guid.NewGuid(),
+                    Id = Guid.NewGuid().ToString(),
                     Name = "Instagram",
                     IconUrl = "~/Content/Images/socialGeneric.png",
                     SystemCollectionEnabled = false
@@ -589,13 +589,12 @@ namespace MvpCompanion.UI.Common.Helpers
 
             items.Add(new QuestionnaireItem
             {
-                QuestionItem = new AwardConsiderationQuestionModel
+                QuestionItem = new AwardQuestionViewModel
                 {
                     AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c123",
-                    IsRequired = true,
                     QuestionContent = "What does it mean to be an MVP for you?"
                 },
-                AnswerItem = new AwardConsiderationAnswerModel
+                AnswerItem = new AwardAnswerViewModel
                 {
                     AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c123"
                 }
@@ -603,13 +602,12 @@ namespace MvpCompanion.UI.Common.Helpers
 
             items.Add(new QuestionnaireItem
             {
-                QuestionItem = new AwardConsiderationQuestionModel
+                QuestionItem = new AwardQuestionViewModel
                 {
                     AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c234",
-                    IsRequired = true,
                     QuestionContent = "What do you plan on doing for the next year as a the go-to source for helping the developer community?"
                 },
-                AnswerItem = new AwardConsiderationAnswerModel
+                AnswerItem = new AwardAnswerViewModel
                 {
                     AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c234"
                 }
@@ -617,13 +615,12 @@ namespace MvpCompanion.UI.Common.Helpers
 
             items.Add(new QuestionnaireItem
             {
-                QuestionItem = new AwardConsiderationQuestionModel
+                QuestionItem = new AwardQuestionViewModel
                 {
                     AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c345",
-                    IsRequired = true,
                     QuestionContent = "How can the MVP program help better enable you to prive the best support possible?"
                 },
-                AnswerItem = new AwardConsiderationAnswerModel
+                AnswerItem = new AwardAnswerViewModel
                 {
                     AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c345"
                 }
@@ -631,13 +628,12 @@ namespace MvpCompanion.UI.Common.Helpers
 
             items.Add(new QuestionnaireItem
             {
-                QuestionItem = new AwardConsiderationQuestionModel
+                QuestionItem = new AwardQuestionViewModel
                 {
                     AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c456",
-                    IsRequired = true,
                     QuestionContent = "Whatcha gonna do, whatcha gonna do, whatcha gonna do when they come for you?"
                 },
-                AnswerItem = new AwardConsiderationAnswerModel
+                AnswerItem = new AwardAnswerViewModel
                 {
                     AwardQuestionId = "13062caa-6a7b-47a9-b58f-2b6a85b2c456"
                 }

@@ -7,17 +7,11 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class SocialNetworkViewModel
+    public class SocialNetworkViewModel
     {
-        /// <summary>
-        /// Initializes a new instance of the SocialNetworkViewModel class.
-        /// </summary>
         public SocialNetworkViewModel() { }
 
-        /// <summary>
-        /// Initializes a new instance of the SocialNetworkViewModel class.
-        /// </summary>
-        public SocialNetworkViewModel(Guid id, string name = default(string), string iconUrl = default(string), bool? systemCollectionEnabled = default(bool?))
+        public SocialNetworkViewModel(string id, string name, string iconUrl, bool? systemCollectionEnabled)
         {
             Id = id;
             Name = name;
@@ -25,24 +19,16 @@ namespace MvpApi.Common.Models
             SystemCollectionEnabled = systemCollectionEnabled;
         }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Id")]
-        public Guid Id { get; set; }
+        [Newtonsoft.Json.JsonProperty(PropertyName = "Id")]
+		public string Id { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Name")]
-        public string Name { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Name")]
+		public string Name { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "IconUrl")]
-        public string IconUrl { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "IconUrl")]
+		public string IconUrl { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "SystemCollectionEnabled")]
-        public bool? SystemCollectionEnabled { get; set; }
-    }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "SystemCollectionEnabled")]
+		public System.Boolean? SystemCollectionEnabled { get; set; }
+	}
 }

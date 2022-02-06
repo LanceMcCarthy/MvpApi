@@ -17,7 +17,7 @@ namespace MvpApi.Common.Models
         /// <summary>
         /// Initializes a new instance of the ContributionViewModel class.
         /// </summary>
-        public ContributionViewModel(IList<ContributionsModel> contributions = default(IList<ContributionsModel>), int? totalContributions = default(int?), int? pagingIndex = default(int?))
+        public ContributionViewModel(IList<ContributionsModel> contributions = default, int? totalContributions = default, int? pagingIndex = default)
         {
             Contributions = contributions;
             TotalContributions = totalContributions;

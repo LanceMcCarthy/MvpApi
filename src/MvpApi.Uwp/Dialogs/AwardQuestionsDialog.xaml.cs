@@ -58,7 +58,7 @@ namespace MvpApi.Uwp.Dialogs
             {
                 ShowProgress("You've likely already submitted your answers. If not, try again later.");
 
-                QuestionnaireItems.ForEach(item => item.AnswerItem = new AwardConsiderationAnswerModel());
+                QuestionnaireItems.ForEach(item => item.AnswerItem = new AwardAnswerViewModel());
 
                 SubmitButton.IsEnabled = false;
                 ConfirmationCheckBox.IsEnabled = false;
@@ -88,7 +88,7 @@ namespace MvpApi.Uwp.Dialogs
 
             try
             {
-                var answers = new List<AwardConsiderationAnswerModel>();
+                var answers = new List<AwardAnswerViewModel>();
 
                 if (answers.Count == 0)
                 {

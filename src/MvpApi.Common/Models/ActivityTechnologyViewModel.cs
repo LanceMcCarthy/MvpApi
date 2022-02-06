@@ -10,7 +10,7 @@ namespace MvpApi.Common.Models
     /// <summary>
     /// The activity technology model.
     /// </summary>
-    public partial class ActivityTechnologyViewModel
+    public class ActivityTechnologyViewModel
     {
         /// <summary>
         /// Initializes a new instance of the ActivityTechnologyViewModel
@@ -22,7 +22,7 @@ namespace MvpApi.Common.Models
         /// Initializes a new instance of the ActivityTechnologyViewModel
         /// class.
         /// </summary>
-        public ActivityTechnologyViewModel(Guid id, string name = default(string), string awardName = default(string), string awardCategory = default(string), int? statuscode = default(int?), bool? active = default(bool?))
+        public ActivityTechnologyViewModel(string id, string name = default, string awardName = default, string awardCategory = default, int? statuscode = default, bool? active = default)
         {
             Id = id;
             Name = name;
@@ -36,7 +36,7 @@ namespace MvpApi.Common.Models
         /// Gets or sets the id.
         /// </summary>
         [JsonProperty(PropertyName = "Id")]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name.

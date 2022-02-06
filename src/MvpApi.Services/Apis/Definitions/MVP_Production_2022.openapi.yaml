@@ -1,0 +1,2334 @@
+openapi: 3.0.1
+info:
+  title: MVP Production
+  version: '1.0'
+servers:
+  - url: https://mvpapi.azure-api.net/mvp
+paths:
+  /api/contributions/contributionareas:
+    get:
+      summary: GetContributionAreas
+      description: Gets a list of Contribution areas grouped by Award Names
+      operationId: 580eb8bfac25510f0c09c1a0
+      responses:
+        '200':
+          description: IEnumerable ContributionAreaViewModel
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+  '/api/contributions/{offset}/{limit}':
+    get:
+      summary: GetContributions
+      description: Supports pagination
+      operationId: 580eb8bfac25510f0c09c1a1
+      parameters:
+        - name: offset
+          in: path
+          description: Format - int32. Page skip integer
+          required: true
+          schema:
+            type: integer
+        - name: limit
+          in: path
+          description: Format - int32. Page take integer
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK. ContributionViewModel object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributionViewModel'
+              example:
+                Contributions:
+                  - ContributionId: 0
+                    ContributionTypeName: string
+                    ContributionType:
+                      Id: string
+                      Name: string
+                      EnglishName: string
+                    ContributionTechnology:
+                      Id: string
+                      Name: string
+                      AwardName: string
+                      AwardCategory: string
+                    AdditionalTechnologies:
+                      - Id: string
+                        Name: string
+                        AwardName: string
+                        AwardCategory: string
+                    StartDate: string
+                    Title: string
+                    ReferenceUrl: string
+                    Visibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                    AnnualQuantity: 0
+                    SecondAnnualQuantity: 0
+                    AnnualReach: 0
+                    Description: string
+                    IsEditable: true
+                TotalContributions: 0
+                PagingIndex: 0
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ContributionViewModel'
+              example:
+                Contributions:
+                  - ContributionId: 0
+                    ContributionTypeName: string
+                    ContributionType:
+                      Id: string
+                      Name: string
+                      EnglishName: string
+                    ContributionTechnology:
+                      Id: string
+                      Name: string
+                      AwardName: string
+                      AwardCategory: string
+                    AdditionalTechnologies:
+                      - Id: string
+                        Name: string
+                        AwardName: string
+                        AwardCategory: string
+                    StartDate: string
+                    Title: string
+                    ReferenceUrl: string
+                    Visibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                    AnnualQuantity: 0
+                    SecondAnnualQuantity: 0
+                    AnnualReach: 0
+                    Description: string
+                    IsEditable: true
+                TotalContributions: 0
+                PagingIndex: 0
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ContributionViewModel'
+              example: <ContributionViewModel> <Contributions> <ContributionId>0</ContributionId> <ContributionTypeName>string</ContributionTypeName> <ContributionType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionType> <ContributionTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </ContributionTechnology> <AdditionalTechnologies> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </AdditionalTechnologies> <StartDate>string</StartDate> <Title>string</Title> <ReferenceUrl>string</ReferenceUrl> <Visibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </Visibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> <IsEditable>true</IsEditable> </Contributions> <TotalContributions>0</TotalContributions> <PagingIndex>0</PagingIndex> </ContributionViewModel>
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/ContributionViewModel'
+              example: <ContributionViewModel> <Contributions> <ContributionId>0</ContributionId> <ContributionTypeName>string</ContributionTypeName> <ContributionType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionType> <ContributionTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </ContributionTechnology> <AdditionalTechnologies> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </AdditionalTechnologies> <StartDate>string</StartDate> <Title>string</Title> <ReferenceUrl>string</ReferenceUrl> <Visibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </Visibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> <IsEditable>true</IsEditable> </Contributions> <TotalContributions>0</TotalContributions> <PagingIndex>0</PagingIndex> </ContributionViewModel>
+  '/api/contributions/{id}':
+    get:
+      summary: GetContributionById
+      description: Gets a Contribution item by id
+      operationId: 580eb8bfac25510f0c09c1a2
+      parameters:
+        - name: id
+          in: path
+          description: Format - int32. ContributionId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK. Contribution object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributionsModel'
+              example:
+                ContributionId: 0
+                ContributionTypeName: string
+                ContributionType:
+                  Id: string
+                  Name: string
+                  EnglishName: string
+                ContributionTechnology:
+                  Id: string
+                  Name: string
+                  AwardName: string
+                  AwardCategory: string
+                AdditionalTechnologies:
+                  - Id: string
+                    Name: string
+                    AwardName: string
+                    AwardCategory: string
+                StartDate: string
+                Title: string
+                ReferenceUrl: string
+                Visibility:
+                  Id: 0
+                  Description: string
+                  LocalizeKey: string
+                AnnualQuantity: 0
+                SecondAnnualQuantity: 0
+                AnnualReach: 0
+                Description: string
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ContributionsModel'
+              example:
+                ContributionId: 0
+                ContributionTypeName: string
+                ContributionType:
+                  Id: string
+                  Name: string
+                  EnglishName: string
+                ContributionTechnology:
+                  Id: string
+                  Name: string
+                  AwardName: string
+                  AwardCategory: string
+                AdditionalTechnologies:
+                  - Id: string
+                    Name: string
+                    AwardName: string
+                    AwardCategory: string
+                StartDate: string
+                Title: string
+                ReferenceUrl: string
+                Visibility:
+                  Id: 0
+                  Description: string
+                  LocalizeKey: string
+                AnnualQuantity: 0
+                SecondAnnualQuantity: 0
+                AnnualReach: 0
+                Description: string
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ContributionsModel'
+              example: <ContributionsModel> <ContributionId>0</ContributionId> <ContributionTypeName>string</ContributionTypeName> <ContributionType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionType> <ContributionTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </ContributionTechnology> <AdditionalTechnologies> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </AdditionalTechnologies> <StartDate>string</StartDate> <Title>string</Title> <ReferenceUrl>string</ReferenceUrl> <Visibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </Visibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> </ContributionsModel>
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/ContributionsModel'
+              example: <ContributionsModel> <ContributionId>0</ContributionId> <ContributionTypeName>string</ContributionTypeName> <ContributionType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionType> <ContributionTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </ContributionTechnology> <AdditionalTechnologies> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </AdditionalTechnologies> <StartDate>string</StartDate> <Title>string</Title> <ReferenceUrl>string</ReferenceUrl> <Visibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </Visibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> </ContributionsModel>
+  /api/contributions:
+    put:
+      summary: PutContribution
+      description: Updates a Contribution item
+      operationId: 580eb8bfac25510f0c09c1a3
+      requestBody:
+        description: ContributionsModel object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContributionsModel'
+            example:
+              ContributionId: 0
+              ContributionTypeName: string
+              ContributionType:
+                Id: string
+                Name: string
+                EnglishName: string
+              ContributionTechnology:
+                Id: string
+                Name: string
+                AwardName: string
+                AwardCategory: string
+              AdditionalTechnologies:
+                - Id: string
+                  Name: string
+                  AwardName: string
+                  AwardCategory: string
+              StartDate: string
+              Title: string
+              ReferenceUrl: string
+              Visibility:
+                Id: 0
+                Description: string
+                LocalizeKey: string
+              AnnualQuantity: 0
+              SecondAnnualQuantity: 0
+              AnnualReach: 0
+              Description: string
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ContributionsModel'
+            example:
+              ContributionId: 0
+              ContributionTypeName: string
+              ContributionType:
+                Id: string
+                Name: string
+                EnglishName: string
+              ContributionTechnology:
+                Id: string
+                Name: string
+                AwardName: string
+                AwardCategory: string
+              AdditionalTechnologies:
+                - Id: string
+                  Name: string
+                  AwardName: string
+                  AwardCategory: string
+              StartDate: string
+              Title: string
+              ReferenceUrl: string
+              Visibility:
+                Id: 0
+                Description: string
+                LocalizeKey: string
+              AnnualQuantity: 0
+              SecondAnnualQuantity: 0
+              AnnualReach: 0
+              Description: string
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ContributionsModel'
+            example: <ContributionsModel> <ContributionId>0</ContributionId> <ContributionTypeName>string</ContributionTypeName> <ContributionType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionType> <ContributionTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </ContributionTechnology> <AdditionalTechnologies> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </AdditionalTechnologies> <StartDate>string</StartDate> <Title>string</Title> <ReferenceUrl>string</ReferenceUrl> <Visibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </Visibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> </ContributionsModel>
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/ContributionsModel'
+            example: <ContributionsModel> <ContributionId>0</ContributionId> <ContributionTypeName>string</ContributionTypeName> <ContributionType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionType> <ContributionTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </ContributionTechnology> <AdditionalTechnologies> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </AdditionalTechnologies> <StartDate>string</StartDate> <Title>string</Title> <ReferenceUrl>string</ReferenceUrl> <Visibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </Visibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> </ContributionsModel>
+          application/x-www-form-urlencoded: { }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+        '500':
+          description: InternalServerError
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+    post:
+      summary: PostContribution
+      description: Creates a new Contribution item
+      operationId: 580eb8bfac25510f0c09c1a4
+      requestBody:
+        description: ContributionsModel object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContributionsModel'
+            example:
+              ContributionId: 0
+              ContributionTypeName: string
+              ContributionType:
+                Id: string
+                Name: string
+                EnglishName: string
+              ContributionTechnology:
+                Id: string
+                Name: string
+                AwardName: string
+                AwardCategory: string
+              AdditionalTechnologies:
+                - Id: string
+                  Name: string
+                  AwardName: string
+                  AwardCategory: string
+              StartDate: string
+              Title: string
+              ReferenceUrl: string
+              Visibility:
+                Id: 0
+                Description: string
+                LocalizeKey: string
+              AnnualQuantity: 0
+              SecondAnnualQuantity: 0
+              AnnualReach: 0
+              Description: string
+          text/json:
+            schema:
+              $ref: '#/components/schemas/ContributionsModel'
+            example:
+              ContributionId: 0
+              ContributionTypeName: string
+              ContributionType:
+                Id: string
+                Name: string
+                EnglishName: string
+              ContributionTechnology:
+                Id: string
+                Name: string
+                AwardName: string
+                AwardCategory: string
+              AdditionalTechnologies:
+                - Id: string
+                  Name: string
+                  AwardName: string
+                  AwardCategory: string
+              StartDate: string
+              Title: string
+              ReferenceUrl: string
+              Visibility:
+                Id: 0
+                Description: string
+                LocalizeKey: string
+              AnnualQuantity: 0
+              SecondAnnualQuantity: 0
+              AnnualReach: 0
+              Description: string
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/ContributionsModel'
+            example: <ContributionsModel> <ContributionId>0</ContributionId> <ContributionTypeName>string</ContributionTypeName> <ContributionType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionType> <ContributionTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </ContributionTechnology> <AdditionalTechnologies> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </AdditionalTechnologies> <StartDate>string</StartDate> <Title>string</Title> <ReferenceUrl>string</ReferenceUrl> <Visibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </Visibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> </ContributionsModel>
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/ContributionsModel'
+            example: <ContributionsModel> <ContributionId>0</ContributionId> <ContributionTypeName>string</ContributionTypeName> <ContributionType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionType> <ContributionTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </ContributionTechnology> <AdditionalTechnologies> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </AdditionalTechnologies> <StartDate>string</StartDate> <Title>string</Title> <ReferenceUrl>string</ReferenceUrl> <Visibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </Visibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> </ContributionsModel>
+          application/x-www-form-urlencoded: { }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiContributionsPost200ApplicationJsonResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ApiContributionsPost200ApplicationJsonResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiContributionsPost200ApplicationJsonResponse'
+              example: <ApiContributionsPost200ApplicationJsonResponse />
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/ApiContributionsPost200ApplicationJsonResponse'
+              example: <ApiContributionsPost200ApplicationJsonResponse />
+        '201':
+          description: Newly created ContributionsModel item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributionsModel'
+              example:
+                ContributionId: 0
+                ContributionTypeName: string
+                ContributionType:
+                  Id: string
+                  Name: string
+                  EnglishName: string
+                ContributionTechnology:
+                  Id: string
+                  Name: string
+                  AwardName: string
+                  AwardCategory: string
+                AdditionalTechnologies:
+                  - Id: string
+                    Name: string
+                    AwardName: string
+                    AwardCategory: string
+                StartDate: string
+                Title: string
+                ReferenceUrl: string
+                Visibility:
+                  Id: 0
+                  Description: string
+                  LocalizeKey: string
+                AnnualQuantity: 0
+                SecondAnnualQuantity: 0
+                AnnualReach: 0
+                Description: string
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ContributionsModel'
+              example:
+                ContributionId: 0
+                ContributionTypeName: string
+                ContributionType:
+                  Id: string
+                  Name: string
+                  EnglishName: string
+                ContributionTechnology:
+                  Id: string
+                  Name: string
+                  AwardName: string
+                  AwardCategory: string
+                AdditionalTechnologies:
+                  - Id: string
+                    Name: string
+                    AwardName: string
+                    AwardCategory: string
+                StartDate: string
+                Title: string
+                ReferenceUrl: string
+                Visibility:
+                  Id: 0
+                  Description: string
+                  LocalizeKey: string
+                AnnualQuantity: 0
+                SecondAnnualQuantity: 0
+                AnnualReach: 0
+                Description: string
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ContributionsModel'
+              example: <ContributionsModel> <ContributionId>0</ContributionId> <ContributionTypeName>string</ContributionTypeName> <ContributionType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionType> <ContributionTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </ContributionTechnology> <AdditionalTechnologies> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </AdditionalTechnologies> <StartDate>string</StartDate> <Title>string</Title> <ReferenceUrl>string</ReferenceUrl> <Visibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </Visibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> </ContributionsModel>
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/ContributionsModel'
+              example: <ContributionsModel> <ContributionId>0</ContributionId> <ContributionTypeName>string</ContributionTypeName> <ContributionType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionType> <ContributionTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </ContributionTechnology> <AdditionalTechnologies> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> </AdditionalTechnologies> <StartDate>string</StartDate> <Title>string</Title> <ReferenceUrl>string</ReferenceUrl> <Visibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </Visibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> </ContributionsModel>
+        '400':
+          description: BadRequest
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+        '500':
+          description: InternalServerError
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+    delete:
+      summary: DeleteContribution
+      description: Deletes a Contribution item
+      operationId: 580eb8bfac25510f0c09c1a5
+      parameters:
+        - name: id
+          in: query
+          description: Format - int32. Contribution ID (model PrivateSiteId value)
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiContributionsDelete200ApplicationJsonResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ApiContributionsDelete200ApplicationJsonResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiContributionsDelete200ApplicationJsonResponse'
+              example: <ApiContributionsDelete200ApplicationJsonResponse />
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/ApiContributionsDelete200ApplicationJsonResponse'
+              example: <ApiContributionsDelete200ApplicationJsonResponse />
+        '204':
+          description: NoContent
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+        '404':
+          description: NotFound
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+  /api/onlineidentities:
+    get:
+      summary: GetOnlineIdentities
+      description: Retricted to the current user
+      operationId: 580eb8bfac25510f0c09c1a7
+      responses:
+        '200':
+          description: OK. IEnumberable object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentityViewModelArray'
+              example:
+                - PrivateSiteId: 0
+                  SocialNetwork:
+                    Id: string
+                    Name: string
+                    IconUrl: string
+                    SystemCollectionEnabled: true
+                  Url: string
+                  OnlineIdentityVisibility:
+                    Id: 0
+                    Description: string
+                    LocalizeKey: string
+                  ContributionCollected: true
+                  DisplayName: string
+                  UserId: string
+                  MicrosoftAccount: string
+                  PrivacyConsentStatus: true
+                  PrivacyConsentCheckStatus: true
+                  PrivacyConsentCheckDate: string
+                  PrivacyConsentUnCheckDate: string
+                  Submitted: true
+            text/json:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentityViewModelArray'
+              example:
+                - PrivateSiteId: 0
+                  SocialNetwork:
+                    Id: string
+                    Name: string
+                    IconUrl: string
+                    SystemCollectionEnabled: true
+                  Url: string
+                  OnlineIdentityVisibility:
+                    Id: 0
+                    Description: string
+                    LocalizeKey: string
+                  ContributionCollected: true
+                  DisplayName: string
+                  UserId: string
+                  MicrosoftAccount: string
+                  PrivacyConsentStatus: true
+                  PrivacyConsentCheckStatus: true
+                  PrivacyConsentCheckDate: string
+                  PrivacyConsentUnCheckDate: string
+                  Submitted: true
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentityViewModelArray'
+              example: <OnlineIdentityViewModelArray> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentityViewModelArray>
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentityViewModelArray'
+              example: <OnlineIdentityViewModelArray> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentityViewModelArray>
+    put:
+      summary: PutOnlineIdentity
+      description: Set PrivateSiteId in model to identity id
+      operationId: 580eb8bfac25510f0c09c1a8
+      requestBody:
+        description: OnlineIdentityViewModel model
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnlineIdentityViewModel'
+            example:
+              PrivateSiteId: 0
+              SocialNetwork:
+                Id: string
+                Name: string
+                IconUrl: string
+                SystemCollectionEnabled: true
+              Url: string
+              OnlineIdentityVisibility:
+                Id: 0
+                Description: string
+                LocalizeKey: string
+              ContributionCollected: true
+              DisplayName: string
+              UserId: string
+              MicrosoftAccount: string
+              PrivacyConsentStatus: true
+              PrivacyConsentCheckStatus: true
+              PrivacyConsentCheckDate: string
+              PrivacyConsentUnCheckDate: string
+              Submitted: true
+          text/json:
+            schema:
+              $ref: '#/components/schemas/OnlineIdentityViewModel'
+            example:
+              PrivateSiteId: 0
+              SocialNetwork:
+                Id: string
+                Name: string
+                IconUrl: string
+                SystemCollectionEnabled: true
+              Url: string
+              OnlineIdentityVisibility:
+                Id: 0
+                Description: string
+                LocalizeKey: string
+              ContributionCollected: true
+              DisplayName: string
+              UserId: string
+              MicrosoftAccount: string
+              PrivacyConsentStatus: true
+              PrivacyConsentCheckStatus: true
+              PrivacyConsentCheckDate: string
+              PrivacyConsentUnCheckDate: string
+              Submitted: true
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/OnlineIdentityViewModel'
+            example: <OnlineIdentityViewModel> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentityViewModel>
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/OnlineIdentityViewModel'
+            example: <OnlineIdentityViewModel> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentityViewModel>
+          application/x-www-form-urlencoded: { }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+        '500':
+          description: InternalServerError
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+    post:
+      summary: PostOnlineIdentity
+      description: Keep PrivateSiteId == 0 and Retricted to the current user
+      operationId: 580eb8bfac25510f0c09c1a9
+      requestBody:
+        description: OnlineIdentityViewModel object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnlineIdentityViewModel'
+            example:
+              PrivateSiteId: 0
+              SocialNetwork:
+                Id: string
+                Name: string
+                IconUrl: string
+                SystemCollectionEnabled: true
+              Url: string
+              OnlineIdentityVisibility:
+                Id: 0
+                Description: string
+                LocalizeKey: string
+              ContributionCollected: true
+              DisplayName: string
+              UserId: string
+              MicrosoftAccount: string
+              PrivacyConsentStatus: true
+              PrivacyConsentCheckStatus: true
+              PrivacyConsentCheckDate: string
+              PrivacyConsentUnCheckDate: string
+              Submitted: true
+          text/json:
+            schema:
+              $ref: '#/components/schemas/OnlineIdentityViewModel'
+            example:
+              PrivateSiteId: 0
+              SocialNetwork:
+                Id: string
+                Name: string
+                IconUrl: string
+                SystemCollectionEnabled: true
+              Url: string
+              OnlineIdentityVisibility:
+                Id: 0
+                Description: string
+                LocalizeKey: string
+              ContributionCollected: true
+              DisplayName: string
+              UserId: string
+              MicrosoftAccount: string
+              PrivacyConsentStatus: true
+              PrivacyConsentCheckStatus: true
+              PrivacyConsentCheckDate: string
+              PrivacyConsentUnCheckDate: string
+              Submitted: true
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/OnlineIdentityViewModel'
+            example: <OnlineIdentityViewModel> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentityViewModel>
+          text/xml:
+            schema:
+              $ref: '#/components/schemas/OnlineIdentityViewModel'
+            example: <OnlineIdentityViewModel> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentityViewModel>
+          application/x-www-form-urlencoded: { }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiOnlineidentitiesPost200ApplicationJsonResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ApiOnlineidentitiesPost200ApplicationJsonResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiOnlineidentitiesPost200ApplicationJsonResponse'
+              example: <ApiOnlineidentitiesPost200ApplicationJsonResponse />
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/ApiOnlineidentitiesPost200ApplicationJsonResponse'
+              example: <ApiOnlineidentitiesPost200ApplicationJsonResponse />
+        '201':
+          description: Newly created OnlineIdentity item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentity'
+              example:
+                OnlineIdentityId: string
+                MvpGuid: string
+                Name: string
+                PrivateSiteId: 0
+                OnlineIdentityVisibility:
+                  Id: 0
+                  Description: string
+                SocialNetwork:
+                  SocialNetworkId: string
+                  Name: string
+                  Website: string
+                  StatusCode:
+                    Id: 0
+                    Description: string
+                  SystemCollectionEnabled: true
+                Url: string
+                DisplayName: string
+                UserId: string
+                MicrosoftAccount: string
+                ContributionCollected: true
+                PrivacyConsentStatus: true
+                Submitted: true
+            text/json:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentity'
+              example:
+                OnlineIdentityId: string
+                MvpGuid: string
+                Name: string
+                PrivateSiteId: 0
+                OnlineIdentityVisibility:
+                  Id: 0
+                  Description: string
+                SocialNetwork:
+                  SocialNetworkId: string
+                  Name: string
+                  Website: string
+                  StatusCode:
+                    Id: 0
+                    Description: string
+                  SystemCollectionEnabled: true
+                Url: string
+                DisplayName: string
+                UserId: string
+                MicrosoftAccount: string
+                ContributionCollected: true
+                PrivacyConsentStatus: true
+                Submitted: true
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentity'
+              example: <OnlineIdentity> <OnlineIdentityId>string</OnlineIdentityId> <MvpGuid>string</MvpGuid> <Name>string</Name> <PrivateSiteId>0</PrivateSiteId> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> </OnlineIdentityVisibility> <SocialNetwork> <SocialNetworkId>string</SocialNetworkId> <Name>string</Name> <Website>string</Website> <StatusCode> <Id>0</Id> <Description>string</Description> </StatusCode> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <ContributionCollected>true</ContributionCollected> <PrivacyConsentStatus>true</PrivacyConsentStatus> <Submitted>true</Submitted> </OnlineIdentity>
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentity'
+              example: <OnlineIdentity> <OnlineIdentityId>string</OnlineIdentityId> <MvpGuid>string</MvpGuid> <Name>string</Name> <PrivateSiteId>0</PrivateSiteId> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> </OnlineIdentityVisibility> <SocialNetwork> <SocialNetworkId>string</SocialNetworkId> <Name>string</Name> <Website>string</Website> <StatusCode> <Id>0</Id> <Description>string</Description> </StatusCode> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <ContributionCollected>true</ContributionCollected> <PrivacyConsentStatus>true</PrivacyConsentStatus> <Submitted>true</Submitted> </OnlineIdentity>
+        '500':
+          description: InternalServerError
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+    delete:
+      summary: DeleteOnlineIdentity
+      description: Delete Online Identity
+      operationId: 580eb8bfac25510f0c09c1aa
+      parameters:
+        - name: id
+          in: query
+          description: Format - int32. The items identity id (PrivateSiteId)
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiOnlineidentitiesDelete200ApplicationJsonResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ApiOnlineidentitiesDelete200ApplicationJsonResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ApiOnlineidentitiesDelete200ApplicationJsonResponse'
+              example: <ApiOnlineidentitiesDelete200ApplicationJsonResponse />
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/ApiOnlineidentitiesDelete200ApplicationJsonResponse'
+              example: <ApiOnlineidentitiesDelete200ApplicationJsonResponse />
+        '204':
+          description: NoContent
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+        '400':
+          description: BadRequest
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+        '404':
+          description: NotFound
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+  '/api/onlineidentities/{nominationsId}':
+    get:
+      summary: GetOnlineIdentitiesByNominationsId
+      description: Retricted to the current user
+      operationId: 580eb8bfac25510f0c09c1ab
+      parameters:
+        - name: nominationsId
+          in: path
+          description: Format - uuid. Guid nominationsId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK. IEnumberable object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentityViewModelArray'
+              example:
+                - PrivateSiteId: 0
+                  SocialNetwork:
+                    Id: string
+                    Name: string
+                    IconUrl: string
+                    SystemCollectionEnabled: true
+                  Url: string
+                  OnlineIdentityVisibility:
+                    Id: 0
+                    Description: string
+                    LocalizeKey: string
+                  ContributionCollected: true
+                  DisplayName: string
+                  UserId: string
+                  MicrosoftAccount: string
+                  PrivacyConsentStatus: true
+                  PrivacyConsentCheckStatus: true
+                  PrivacyConsentCheckDate: string
+                  PrivacyConsentUnCheckDate: string
+                  Submitted: true
+            text/json:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentityViewModelArray'
+              example:
+                - PrivateSiteId: 0
+                  SocialNetwork:
+                    Id: string
+                    Name: string
+                    IconUrl: string
+                    SystemCollectionEnabled: true
+                  Url: string
+                  OnlineIdentityVisibility:
+                    Id: 0
+                    Description: string
+                    LocalizeKey: string
+                  ContributionCollected: true
+                  DisplayName: string
+                  UserId: string
+                  MicrosoftAccount: string
+                  PrivacyConsentStatus: true
+                  PrivacyConsentCheckStatus: true
+                  PrivacyConsentCheckDate: string
+                  PrivacyConsentUnCheckDate: string
+                  Submitted: true
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentityViewModelArray'
+              example: <OnlineIdentityViewModelArray> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentityViewModelArray>
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/OnlineIdentityViewModelArray'
+              example: <OnlineIdentityViewModelArray> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentityViewModelArray>
+  /api/profile:
+    get:
+      summary: GetMVPProfile
+      description: Gets the current logged on user profile summary
+      operationId: 580eb8bfac25510f0c09c1ad
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileViewModel'
+              example:
+                Metadata:
+                  PageTitle: string
+                  TemplateName: string
+                  Keywords: string
+                  Description: string
+                MvpId: string
+                YearsAsMvp: 0
+                FirstAwardYear: string
+                AwardCategoryDisplay: string
+                TechnicalExpertise: string
+                InTheSpotlight: true
+                Headline: string
+                Biography: string
+                DisplayName: string
+                FullName: string
+                PrimaryEmailAddress: string
+                ShippingCountry: string
+                ShippingStateCity: string
+                Languages: string
+                OnlineIdentities:
+                  - PrivateSiteId: 0
+                    SocialNetwork:
+                      Id: string
+                      Name: string
+                      IconUrl: string
+                      SystemCollectionEnabled: true
+                    Url: string
+                    OnlineIdentityVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                    ContributionCollected: true
+                    DisplayName: string
+                    UserId: string
+                    MicrosoftAccount: string
+                    PrivacyConsentStatus: true
+                    PrivacyConsentCheckStatus: true
+                    PrivacyConsentCheckDate: string
+                    PrivacyConsentUnCheckDate: string
+                    Submitted: true
+                Certifications:
+                  - PrivateSiteId: 0
+                    Id: string
+                    Title: string
+                    CertificationVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                Activities:
+                  - PrivateSiteId: 0
+                    ActivityType:
+                      Id: string
+                      Name: string
+                      EnglishName: string
+                    ApplicableTechnology:
+                      Id: string
+                      Name: string
+                      AwardName: string
+                      AwardCategory: string
+                      Statuscode: 0
+                      Active: true
+                    DateOfActivity: string
+                    DateOfActivityFormatted: string
+                    EndDate: string
+                    EndDateFormatted: string
+                    TitleOfActivity: string
+                    ReferenceUrl: string
+                    ActivityVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                    AnnualQuantity: 0
+                    SecondAnnualQuantity: 0
+                    AnnualReach: 0
+                    Description: string
+                    OnlineIdentity:
+                      PrivateSiteId: 0
+                      SocialNetwork:
+                        Id: string
+                        Name: string
+                        IconUrl: string
+                        SystemCollectionEnabled: true
+                      Url: string
+                      OnlineIdentityVisibility:
+                        Id: 0
+                        Description: string
+                        LocalizeKey: string
+                      ContributionCollected: true
+                      DisplayName: string
+                      UserId: string
+                      MicrosoftAccount: string
+                      PrivacyConsentStatus: true
+                      PrivacyConsentCheckStatus: true
+                      PrivacyConsentCheckDate: string
+                      PrivacyConsentUnCheckDate: string
+                      Submitted: true
+                    SocialNetwork:
+                      Id: string
+                      Name: string
+                      IconUrl: string
+                      SystemCollectionEnabled: true
+                    AllAnswersUrl: string
+                    AllPostsUrl: string
+                    IsSystemCollected: true
+                    IsBelongToLatestAwardCycle: true
+                    DisplayMode: string
+                    ChartColumnIndexes:
+                      - 0
+                    DescriptionSummaryFormat: string
+                    DataTableTitle: string
+                    SubtitleHeader: string
+                    IsAllowEdit: true
+                    IsAllowDelete: true
+                    IsFromBookmarklet: true
+                    Submitted: true
+                CommunityAwards:
+                  - PrivateSiteId: 0
+                    Title: string
+                    Description: string
+                    DateEarned: string
+                    ReferenceUrl: string
+                    AwardRecognitionVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                NewsHighlights:
+                  - Title: string
+                    Date: string
+                    DateFormatted: string
+                    Url: string
+                    Type: string
+                    Language: string
+                UpcomingEvent:
+                  - Title: string
+                    Date: string
+                    DateFormatted: string
+                    Url: string
+                    Type: string
+                    Language: string
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ProfileViewModel'
+              example:
+                Metadata:
+                  PageTitle: string
+                  TemplateName: string
+                  Keywords: string
+                  Description: string
+                MvpId: string
+                YearsAsMvp: 0
+                FirstAwardYear: string
+                AwardCategoryDisplay: string
+                TechnicalExpertise: string
+                InTheSpotlight: true
+                Headline: string
+                Biography: string
+                DisplayName: string
+                FullName: string
+                PrimaryEmailAddress: string
+                ShippingCountry: string
+                ShippingStateCity: string
+                Languages: string
+                OnlineIdentities:
+                  - PrivateSiteId: 0
+                    SocialNetwork:
+                      Id: string
+                      Name: string
+                      IconUrl: string
+                      SystemCollectionEnabled: true
+                    Url: string
+                    OnlineIdentityVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                    ContributionCollected: true
+                    DisplayName: string
+                    UserId: string
+                    MicrosoftAccount: string
+                    PrivacyConsentStatus: true
+                    PrivacyConsentCheckStatus: true
+                    PrivacyConsentCheckDate: string
+                    PrivacyConsentUnCheckDate: string
+                    Submitted: true
+                Certifications:
+                  - PrivateSiteId: 0
+                    Id: string
+                    Title: string
+                    CertificationVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                Activities:
+                  - PrivateSiteId: 0
+                    ActivityType:
+                      Id: string
+                      Name: string
+                      EnglishName: string
+                    ApplicableTechnology:
+                      Id: string
+                      Name: string
+                      AwardName: string
+                      AwardCategory: string
+                      Statuscode: 0
+                      Active: true
+                    DateOfActivity: string
+                    DateOfActivityFormatted: string
+                    EndDate: string
+                    EndDateFormatted: string
+                    TitleOfActivity: string
+                    ReferenceUrl: string
+                    ActivityVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                    AnnualQuantity: 0
+                    SecondAnnualQuantity: 0
+                    AnnualReach: 0
+                    Description: string
+                    OnlineIdentity:
+                      PrivateSiteId: 0
+                      SocialNetwork:
+                        Id: string
+                        Name: string
+                        IconUrl: string
+                        SystemCollectionEnabled: true
+                      Url: string
+                      OnlineIdentityVisibility:
+                        Id: 0
+                        Description: string
+                        LocalizeKey: string
+                      ContributionCollected: true
+                      DisplayName: string
+                      UserId: string
+                      MicrosoftAccount: string
+                      PrivacyConsentStatus: true
+                      PrivacyConsentCheckStatus: true
+                      PrivacyConsentCheckDate: string
+                      PrivacyConsentUnCheckDate: string
+                      Submitted: true
+                    SocialNetwork:
+                      Id: string
+                      Name: string
+                      IconUrl: string
+                      SystemCollectionEnabled: true
+                    AllAnswersUrl: string
+                    AllPostsUrl: string
+                    IsSystemCollected: true
+                    IsBelongToLatestAwardCycle: true
+                    DisplayMode: string
+                    ChartColumnIndexes:
+                      - 0
+                    DescriptionSummaryFormat: string
+                    DataTableTitle: string
+                    SubtitleHeader: string
+                    IsAllowEdit: true
+                    IsAllowDelete: true
+                    IsFromBookmarklet: true
+                    Submitted: true
+                CommunityAwards:
+                  - PrivateSiteId: 0
+                    Title: string
+                    Description: string
+                    DateEarned: string
+                    ReferenceUrl: string
+                    AwardRecognitionVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                NewsHighlights:
+                  - Title: string
+                    Date: string
+                    DateFormatted: string
+                    Url: string
+                    Type: string
+                    Language: string
+                UpcomingEvent:
+                  - Title: string
+                    Date: string
+                    DateFormatted: string
+                    Url: string
+                    Type: string
+                    Language: string
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProfileViewModel'
+              example: <ProfileViewModel> <Metadata> <PageTitle>string</PageTitle> <TemplateName>string</TemplateName> <Keywords>string</Keywords> <Description>string</Description> </Metadata> <MvpId>string</MvpId> <YearsAsMvp>0</YearsAsMvp> <FirstAwardYear>string</FirstAwardYear> <AwardCategoryDisplay>string</AwardCategoryDisplay> <TechnicalExpertise>string</TechnicalExpertise> <InTheSpotlight>true</InTheSpotlight> <Headline>string</Headline> <Biography>string</Biography> <DisplayName>string</DisplayName> <FullName>string</FullName> <PrimaryEmailAddress>string</PrimaryEmailAddress> <ShippingCountry>string</ShippingCountry> <ShippingStateCity>string</ShippingStateCity> <Languages>string</Languages> <OnlineIdentities> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentities> <Certifications> <PrivateSiteId>0</PrivateSiteId> <Id>string</Id> <Title>string</Title> <CertificationVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </CertificationVisibility> </Certifications> <Activities> <PrivateSiteId>0</PrivateSiteId> <ActivityType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ActivityType> <ApplicableTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> <Statuscode>0</Statuscode> <Active>true</Active> </ApplicableTechnology> <DateOfActivity>string</DateOfActivity> <DateOfActivityFormatted>string</DateOfActivityFormatted> <EndDate>string</EndDate> <EndDateFormatted>string</EndDateFormatted> <TitleOfActivity>string</TitleOfActivity> <ReferenceUrl>string</ReferenceUrl> <ActivityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </ActivityVisibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> <OnlineIdentity> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentity> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <AllAnswersUrl>string</AllAnswersUrl> <AllPostsUrl>string</AllPostsUrl> <IsSystemCollected>true</IsSystemCollected> <IsBelongToLatestAwardCycle>true</IsBelongToLatestAwardCycle> <DisplayMode>string</DisplayMode> <ChartColumnIndexes>0</ChartColumnIndexes> <DescriptionSummaryFormat>string</DescriptionSummaryFormat> <DataTableTitle>string</DataTableTitle> <SubtitleHeader>string</SubtitleHeader> <IsAllowEdit>true</IsAllowEdit> <IsAllowDelete>true</IsAllowDelete> <IsFromBookmarklet>true</IsFromBookmarklet> <Submitted>true</Submitted> </Activities> <CommunityAwards> <PrivateSiteId>0</PrivateSiteId> <Title>string</Title> <Description>string</Description> <DateEarned>string</DateEarned> <ReferenceUrl>string</ReferenceUrl> <AwardRecognitionVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </AwardRecognitionVisibility> </CommunityAwards> <NewsHighlights> <Title>string</Title> <Date>string</Date> <DateFormatted>string</DateFormatted> <Url>string</Url> <Type>string</Type> <Language>string</Language> </NewsHighlights> <UpcomingEvent> <Title>string</Title> <Date>string</Date> <DateFormatted>string</DateFormatted> <Url>string</Url> <Type>string</Type> <Language>string</Language> </UpcomingEvent> </ProfileViewModel>
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/ProfileViewModel'
+              example: <ProfileViewModel> <Metadata> <PageTitle>string</PageTitle> <TemplateName>string</TemplateName> <Keywords>string</Keywords> <Description>string</Description> </Metadata> <MvpId>string</MvpId> <YearsAsMvp>0</YearsAsMvp> <FirstAwardYear>string</FirstAwardYear> <AwardCategoryDisplay>string</AwardCategoryDisplay> <TechnicalExpertise>string</TechnicalExpertise> <InTheSpotlight>true</InTheSpotlight> <Headline>string</Headline> <Biography>string</Biography> <DisplayName>string</DisplayName> <FullName>string</FullName> <PrimaryEmailAddress>string</PrimaryEmailAddress> <ShippingCountry>string</ShippingCountry> <ShippingStateCity>string</ShippingStateCity> <Languages>string</Languages> <OnlineIdentities> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentities> <Certifications> <PrivateSiteId>0</PrivateSiteId> <Id>string</Id> <Title>string</Title> <CertificationVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </CertificationVisibility> </Certifications> <Activities> <PrivateSiteId>0</PrivateSiteId> <ActivityType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ActivityType> <ApplicableTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> <Statuscode>0</Statuscode> <Active>true</Active> </ApplicableTechnology> <DateOfActivity>string</DateOfActivity> <DateOfActivityFormatted>string</DateOfActivityFormatted> <EndDate>string</EndDate> <EndDateFormatted>string</EndDateFormatted> <TitleOfActivity>string</TitleOfActivity> <ReferenceUrl>string</ReferenceUrl> <ActivityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </ActivityVisibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> <OnlineIdentity> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentity> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <AllAnswersUrl>string</AllAnswersUrl> <AllPostsUrl>string</AllPostsUrl> <IsSystemCollected>true</IsSystemCollected> <IsBelongToLatestAwardCycle>true</IsBelongToLatestAwardCycle> <DisplayMode>string</DisplayMode> <ChartColumnIndexes>0</ChartColumnIndexes> <DescriptionSummaryFormat>string</DescriptionSummaryFormat> <DataTableTitle>string</DataTableTitle> <SubtitleHeader>string</SubtitleHeader> <IsAllowEdit>true</IsAllowEdit> <IsAllowDelete>true</IsAllowDelete> <IsFromBookmarklet>true</IsFromBookmarklet> <Submitted>true</Submitted> </Activities> <CommunityAwards> <PrivateSiteId>0</PrivateSiteId> <Title>string</Title> <Description>string</Description> <DateEarned>string</DateEarned> <ReferenceUrl>string</ReferenceUrl> <AwardRecognitionVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </AwardRecognitionVisibility> </CommunityAwards> <NewsHighlights> <Title>string</Title> <Date>string</Date> <DateFormatted>string</DateFormatted> <Url>string</Url> <Type>string</Type> <Language>string</Language> </NewsHighlights> <UpcomingEvent> <Title>string</Title> <Date>string</Date> <DateFormatted>string</DateFormatted> <Url>string</Url> <Type>string</Type> <Language>string</Language> </UpcomingEvent> </ProfileViewModel>
+  '/api/profile/{mvpid}':
+    get:
+      summary: GetMVPProfileById
+      description: Gets a users public profile
+      operationId: 580eb8bfac25510f0c09c1ae
+      parameters:
+        - name: mvpid
+          in: path
+          description: Users mvpid
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileViewModel'
+              example:
+                Metadata:
+                  PageTitle: string
+                  TemplateName: string
+                  Keywords: string
+                  Description: string
+                MvpId: string
+                YearsAsMvp: 0
+                FirstAwardYear: string
+                AwardCategoryDisplay: string
+                TechnicalExpertise: string
+                InTheSpotlight: true
+                Headline: string
+                Biography: string
+                DisplayName: string
+                FullName: string
+                PrimaryEmailAddress: string
+                ShippingCountry: string
+                ShippingStateCity: string
+                Languages: string
+                OnlineIdentities:
+                  - PrivateSiteId: 0
+                    SocialNetwork:
+                      Id: string
+                      Name: string
+                      IconUrl: string
+                      SystemCollectionEnabled: true
+                    Url: string
+                    OnlineIdentityVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                    ContributionCollected: true
+                    DisplayName: string
+                    UserId: string
+                    MicrosoftAccount: string
+                    PrivacyConsentStatus: true
+                    PrivacyConsentCheckStatus: true
+                    PrivacyConsentCheckDate: string
+                    PrivacyConsentUnCheckDate: string
+                    Submitted: true
+                Certifications:
+                  - PrivateSiteId: 0
+                    Id: string
+                    Title: string
+                    CertificationVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                Activities:
+                  - PrivateSiteId: 0
+                    ActivityType:
+                      Id: string
+                      Name: string
+                      EnglishName: string
+                    ApplicableTechnology:
+                      Id: string
+                      Name: string
+                      AwardName: string
+                      AwardCategory: string
+                      Statuscode: 0
+                      Active: true
+                    DateOfActivity: string
+                    DateOfActivityFormatted: string
+                    EndDate: string
+                    EndDateFormatted: string
+                    TitleOfActivity: string
+                    ReferenceUrl: string
+                    ActivityVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                    AnnualQuantity: 0
+                    SecondAnnualQuantity: 0
+                    AnnualReach: 0
+                    Description: string
+                    OnlineIdentity:
+                      PrivateSiteId: 0
+                      SocialNetwork:
+                        Id: string
+                        Name: string
+                        IconUrl: string
+                        SystemCollectionEnabled: true
+                      Url: string
+                      OnlineIdentityVisibility:
+                        Id: 0
+                        Description: string
+                        LocalizeKey: string
+                      ContributionCollected: true
+                      DisplayName: string
+                      UserId: string
+                      MicrosoftAccount: string
+                      PrivacyConsentStatus: true
+                      PrivacyConsentCheckStatus: true
+                      PrivacyConsentCheckDate: string
+                      PrivacyConsentUnCheckDate: string
+                      Submitted: true
+                    SocialNetwork:
+                      Id: string
+                      Name: string
+                      IconUrl: string
+                      SystemCollectionEnabled: true
+                    AllAnswersUrl: string
+                    AllPostsUrl: string
+                    IsSystemCollected: true
+                    IsBelongToLatestAwardCycle: true
+                    DisplayMode: string
+                    ChartColumnIndexes:
+                      - 0
+                    DescriptionSummaryFormat: string
+                    DataTableTitle: string
+                    SubtitleHeader: string
+                    IsAllowEdit: true
+                    IsAllowDelete: true
+                    IsFromBookmarklet: true
+                    Submitted: true
+                CommunityAwards:
+                  - PrivateSiteId: 0
+                    Title: string
+                    Description: string
+                    DateEarned: string
+                    ReferenceUrl: string
+                    AwardRecognitionVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                NewsHighlights:
+                  - Title: string
+                    Date: string
+                    DateFormatted: string
+                    Url: string
+                    Type: string
+                    Language: string
+                UpcomingEvent:
+                  - Title: string
+                    Date: string
+                    DateFormatted: string
+                    Url: string
+                    Type: string
+                    Language: string
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ProfileViewModel'
+              example:
+                Metadata:
+                  PageTitle: string
+                  TemplateName: string
+                  Keywords: string
+                  Description: string
+                MvpId: string
+                YearsAsMvp: 0
+                FirstAwardYear: string
+                AwardCategoryDisplay: string
+                TechnicalExpertise: string
+                InTheSpotlight: true
+                Headline: string
+                Biography: string
+                DisplayName: string
+                FullName: string
+                PrimaryEmailAddress: string
+                ShippingCountry: string
+                ShippingStateCity: string
+                Languages: string
+                OnlineIdentities:
+                  - PrivateSiteId: 0
+                    SocialNetwork:
+                      Id: string
+                      Name: string
+                      IconUrl: string
+                      SystemCollectionEnabled: true
+                    Url: string
+                    OnlineIdentityVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                    ContributionCollected: true
+                    DisplayName: string
+                    UserId: string
+                    MicrosoftAccount: string
+                    PrivacyConsentStatus: true
+                    PrivacyConsentCheckStatus: true
+                    PrivacyConsentCheckDate: string
+                    PrivacyConsentUnCheckDate: string
+                    Submitted: true
+                Certifications:
+                  - PrivateSiteId: 0
+                    Id: string
+                    Title: string
+                    CertificationVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                Activities:
+                  - PrivateSiteId: 0
+                    ActivityType:
+                      Id: string
+                      Name: string
+                      EnglishName: string
+                    ApplicableTechnology:
+                      Id: string
+                      Name: string
+                      AwardName: string
+                      AwardCategory: string
+                      Statuscode: 0
+                      Active: true
+                    DateOfActivity: string
+                    DateOfActivityFormatted: string
+                    EndDate: string
+                    EndDateFormatted: string
+                    TitleOfActivity: string
+                    ReferenceUrl: string
+                    ActivityVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                    AnnualQuantity: 0
+                    SecondAnnualQuantity: 0
+                    AnnualReach: 0
+                    Description: string
+                    OnlineIdentity:
+                      PrivateSiteId: 0
+                      SocialNetwork:
+                        Id: string
+                        Name: string
+                        IconUrl: string
+                        SystemCollectionEnabled: true
+                      Url: string
+                      OnlineIdentityVisibility:
+                        Id: 0
+                        Description: string
+                        LocalizeKey: string
+                      ContributionCollected: true
+                      DisplayName: string
+                      UserId: string
+                      MicrosoftAccount: string
+                      PrivacyConsentStatus: true
+                      PrivacyConsentCheckStatus: true
+                      PrivacyConsentCheckDate: string
+                      PrivacyConsentUnCheckDate: string
+                      Submitted: true
+                    SocialNetwork:
+                      Id: string
+                      Name: string
+                      IconUrl: string
+                      SystemCollectionEnabled: true
+                    AllAnswersUrl: string
+                    AllPostsUrl: string
+                    IsSystemCollected: true
+                    IsBelongToLatestAwardCycle: true
+                    DisplayMode: string
+                    ChartColumnIndexes:
+                      - 0
+                    DescriptionSummaryFormat: string
+                    DataTableTitle: string
+                    SubtitleHeader: string
+                    IsAllowEdit: true
+                    IsAllowDelete: true
+                    IsFromBookmarklet: true
+                    Submitted: true
+                CommunityAwards:
+                  - PrivateSiteId: 0
+                    Title: string
+                    Description: string
+                    DateEarned: string
+                    ReferenceUrl: string
+                    AwardRecognitionVisibility:
+                      Id: 0
+                      Description: string
+                      LocalizeKey: string
+                NewsHighlights:
+                  - Title: string
+                    Date: string
+                    DateFormatted: string
+                    Url: string
+                    Type: string
+                    Language: string
+                UpcomingEvent:
+                  - Title: string
+                    Date: string
+                    DateFormatted: string
+                    Url: string
+                    Type: string
+                    Language: string
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ProfileViewModel'
+              example: <ProfileViewModel> <Metadata> <PageTitle>string</PageTitle> <TemplateName>string</TemplateName> <Keywords>string</Keywords> <Description>string</Description> </Metadata> <MvpId>string</MvpId> <YearsAsMvp>0</YearsAsMvp> <FirstAwardYear>string</FirstAwardYear> <AwardCategoryDisplay>string</AwardCategoryDisplay> <TechnicalExpertise>string</TechnicalExpertise> <InTheSpotlight>true</InTheSpotlight> <Headline>string</Headline> <Biography>string</Biography> <DisplayName>string</DisplayName> <FullName>string</FullName> <PrimaryEmailAddress>string</PrimaryEmailAddress> <ShippingCountry>string</ShippingCountry> <ShippingStateCity>string</ShippingStateCity> <Languages>string</Languages> <OnlineIdentities> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentities> <Certifications> <PrivateSiteId>0</PrivateSiteId> <Id>string</Id> <Title>string</Title> <CertificationVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </CertificationVisibility> </Certifications> <Activities> <PrivateSiteId>0</PrivateSiteId> <ActivityType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ActivityType> <ApplicableTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> <Statuscode>0</Statuscode> <Active>true</Active> </ApplicableTechnology> <DateOfActivity>string</DateOfActivity> <DateOfActivityFormatted>string</DateOfActivityFormatted> <EndDate>string</EndDate> <EndDateFormatted>string</EndDateFormatted> <TitleOfActivity>string</TitleOfActivity> <ReferenceUrl>string</ReferenceUrl> <ActivityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </ActivityVisibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> <OnlineIdentity> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentity> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <AllAnswersUrl>string</AllAnswersUrl> <AllPostsUrl>string</AllPostsUrl> <IsSystemCollected>true</IsSystemCollected> <IsBelongToLatestAwardCycle>true</IsBelongToLatestAwardCycle> <DisplayMode>string</DisplayMode> <ChartColumnIndexes>0</ChartColumnIndexes> <DescriptionSummaryFormat>string</DescriptionSummaryFormat> <DataTableTitle>string</DataTableTitle> <SubtitleHeader>string</SubtitleHeader> <IsAllowEdit>true</IsAllowEdit> <IsAllowDelete>true</IsAllowDelete> <IsFromBookmarklet>true</IsFromBookmarklet> <Submitted>true</Submitted> </Activities> <CommunityAwards> <PrivateSiteId>0</PrivateSiteId> <Title>string</Title> <Description>string</Description> <DateEarned>string</DateEarned> <ReferenceUrl>string</ReferenceUrl> <AwardRecognitionVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </AwardRecognitionVisibility> </CommunityAwards> <NewsHighlights> <Title>string</Title> <Date>string</Date> <DateFormatted>string</DateFormatted> <Url>string</Url> <Type>string</Type> <Language>string</Language> </NewsHighlights> <UpcomingEvent> <Title>string</Title> <Date>string</Date> <DateFormatted>string</DateFormatted> <Url>string</Url> <Type>string</Type> <Language>string</Language> </UpcomingEvent> </ProfileViewModel>
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/ProfileViewModel'
+              example: <ProfileViewModel> <Metadata> <PageTitle>string</PageTitle> <TemplateName>string</TemplateName> <Keywords>string</Keywords> <Description>string</Description> </Metadata> <MvpId>string</MvpId> <YearsAsMvp>0</YearsAsMvp> <FirstAwardYear>string</FirstAwardYear> <AwardCategoryDisplay>string</AwardCategoryDisplay> <TechnicalExpertise>string</TechnicalExpertise> <InTheSpotlight>true</InTheSpotlight> <Headline>string</Headline> <Biography>string</Biography> <DisplayName>string</DisplayName> <FullName>string</FullName> <PrimaryEmailAddress>string</PrimaryEmailAddress> <ShippingCountry>string</ShippingCountry> <ShippingStateCity>string</ShippingStateCity> <Languages>string</Languages> <OnlineIdentities> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentities> <Certifications> <PrivateSiteId>0</PrivateSiteId> <Id>string</Id> <Title>string</Title> <CertificationVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </CertificationVisibility> </Certifications> <Activities> <PrivateSiteId>0</PrivateSiteId> <ActivityType> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ActivityType> <ApplicableTechnology> <Id>string</Id> <Name>string</Name> <AwardName>string</AwardName> <AwardCategory>string</AwardCategory> <Statuscode>0</Statuscode> <Active>true</Active> </ApplicableTechnology> <DateOfActivity>string</DateOfActivity> <DateOfActivityFormatted>string</DateOfActivityFormatted> <EndDate>string</EndDate> <EndDateFormatted>string</EndDateFormatted> <TitleOfActivity>string</TitleOfActivity> <ReferenceUrl>string</ReferenceUrl> <ActivityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </ActivityVisibility> <AnnualQuantity>0</AnnualQuantity> <SecondAnnualQuantity>0</SecondAnnualQuantity> <AnnualReach>0</AnnualReach> <Description>string</Description> <OnlineIdentity> <PrivateSiteId>0</PrivateSiteId> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <Url>string</Url> <OnlineIdentityVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </OnlineIdentityVisibility> <ContributionCollected>true</ContributionCollected> <DisplayName>string</DisplayName> <UserId>string</UserId> <MicrosoftAccount>string</MicrosoftAccount> <PrivacyConsentStatus>true</PrivacyConsentStatus> <PrivacyConsentCheckStatus>true</PrivacyConsentCheckStatus> <PrivacyConsentCheckDate>string</PrivacyConsentCheckDate> <PrivacyConsentUnCheckDate>string</PrivacyConsentUnCheckDate> <Submitted>true</Submitted> </OnlineIdentity> <SocialNetwork> <Id>string</Id> <Name>string</Name> <IconUrl>string</IconUrl> <SystemCollectionEnabled>true</SystemCollectionEnabled> </SocialNetwork> <AllAnswersUrl>string</AllAnswersUrl> <AllPostsUrl>string</AllPostsUrl> <IsSystemCollected>true</IsSystemCollected> <IsBelongToLatestAwardCycle>true</IsBelongToLatestAwardCycle> <DisplayMode>string</DisplayMode> <ChartColumnIndexes>0</ChartColumnIndexes> <DescriptionSummaryFormat>string</DescriptionSummaryFormat> <DataTableTitle>string</DataTableTitle> <SubtitleHeader>string</SubtitleHeader> <IsAllowEdit>true</IsAllowEdit> <IsAllowDelete>true</IsAllowDelete> <IsFromBookmarklet>true</IsFromBookmarklet> <Submitted>true</Submitted> </Activities> <CommunityAwards> <PrivateSiteId>0</PrivateSiteId> <Title>string</Title> <Description>string</Description> <DateEarned>string</DateEarned> <ReferenceUrl>string</ReferenceUrl> <AwardRecognitionVisibility> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </AwardRecognitionVisibility> </CommunityAwards> <NewsHighlights> <Title>string</Title> <Date>string</Date> <DateFormatted>string</DateFormatted> <Url>string</Url> <Type>string</Type> <Language>string</Language> </NewsHighlights> <UpcomingEvent> <Title>string</Title> <Date>string</Date> <DateFormatted>string</DateFormatted> <Url>string</Url> <Type>string</Type> <Language>string</Language> </UpcomingEvent> </ProfileViewModel>
+  /api/profile/photo:
+    get:
+      summary: GetMVPProfileImage
+      description: Gets the MVP Profile Image
+      operationId: 580eb8bfac25510f0c09c1af
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+  /api/contributions/contributiontypes:
+    get:
+      summary: GetContributionTypes
+      description: Gets a list of Contribution Types
+      operationId: 58120164ac25510f0c09c1d7
+      responses:
+        '200':
+          description: OK. IOrderedEnumerable object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributionTypeModelArray'
+              example:
+                - Id: string
+                  Name: string
+                  EnglishName: string
+            text/json:
+              schema:
+                $ref: '#/components/schemas/ContributionTypeModelArray'
+              example:
+                - Id: string
+                  Name: string
+                  EnglishName: string
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ContributionTypeModelArray'
+              example: <ContributionTypeModelArray> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionTypeModelArray>
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/ContributionTypeModelArray'
+              example: <ContributionTypeModelArray> <Id>string</Id> <Name>string</Name> <EnglishName>string</EnglishName> </ContributionTypeModelArray>
+  /api/contributions/sharingpreferences:
+    get:
+      summary: GetSharingPreferences
+      description: Gets a list of Sharing Preference / Visibility Types for Contributions
+      operationId: 58b72051ac2551094c6df29e
+      responses:
+        '200':
+          description: OK. IEnumerable object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisibilityViewModelArray'
+              example:
+                - Id: 0
+                  Description: string
+                  LocalizeKey: string
+            text/json:
+              schema:
+                $ref: '#/components/schemas/VisibilityViewModelArray'
+              example:
+                - Id: 0
+                  Description: string
+                  LocalizeKey: string
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/VisibilityViewModelArray'
+              example: <VisibilityViewModelArray> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </VisibilityViewModelArray>
+            text/xml:
+              schema:
+                $ref: '#/components/schemas/VisibilityViewModelArray'
+              example: <VisibilityViewModelArray> <Id>0</Id> <Description>string</Description> <LocalizeKey>string</LocalizeKey> </VisibilityViewModelArray>
+  /api/awardconsideration/getcurrentquestions:
+    get:
+      summary: GetCurrentQuestions
+      description: "Gets the current award consideration question list for current award renewal cycle(with MVP's answer if it is in database)\n"
+      operationId: getcurrentquestions
+      responses:
+        '200':
+          description: List of Award consideration questions are received.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AwardQuestionViewModelArray'
+              example:
+                - AwardQuestionId: string
+                  QuestionContent: string
+                  Required: true
+  /api/awardconsideration/saveanswers:
+    post:
+      summary: SaveAnswers
+      description: 'Saves the MVP''s answers for award consideration questions. '
+      operationId: putanswers
+      requestBody:
+        description: List of award question models
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AwardAnswerViewModelArray'
+            example:
+              - AwardQuestionId: string
+                Answer: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+        '500':
+          description: InternalServerError
+          content:
+            application/json: { }
+            text/json: { }
+            application/xml: { }
+            text/xml: { }
+  /api/awardconsideration/GetAnswers:
+    get:
+      summary: GetAnswers
+      description: Gets currently active award consideration question answers.
+      operationId: getanswers
+      responses:
+        '200':
+          description: OK. List of award consideration answers model.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AwardAnswerViewModelArray'
+              example:
+                - AwardQuestionId: string
+                  Answer: string
+  /api/awardconsideration/SubmitAnswers:
+    post:
+      summary: SubmitAnswers
+      description: Submits and finalizes the current answers for award consideration questions. Once submitted answers can't be changed anymore under current renewal cycle.
+      operationId: submitanswers
+      responses:
+        '200':
+          description: OK
+  '/api/contributions/current/{offset}/{limit}':
+    get:
+      summary: Gets all the current cycle Contributions for the MVP
+      description: Supports Pagination
+      operationId: GetCurrentContributions
+      parameters:
+        - name: offset
+          in: path
+          description: Format - int32. Page skip integer
+          required: true
+          schema:
+            type: integer
+        - name: limit
+          in: path
+          description: Format - int32. Page take integer
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK. ContributionViewModel object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributionViewModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ContributionViewModel'
+  '/api/contributions/historical/{offset}/{limit}':
+    get:
+      summary: Gets all of the historical cycle Contributions for the MVP
+      description: Supports pagination
+      operationId: GetHistoricalContributions
+      parameters:
+        - name: offset
+          in: path
+          description: Format - int32. Page skip integer
+          required: true
+          schema:
+            type: integer
+        - name: limit
+          in: path
+          description: Format - int32. Page take integer
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ok. ContributionViewModel object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContributionViewModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ContributionViewModel'
+  /api/profile/me:
+    get:
+      summary: Gets the current logged on user status
+      operationId: GetMyStatus
+      responses:
+        '200':
+          description: Ok. Boolean
+components:
+  schemas:
+    VisibilityViewModel:
+      type: object
+      properties:
+        Id:
+          type: integer
+          description: Gets or sets the id.
+          format: int32
+        Description:
+          type: string
+          description: Gets or sets the description.
+        LocalizeKey:
+          type: string
+      description: The visibility.
+    ContributionTypeModel:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Gets or sets the id.
+          format: uuid
+        Name:
+          type: string
+          description: Gets or sets the localized name.
+        EnglishName:
+          type: string
+          description: Gets or sets the english name
+    ContributionViewModel:
+      type: object
+      properties:
+        Contributions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributionsModel'
+        TotalContributions:
+          type: integer
+          format: int32
+        PagingIndex:
+          type: integer
+          format: int32
+    ContributionTechnologyModel:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Gets or sets the id.
+          format: uuid
+        Name:
+          type: string
+          description: Gets or sets the name.
+        AwardName:
+          type: string
+        AwardCategory:
+          type: string
+          description: Property to hold the Award Category value
+    OnlineIdentityViewModel:
+      required:
+        - SocialNetwork
+        - Url
+      type: object
+      properties:
+        PrivateSiteId:
+          type: integer
+          format: int32
+        SocialNetwork:
+          $ref: '#/components/schemas/SocialNetworkViewModel'
+        Url:
+          maxLength: 490
+          minLength: 0
+          pattern: '^((https?|ftp):\/\/)?(((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)+(\/(([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)|\/|\?)*)?$'
+          type: string
+        OnlineIdentityVisibility:
+          $ref: '#/components/schemas/VisibilityViewModel'
+        ContributionCollected:
+          type: boolean
+        DisplayName:
+          maxLength: 500
+          minLength: 0
+          type: string
+        UserId:
+          maxLength: 500
+          minLength: 0
+          type: string
+        MicrosoftAccount:
+          maxLength: 500
+          minLength: 0
+          type: string
+        PrivacyConsentStatus:
+          type: boolean
+        PrivacyConsentCheckStatus:
+          type: boolean
+        PrivacyConsentCheckDate:
+          type: string
+          format: date-time
+        PrivacyConsentUnCheckDate:
+          type: string
+          format: date-time
+        Submitted:
+          type: boolean
+    SocialNetworkViewModel:
+      required:
+        - Id
+      type: object
+      properties:
+        Id:
+          type: string
+          format: uuid
+        Name:
+          type: string
+        IconUrl:
+          type: string
+        SystemCollectionEnabled:
+          type: boolean
+    OnlineIdentity:
+      type: object
+      properties:
+        OnlineIdentityId:
+          type: string
+          format: uuid
+        MvpGuid:
+          type: string
+          format: uuid
+        Name:
+          type: string
+        PrivateSiteId:
+          type: integer
+          format: int32
+        OnlineIdentityVisibility:
+          $ref: '#/components/schemas/SharingPreference'
+        SocialNetwork:
+          $ref: '#/components/schemas/SocialNetwork'
+        Url:
+          type: string
+        DisplayName:
+          type: string
+        UserId:
+          type: string
+        MicrosoftAccount:
+          type: string
+        ContributionCollected:
+          type: boolean
+        PrivacyConsentStatus:
+          type: boolean
+        Submitted:
+          type: boolean
+    SharingPreference:
+      type: object
+      properties:
+        Id:
+          type: integer
+          format: int32
+        Description:
+          type: string
+    SocialNetwork:
+      type: object
+      properties:
+        SocialNetworkId:
+          type: string
+          format: uuid
+        Name:
+          type: string
+        Website:
+          type: string
+        StatusCode:
+          $ref: '#/components/schemas/SocialNetworkStatusCode'
+        SystemCollectionEnabled:
+          type: boolean
+    SocialNetworkStatusCode:
+      type: object
+      properties:
+        Id:
+          type: integer
+          format: int32
+        Description:
+          type: string
+    ProfileViewModel:
+      type: object
+      properties:
+        Metadata:
+          $ref: '#/components/schemas/ContentMetadata'
+        MvpId:
+          type: string
+        YearsAsMvp:
+          type: integer
+          format: int32
+        FirstAwardYear:
+          type: string
+        AwardCategoryDisplay:
+          type: string
+        TechnicalExpertise:
+          type: string
+        InTheSpotlight:
+          type: boolean
+        Headline:
+          type: string
+        Biography:
+          type: string
+        DisplayName:
+          type: string
+        FullName:
+          type: string
+        PrimaryEmailAddress:
+          type: string
+        ShippingCountry:
+          type: string
+        ShippingStateCity:
+          type: string
+        Languages:
+          type: string
+        OnlineIdentities:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnlineIdentityViewModel'
+        Certifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/CertificationViewModel'
+        Activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityViewModel'
+        CommunityAwards:
+          type: array
+          items:
+            $ref: '#/components/schemas/AwardRecognitionViewModel'
+        NewsHighlights:
+          type: array
+          items:
+            $ref: '#/components/schemas/MvpHighlightViewModel'
+        UpcomingEvent:
+          type: array
+          items:
+            $ref: '#/components/schemas/MvpHighlightViewModel'
+    ContentMetadata:
+      type: object
+      properties:
+        PageTitle:
+          type: string
+        TemplateName:
+          type: string
+        Keywords:
+          type: string
+        Description:
+          type: string
+    CertificationViewModel:
+      type: object
+      properties:
+        PrivateSiteId:
+          type: integer
+          description: Gets or sets the private site id.
+          format: int32
+        Id:
+          type: string
+          description: Gets or sets the id.
+          format: uuid
+        Title:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Gets or sets the title.
+        CertificationVisibility:
+          $ref: '#/components/schemas/VisibilityViewModel'
+      description: The account certification view model for edit.
+    ActivityViewModel:
+      required:
+        - ActivityType
+        - ApplicableTechnology
+        - DateOfActivity
+        - TitleOfActivity
+      type: object
+      properties:
+        PrivateSiteId:
+          type: integer
+          description: Gets or sets the private site id.
+          format: int32
+        ActivityType:
+          $ref: '#/components/schemas/ActivityTypeViewModel'
+        ApplicableTechnology:
+          $ref: '#/components/schemas/ActivityTechnologyViewModel'
+        DateOfActivity:
+          type: string
+          description: Gets or sets the start date.
+          format: date-time
+        DateOfActivityFormatted:
+          type: string
+        EndDate:
+          type: string
+          description: End Date for system auto contribution
+          format: date-time
+        EndDateFormatted:
+          type: string
+        TitleOfActivity:
+          type: string
+          description: Gets or sets the title.
+        ReferenceUrl:
+          pattern: '^((https?|ftp):\/\/)?(((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)+(\/(([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)|\/|\?)*)?$'
+          type: string
+          description: Gets or sets the url.
+        ActivityVisibility:
+          $ref: '#/components/schemas/VisibilityViewModel'
+        AnnualQuantity:
+          pattern: '^[0-9]*$'
+          type: integer
+          description: Gets or sets the annual quantity.
+          format: int32
+        SecondAnnualQuantity:
+          pattern: '^[0-9]*$'
+          type: integer
+          description: Gets or sets the second annual quantity.
+          format: int32
+        AnnualReach:
+          pattern: '^[0-9]*$'
+          type: integer
+          description: Gets or sets the reach score.
+          format: int32
+        Description:
+          type: string
+          description: Gets or sets the description.
+        OnlineIdentity:
+          $ref: '#/components/schemas/OnlineIdentityViewModel'
+        SocialNetwork:
+          $ref: '#/components/schemas/SocialNetworkViewModel'
+        AllAnswersUrl:
+          type: string
+          description: AllAnswersUrl
+        AllPostsUrl:
+          type: string
+          description: AllAnswersUrl
+        IsSystemCollected:
+          type: boolean
+          description: If this contribution is system collected
+        IsBelongToLatestAwardCycle:
+          type: boolean
+          description: If this contribution belongs to latest award cycle.
+        DisplayMode:
+          type: string
+        ChartColumnIndexes:
+          type: array
+          items:
+            type: integer
+            format: int32
+        DescriptionSummaryFormat:
+          type: string
+        DataTableTitle:
+          type: string
+        SubtitleHeader:
+          type: string
+        IsAllowEdit:
+          type: boolean
+        IsAllowDelete:
+          type: boolean
+        IsFromBookmarklet:
+          type: boolean
+          description: 'IsBookmarklet: If the call is initiated from bookmarklet'
+        Submitted:
+          type: boolean
+      description: "The activity view model.\r\nNote:\r\nThe logic of acticity is a little complicate.\r\nWhile edit activity, the ActivityType should be non-editable;\r\nWhile add activity, the dispalyname of AnnualQuantity/SecondAnnualQuantity/ReachScore should change with ActivityType changing,\r\nand validation rule is different while ActivityType change.\r\nFollowing is the logic details.\r\n<remarks>\r\nBook (Author):\r\n    [msft_title: required, 'Title']\r\n    [msft_startdate: required,'Start Date']\r\n    [msft_annualquantity: required, 'Books']\r\nBook (Co-Author): same as Book (Author)\r\nConference (booth presenter):\r\n    [msft_title: required, 'Title']\r\n    [msft_startdate: required,'Start Date']\r\n    [msft_annualquantity: required, 'Conferences']\r\nConference (organizer): same as Conference (booth presenter)\r\nSpeaking (Conference):\r\n    [msft_title: required, 'Title']\r\n    [msft_startdate: required,'Start Date']\r\n    [msft_annualquantity: required, 'Talks']\r\nSpeaking (Local):Same as Speaking (Conference)\r\nSpeaking (User group):Same as Speaking (Conference)\r\nForum Moderator:\r\n    [msft_title: required, 'Title']\r\n    [msft_startdate: required,'Start Date']\r\n    [msft_annualquantity: required, 'Threads Moderated']\r\nForum Participation (Microsoft Forums):\r\n    [msft_title: recommend, 'Title']\r\n    [msft_startdate: required,'Start Date']\r\n    [msft_url: required, 'Url']\r\n    [msft_annualquantity: required, 'Answers']\r\nForum Participation (3rd Party forums):\r\n    [msft_title: recommend, 'Title']\r\n    [msft_startdate: required,'Start Date']\r\n    [msft_url: required, 'Url']\r\n    [msft_annualquantity: required, 'Answers']\r\n    [msft_secondannualquantity: required, 'Posts']\r\n</remarks>"
+    AwardRecognitionViewModel:
+      required:
+        - Title
+        - DateEarned
+      type: object
+      properties:
+        PrivateSiteId:
+          type: integer
+          format: int32
+        Title:
+          maxLength: 100
+          minLength: 0
+          type: string
+        Description:
+          maxLength: 2000
+          minLength: 0
+          type: string
+        DateEarned:
+          type: string
+          format: date-time
+        ReferenceUrl:
+          pattern: '^((https?|ftp):\/\/)?(((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)+(\/(([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;''\(\)\*\+,;=]|:|@)|\/|\?)*)?$'
+          type: string
+        AwardRecognitionVisibility:
+          $ref: '#/components/schemas/VisibilityViewModel'
+    MvpHighlightViewModel:
+      type: object
+      properties:
+        Title:
+          type: string
+        Date:
+          type: string
+          format: date-time
+        DateFormatted:
+          type: string
+        Url:
+          type: string
+        Type:
+          type: string
+        Language:
+          type: string
+    ActivityTypeViewModel:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Gets or sets the id.
+          format: uuid
+        Name:
+          type: string
+          description: Gets or sets the name.
+        EnglishName:
+          type: string
+          description: Gets or sets the english name
+      description: The activity type.
+    ActivityTechnologyViewModel:
+      required:
+        - Id
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Gets or sets the id.
+          format: uuid
+        Name:
+          type: string
+          description: Gets or sets the name.
+        AwardName:
+          type: string
+        AwardCategory:
+          type: string
+          description: Property to hold the Award Category value
+        Statuscode:
+          type: integer
+          format: int32
+        Active:
+          type: boolean
+      description: The activity technology model.
+    AwardQuestionViewModel:
+      type: object
+      properties:
+        AwardQuestionId:
+          type: string
+          description: Gets or sets the key of the question
+          format: uuid
+        QuestionContent:
+          type: string
+          description: Gets or sets html description of the question
+        Required:
+          type: boolean
+          description: Gets or sets flag if award consideration question is required
+    AwardAnswerViewModel:
+      type: object
+      properties:
+        AwardQuestionId:
+          type: string
+          description: Gets or sets the key of the question
+          format: uuid
+        Answer:
+          type: string
+          description: Gets or sets answer for the given award question
+    VisibilityViewModelArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/VisibilityViewModel'
+    ContributionTypeModelArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/ContributionTypeModel'
+    AwardQuestionViewModelArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/AwardQuestionViewModel'
+    AwardAnswerViewModelArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/AwardAnswerViewModel'
+    ApiContributionsPost200ApplicationJsonResponse:
+      type: object
+    ApiContributionsPost200TextJsonResponse:
+      type: object
+    ApiContributionsPost200ApplicationXmlResponse:
+      type: object
+    ApiContributionsPost200TextXmlResponse:
+      type: object
+    ApiContributionsDelete200ApplicationJsonResponse:
+      type: object
+    ApiContributionsDelete200TextJsonResponse:
+      type: object
+    ApiContributionsDelete200ApplicationXmlResponse:
+      type: object
+    ApiContributionsDelete200TextXmlResponse:
+      type: object
+    OnlineIdentityViewModelArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/OnlineIdentityViewModel'
+    ApiOnlineidentitiesPost200ApplicationJsonResponse:
+      type: object
+    ApiOnlineidentitiesPost200TextJsonResponse:
+      type: object
+    ApiOnlineidentitiesPost200ApplicationXmlResponse:
+      type: object
+    ApiOnlineidentitiesPost200TextXmlResponse:
+      type: object
+    ApiOnlineidentitiesDelete200ApplicationJsonResponse:
+      type: object
+    ApiOnlineidentitiesDelete200TextJsonResponse:
+      type: object
+    ApiOnlineidentitiesDelete200ApplicationXmlResponse:
+      type: object
+    ApiOnlineidentitiesDelete200TextXmlResponse:
+      type: object
+    ContributionsModel:
+      type: object
+      properties:
+        ContributionId:
+          type: integer
+          description: Gets or sets the Contribution table id.
+          format: int32
+        ContributionTypeName:
+          type: string
+          description: Name of the contribution type
+        ContributionType:
+          $ref: '#/components/schemas/ContributionTypeModel'
+        ContributionTechnology:
+          $ref: '#/components/schemas/ContributionTechnologyModel'
+        AdditionalTechnologies:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContributionTechnologyModel'
+        StartDate:
+          type: string
+          description: Gets or sets the start date.
+          format: date-time
+        Title:
+          type: string
+          description: Gets or sets the title.
+        ReferenceUrl:
+          type: string
+          description: Gets or sets the url.
+        Visibility:
+          $ref: '#/components/schemas/VisibilityViewModel'
+        AnnualQuantity:
+          type: integer
+          description: Gets or sets the annual quantity.
+          format: int32
+        SecondAnnualQuantity:
+          type: integer
+          description: Gets or sets the second annual quantity.
+          format: int32
+        AnnualReach:
+          type: integer
+          description: Gets or sets the reach score.
+          format: int32
+        Description:
+          type: string
+          description: Gets or sets the description.
+        IsEditable:
+          type: boolean
+          description: Gets or sets the IsEditable.
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      name: Ocp-Apim-Subscription-Key
+      in: header
+    apiKeyQuery:
+      type: apiKey
+      name: subscription-key
+      in: query
+security:
+  - apiKeyHeader: [ ]
+  - apiKeyQuery: [ ]
