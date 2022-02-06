@@ -10,6 +10,8 @@ namespace MvpApi.Common.Models
         private AwardQuestionViewModel _questionItem;
         private AwardAnswerViewModel _answerItem;
 
+        public QuestionnaireItem() { }
+
         public QuestionnaireItem(AwardQuestionViewModel questionItem, AwardAnswerViewModel answerItem)
         {
             QuestionItem = questionItem;
