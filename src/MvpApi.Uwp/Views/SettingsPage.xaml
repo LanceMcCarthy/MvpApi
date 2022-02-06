@@ -10,7 +10,8 @@
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       xmlns:input="using:Telerik.UI.Xaml.Controls.Input"
       mc:Ignorable="d"
-      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+      xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives">
 
     <Page.Resources>
         <Style x:Key="MyHeaderToggleButtonStyle"
@@ -347,22 +348,20 @@
                                       HeaderStyle="{StaticResource MyHeaderToggleButtonStyle}"
                                       HorizontalContentAlignment="Stretch">
                 <toolkitControls:Expander.Header>
-                    <TextBlock Text="Diagnostic Tools"
+                    <TextBlock Text="Data Export"
                                Style="{ThemeResource SubtitleTextBlockStyle}" />
                 </toolkitControls:Expander.Header>
 
                 <StackPanel Margin="20">
-                    <TextBlock Text="The following features can be used to help diagnose problems with the app, or if you're just a data nerd 🤓🐱‍🏍"
-                               Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
-                               VerticalAlignment="Center"
+                    <TextBlock Text="The following options can be used to export your contribution activities, types or areas data to help diagnose problems with the app (or if you're just a data nerd 🤓)."
                                TextWrapping="Wrap"
-                               Margin="0,0,0,5">
-                        <!--<animations:Implicit.ShowAnimations>
+                               Margin="0,0,0,15">
+                        <animations:Implicit.ShowAnimations>
                             <animations:ScaleAnimation From="0.8"
-                                                       To="1"
+                                                       To="1.0"
                                                        Duration="0:0:0.4" />
-                            <animations:OpacityAnimation From="0"
-                                                         To="1"
+                            <animations:OpacityAnimation From="0.0"
+                                                         To="1.0"
                                                          Duration="0:0:0.4" />
                         </animations:Implicit.ShowAnimations>
                         <animations:Implicit.HideAnimations>
@@ -372,17 +371,42 @@
                             <animations:OpacityAnimation From="1"
                                                          To="0"
                                                          Duration="0:0:0.6" />
-                        </animations:Implicit.HideAnimations>-->
+                        </animations:Implicit.HideAnimations>
                     </TextBlock>
 
-                    <Button Content="Download Contributions JSON Data"
-                            Command="{Binding ExportContributionsJsonCommand}" />
-                    <Button Content="Download Contributions Areas JSON Data (coming soon)"
-                            IsEnabled="False"
-                            Command="{Binding ExportContributionsJsonCommand}" />
-                    <Button Content="Download Contribution Types JSON Data (coming soon)"
-                            IsEnabled="False"
-                            Command="{Binding ExportContributionsJsonCommand}" />
+                    <Border BorderThickness="2" 
+                            BorderBrush="{ThemeResource SystemAccentColor}"
+                            HorizontalAlignment="Left"
+                            Margin="0,0,0,10"
+                            MinWidth="250">
+                        <StackPanel Margin="10">
+                            <ComboBox ItemsSource="{Binding ContributionExportTypes}"
+                                      SelectedItem="{Binding SelectedExportType, Mode=TwoWay}"
+                                      Header="Community Activities Data"
+                                      HorizontalAlignment="Stretch"/>
+
+                            <Button Content="Export"
+                                    Command="{Binding ExportContributionsCommand}"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="0,10,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border BorderThickness="2"
+                            BorderBrush="{ThemeResource SystemAccentColor}"
+                            HorizontalAlignment="Left"
+                            Margin="0,0,0,10"
+                            MinWidth="250">
+                        <StackPanel Margin="10">
+
+                            <TextBlock Text="Online Identities Data" />
+
+                            <Button Content="Export"
+                                    Command="{Binding ExportOnlineIdentitiesCommand}"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="0,10,0,0" />
+                        </StackPanel>
+                    </Border>
 
                 </StackPanel>
             </toolkitControls:Expander>
@@ -492,5 +516,12 @@
                 </StackPanel>
             </toolkitControls:Expander>
         </StackPanel>
+
+        <primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
+                                     Visibility="{Binding IsBusy}"
+                                     Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
+                                     Style="{StaticResource PageBusyIndicatorStyle}" 
+                                     Grid.Row="0"
+                                     Grid.RowSpan="3"/>
     </Grid>
 </Page>

@@ -248,7 +248,7 @@ namespace MvpApi.Uwp.ViewModels
             IsBusy = true;
             IsBusyMessage = "exporting all contributions...";
 
-            var jsonData = await App.ApiService.ExportContributionsAsync();
+            var jsonData = await App.ApiService.ExportAllContributionsAsync();
 
             if (string.IsNullOrEmpty(jsonData))
                 return;

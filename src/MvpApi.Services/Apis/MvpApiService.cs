@@ -500,8 +500,6 @@ namespace MvpApi.Services.Apis
 
             try
             {
-                int totalCount = 0;
-
                 // The first 0/0 fetch is to get the total number of historical contributions (no contributions are actually fetched)
                 using (var response = await client.GetAsync($"contributions/current/0/0"))
                 {
@@ -515,7 +513,7 @@ namespace MvpApi.Services.Apis
                         var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
 
                         // Read the total count
-                        totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+                        var totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
 
                         // Make a new request
                         var allresults = await GetCurrentCycleContributionsAsync(0, totalCount, true);
@@ -1299,9 +1297,9 @@ namespace MvpApi.Services.Apis
 
         #endregion
 
-        #region Utilities
+        #region Export Operations
 
-        public async Task<string> ExportContributionsAsync()
+        public async Task<string> ExportAllContributionsAsync()
         {
             string json = string.Empty;
 
@@ -1313,10 +1311,10 @@ namespace MvpApi.Services.Apis
                     {
                         json = await response.Content.ReadAsStringAsync();
 
-
-
                         if (!IsDataValid(json))
                             return null;
+
+
                     }
                     else
                     {
@@ -1338,6 +1336,102 @@ namespace MvpApi.Services.Apis
                 await e.LogExceptionAsync();
 
                 Trace.WriteLine($"ExportContributionsAsync Exception: {e}");
+            }
+
+            return json;
+        }
+
+        public async Task<string> ExportCurrentContributionsAsync()
+        {
+            string json = string.Empty;
+
+            try
+            {
+                using (var response = await client.GetAsync($"contributions/current/0/0"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
+                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
+
+                        // Read the total count
+                        var totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+
+                        // Make a new request
+                        var allresults = await GetCurrentCycleContributionsAsync(0, totalCount, true);
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"ExportCurrentContributionsAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"ExportCurrentContributionsAsync Exception: {e}");
+            }
+
+            return json;
+        }
+
+        public async Task<string> ExportHistoricalContributionsAsync()
+        {
+            string json = string.Empty;
+
+            try
+            {
+                using (var response = await client.GetAsync($"contributions/historical/0/0"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
+                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
+
+                        // Read the total count
+                        var totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+
+                        // Make a new request
+                        var allresults = await GetHistoricalContributionsAsync(0, totalCount, true);
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"ExportHistoricalContributionsAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"ExportHistoricalContributionsAsync Exception: {e}");
             }
 
             return json;
@@ -1382,6 +1476,10 @@ namespace MvpApi.Services.Apis
 
             return json;
         }
+
+        #endregion
+
+        #region Utilities
 
         private async Task ProcessRefreshOrBadRequestAsync(HttpResponseMessage response)
         {
