@@ -11,28 +11,24 @@ namespace MvpApi.Common.Models
     {
         public SocialNetworkViewModel() { }
 
-        public SocialNetworkViewModel(string socialNetworkId, string name, string website, SocialNetworkStatusCode statusCode, bool? systemCollectionEnabled)
+        public SocialNetworkViewModel(string id, string name, string iconUrl, bool? systemCollectionEnabled)
         {
-            SocialNetworkId = socialNetworkId;
+            Id = id;
             Name = name;
-            Website = website;
-            StatusCode = statusCode;
+            IconUrl = iconUrl;
             SystemCollectionEnabled = systemCollectionEnabled;
         }
 
-        [Newtonsoft.Json.JsonProperty(PropertyName = "SocialNetworkId")]
-        public string SocialNetworkId { get; set; }
+        [Newtonsoft.Json.JsonProperty(PropertyName = "Id")]
+		public string Id { get; set; }
 
-        [Newtonsoft.Json.JsonProperty(PropertyName = "Name")]
-        public string Name { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Name")]
+		public string Name { get; set; }
 
-        [Newtonsoft.Json.JsonProperty(PropertyName = "Website")]
-        public string Website { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "IconUrl")]
+		public string IconUrl { get; set; }
 
-        [Newtonsoft.Json.JsonProperty(PropertyName = "StatusCode")]
-        public SocialNetworkStatusCode StatusCode { get; set; }
-
-        [Newtonsoft.Json.JsonProperty(PropertyName = "SystemCollectionEnabled")]
-        public System.Boolean? SystemCollectionEnabled { get; set; }
-    }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "SystemCollectionEnabled")]
+		public System.Boolean? SystemCollectionEnabled { get; set; }
+	}
 }

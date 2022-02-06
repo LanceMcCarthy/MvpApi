@@ -1108,7 +1108,7 @@ namespace MvpApi.Services.Apis
         /// Gets the current Award Consideration Questions list.
         /// </summary>
         /// <returns>The list of questions to be answered for consideration in the next award period.</returns>
-        public async Task<IReadOnlyList<AwardConsiderationQuestionModel>> GetAwardConsiderationQuestionsAsync()
+        public async Task<IReadOnlyList<AwardQuestionViewModel>> GetAwardConsiderationQuestionsAsync()
         {
             try
             {
@@ -1121,7 +1121,7 @@ namespace MvpApi.Services.Apis
                         if (!IsDataValid(json))
                             return null;
 
-                        return JsonConvert.DeserializeObject<IReadOnlyList<AwardConsiderationQuestionModel>>(json);
+                        return JsonConvert.DeserializeObject<IReadOnlyList<AwardQuestionViewModel>>(json);
                     }
                     else
                     {
@@ -1151,7 +1151,7 @@ namespace MvpApi.Services.Apis
         /// Gets the MVP's currently saved answers for the Award consideration questions
         /// </summary>
         /// <returns>The list of questions to be answered for consideration in the next award period.</returns>
-        public async Task<IReadOnlyList<AwardConsiderationAnswerModel>> GetAwardConsiderationAnswersAsync()
+        public async Task<IReadOnlyList<AwardAnswerViewModel>> GetAwardConsiderationAnswersAsync()
         {
             try
             {
@@ -1164,7 +1164,7 @@ namespace MvpApi.Services.Apis
                         if (!IsDataValid(json))
                             return null;
 
-                        return JsonConvert.DeserializeObject<IReadOnlyList<AwardConsiderationAnswerModel>>(json);
+                        return JsonConvert.DeserializeObject<IReadOnlyList<AwardAnswerViewModel>>(json);
                     }
                     else
                     {
@@ -1198,7 +1198,7 @@ namespace MvpApi.Services.Apis
         /// </summary>
         /// <param name="answers"></param>
         /// <returns></returns>
-        public async Task<List<AwardConsiderationAnswerModel>> SaveAwardConsiderationAnswerAsync(IEnumerable<AwardConsiderationAnswerModel> answers)
+        public async Task<List<AwardAnswerViewModel>> SaveAwardConsiderationAnswerAsync(IEnumerable<AwardAnswerViewModel> answers)
         {
             if (answers == null)
                 throw new NullReferenceException("The contribution parameter was null.");
@@ -1222,7 +1222,7 @@ namespace MvpApi.Services.Apis
                             if (!IsDataValid(json))
                                 return null;
 
-                            return JsonConvert.DeserializeObject<List<AwardConsiderationAnswerModel>>(json);
+                            return JsonConvert.DeserializeObject<List<AwardAnswerViewModel>>(json);
                         }
                         else
                         {
@@ -1312,6 +1312,8 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         json = await response.Content.ReadAsStringAsync();
+
+
 
                         if (!IsDataValid(json))
                             return null;
