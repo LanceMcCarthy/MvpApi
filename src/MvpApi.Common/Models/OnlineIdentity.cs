@@ -7,17 +7,14 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class OnlineIdentity
+    public class OnlineIdentity
     {
         /// <summary>
         /// Initializes a new instance of the OnlineIdentity class.
         /// </summary>
         public OnlineIdentity() { }
 
-        /// <summary>
-        /// Initializes a new instance of the OnlineIdentity class.
-        /// </summary>
-        public OnlineIdentity(Guid? onlineIdentityId = default(Guid?), Guid? mvpGuid = default(Guid?), string name = default(string), int? privateSiteId = default(int?), SharingPreference onlineIdentityVisibility = default(SharingPreference), SocialNetwork socialNetwork = default(SocialNetwork), string url = default(string), string displayName = default(string), string userId = default(string), string microsoftAccount = default(string), bool? contributionCollected = default(bool?), bool? privacyConsentStatus = default(bool?), bool? submitted = default(bool?))
+        public OnlineIdentity(string onlineIdentityId, string mvpGuid, string name, int? privateSiteId, SharingPreference onlineIdentityVisibility, SocialNetwork socialNetwork, string url, string displayName, string userId, string microsoftAccount, bool? contributionCollected, bool? privacyConsentStatus, bool? submitted)
         {
             OnlineIdentityId = onlineIdentityId;
             MvpGuid = mvpGuid;
@@ -34,69 +31,43 @@ namespace MvpApi.Common.Models
             Submitted = submitted;
         }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "OnlineIdentityId")]
-        public Guid? OnlineIdentityId { get; set; }
+        [Newtonsoft.Json.JsonProperty(PropertyName = "OnlineIdentityId")]
+		public string OnlineIdentityId { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "MvpGuid")]
-        public Guid? MvpGuid { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "MvpGuid")]
+		public string MvpGuid { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Name")]
-        public string Name { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Name")]
+		public string Name { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "PrivateSiteId")]
-        public int? PrivateSiteId { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "PrivateSiteId")]
+		public int? PrivateSiteId { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "OnlineIdentityVisibility")]
-        public SharingPreference OnlineIdentityVisibility { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "OnlineIdentityVisibility")]
+		public SharingPreference OnlineIdentityVisibility { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "SocialNetwork")]
-        public SocialNetwork SocialNetwork { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "SocialNetwork")]
+		public SocialNetwork SocialNetwork { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Url")]
-        public string Url { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Url")]
+		public string Url { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "DisplayName")]
-        public string DisplayName { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "DisplayName")]
+		public string DisplayName { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "UserId")]
-        public string UserId { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "UserId")]
+		public string UserId { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "MicrosoftAccount")]
-        public string MicrosoftAccount { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "MicrosoftAccount")]
+		public string MicrosoftAccount { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "ContributionCollected")]
-        public bool? ContributionCollected { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "ContributionCollected")]
+		public bool? ContributionCollected { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "PrivacyConsentStatus")]
-        public bool? PrivacyConsentStatus { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "PrivacyConsentStatus")]
+		public bool? PrivacyConsentStatus { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Submitted")]
-        public bool? Submitted { get; set; }
-    }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Submitted")]
+		public bool? Submitted { get; set; }
+	}
 }

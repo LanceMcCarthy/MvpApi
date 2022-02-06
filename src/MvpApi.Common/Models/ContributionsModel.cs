@@ -34,7 +34,7 @@ namespace MvpApi.Common.Models
         /// <summary>
         /// Initializes a new instance of the ContributionsModel class.
         /// </summary>
-        public ContributionsModel(int? contributionId = default(int?), string contributionTypeName = default(string), ContributionTypeModel contributionType = default(ContributionTypeModel), ContributionTechnologyModel contributionTechnology = default(ContributionTechnologyModel), DateTime? startDate = default(DateTime?), string title = default(string), string referenceUrl = default(string), VisibilityViewModel visibility = default(VisibilityViewModel), int? annualQuantity = default(int?), int? secondAnnualQuantity = default(int?), int? annualReach = default(int?), string description = default(string))
+        public ContributionsModel(int? contributionId = default, string contributionTypeName = default, ContributionTypeModel contributionType = default, ContributionTechnologyModel contributionTechnology = default, DateTime? startDate = default, string title = default, string referenceUrl = default, VisibilityViewModel visibility = default, int? annualQuantity = default, int? secondAnnualQuantity = default, int? annualReach = default, string description = default, bool? isEditable = default)
         {
             ContributionId = contributionId;
             ContributionTypeName = contributionTypeName;
@@ -48,6 +48,7 @@ namespace MvpApi.Common.Models
             SecondAnnualQuantity = secondAnnualQuantity;
             AnnualReach = annualReach;
             Description = description;
+            IsEditable = isEditable;
         }
 
         /// <summary>
@@ -180,6 +181,12 @@ namespace MvpApi.Common.Models
             get => description;
             set => SetProperty(ref description, value);
         }
+
+        /// <summary>
+		/// Gets or sets the IsEditable.
+		/// </summary>
+		[JsonProperty(PropertyName = "IsEditable")]
+        public bool? IsEditable { get; set; }
 
 
         /// <summary>
