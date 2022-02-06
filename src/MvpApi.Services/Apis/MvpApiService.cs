@@ -93,15 +93,9 @@ namespace MvpApi.Services.Apis
                         var json = await response.Content.ReadAsStringAsync();
                         return JsonConvert.DeserializeObject<ProfileViewModel>(json);
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -158,15 +152,7 @@ namespace MvpApi.Services.Apis
                     }
                     else
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
-                        }
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -240,15 +226,7 @@ namespace MvpApi.Services.Apis
                     }
                     else
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
-                        }
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -297,6 +275,10 @@ namespace MvpApi.Services.Apis
 
                         // Read the total
                         totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
 
@@ -356,15 +338,9 @@ namespace MvpApi.Services.Apis
 
                         return contributionsCachedResult;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -413,15 +389,9 @@ namespace MvpApi.Services.Apis
                             var json = await response.Content.ReadAsStringAsync();
                             return JsonConvert.DeserializeObject<ContributionsModel>(json);
                         }
-
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        else
                         {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                            await ProcessRefreshOrBadRequestAsync(response);
                         }
                     }
                 }
@@ -470,15 +440,9 @@ namespace MvpApi.Services.Apis
                         {
                             return true;
                         }
-
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        else
                         {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                            await ProcessRefreshOrBadRequestAsync(response);
                         }
                     }
                 }
@@ -521,15 +485,9 @@ namespace MvpApi.Services.Apis
                     {
                         return true;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -581,15 +539,9 @@ namespace MvpApi.Services.Apis
                         
                         return contributionTypesCachedResult;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -639,15 +591,9 @@ namespace MvpApi.Services.Apis
 
                         return contributionAreasCachedResult;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -698,14 +644,9 @@ namespace MvpApi.Services.Apis
 
                         return visibilitiesCachedResult;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -755,15 +696,9 @@ namespace MvpApi.Services.Apis
 
                         return onlineIdentitiesCachedResult;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -817,15 +752,9 @@ namespace MvpApi.Services.Apis
 
                             return result;
                         }
-
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        else
                         {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                            await ProcessRefreshOrBadRequestAsync(response);
                         }
                     }
                 }
@@ -862,15 +791,9 @@ namespace MvpApi.Services.Apis
                     {
                         return true;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -908,15 +831,9 @@ namespace MvpApi.Services.Apis
                         var json = await response.Content.ReadAsStringAsync();
                         return JsonConvert.DeserializeObject<IReadOnlyList<AwardConsiderationQuestionModel>>(json);
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -953,15 +870,9 @@ namespace MvpApi.Services.Apis
                         var json = await response.Content.ReadAsStringAsync();
                         return JsonConvert.DeserializeObject<IReadOnlyList<AwardConsiderationAnswerModel>>(json);
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -1012,15 +923,9 @@ namespace MvpApi.Services.Apis
                             var json = await response.Content.ReadAsStringAsync();
                             return JsonConvert.DeserializeObject<List<AwardConsiderationAnswerModel>>(json);
                         }
-
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        else
                         {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                            await ProcessRefreshOrBadRequestAsync(response);
                         }
                     }
                 }
@@ -1065,15 +970,9 @@ namespace MvpApi.Services.Apis
                         {
                             return true;
                         }
-
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        else
                         {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                            await ProcessRefreshOrBadRequestAsync(response);
                         }
                     }
                 }
@@ -1101,27 +1000,22 @@ namespace MvpApi.Services.Apis
 
         #region Utilities
 
-        public async Task<string> ExportContributionsAsync(bool useOriginalJson = false)
+        public async Task<string> ExportContributionsAsync()
         {
             string json = string.Empty;
 
             try
             {
-                if(useOriginalJson)
+                using (var response = await client.GetAsync($"contributions/0/0"))
                 {
-                    using (var response = await client.GetAsync($"contributions/0/0"))
+                    if (response.IsSuccessStatusCode)
                     {
-                        if (response.IsSuccessStatusCode)
-                        {
-                            json = await response.Content.ReadAsStringAsync();
-                        }
+                        json = await response.Content.ReadAsStringAsync();
                     }
-                }
-                else
-                {
-                    var allContributions = await GetAllContributionsAsync();
-
-                    json = JsonConvert.SerializeObject(allContributions);
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
                 }
             }
             catch (HttpRequestException e)
@@ -1145,14 +1039,52 @@ namespace MvpApi.Services.Apis
 
         public async Task<string> ExportOnlineIdentitiesAsync()
         {
+            string json = string.Empty;
+
             try
             {
-                var onlineIdentities = await GetOnlineIdentitiesAsync();
-                return JsonConvert.SerializeObject(onlineIdentities);
+                using (var response = await client.GetAsync("onlineidentities"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        json = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
             }
-            catch
+            catch (HttpRequestException e)
             {
-                return "";
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return json;
+        }
+
+        private async Task ProcessRefreshOrBadRequestAsync(HttpResponseMessage response)
+        {
+            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+            }
+            else if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var message = await response.Content.ReadAsStringAsync();
+
+                RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
             }
         }
 

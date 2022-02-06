@@ -54,7 +54,7 @@ namespace MvpApi.Uwp.ViewModels
                 IsBusyMessage = "loading contributions...";
 
                 // Get the raw JSON from the API to help diagnose issues with deserialization problems
-                var json = await App.ApiService.ExportContributionsAsync(useOriginalJson: true);
+                var json = await App.ApiService.ExportContributionsAsync();
 
                 var dataPackage = new DataPackage
                 {
