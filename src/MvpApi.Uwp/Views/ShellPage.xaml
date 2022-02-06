@@ -157,7 +157,6 @@
                      VerticalAlignment="Center" />
 
             <Button Content="Why so many permissions?"
-                    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
                     Margin="10">
@@ -177,7 +176,6 @@
             </Button>
 
             <Button Content="Problems?"
-                    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
                     Margin="10">
@@ -197,6 +195,26 @@
                     </Flyout>
                 </Button.Flyout>
             </Button>
+
+            <StackPanel VerticalAlignment="Bottom"
+                        Margin="20"
+                        IsHitTestVisible="False">
+                <Border HorizontalAlignment="Center"
+                        Margin="0,0,0,10"
+                        BorderThickness="2"
+                        BorderBrush="{ThemeResource SystemAccentColor}"
+                        IsHitTestVisible="False">
+                    <TextBlock Text="Sign-in using the Microsoft Account associated with your MVP Profile"
+                               FontWeight="SemiBold"
+                               Margin="5,3"
+                               IsHitTestVisible="False" />
+                </Border>
+                <TextBlock Text="You must be an active Microsoft MVP, with an accepted NDA agreement, or you'll receive an error after login."
+                           FontStyle="Italic"
+                           HorizontalAlignment="Center"
+                           TextWrapping="WrapWholeWords"
+                           IsHitTestVisible="False" />
+            </StackPanel>
         </Grid>
 
         <primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"

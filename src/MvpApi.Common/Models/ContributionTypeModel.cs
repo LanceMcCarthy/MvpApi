@@ -10,7 +10,7 @@ namespace MvpApi.Common.Models
 {
     public partial class ContributionTypeModel : BindableBase
     {
-        private Guid? id;
+        private string id;
         private string name;
         private string englishName;
 
@@ -22,7 +22,7 @@ namespace MvpApi.Common.Models
         /// <summary>
         /// Initializes a new instance of the ContributionTypeModel class.
         /// </summary>
-        public ContributionTypeModel(Guid? id = default(Guid?), string name = default(string), string englishName = default(string))
+        public ContributionTypeModel(string id, string name = default, string englishName = default)
         {
             Id = id;
             Name = name;
@@ -33,7 +33,7 @@ namespace MvpApi.Common.Models
         /// Gets or sets the id.
         /// </summary>
         [JsonProperty(PropertyName = "Id")]
-        public Guid? Id
+        public string Id
         {
             get => id;
             set => SetProperty(ref id, value);

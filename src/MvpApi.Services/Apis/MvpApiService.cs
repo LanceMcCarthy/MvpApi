@@ -16,15 +16,24 @@ namespace MvpApi.Services.Apis
 {
     public class MvpApiService : BindableBase, IDisposable
     {
+        #region fields
         private readonly HttpClient client;
-        private ContributionViewModel contributionsCachedResult;
-        private IReadOnlyList<ContributionTypeModel> contributionTypesCachedResult;
-        private IReadOnlyList<ContributionAreasRootItem> contributionAreasCachedResult;
-        private IReadOnlyList<VisibilityViewModel> visibilitiesCachedResult;
-        private IReadOnlyList<OnlineIdentityViewModel> onlineIdentitiesCachedResult;
         private ProfileViewModel mvp;
         private bool isLoggedIn;
         private string profileImagePath;
+
+        // Contribution caches
+        private ContributionViewModel totalContributionsCache;
+        private ContributionViewModel historicalContributionsCache;
+        private ContributionViewModel currentContributionsCache;
+
+        // Supporting data caches
+        private IReadOnlyList<ContributionTypeModel> typesCachedResult;
+        private IReadOnlyList<ContributionAreasRootItem> areasCachedResult;
+        private IReadOnlyList<VisibilityViewModel> visibilitiesCachedResult;
+        private IReadOnlyList<OnlineIdentityViewModel> onlineIdentitiesCachedResult;
+
+        #endregion
 
         /// <summary>
         /// Service that interacts with the MVP API
@@ -76,7 +85,7 @@ namespace MvpApi.Services.Apis
 
         #endregion
 
-        #region API Endpoints
+        #region API Endpoint - Profile Data
 
         /// <summary>
         /// Returns the profile data of the currently signed in MVP
@@ -91,17 +100,15 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
                         return JsonConvert.DeserializeObject<ProfileViewModel>(json);
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -125,15 +132,15 @@ namespace MvpApi.Services.Apis
         }
 
         /// <summary>
-        /// Get the profile picture of the currently signed in MVP
+        /// Get the profile picture of the currently signed in MVP.
         /// </summary>
-        /// <returns>JPG image byte array</returns>
-        public async Task<byte[]> GetProfileImageAsync()
+        /// <returns>Tuple byte[], string - image bytes and the image format</returns>
+        public async Task<Tuple<byte[],string>> GetProfileImageAsync()
         {
             try
             {
                 // the result is Detected mime type: image/jpeg; charset=binary
-                using (var response = await client.GetAsync("https://mvpapi.azure-api.net/mvp/api/profile/photo"))
+                using (var response = await client.GetAsync("profile/photo"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
@@ -143,12 +150,34 @@ namespace MvpApi.Services.Apis
                         {
                             if (string.IsNullOrEmpty(base64String))
                             {
+                                RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs
+                                {
+                                    Message = "A null result was returned for your profile photo. Either you do not have a profile image saved to your profile or there's a server problem."
+                                });
+
                                 return null;
                             }
 
                             base64String = base64String.TrimStart('"').TrimEnd('"');
 
-                            return Convert.FromBase64String(base64String);
+                            // determine file type
+                            var data = base64String.Substring(0, 5);
+
+                            var fileExtension = string.Empty;
+
+                            switch (data.ToUpper())
+                            {
+                                case "IVBOR":
+                                    fileExtension = "png";
+                                    break;
+                                case "/9J/4":
+                                    fileExtension = "jpg";
+                                    break;
+                            }
+
+                            var imgBytes = Convert.FromBase64String(base64String);
+
+                            return new Tuple<byte[],string>(imgBytes, fileExtension);
                         }
                         catch (Exception e)
                         {
@@ -158,15 +187,7 @@ namespace MvpApi.Services.Apis
                     }
                     else
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
-                        }
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -196,61 +217,14 @@ namespace MvpApi.Services.Apis
         {
             try
             {
-                // the result is Detected mime type: image/jpeg; charset=binary
-                using (var response = await client.GetAsync("profile/photo"))
-                {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var base64String = await response.Content.ReadAsStringAsync();
+                var photoResult = await GetProfileImageAsync();
 
-                        try
-                        {
-                            if (string.IsNullOrEmpty(base64String))
-                            {
-                                return null;
-                            }
+                var imageBytes = photoResult.Item1;
+                var fileExtension = photoResult.Item2;
 
-                            base64String = base64String.TrimStart('"').TrimEnd('"');
+                var savedImageFilePath = StorageHelpers.Instance.SaveImage(imageBytes, $"ProfilePicture.{fileExtension}");
 
-                            // determine file type
-                            var data = base64String.Substring(0, 5);
-
-                            var fileExtension = string.Empty;
-
-                            switch (data.ToUpper())
-                            {
-                                case "IVBOR":
-                                    fileExtension = "png";
-                                    break;
-                                case "/9J/4":
-                                    fileExtension = "jpg";
-                                    break;
-                            }
-
-                            var imgBytes = Convert.FromBase64String(base64String);
-
-                            var filePath = StorageHelpers.Instance.SaveImage(imgBytes, $"ProfilePicture.{fileExtension}");
-                            return filePath;
-                        }
-                        catch (Exception e)
-                        {
-                            await e.LogExceptionAsync();
-                            Trace.WriteLine($"DownloadAndSaveProfileImage Exception: {e}");
-                        }
-                    }
-                    else
-                    {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
-                        }
-                    }
-                }
+                return savedImageFilePath;
             }
             catch (HttpRequestException e)
             {
@@ -264,44 +238,63 @@ namespace MvpApi.Services.Apis
             catch (Exception e)
             {
                 //await e.LogExceptionAsync();
+
                 Trace.WriteLine($"GetProfileImageAsync Exception: {e}");
             }
 
             return null;
         }
 
+        #endregion
+
+        #region API Endpoint - Contributions Fetching
+
         /// <summary>
-        /// Gets all the MVP's activities.
+        /// Gets all the MVP's activities, both current and historical. IMPORTANT: This may take some time, be sure to show visual busy indicator for use.
         /// </summary>
         /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
         /// <returns>A list of the MVP's contributions</returns>
         public async Task<ContributionViewModel> GetAllContributionsAsync(bool forceRefresh = false)
         {
-            if (contributionsCachedResult != null && !forceRefresh)
+            if (totalContributionsCache != null && !forceRefresh)
             {
-                // Return the cached result by default.
-                return contributionsCachedResult;
+                // If we have previously fetched all the conributions and we do not need a refresh.
+                return totalContributionsCache;
             }
-            
+
             try
             {
                 int totalCount = 0;
 
-                // The first fetch gets the total count, which we need to do the full fetch
+                // The first 0/0 fetch is to get the total number of contributions (no contributions are actually fetched)
                 using (var response = await client.GetAsync($"contributions/0/0"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
                         var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
 
-                        // Read the total
+                        // Read the total count
                         totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+
+                        // Make a new request
+                        var allresults = await GetContributionsAsync(0, totalCount, true);
+
+                        // cache the result
+                        totalContributionsCache = allresults;
+
+                        // return the cache
+                        return totalContributionsCache;
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
-
-                // Using the total count, we can now fetch all the items and cache them
-                return await GetContributionsAsync(0, totalCount, true);
             }
             catch (HttpRequestException e)
             {
@@ -310,33 +303,27 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Trace.WriteLine($"GetContributionsAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetAllContributionsAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Trace.WriteLine($"GetContributionsAsync Exception: {e}");
+                Trace.WriteLine($"GetAllContributionsAsync Exception: {e}");
             }
 
             return null;
         }
 
         /// <summary>
-        /// Gets the MVPs activities, depending on the offset (page) and the limit (number of items per-page)
+        /// Gets the MVPs activities, current and historical. Requires the number of pages to skip (offset) and the number of items per-page (limit).
         /// </summary>
-        /// <param name="offset">page to return</param>
-        /// <param name="limit">number of items for the page</param>
+        /// <param name="offset">Format - int32. Page skip integer</param>
+        /// <param name="limit">Format - int32. Page take integer</param>
         /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
         /// <returns>A list of the MVP's contributions</returns>
         public async Task<ContributionViewModel> GetContributionsAsync(int? offset, int limit, bool forceRefresh = false)
         {
-            if (contributionsCachedResult != null && !forceRefresh)
-            {
-                // Return the cached result by default.
-                return contributionsCachedResult;
-            }
-            
             if (offset == null)
             {
                 offset = 0;
@@ -349,22 +336,15 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
 
-                        // Update the cached result.
-                        contributionsCachedResult = deserializedResult;
+                        if (!IsDataValid(json))
+                            return null;
 
-                        return contributionsCachedResult;
+                        return JsonConvert.DeserializeObject<ContributionViewModel>(json);
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -375,17 +355,255 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Trace.WriteLine($"GetContributionsAsync HttpRequestException: {e}");
+                Trace.WriteLine($"GetAllContributionsPagedAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
                 await e.LogExceptionAsync();
 
-                Trace.WriteLine($"GetContributionsAsync Exception: {e}");
+                Trace.WriteLine($"GetAllContributionsPagedAsync Exception: {e}");
             }
 
             return null;
         }
+
+        /// <summary>
+        /// Gets all the MVP's historial activities in one fetch. IMPORTANT: This may take some time, be sure to show visual busy indicator for use.
+        /// </summary>
+        /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
+        /// <returns>A list of the MVP's contributions</returns>
+        public async Task<ContributionViewModel> GetAllHistoricalContributionsAsync(bool forceRefresh = false)
+        {
+            if (historicalContributionsCache != null && !forceRefresh)
+            {
+                // Return the cached result by default.
+                return historicalContributionsCache;
+            }
+
+            try
+            {
+                int totalCount = 0;
+
+                // The first 0/0 fetch is to get the total number of historical contributions (no contributions are actually fetched)
+                using (var response = await client.GetAsync($"contributions/historical/0/0"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
+                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
+
+                        // Read the total count
+                        totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+
+                        // Make a new request
+                        var allresults = await GetHistoricalContributionsAsync(0, totalCount, true);
+
+                        // cache the result
+                        historicalContributionsCache = allresults;
+
+                        // return the cache
+                        return historicalContributionsCache;
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"GetAllHistoricalContributionsAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"GetAllHistoricalContributionsAsync Exception: {e}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the MVPs historical activities, these are contributions prior to the current cycle. Requires the number of pages to skip (offset) and the number of items per-page (limit).
+        /// </summary>
+        /// <param name="offset">Format - int32. Page skip integer</param>
+        /// <param name="limit">Format - int32. Page take integer</param>
+        /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
+        /// <returns>A list of the MVP's contributions</returns>
+        public async Task<ContributionViewModel> GetHistoricalContributionsAsync(int? offset, int limit, bool forceRefresh = false)
+        {
+            if (offset == null)
+            {
+                offset = 0;
+            }
+
+            try
+            {
+                using (var response = await client.GetAsync($"contributions/historical/{offset}/{limit}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
+                        return JsonConvert.DeserializeObject<ContributionViewModel>(json);
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"GetHistoricalContributionsAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"GetHistoricalContributionsAsync Exception: {e}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets all the MVP's current cycle activities in one fetch. IMPORTANT: This may take some time, be sure to show visual busy indicator for use.
+        /// </summary>
+        /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
+        /// <returns>A list of the MVP's contributions</returns>
+        public async Task<ContributionViewModel> GetAllCurrentCycleContributionsAsync(bool forceRefresh = false)
+        {
+            if (currentContributionsCache != null && !forceRefresh)
+            {
+                // Return the cached result by default.
+                return currentContributionsCache;
+            }
+
+            try
+            {
+                // The first 0/0 fetch is to get the total number of historical contributions (no contributions are actually fetched)
+                using (var response = await client.GetAsync($"contributions/current/0/0"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
+                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
+
+                        // Read the total count
+                        var totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+
+                        // Make a new request
+                        var allresults = await GetCurrentCycleContributionsAsync(0, totalCount, true);
+
+                        // cache the result
+                        currentContributionsCache = allresults;
+
+                        // return the cache
+                        return currentContributionsCache;
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"GetAllHistoricalContributionsAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"GetAllHistoricalContributionsAsync Exception: {e}");
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the MVPs activities for the current MVP cycle. Requires the number of pages to skip (offset) and the number of items per-page (limit).
+        /// </summary>
+        /// <param name="offset">Format - int32. Page skip integer</param>
+        /// <param name="limit">Format - int32. Page take integer</param>
+        /// <param name="forceRefresh">The result is cached in a backing list by default which prevents unnecessary fetches. If you want the cache refreshed, set this to true</param>
+        /// <returns>A list of the MVP's contributions</returns>
+        public async Task<ContributionViewModel> GetCurrentCycleContributionsAsync(int? offset, int limit, bool forceRefresh = false)
+        {
+            if (offset == null)
+            {
+                offset = 0;
+            }
+
+            try
+            {
+                using (var response = await client.GetAsync($"contributions/current/{offset}/{limit}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
+                        return JsonConvert.DeserializeObject<ContributionViewModel>(json);
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"GetCurrentCycleContributionsPagedAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"GetCurrentCycleContributionsPagedAsync Exception: {e}");
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region API Endpoint - Contribution Editing
 
         /// <summary>
         /// Submits a new contribution to the currently sign-in MVP profile
@@ -400,6 +618,7 @@ namespace MvpApi.Services.Apis
             try
             {
                 var serializedContribution = JsonConvert.SerializeObject(contribution);
+
                 byte[] byteData = Encoding.UTF8.GetBytes(serializedContribution);
 
                 using (var content = new ByteArrayContent(byteData))
@@ -411,17 +630,15 @@ namespace MvpApi.Services.Apis
                         if (response.IsSuccessStatusCode)
                         {
                             var json = await response.Content.ReadAsStringAsync();
+
+                            if (!IsDataValid(json))
+                                return null;
+
                             return JsonConvert.DeserializeObject<ContributionsModel>(json);
                         }
-
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        else
                         {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                            await ProcessRefreshOrBadRequestAsync(response);
                         }
                     }
                 }
@@ -470,15 +687,9 @@ namespace MvpApi.Services.Apis
                         {
                             return true;
                         }
-
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        else
                         {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                            await ProcessRefreshOrBadRequestAsync(response);
                         }
                     }
                 }
@@ -521,15 +732,9 @@ namespace MvpApi.Services.Apis
                     {
                         return true;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -554,6 +759,10 @@ namespace MvpApi.Services.Apis
             return null;
         }
 
+        #endregion
+
+        #region API Endpoint - Supporting Data Fetches (Types, Areas, Visibilities)
+
         /// <summary>
         /// This gets a list if the different contributions types
         /// </summary>
@@ -561,10 +770,10 @@ namespace MvpApi.Services.Apis
         /// <returns>List of contributions types</returns>
         public async Task<IReadOnlyList<ContributionTypeModel>> GetContributionTypesAsync(bool forceRefresh = false)
         {
-            if (contributionTypesCachedResult?.Count == 0 && !forceRefresh)
+            if (typesCachedResult?.Count == 0 && !forceRefresh)
             {
                 // Return the cached result by default.
-                return contributionTypesCachedResult;
+                return typesCachedResult;
             }
 
             try
@@ -574,22 +783,20 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
                         var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<ContributionTypeModel>>(json);
 
                         // Update the cached result.
-                        contributionTypesCachedResult = new List<ContributionTypeModel>(deserializedResult);
-                        
-                        return contributionTypesCachedResult;
-                    }
+                        typesCachedResult = new List<ContributionTypeModel>(deserializedResult);
 
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                    {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                        return typesCachedResult;
                     }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    else
                     {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -619,10 +826,10 @@ namespace MvpApi.Services.Apis
         /// <returns>A list of available contribution areas</returns>
         public async Task<IReadOnlyList<ContributionAreasRootItem>> GetContributionAreasAsync(bool forceRefresh = false)
         {
-            if (contributionAreasCachedResult?.Count == 0 && !forceRefresh)
+            if (areasCachedResult?.Count == 0 && !forceRefresh)
             {
                 // Return the cached result by default.
-                return contributionAreasCachedResult;
+                return areasCachedResult;
             }
 
             try
@@ -632,22 +839,20 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
                         var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<ContributionAreasRootItem>>(json);
 
                         // Update the cached result.
-                        contributionAreasCachedResult = new List<ContributionAreasRootItem>(deserializedResult);
+                        areasCachedResult = new List<ContributionAreasRootItem>(deserializedResult);
 
-                        return contributionAreasCachedResult;
+                        return areasCachedResult;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -691,6 +896,9 @@ namespace MvpApi.Services.Apis
                     {
                         var json = await response.Content.ReadAsStringAsync();
 
+                        if (!IsDataValid(json))
+                            return null;
+
                         var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<VisibilityViewModel>>(json);
 
                         // Update the cached result.
@@ -698,14 +906,9 @@ namespace MvpApi.Services.Apis
 
                         return visibilitiesCachedResult;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = "Bad Request Error - If this continues to happen, please open a GitHub issue so we can fix this immediately (go to the About page for a direct link)." });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -728,6 +931,10 @@ namespace MvpApi.Services.Apis
             return null;
         }
 
+        #endregion
+
+        #region API Endpoint - Online Identities
+
         /// <summary>
         /// Returns a list of the MVP's OnlineIdentities (social media accounts and other identities)
         /// </summary>
@@ -735,7 +942,7 @@ namespace MvpApi.Services.Apis
         /// <returns></returns>
         public async Task<IReadOnlyList<OnlineIdentityViewModel>> GetOnlineIdentitiesAsync(bool forceRefresh = false)
         {
-            if (contributionTypesCachedResult?.Count == 0 && !forceRefresh)
+            if (typesCachedResult?.Count == 0 && !forceRefresh)
             {
                 // Return the cached result by default.
                 return onlineIdentitiesCachedResult;
@@ -748,6 +955,10 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
                         var deserializedResult = JsonConvert.DeserializeObject<IReadOnlyList<OnlineIdentityViewModel>>(json);
 
                         // Update the cached result.
@@ -755,15 +966,9 @@ namespace MvpApi.Services.Apis
 
                         return onlineIdentitiesCachedResult;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -785,7 +990,7 @@ namespace MvpApi.Services.Apis
 
             return null;
         }
-        
+
         /// <summary>
         /// Saves an OnlineIdentity
         /// </summary>
@@ -799,6 +1004,7 @@ namespace MvpApi.Services.Apis
             try
             {
                 var serializedOnlineIdentity = JsonConvert.SerializeObject(onlineIdentity);
+
                 byte[] byteData = Encoding.UTF8.GetBytes(serializedOnlineIdentity);
 
                 using (var content = new ByteArrayContent(byteData))
@@ -810,22 +1016,21 @@ namespace MvpApi.Services.Apis
                         if (response.IsSuccessStatusCode)
                         {
                             var json = await response.Content.ReadAsStringAsync();
+
+                            if (!IsDataValid(json))
+                                return null;
+
                             Trace.WriteLine($"OnlineIdentity Save JSON: {json}");
 
                             var result = JsonConvert.DeserializeObject<OnlineIdentity>(json);
+
                             Trace.WriteLine($"OnlineIdentity Save Result: ID {result.PrivateSiteId}");
 
                             return result;
                         }
-
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        else
                         {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                            await ProcessRefreshOrBadRequestAsync(response);
                         }
                     }
                 }
@@ -849,6 +1054,12 @@ namespace MvpApi.Services.Apis
             return null;
         }
 
+        /// <summary>
+        /// Deletes an Online Identity
+        /// </summary>
+        /// <param name="onlineIdentity"></param>
+        /// <returns></returns>
+        /// <exception cref="NullReferenceException"></exception>
         public async Task<bool> DeleteOnlineIdentityAsync(OnlineIdentityViewModel onlineIdentity)
         {
             if (onlineIdentity == null)
@@ -862,15 +1073,9 @@ namespace MvpApi.Services.Apis
                     {
                         return true;
                     }
-
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                    else
                     {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                    }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
-                    {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -892,12 +1097,16 @@ namespace MvpApi.Services.Apis
 
             return false;
         }
-        
+
+        #endregion
+
+        #region API Endpoint - Yearly Questionnaire
+
         /// <summary>
         /// Gets the current Award Consideration Questions list.
         /// </summary>
         /// <returns>The list of questions to be answered for consideration in the next award period.</returns>
-        public async Task<IReadOnlyList<AwardConsiderationQuestionModel>> GetAwardConsiderationQuestionsAsync()
+        public async Task<IReadOnlyList<AwardQuestionViewModel>> GetAwardConsiderationQuestionsAsync()
         {
             try
             {
@@ -906,17 +1115,15 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<IReadOnlyList<AwardConsiderationQuestionModel>>(json);
-                    }
 
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                    {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                        if (!IsDataValid(json))
+                            return null;
+
+                        return JsonConvert.DeserializeObject<IReadOnlyList<AwardQuestionViewModel>>(json);
                     }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    else
                     {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -937,12 +1144,12 @@ namespace MvpApi.Services.Apis
 
             return null;
         }
-        
+
         /// <summary>
         /// Gets the MVP's currently saved answers for the Award consideration questions
         /// </summary>
         /// <returns>The list of questions to be answered for consideration in the next award period.</returns>
-        public async Task<IReadOnlyList<AwardConsiderationAnswerModel>> GetAwardConsiderationAnswersAsync()
+        public async Task<IReadOnlyList<AwardAnswerViewModel>> GetAwardConsiderationAnswersAsync()
         {
             try
             {
@@ -951,17 +1158,15 @@ namespace MvpApi.Services.Apis
                     if (response.IsSuccessStatusCode)
                     {
                         var json = await response.Content.ReadAsStringAsync();
-                        return JsonConvert.DeserializeObject<IReadOnlyList<AwardConsiderationAnswerModel>>(json);
-                    }
 
-                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                    {
-                        AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                        if (!IsDataValid(json))
+                            return null;
+
+                        return JsonConvert.DeserializeObject<IReadOnlyList<AwardAnswerViewModel>>(json);
                     }
-                    else if (response.StatusCode == HttpStatusCode.BadRequest)
+                    else
                     {
-                        var message = await response.Content.ReadAsStringAsync();
-                        RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                        await ProcessRefreshOrBadRequestAsync(response);
                     }
                 }
             }
@@ -991,7 +1196,7 @@ namespace MvpApi.Services.Apis
         /// </summary>
         /// <param name="answers"></param>
         /// <returns></returns>
-        public async Task<List<AwardConsiderationAnswerModel>> SaveAwardConsiderationAnswerAsync(IEnumerable<AwardConsiderationAnswerModel> answers)
+        public async Task<List<AwardAnswerViewModel>> SaveAwardConsiderationAnswerAsync(IEnumerable<AwardAnswerViewModel> answers)
         {
             if (answers == null)
                 throw new NullReferenceException("The contribution parameter was null.");
@@ -999,6 +1204,7 @@ namespace MvpApi.Services.Apis
             try
             {
                 var serializedContribution = JsonConvert.SerializeObject(answers);
+
                 byte[] byteData = Encoding.UTF8.GetBytes(serializedContribution);
 
                 using (var content = new ByteArrayContent(byteData))
@@ -1010,17 +1216,15 @@ namespace MvpApi.Services.Apis
                         if (response.IsSuccessStatusCode)
                         {
                             var json = await response.Content.ReadAsStringAsync();
-                            return JsonConvert.DeserializeObject<List<AwardConsiderationAnswerModel>>(json);
-                        }
 
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
-                        {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+                            if (!IsDataValid(json))
+                                return null;
+
+                            return JsonConvert.DeserializeObject<List<AwardAnswerViewModel>>(json);
                         }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
+                        else
                         {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                            await ProcessRefreshOrBadRequestAsync(response);
                         }
                     }
                 }
@@ -1042,7 +1246,7 @@ namespace MvpApi.Services.Apis
 
             return null;
         }
-        
+
         /// <summary>
         /// Submits the MVP's answers for award consideration questions.
         /// WARNING - THIS CAN ONLY BE DONE ONCE PER AWARD PERIOD, THE ANSWERS CANNOT BE CHANGED AFTER SUBMISSION.
@@ -1065,15 +1269,9 @@ namespace MvpApi.Services.Apis
                         {
                             return true;
                         }
-
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+                        else
                         {
-                            AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
-                        }
-                        else if (response.StatusCode == HttpStatusCode.BadRequest)
-                        {
-                            var message = await response.Content.ReadAsStringAsync();
-                            RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+                            await ProcessRefreshOrBadRequestAsync(response);
                         }
                     }
                 }
@@ -1082,7 +1280,7 @@ namespace MvpApi.Services.Apis
             {
                 if (e.Message.Contains("500"))
                 {
-                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true, Message = e.Message});
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true, Message = e.Message });
                 }
 
                 Trace.WriteLine($"SubmitContributionAsync HttpRequestException: {e}");
@@ -1099,32 +1297,232 @@ namespace MvpApi.Services.Apis
 
         #endregion
 
-        #region Utilities
+        #region Export Operations
 
-        public async Task<string> ExportContributionsAsync()
+        public async Task<string> ExportAllContributionsAsync()
         {
+            string json = string.Empty;
+
             try
             {
-                var allContributions = await GetAllContributionsAsync();
-                return JsonConvert.SerializeObject(allContributions);
+                using (var response = await client.GetAsync($"contributions/0/0"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
+
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
             }
-            catch
+            catch (HttpRequestException e)
             {
-                return "";
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"ExportContributionsAsync HttpRequestException: {e}");
             }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"ExportContributionsAsync Exception: {e}");
+            }
+
+            return json;
+        }
+
+        public async Task<string> ExportCurrentContributionsAsync()
+        {
+            string json = string.Empty;
+
+            try
+            {
+                using (var response = await client.GetAsync($"contributions/current/0/0"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
+                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
+
+                        // Read the total count
+                        var totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+
+                        // Make a new request
+                        var allresults = await GetCurrentCycleContributionsAsync(0, totalCount, true);
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"ExportCurrentContributionsAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"ExportCurrentContributionsAsync Exception: {e}");
+            }
+
+            return json;
+        }
+
+        public async Task<string> ExportHistoricalContributionsAsync()
+        {
+            string json = string.Empty;
+
+            try
+            {
+                using (var response = await client.GetAsync($"contributions/historical/0/0"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+
+                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
+
+                        // Read the total count
+                        var totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+
+                        // Make a new request
+                        var allresults = await GetHistoricalContributionsAsync(0, totalCount, true);
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"ExportHistoricalContributionsAsync HttpRequestException: {e}");
+            }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"ExportHistoricalContributionsAsync Exception: {e}");
+            }
+
+            return json;
         }
 
         public async Task<string> ExportOnlineIdentitiesAsync()
         {
+            string json = string.Empty;
+
             try
             {
-                var onlineIdentities = await GetOnlineIdentitiesAsync();
-                return JsonConvert.SerializeObject(onlineIdentities);
+                using (var response = await client.GetAsync("onlineidentities"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        json = await response.Content.ReadAsStringAsync();
+
+                        if (!IsDataValid(json))
+                            return null;
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
             }
-            catch
+            catch (HttpRequestException e)
             {
-                return "";
+                if (e.Message.Contains("500"))
+                {
+                    RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
+                }
+
+                Trace.WriteLine($"GetOnlineIdentitiesAsync HttpRequestException: {e}");
             }
+            catch (Exception e)
+            {
+                await e.LogExceptionAsync();
+
+                Trace.WriteLine($"GetOnlineIdentitiesAsync Exception: {e}");
+            }
+
+            return json;
+        }
+
+        #endregion
+
+        #region Utilities
+
+        private async Task ProcessRefreshOrBadRequestAsync(HttpResponseMessage response)
+        {
+            if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                AccessTokenExpired?.Invoke(this, new ApiServiceEventArgs { IsTokenRefreshNeeded = true });
+            }
+            else if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                var message = await response.Content.ReadAsStringAsync();
+
+                RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsBadRequest = true, Message = message });
+            }
+        }
+
+        // checks in the json is valid to continue processing. The API will return a string with just the word 'null' in some circumstances.
+        private bool IsDataValid(string json)
+        {
+            bool isDataValid = true;
+
+            if (string.IsNullOrEmpty(json))
+            {
+                Trace.Write("JSON response was empty", "Data Validation");
+
+                isDataValid = false;
+            }
+
+            if (json.Equals("null"))
+            {
+                Trace.Write("JSON response contained the word 'null'.", "Data Validation");
+
+                isDataValid = false;
+            }
+
+            if (!isDataValid)
+            {
+                RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs
+                {
+                    Message = "The server has returned 'null'. You either don't have any data for this request or are using the wrong account to log into the app."
+                });
+            }
+
+            return isDataValid;
         }
 
         #endregion

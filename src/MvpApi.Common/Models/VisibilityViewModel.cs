@@ -7,24 +7,15 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    /// <summary>
-    /// The visibility.
-    /// </summary>
     public partial class VisibilityViewModel : BindableBase
     {
         private int? id;
         private string description;
         private string localizeKey;
 
-        /// <summary>
-        /// Initializes a new instance of the VisibilityViewModel class.
-        /// </summary>
         public VisibilityViewModel() { }
 
-        /// <summary>
-        /// Initializes a new instance of the VisibilityViewModel class.
-        /// </summary>
-        public VisibilityViewModel(int? id = default(int?), string description = default(string), string localizeKey = default(string))
+        public VisibilityViewModel(int? id, string description, string localizeKey)
         {
             Id = id;
             Description = description;

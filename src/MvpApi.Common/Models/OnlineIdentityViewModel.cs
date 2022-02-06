@@ -7,17 +7,14 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class OnlineIdentityViewModel
+    public class OnlineIdentityViewModel
     {
         /// <summary>
         /// Initializes a new instance of the OnlineIdentityViewModel class.
         /// </summary>
         public OnlineIdentityViewModel() { }
 
-        /// <summary>
-        /// Initializes a new instance of the OnlineIdentityViewModel class.
-        /// </summary>
-        public OnlineIdentityViewModel(SocialNetworkViewModel socialNetwork, string url, int? privateSiteId = default(int?), VisibilityViewModel onlineIdentityVisibility = default(VisibilityViewModel), bool? contributionCollected = default(bool?), string displayName = default(string), string userId = default(string), string microsoftAccount = default(string), bool? privacyConsentStatus = default(bool?), bool? privacyConsentCheckStatus = default(bool?), DateTime? privacyConsentCheckDate = default(DateTime?), DateTime? privacyConsentUnCheckDate = default(DateTime?), bool? submitted = default(bool?))
+        public OnlineIdentityViewModel(int? privateSiteId, SocialNetworkViewModel socialNetwork, string url, VisibilityViewModel onlineIdentityVisibility, bool? contributionCollected, string displayName, string userId, string microsoftAccount, bool? privacyConsentStatus, bool? privacyConsentCheckStatus, DateTimeOffset? privacyConsentCheckDate, DateTimeOffset? privacyConsentUnCheckDate, bool? submitted)
         {
             PrivateSiteId = privateSiteId;
             SocialNetwork = socialNetwork;
@@ -34,69 +31,63 @@ namespace MvpApi.Common.Models
             Submitted = submitted;
         }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "PrivateSiteId")]
-        public int? PrivateSiteId { get; set; }
+        [Newtonsoft.Json.JsonProperty(PropertyName = "PrivateSiteId")]
+		public System.Int32? PrivateSiteId { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "SocialNetwork")]
-        public SocialNetworkViewModel SocialNetwork { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "SocialNetwork")]
+		public SocialNetworkViewModel SocialNetwork { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Url")]
-        public string Url { get; set; }
+		/// <summary>
+		/// Max length: 490
+		/// Min length: 0
+		/// Pattern: ^((https?|ftp):\/\/)?(((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)+(\/(([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|\/|\?)*)?$
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Url")]
+		public string Url { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "OnlineIdentityVisibility")]
-        public VisibilityViewModel OnlineIdentityVisibility { get; set; }
+		/// <summary>
+		/// The visibility.
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "OnlineIdentityVisibility")]
+		public VisibilityViewModel OnlineIdentityVisibility { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "ContributionCollected")]
-        public bool? ContributionCollected { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "ContributionCollected")]
+		public System.Boolean? ContributionCollected { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "DisplayName")]
-        public string DisplayName { get; set; }
+		/// <summary>
+		/// Max length: 500
+		/// Min length: 0
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "DisplayName")]
+		public string DisplayName { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "UserId")]
-        public string UserId { get; set; }
+		/// <summary>
+		/// Max length: 500
+		/// Min length: 0
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "UserId")]
+		public string UserId { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "MicrosoftAccount")]
-        public string MicrosoftAccount { get; set; }
+		/// <summary>
+		/// Max length: 500
+		/// Min length: 0
+		/// </summary>
+		[Newtonsoft.Json.JsonProperty(PropertyName = "MicrosoftAccount")]
+		public string MicrosoftAccount { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "PrivacyConsentStatus")]
-        public bool? PrivacyConsentStatus { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "PrivacyConsentStatus")]
+		public System.Boolean? PrivacyConsentStatus { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "PrivacyConsentCheckStatus")]
-        public bool? PrivacyConsentCheckStatus { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "PrivacyConsentCheckStatus")]
+		public System.Boolean? PrivacyConsentCheckStatus { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "PrivacyConsentCheckDate")]
-        public DateTime? PrivacyConsentCheckDate { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "PrivacyConsentCheckDate")]
+		public System.DateTimeOffset? PrivacyConsentCheckDate { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "PrivacyConsentUnCheckDate")]
-        public DateTime? PrivacyConsentUnCheckDate { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "PrivacyConsentUnCheckDate")]
+		public System.DateTimeOffset? PrivacyConsentUnCheckDate { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Submitted")]
-        public bool? Submitted { get; set; }
-    }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Submitted")]
+		public System.Boolean? Submitted { get; set; }
+	}
 }

@@ -7,17 +7,14 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class SocialNetwork
+    public class SocialNetwork
     {
         /// <summary>
         /// Initializes a new instance of the SocialNetwork class.
         /// </summary>
         public SocialNetwork() { }
 
-        /// <summary>
-        /// Initializes a new instance of the SocialNetwork class.
-        /// </summary>
-        public SocialNetwork(Guid? socialNetworkId = default(Guid?), string name = default(string), string website = default(string), SocialNetworkStatusCode statusCode = default(SocialNetworkStatusCode), bool? systemCollectionEnabled = default(bool?))
+        public SocialNetwork(string socialNetworkId, string name, string website, SocialNetworkStatusCode statusCode, bool? systemCollectionEnabled)
         {
             SocialNetworkId = socialNetworkId;
             Name = name;
@@ -26,29 +23,19 @@ namespace MvpApi.Common.Models
             SystemCollectionEnabled = systemCollectionEnabled;
         }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "SocialNetworkId")]
-        public Guid? SocialNetworkId { get; set; }
+        [Newtonsoft.Json.JsonProperty(PropertyName = "SocialNetworkId")]
+		public string SocialNetworkId { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Name")]
-        public string Name { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Name")]
+		public string Name { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "Website")]
-        public string Website { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "Website")]
+		public string Website { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "StatusCode")]
-        public SocialNetworkStatusCode StatusCode { get; set; }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "StatusCode")]
+		public SocialNetworkStatusCode StatusCode { get; set; }
 
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "SystemCollectionEnabled")]
-        public bool? SystemCollectionEnabled { get; set; }
-    }
+		[Newtonsoft.Json.JsonProperty(PropertyName = "SystemCollectionEnabled")]
+		public System.Boolean? SystemCollectionEnabled { get; set; }
+	}
 }

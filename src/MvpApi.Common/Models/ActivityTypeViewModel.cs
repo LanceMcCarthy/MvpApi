@@ -10,7 +10,7 @@ namespace MvpApi.Common.Models
     /// <summary>
     /// The activity type.
     /// </summary>
-    public partial class ActivityTypeViewModel
+    public class ActivityTypeViewModel
     {
         /// <summary>
         /// Initializes a new instance of the ActivityTypeViewModel class.
@@ -20,7 +20,7 @@ namespace MvpApi.Common.Models
         /// <summary>
         /// Initializes a new instance of the ActivityTypeViewModel class.
         /// </summary>
-        public ActivityTypeViewModel(Guid? id = default(Guid?), string name = default(string), string englishName = default(string))
+        public ActivityTypeViewModel(string id = default, string name = default, string englishName = default)
         {
             Id = id;
             Name = name;
@@ -31,7 +31,7 @@ namespace MvpApi.Common.Models
         /// Gets or sets the id.
         /// </summary>
         [JsonProperty(PropertyName = "Id")]
-        public Guid? Id { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name.
