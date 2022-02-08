@@ -1305,16 +1305,31 @@ namespace MvpApi.Services.Apis
 
             try
             {
+                int totalCount = 0;
+
                 using (var response = await client.GetAsync($"contributions/0/0"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
+                        var firstJson = await response.Content.ReadAsStringAsync();
+
+                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(firstJson);
+
+                        // Read the total count
+                        totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
+
+                // Get all the contribution data
+                using (var response = await client.GetAsync($"contributions/{0}/{totalCount}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
                         json = await response.Content.ReadAsStringAsync();
-
-                        if (!IsDataValid(json))
-                            return null;
-
-
                     }
                     else
                     {
@@ -1347,22 +1362,31 @@ namespace MvpApi.Services.Apis
 
             try
             {
+                int totalCount = 0;
+
                 using (var response = await client.GetAsync($"contributions/current/0/0"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
-                        json = await response.Content.ReadAsStringAsync();
-
-                        if (!IsDataValid(json))
-                            return null;
-
-                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
+                        var firstJson = await response.Content.ReadAsStringAsync();
+                        
+                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(firstJson);
 
                         // Read the total count
-                        var totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+                        totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
 
-                        // Make a new request
-                        var allresults = await GetCurrentCycleContributionsAsync(0, totalCount, true);
+                // Get all the contribution data
+                using (var response = await client.GetAsync($"contributions/current/{0}/{totalCount}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        json = await response.Content.ReadAsStringAsync();
                     }
                     else
                     {
@@ -1395,22 +1419,31 @@ namespace MvpApi.Services.Apis
 
             try
             {
+                int totalCount = 0;
+
                 using (var response = await client.GetAsync($"contributions/historical/0/0"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
-                        json = await response.Content.ReadAsStringAsync();
+                        var firstJson = await response.Content.ReadAsStringAsync();
 
-                        if (!IsDataValid(json))
-                            return null;
-
-                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(json);
+                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(firstJson);
 
                         // Read the total count
-                        var totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+                        totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
+                    }
+                    else
+                    {
+                        await ProcessRefreshOrBadRequestAsync(response);
+                    }
+                }
 
-                        // Make a new request
-                        var allresults = await GetHistoricalContributionsAsync(0, totalCount, true);
+                // Get all the contribution data
+                using (var response = await client.GetAsync($"contributions/historical/{0}/{totalCount}"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        json = await response.Content.ReadAsStringAsync();
                     }
                     else
                     {
