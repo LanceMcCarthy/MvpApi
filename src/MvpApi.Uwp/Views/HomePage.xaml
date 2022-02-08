@@ -15,44 +15,6 @@
         <viewModels:HomeViewModel x:Name="ViewModel" />
     </Page.DataContext>
 
-    <Page.Resources>
-        <Style x:Key="SmallCellContentStyle"
-               TargetType="TextBlock">
-            <Setter Property="MaxWidth"
-                    Value="100" />
-            <Setter Property="TextTrimming"
-                    Value="CharacterEllipsis" />
-            <Setter Property="Margin"
-                    Value="5" />
-            <Setter Property="VerticalAlignment"
-                    Value="Center" />
-        </Style>
-
-        <Style x:Key="MediumCellContentStyle"
-               TargetType="TextBlock">
-            <Setter Property="MaxWidth"
-                    Value="250" />
-            <Setter Property="TextTrimming"
-                    Value="CharacterEllipsis" />
-            <Setter Property="Margin"
-                    Value="5" />
-            <Setter Property="VerticalAlignment"
-                    Value="Center" />
-        </Style>
-
-        <Style x:Key="WideCellContentStyle"
-               TargetType="TextBlock">
-            <Setter Property="MaxWidth"
-                    Value="400" />
-            <Setter Property="TextTrimming"
-                    Value="CharacterEllipsis" />
-            <Setter Property="Margin"
-                    Value="5" />
-            <Setter Property="VerticalAlignment"
-                    Value="Center" />
-        </Style>
-    </Page.Resources>
-
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -61,7 +23,6 @@
         </Grid.RowDefinitions>
 
         <Grid x:Name="HeaderGrid"
-              Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
 
             <TextBlock Text="Home"
@@ -69,9 +30,54 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
 
-            <Button HorizontalAlignment="Right"
-                    Background="Transparent"
-                    Margin="0,0,10,0">
+            <Button x:Name="AwardCycleButton"
+                    HorizontalAlignment="Left"
+                    Margin="8">
+                <Button.Content>
+                    <StackPanel Orientation="Horizontal">
+                        <SymbolIcon Symbol="Calendar"
+                                    Margin="5" />
+                        <TextBlock Text="Award Cycle:"
+                                   Margin="5,5,0,5" />
+                        <TextBlock Text="{Binding PreferredAwardDataDataCycle}"
+                                   FontWeight="SemiBold"
+                                   Margin="5" />
+                    </StackPanel>
+                </Button.Content>
+                <Button.Flyout>
+                    <Flyout x:Name="AwardCyclePreferenceFlyout">
+                        <StackPanel Margin="10,10,10,5"
+                                    MaxWidth="400">
+                            <ComboBox x:Name="AwardCycleComboBox"
+                                      ItemsSource="{Binding AwardDataCycles}"
+                                      SelectedItem="{Binding PreferredAwardDataDataCycle, Mode=TwoWay}"
+                                      IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBoolConverter}}"
+                                      Header="Selected Award Cycle Preference"
+                                      HorizontalAlignment="Stretch" />
+                            <TextBlock TextWrapping="WrapWholeWords"
+                                       Margin="0,10,0,0">
+                                <Run Text="Award cycle preference options:" />
+                                <LineBreak />
+                                <Run Text="- Current:"
+                                     FontWeight="Bold" />
+                                <Run Text="Show current cycle's contributions (fastest)." />
+                                <LineBreak />
+                                <Run Text="- Historical:"
+                                     FontWeight="Bold" />
+                                <Run Text="Show prior award cycle contributions." />
+                                <LineBreak />
+                                <Run Text="- All:"
+                                     FontWeight="Bold" />
+                                <Run Text="Shows everything you have, but can take a while to load." />
+                            </TextBlock>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+
+            <Button x:Name="GroupByButton"
+                    HorizontalAlignment="Right"
+                    Margin="8">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <SymbolIcon Symbol="ShowBcc"
@@ -81,7 +87,7 @@
                     </StackPanel>
                 </Button.Content>
                 <Button.Flyout>
-                    <Flyout>
+                    <Flyout x:Name="GroupingFlyout">
                         <StackPanel Margin="10,10,10,5">
                             <TextBlock Text="Grouping" />
                             <RadioButton Content="None"
@@ -218,5 +224,7 @@
                                      Grid.Row="1"
                                      Grid.RowSpan="2"
                                      Grid.Column="0" />
+
+        
     </Grid>
 </Page>

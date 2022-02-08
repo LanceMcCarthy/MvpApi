@@ -13,12 +13,13 @@ using MvpCompanion.UI.Common.Helpers;
 using Windows.Storage.Pickers;
 using Windows.Storage;
 using Windows.Storage.Provider;
+using MvpApi.Services.Models;
 
 namespace MvpApi.Uwp.ViewModels
 {
     public class SettingsViewModel : PageViewModelBase
     {
-        private string selectedExportType;
+        private string selectedExportType = AwardCycle.All;
 
         public SettingsViewModel()
         {
@@ -26,15 +27,13 @@ namespace MvpApi.Uwp.ViewModels
             {
                 UseBetaEditor = true;
             }
-
-            SelectedExportType = ContributionExportTypes[0];
-
+            
             ExportContributionsCommand = new DelegateCommand(async () => await ExportContributionsAsync());
 
             ExportOnlineIdentitiesCommand = new DelegateCommand(async () => await ExportOnlineIdentitiesAsync());
         }
 
-        public List<string> ContributionExportTypes => new List<string> { "All", "Current Cycle", "Historical" };
+        public List<string> ContributionExportTypes => new List<string> { AwardCycle.All, AwardCycle.Current, AwardCycle.Historical };
 
         public string SelectedExportType 
         { 
@@ -75,13 +74,13 @@ namespace MvpApi.Uwp.ViewModels
 
                 switch (SelectedExportType)
                 {
-                    case "Current Cycle":
+                    case AwardCycle.Current:
                         json = await App.ApiService.ExportCurrentContributionsAsync();
                         break;
-                    case "Historical":
+                    case AwardCycle.Historical:
                         json = await App.ApiService.ExportHistoricalContributionsAsync();
                         break;
-                    case "All":
+                    case AwardCycle.All:
                     default:
                         json = await App.ApiService.ExportAllContributionsAsync();
                         break;
@@ -134,7 +133,7 @@ namespace MvpApi.Uwp.ViewModels
         {
             string resultMessage = "";
 
-            var md = new MessageDialog("Where do you want to export the data to?", "Select Desintation");
+            var md = new MessageDialog("Where do you want to export the data to?", "Select Destination");
 
             md.Commands.Add(new UICommand("Cancel"));
 
@@ -171,7 +170,12 @@ namespace MvpApi.Uwp.ViewModels
 
                     if (status == FileUpdateStatus.Complete)
                     {
-                        resultMessage = $"{file.Name} was successfully saved.";
+                        resultMessage = $"{file.Name} was successfully saved.\r\n\n" +
+                                        "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n" +
+                                        "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
+                                        "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
+                                        "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
+                                        "4. Now you can us 'Save As' to xlsx file or csv.";
                     }
                 }
             }));
