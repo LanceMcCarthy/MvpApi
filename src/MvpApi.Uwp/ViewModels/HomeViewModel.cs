@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
+using MvpApi.Common.Interfaces;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
@@ -32,28 +33,17 @@ namespace MvpApi.Uwp.ViewModels
     {
         #region Fields
 
+        private ObservableCollection<ContributionsModel> _contributions;
         private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
         private bool _isMultipleSelectionEnabled;
-        private ObservableCollection<ContributionsModel> _contributions;
         private bool _areAppBarButtonsEnabled;
         private bool _isInternetDisabled;
+        private string _preferredAwardDataCycle;
 
         #endregion
 
         public HomeViewModel()
         {
-            if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
-            {
-                var designItems = DesignTimeHelpers.GenerateContributions();
-
-                Contributions = new ObservableCollection<ContributionsModel>();
-
-                foreach (var contribution in designItems)
-                {
-                    Contributions.Add(contribution);
-                }
-            }
-
             RefreshAfterDisconnectCommand = new DelegateCommand(async () =>
             {
                 IsInternetDisabled = !NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable;
@@ -67,6 +57,20 @@ namespace MvpApi.Uwp.ViewModels
 
                 }
             });
+
+            if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
+            {
+                var designItems = DesignTimeHelpers.GenerateContributions();
+
+                Contributions = new ObservableCollection<ContributionsModel>();
+
+                foreach (var contribution in designItems)
+                {
+                    Contributions.Add(contribution);
+                }
+
+                PreferredAwardDataDataCycle = AwardDataCycles[0];
+            }
         }
 
         #region Properties
@@ -113,6 +117,48 @@ namespace MvpApi.Uwp.ViewModels
             get => _isInternetDisabled;
             set => Set(ref _isInternetDisabled, value);
         }
+
+        public List<string> AwardDataCycles => new List<string> { "All", "Current", "Historical" };
+
+        public string PreferredAwardDataDataCycle
+        {
+            get
+            {
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(PreferredAwardDataDataCycle), out var rawValue))
+                {
+                    _preferredAwardDataCycle = (string)rawValue;
+                }
+                else
+                {
+                    _preferredAwardDataCycle = "Current";
+                    ApplicationData.Current.LocalSettings.Values[nameof(PreferredAwardDataDataCycle)] = _preferredAwardDataCycle;
+                }
+
+                return _preferredAwardDataCycle;
+            }
+            set
+            {
+                Debug.WriteLine($"PreferredAwardDataDataCycle SET: Before ${_preferredAwardDataCycle}");
+
+                if (_preferredAwardDataCycle == value)
+                    return;
+
+                _preferredAwardDataCycle = value;
+
+                ApplicationData.Current.LocalSettings.Values[nameof(PreferredAwardDataDataCycle)] = _preferredAwardDataCycle;
+
+                RaisePropertyChanged(nameof(PreferredAwardDataDataCycle));
+
+                FlyoutView?.CloseFlyout();
+                
+                TaskUtilities.RunOnDispatcherThreadSync(async () =>
+                {
+                    await LoadContributionsAsync();
+                });
+            }
+        }
+
+        public IFlyoutView FlyoutView { get; set; }
 
         #endregion
 
@@ -242,7 +288,7 @@ namespace MvpApi.Uwp.ViewModels
                     break;
             }
         }
-
+        
         public async void ExportButton_OnClick(object sender, RoutedEventArgs e)
         {
             IsBusy = true;
@@ -339,15 +385,28 @@ namespace MvpApi.Uwp.ViewModels
             try
             {
                 IsBusy = true;
-                IsBusyMessage = "loading current award cycle's contributions...";
+                IsBusyMessage = $"Fetching {PreferredAwardDataDataCycle} award cycle contributions...";
+                
+                ContributionViewModel result;
+
+                switch (PreferredAwardDataDataCycle)
+                {
+                    case "All":
+                        // Get the entire list of contributions for the user (current and historical)
+                        result = await App.ApiService.GetAllContributionsAsync();
+                        break;
+                    case "Historical":
+                        // Get only the historical contributions from previous cycles
+                        result = await App.ApiService.GetAllHistoricalContributionsAsync();
+                        break;
+                    case "Current":
+                    default:
+                        // Get only the current cycle's contributions
+                        result = await App.ApiService.GetAllCurrentCycleContributionsAsync();
+                        break;
+                }
 
                 Contributions = new ObservableCollection<ContributionsModel>();
-
-                // Get all the contributions for the currently signed in MVP.
-                //var result = await App.ApiService.GetAllContributionsAsync();
-
-                // Get only the current cycle's contributions
-                var result = await App.ApiService.GetAllCurrentCycleContributionsAsync();
 
                 foreach (var cont in result.Contributions)
                 {

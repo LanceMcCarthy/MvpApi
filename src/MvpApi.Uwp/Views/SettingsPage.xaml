@@ -348,67 +348,109 @@
                                       HeaderStyle="{StaticResource MyHeaderToggleButtonStyle}"
                                       HorizontalContentAlignment="Stretch">
                 <toolkitControls:Expander.Header>
-                    <TextBlock Text="Data Export"
+                    <TextBlock Text="Data"
                                Style="{ThemeResource SubtitleTextBlockStyle}" />
                 </toolkitControls:Expander.Header>
 
-                <StackPanel Margin="20">
-                    <TextBlock Text="The following options can be used to export your contribution activities, types or areas data to help diagnose problems with the app (or if you're just a data nerd 🤓)."
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,15">
-                        <animations:Implicit.ShowAnimations>
-                            <animations:ScaleAnimation From="0.8"
-                                                       To="1.0"
-                                                       Duration="0:0:0.4" />
-                            <animations:OpacityAnimation From="0.0"
-                                                         To="1.0"
-                                                         Duration="0:0:0.4" />
-                        </animations:Implicit.ShowAnimations>
-                        <animations:Implicit.HideAnimations>
-                            <animations:ScaleAnimation From="1"
-                                                       To="0.8"
-                                                       Duration="0:0:0.6" />
-                            <animations:OpacityAnimation From="1"
-                                                         To="0"
-                                                         Duration="0:0:0.6" />
-                        </animations:Implicit.HideAnimations>
-                    </TextBlock>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-                    <Border BorderThickness="2" 
-                            BorderBrush="{ThemeResource SystemAccentColor}"
-                            HorizontalAlignment="Left"
-                            Margin="0,0,0,10"
-                            MinWidth="250">
-                        <StackPanel Margin="10">
+                    <StackPanel Margin="20">
+                        <TextBlock Text="Export" 
+                                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
+
+                        <TextBlock Text="The following options can be used to export your contribution activities, types or areas data to help diagnose problems with the app (or if you're just a data nerd 🤓)."
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,15">
+                            <animations:Implicit.ShowAnimations>
+                                <animations:ScaleAnimation From="0.8"
+                                                           To="1.0"
+                                                           Duration="0:0:0.4" />
+                                <animations:OpacityAnimation From="0.0"
+                                                             To="1.0"
+                                                             Duration="0:0:0.4" />
+                            </animations:Implicit.ShowAnimations>
+                            <animations:Implicit.HideAnimations>
+                                <animations:ScaleAnimation From="1"
+                                                           To="0.8"
+                                                           Duration="0:0:0.6" />
+                                <animations:OpacityAnimation From="1"
+                                                             To="0"
+                                                             Duration="0:0:0.6" />
+                            </animations:Implicit.HideAnimations>
+                        </TextBlock>
+
+                        <StackPanel Orientation="Horizontal">
                             <ComboBox ItemsSource="{Binding ContributionExportTypes}"
                                       SelectedItem="{Binding SelectedExportType, Mode=TwoWay}"
-                                      Header="Community Activities Data"
-                                      HorizontalAlignment="Stretch"/>
+                                      Header="Select Contributions Award cycle" />
 
-                            <Button Content="Export"
+                            <Button Content="Export Contributions"
                                     Command="{Binding ExportContributionsCommand}"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="0,10,0,0" />
+                                    VerticalAlignment="Bottom"
+                                    Margin="10,0,0,0" />
+
                         </StackPanel>
-                    </Border>
 
-                    <Border BorderThickness="2"
-                            BorderBrush="{ThemeResource SystemAccentColor}"
-                            HorizontalAlignment="Left"
-                            Margin="0,0,0,10"
-                            MinWidth="250">
-                        <StackPanel Margin="10">
 
-                            <TextBlock Text="Online Identities Data" />
+                        <TextBlock Text="Online Identities"
+                                   FontWeight="SemiBold"
+                                   Margin="0,40,0,0" />
 
-                            <Button Content="Export"
-                                    Command="{Binding ExportOnlineIdentitiesCommand}"
-                                    HorizontalAlignment="Stretch"
-                                    Margin="0,10,0,0" />
-                        </StackPanel>
-                    </Border>
+                        <TextBlock Text="Export data of your MVP profile's online identities list."
+                                   Margin="0,10,0,0" />
 
-                </StackPanel>
+
+                        <Button Content="Export Online Identities"
+                                Command="{Binding ExportOnlineIdentitiesCommand}"
+                                Margin="0,10,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Margin="20"
+                                Grid.Column="1">
+                        <TextBlock Text="Import"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}" />
+                        <TextBlock Text="The following import options can be used to test your JSON data and validate the deserialization logic against that data."
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,0">
+                            <animations:Implicit.ShowAnimations>
+                                <animations:ScaleAnimation From="0.8"
+                                                           To="1.0"
+                                                           Duration="0:0:0.4" />
+                                <animations:OpacityAnimation From="0.0"
+                                                             To="1.0"
+                                                             Duration="0:0:0.4" />
+                            </animations:Implicit.ShowAnimations>
+                            <animations:Implicit.HideAnimations>
+                                <animations:ScaleAnimation From="1"
+                                                           To="0.8"
+                                                           Duration="0:0:0.6" />
+                                <animations:OpacityAnimation From="1"
+                                                             To="0"
+                                                             Duration="0:0:0.6" />
+                            </animations:Implicit.HideAnimations>
+                        </TextBlock>
+                        <Border BorderThickness="0"
+                                BorderBrush="{ThemeResource SystemControlHighlightAccentBrush}"
+                                HorizontalAlignment="Left"
+                                Margin="0,0,0,10">
+                            <StackPanel Margin="0,20,0,0">
+                                <TextBlock Text="Contributions Deserialization Test" 
+                                           FontWeight="SemiBold"/>
+
+                                <TextBlock Text="Select one of the json data files that you have exported. This will test the deserialization logic and help identify issues." />
+
+                                <Button Content="Select Data File"
+                                        Command="{Binding ImportContributionsTestCommand}"
+                                        Margin="0,10,0,0" />
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Grid>
             </toolkitControls:Expander>
 
             <toolkitControls:Expander IsExpanded="False"
@@ -446,7 +488,7 @@
 
                     <ToggleSwitch IsOn="{Binding UseBetaEditor, Mode=TwoWay}"
                                   Header="Use Experimental Editor"
-                                  VerticalAlignment="Center"/>
+                                  VerticalAlignment="Center" />
                 </StackPanel>
             </toolkitControls:Expander>
 
@@ -485,7 +527,7 @@
 
                     <input:RadDatePicker Header="Submissions Start Override"
                                          Value="{Binding SubmissionStartDate, Mode=TwoWay}"
-                                         HorizontalAlignment="Left"/>
+                                         HorizontalAlignment="Left" />
 
                     <TextBlock Text="Changing this value will temporarily override the deadline date for uploading activities (this does not guarantee that the API will accept it)."
                                Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
@@ -512,7 +554,7 @@
 
                     <input:RadDatePicker Header="Submissions Deadline Override"
                                          Value="{Binding SubmissionDeadline, Mode=TwoWay}"
-                                         HorizontalAlignment="Left"/>
+                                         HorizontalAlignment="Left" />
                 </StackPanel>
             </toolkitControls:Expander>
         </StackPanel>
@@ -520,8 +562,8 @@
         <primitives:RadBusyIndicator IsActive="{x:Bind ViewModel.IsBusy, Mode=OneWay}"
                                      Visibility="{Binding IsBusy}"
                                      Content="{x:Bind ViewModel.IsBusyMessage, Mode=OneWay}"
-                                     Style="{StaticResource PageBusyIndicatorStyle}" 
+                                     Style="{StaticResource PageBusyIndicatorStyle}"
                                      Grid.Row="0"
-                                     Grid.RowSpan="3"/>
+                                     Grid.RowSpan="3" />
     </Grid>
 </Page>
