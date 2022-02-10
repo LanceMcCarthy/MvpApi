@@ -1,9 +1,10 @@
-﻿using Windows.UI.Xaml.Controls;
+﻿using System.Linq;
+using Windows.UI.Xaml.Controls;
 using MvpApi.Common.Interfaces;
 
 namespace MvpApi.Uwp.Views
 {
-    public sealed partial class HomePage : Page, IFlyoutView
+    public sealed partial class HomePage : Page, IFlyoutView, IScrollableView
     {
         public HomePage()
         {
@@ -14,6 +15,7 @@ namespace MvpApi.Uwp.Views
             ViewModel.GroupDescriptors = ContributionsGrid.GroupDescriptors;
 
             ViewModel.FlyoutView = this;
+            ViewModel.ScrollableView = this;
         }
 
         public void CloseFlyout()
@@ -23,6 +25,36 @@ namespace MvpApi.Uwp.Views
             
             if (GroupingFlyout.IsOpen)
                 GroupingFlyout.Hide();
+        }
+
+        public void ScrollToTop()
+        {
+            var firstItem = ContributionsGrid.GetDataView().Items.FirstOrDefault();
+
+            if (firstItem != null)
+            {
+                ContributionsGrid.ScrollItemIntoView(firstItem);
+            }
+        }
+
+        public void ScrollTo(object item)
+        {
+            ContributionsGrid.ScrollItemIntoView(item);
+        }
+
+        public void ScrollTo(int index)
+        {
+            ContributionsGrid.ScrollIndexIntoView(index);
+        }
+
+        public void ScrollToEnd()
+        {
+            var lastItem = ContributionsGrid.GetDataView().Items.LastOrDefault();
+
+            if (lastItem != null)
+            {
+                ContributionsGrid.ScrollItemIntoView(lastItem);
+            }
         }
     }
 }

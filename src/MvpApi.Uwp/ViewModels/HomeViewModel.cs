@@ -22,6 +22,7 @@ using MvpApi.Uwp.Common;
 using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.Views;
 using MvpCompanion.UI.Common.Helpers;
+using Telerik.Core.Data;
 using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
 using Template10.Common;
@@ -33,12 +34,17 @@ namespace MvpApi.Uwp.ViewModels
     {
         #region Fields
 
-        private ObservableCollection<ContributionsModel> _contributions;
+        private IncrementalLoadingCollection<ContributionsModel> _contributions;
         private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
         private bool _isMultipleSelectionEnabled;
         private bool _areAppBarButtonsEnabled;
         private bool _isInternetDisabled;
+        private bool _isLoadingMoreItems;
+        private string _loadingMoreItemsMessage;
         private string _preferredAwardDataCycle;
+
+        private int? _currentOffset = 0;
+        private string _displayTotal = "0 Items";
 
         #endregion
 
@@ -62,7 +68,7 @@ namespace MvpApi.Uwp.ViewModels
             {
                 var designItems = DesignTimeHelpers.GenerateContributions();
 
-                Contributions = new ObservableCollection<ContributionsModel>();
+                Contributions = new IncrementalLoadingCollection<ContributionsModel>(null);
 
                 foreach (var contribution in designItems)
                 {
@@ -74,8 +80,8 @@ namespace MvpApi.Uwp.ViewModels
         }
 
         #region Properties
-
-        public ObservableCollection<ContributionsModel> Contributions
+        
+        public IncrementalLoadingCollection<ContributionsModel> Contributions
         {
             get => _contributions;
             set => Set(ref _contributions, value);
@@ -118,6 +124,24 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _isInternetDisabled, value);
         }
 
+        public bool IsLoadingMoreItems
+        {
+            get => _isLoadingMoreItems;
+            set => Set(ref _isLoadingMoreItems, value);
+        }
+
+        public string LoadingMoreItemsMessage
+        {
+            get => _loadingMoreItemsMessage;
+            set => Set(ref _loadingMoreItemsMessage, value);
+        }
+
+        public string DisplayTotal
+        {
+            get => _displayTotal;
+            set => Set(ref _displayTotal, value);
+        }
+
         public List<string> AwardDataCycles => new List<string> { "All", "Current", "Historical" };
 
         public string PreferredAwardDataDataCycle
@@ -150,15 +174,14 @@ namespace MvpApi.Uwp.ViewModels
                 RaisePropertyChanged(nameof(PreferredAwardDataDataCycle));
 
                 FlyoutView?.CloseFlyout();
-                
-                TaskUtilities.RunOnDispatcherThreadSync(async () =>
-                {
-                    await LoadContributionsAsync();
-                });
+
+                Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
             }
         }
 
         public IFlyoutView FlyoutView { get; set; }
+
+        public IScrollableView ScrollableView { get; set; }
 
         #endregion
 
@@ -189,12 +212,12 @@ namespace MvpApi.Uwp.ViewModels
                 SelectedContributions.Clear();
         }
 
-        public async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        public void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedContributions.Any())
                 SelectedContributions.Clear();
-
-            await LoadContributionsAsync();
+            
+            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
         }
 
         public async void DeleteSelectionButton_Click(object sender, RoutedEventArgs e)
@@ -203,9 +226,17 @@ namespace MvpApi.Uwp.ViewModels
             {
                 IsBusy = true;
                 IsBusyMessage = "preparing to delete contributions...";
+                
+                int? indexToReturnTo = null;
 
                 foreach (ContributionsModel contribution in SelectedContributions)
                 {
+                    // Try to grab an index in the overall list so that we can scroll back to it after deletion
+                    if (indexToReturnTo == null)
+                    {
+                        indexToReturnTo = Contributions.IndexOf(contribution);
+                    }
+
                     IsBusyMessage = $"deleting {contribution.Title}...";
 
                     var success = await App.ApiService.DeleteContributionAsync(contribution);
@@ -214,12 +245,16 @@ namespace MvpApi.Uwp.ViewModels
                     if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
                         StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
                 }
-
+                
                 SelectedContributions.Clear();
 
                 // After deleting contributions, we need to fetch updated list
                 IsBusyMessage = "refreshing contributions...";
-                await LoadContributionsAsync();
+                
+                // TODO - IMPORTANT: decide if we need a full refresh or if this custom refresh with scrolling position works
+                await RefreshAndReturnToPositionAsync(Convert.ToUInt32(indexToReturnTo));
+                // or start them at the beginning because we cant programmatically get the right number of items in one fetch
+                //Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
             }
             catch (Exception ex)
             {
@@ -341,88 +376,126 @@ namespace MvpApi.Uwp.ViewModels
 
         #region Methods
 
-        //private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
-        //{
-        //    try
-        //    {
-        //        // Here we use a different flag when the view model is busy loading items because we don't want to cover the UI
-        //        // The IsBusy flag is used for when deleting items, when we want to block the UI
-        //        IsLoadingMoreItems = true;
-
-        //        var result = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
-
-        //        Debug.WriteLine($"** LoadMoreItems **\nPagingIndex: {result.PagingIndex}, Count: {result.Contributions.Count}, TotalContributions: {result.TotalContributions}");
-
-        //        _currentOffset = result.PagingIndex;
-
-        //        DisplayTotal = $"{_currentOffset} of {result.TotalContributions}";
-
-        //        // If we've received all the contributions, return null to stop automatic loading
-        //        if (result.PagingIndex == result.TotalContributions)
-        //            return null;
-
-        //        return result.Contributions;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Only log this exception after the user is logged in
-        //        if (App.ShellPage?.DataContext is ShellPageViewModel shellVm && shellVm.IsLoggedIn)
-        //        {
-        //            await ex.LogExceptionAsync();
-        //            Debug.WriteLine($"LoadMoreItems Exception: {ex}");
-        //        }
-
-        //        return null;
-        //    }
-        //    finally
-        //    {
-        //        IsLoadingMoreItems = false;
-        //    }
-        //}
-
-        private async Task LoadContributionsAsync()
+        private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
         {
             try
             {
-                IsBusy = true;
-                IsBusyMessage = $"Fetching {PreferredAwardDataDataCycle} award cycle contributions...";
+                // Here we use a different flag when the view model is busy loading items because we don't want to cover the UI
+                // The IsBusy flag is used for when deleting items, when we want to block the UI
+                IsLoadingMoreItems = true;
+                LoadingMoreItemsMessage = $"fetching the next {count} items...";
+
+                if (_currentOffset == null)
+                {
+                    _currentOffset = 0;
+                }
                 
-                ContributionViewModel result;
+                ContributionViewModel fetchResult;
 
                 switch (PreferredAwardDataDataCycle)
                 {
                     case "All":
-                        // Get the entire list of contributions for the user (current and historical)
-                        result = await App.ApiService.GetAllContributionsAsync();
+                        fetchResult = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
                         break;
                     case "Historical":
-                        // Get only the historical contributions from previous cycles
-                        result = await App.ApiService.GetAllHistoricalContributionsAsync();
+                        fetchResult = await App.ApiService.GetHistoricalContributionsAsync(_currentOffset, (int)count);
                         break;
                     case "Current":
                     default:
-                        // Get only the current cycle's contributions
-                        result = await App.ApiService.GetAllCurrentCycleContributionsAsync();
+                        fetchResult = await App.ApiService.GetCurrentCycleContributionsAsync(_currentOffset, (int)count);
                         break;
                 }
+                
+                Debug.WriteLine($"** LoadMoreItems **\nPagingIndex: {fetchResult.PagingIndex}, Count: {fetchResult.Contributions.Count}, TotalContributions: {fetchResult.TotalContributions}");
 
-                Contributions = new ObservableCollection<ContributionsModel>();
+                // Current offset is the number of items we've already fetched
+                _currentOffset = fetchResult.PagingIndex;
 
-                foreach (var cont in result.Contributions)
+                DisplayTotal = $"{fetchResult.PagingIndex} of {fetchResult.TotalContributions} items";
+
+                // If we've received all the contributions, return null to stop automatic loading because we've retrived all the available items
+                if (fetchResult.PagingIndex + fetchResult.Contributions.Count == fetchResult.TotalContributions)
                 {
-                    Contributions.Add(cont);
+                    return null;
                 }
+
+                return fetchResult.Contributions;
             }
             catch (Exception ex)
             {
-                await ex.LogExceptionWithUserMessage();
+                // Only log this exception after the user is logged in, unauthorized users will get an error.
+                if (ShellPage.Instance.DataContext is ShellViewModel shellVm && shellVm.IsLoggedIn)
+                {
+                    await ex.LogExceptionAsync();
+                    Debug.WriteLine($"LoadMoreItems Exception: {ex}");
+                }
+
+                return null;
             }
             finally
             {
-                IsBusyMessage = "";
-                IsBusy = false;
+                IsLoadingMoreItems = false;
+                LoadingMoreItemsMessage = "";
             }
         }
+
+        private async Task RefreshAndReturnToPositionAsync(uint rowIndexToReturnTo)
+        {
+            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
+
+            if (Contributions.Count < rowIndexToReturnTo)
+            {
+                await Contributions.LoadMoreItemsAsync(rowIndexToReturnTo);
+            }
+            
+            ScrollableView.ScrollTo(rowIndexToReturnTo);
+        }
+
+        //private async Task LoadContributionsAsync()
+        //{
+        //    try
+        //    {
+        //        IsBusy = true;
+        //        IsBusyMessage = $"Fetching {PreferredAwardDataDataCycle} award cycle contributions...";
+                
+        //        ContributionViewModel result;
+
+        //        switch (PreferredAwardDataDataCycle)
+        //        {
+        //            case "All":
+        //                // Get the entire list of contributions for the user (current and historical)
+        //                //result = await App.ApiService.GetAllContributionsAsync();
+
+        //                result = await App.ApiService.GetAllContributionsAsync();
+        //                break;
+        //            case "Historical":
+        //                // Get only the historical contributions from previous cycles
+        //                result = await App.ApiService.GetAllHistoricalContributionsAsync();
+        //                break;
+        //            case "Current":
+        //            default:
+        //                // Get only the current cycle's contributions
+        //                result = await App.ApiService.GetAllCurrentCycleContributionsAsync();
+        //                break;
+        //        }
+
+        //        Contributions = new ObservableCollection<ContributionsModel>();
+
+        //        foreach (var cont in result.Contributions)
+        //        {
+        //            Contributions.Add(cont);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await ex.LogExceptionWithUserMessage();
+        //    }
+        //    finally
+        //    {
+        //        IsBusyMessage = "";
+        //        IsBusy = false;
+        //    }
+        //}
 
         #endregion
 
@@ -449,7 +522,7 @@ namespace MvpApi.Uwp.ViewModels
                 // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
                 if (shellVm.IsLoggedIn)
                 {
-                    await LoadContributionsAsync();
+                    Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
                 }
 
                 if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
