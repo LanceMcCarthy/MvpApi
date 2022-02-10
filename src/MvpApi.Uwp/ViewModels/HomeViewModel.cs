@@ -40,9 +40,11 @@ namespace MvpApi.Uwp.ViewModels
         private bool _areAppBarButtonsEnabled;
         private bool _isInternetDisabled;
         private bool _isLoadingMoreItems;
+        private string _loadingMoreItemsMessage;
         private string _preferredAwardDataCycle;
 
         private int? _currentOffset = 0;
+        private string _displayTotal = "0 Items";
 
         #endregion
 
@@ -128,7 +130,12 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _isLoadingMoreItems, value);
         }
 
-        private string _displayTotal;
+        public string LoadingMoreItemsMessage
+        {
+            get => _loadingMoreItemsMessage;
+            set => Set(ref _loadingMoreItemsMessage, value);
+        }
+
         public string DisplayTotal
         {
             get => _displayTotal;
@@ -243,8 +250,7 @@ namespace MvpApi.Uwp.ViewModels
 
                 // After deleting contributions, we need to fetch updated list
                 IsBusyMessage = "refreshing contributions...";
-
-
+                
                 // TODO - IMPORTANT: decide if we need a full refresh or if this custom refresh with scrolling position works
                 await RefreshAndReturnToPositionAsync(Convert.ToUInt32(indexToReturnTo));
                 // or start them at the beginning because we cant programmatically get the right number of items in one fetch
@@ -377,6 +383,7 @@ namespace MvpApi.Uwp.ViewModels
                 // Here we use a different flag when the view model is busy loading items because we don't want to cover the UI
                 // The IsBusy flag is used for when deleting items, when we want to block the UI
                 IsLoadingMoreItems = true;
+                LoadingMoreItemsMessage = $"fetching the next {count} items...";
 
                 if (_currentOffset == null)
                 {
@@ -404,7 +411,7 @@ namespace MvpApi.Uwp.ViewModels
                 // Current offset is the number of items we've already fetched
                 _currentOffset = fetchResult.PagingIndex;
 
-                DisplayTotal = $"{fetchResult.PagingIndex} of {fetchResult.TotalContributions}";
+                DisplayTotal = $"{fetchResult.PagingIndex} of {fetchResult.TotalContributions} items";
 
                 // If we've received all the contributions, return null to stop automatic loading because we've retrived all the available items
                 if (fetchResult.PagingIndex + fetchResult.Contributions.Count == fetchResult.TotalContributions)
@@ -416,7 +423,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
-                // Only log this exception after the user is logged in
+                // Only log this exception after the user is logged in, unauthorized users will get an error.
                 if (ShellPage.Instance.DataContext is ShellViewModel shellVm && shellVm.IsLoggedIn)
                 {
                     await ex.LogExceptionAsync();
@@ -428,6 +435,7 @@ namespace MvpApi.Uwp.ViewModels
             finally
             {
                 IsLoadingMoreItems = false;
+                LoadingMoreItemsMessage = "";
             }
         }
 

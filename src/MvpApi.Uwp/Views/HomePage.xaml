@@ -172,16 +172,24 @@
                 <grid:DataGridTextColumn PropertyName="Description"
                                          Header="Description"
                                          CellContentStyle="{StaticResource MediumCellContentStyle}" />
-                <grid:DataGridNumericalColumn PropertyName="AnnualQuantity"
+                <!--<grid:DataGridNumericalColumn PropertyName="AnnualQuantity"
                                               Header="Annual Quantity" />
                 <grid:DataGridNumericalColumn PropertyName="AnnualReach"
-                                              Header="Annual Reach" />
+                                              Header="Annual Reach" />-->
                 <grid:DataGridTextColumn PropertyName="ReferenceUrl"
                                          Width="100"
                                          Header="Url"
                                          CellContentStyle="{StaticResource MediumCellContentStyle}" />
             </grid:RadDataGrid.Columns>
         </grid:RadDataGrid>
+
+        <primitives:RadBusyIndicator Content="{x:Bind ViewModel.LoadingMoreItemsMessage, Mode=OneWay}"
+                                     IsActive="{x:Bind ViewModel.IsLoadingMoreItems, Mode=OneWay}"
+                                     Visibility="{x:Bind ViewModel.IsLoadingMoreItems, Mode=OneWay}"
+                                     AnimationStyle="AnimationStyle3"
+                                     VerticalAlignment="Bottom"
+                                     Grid.Row="1"
+                                     Grid.Column="0" />
 
         <Button Content="Refresh Data (after internet connection is established)"
                 VerticalAlignment="Center"
@@ -192,6 +200,11 @@
 
         <CommandBar Grid.Row="2"
                     Background="{ThemeResource AppBarBackgroundThemeBrush}">
+            <CommandBar.Content>
+                <TextBlock Text="{Binding DisplayTotal}"
+                           Margin="15,15,0,0"
+                           Style="{ThemeResource CaptionTextBlockStyle}"/>
+            </CommandBar.Content>
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export All Contributions"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
