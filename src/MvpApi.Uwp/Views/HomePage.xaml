@@ -112,6 +112,7 @@
         <grid:RadDataGrid x:Name="ContributionsGrid"
                           ItemsSource="{Binding Contributions}"
                           SelectionMode="{Binding GridSelectionMode}"
+                          IncrementalLoadingMode="Auto"
                           AutoGenerateColumns="False"
                           CanUserChooseColumns="False"
                           UserGroupMode="Disabled"
