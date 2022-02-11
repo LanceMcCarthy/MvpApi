@@ -27,6 +27,7 @@ using Telerik.Data.Core;
 using Telerik.UI.Xaml.Controls.Grid;
 using Template10.Common;
 using Template10.Mvvm;
+using MvpApi.Common.Extensions;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -93,24 +94,24 @@ namespace MvpApi.Uwp.ViewModels
 
         public DelegateCommand RefreshAfterDisconnectCommand { get; }
 
-        public bool IsMultipleSelectionEnabled
-        {
-            get => _isMultipleSelectionEnabled;
-            set
-            {
-                Set(ref _isMultipleSelectionEnabled, value);
+        //public bool IsMultipleSelectionEnabled
+        //{
+        //    get => _isMultipleSelectionEnabled;
+        //    set
+        //    {
+        //        Set(ref _isMultipleSelectionEnabled, value);
 
-                GridSelectionMode = value
-                    ? DataGridSelectionMode.Multiple
-                    : DataGridSelectionMode.Single;
-            }
-        }
+        //        GridSelectionMode = value
+        //            ? DataGridSelectionMode.Multiple
+        //            : DataGridSelectionMode.Single;
+        //    }
+        //}
 
-        public DataGridSelectionMode GridSelectionMode
-        {
-            get => _gridSelectionMode;
-            set => Set(ref _gridSelectionMode, value);
-        }
+        //public DataGridSelectionMode GridSelectionMode
+        //{
+        //    get => _gridSelectionMode;
+        //    set => Set(ref _gridSelectionMode, value);
+        //}
 
         public bool AreAppBarButtonsEnabled
         {
@@ -141,7 +142,14 @@ namespace MvpApi.Uwp.ViewModels
             get => _displayTotal;
             set => Set(ref _displayTotal, value);
         }
-        
+
+        private bool _skipAutomaticRefresh;
+        public bool SkipAutomaticRefresh
+        {
+            get => _skipAutomaticRefresh;
+            set => Set(ref _skipAutomaticRefresh, value);
+        }
+
         public List<string> AwardDataCycles => new List<string> { "All", "Current", "Historical" };
 
         public string PreferredAwardDataDataCycle
@@ -182,6 +190,8 @@ namespace MvpApi.Uwp.ViewModels
         public IFlyoutView FlyoutView { get; set; }
 
         public IScrollableView ScrollableView { get; set; }
+
+        public IExpandableItemView ExpandableItemView { get; set; }
 
         #endregion
 
@@ -297,41 +307,41 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        public async void RadDataGrid_OnSelectionChanged(object sender, DataGridSelectionChangedEventArgs e)
-        {
-            // When in multiple selection mode, enable/disable delete instead of navigating to details page
-            if (GridSelectionMode == DataGridSelectionMode.Multiple)
-            {
-                AreAppBarButtonsEnabled = e?.AddedItems.Any() == true;
-                return;
-            }
+        //public async void RadDataGrid_OnSelectionChanged(object sender, DataGridSelectionChangedEventArgs e)
+        //{
+        //    // When in multiple selection mode, enable/disable delete instead of navigating to details page
+        //    if (GridSelectionMode == DataGridSelectionMode.Multiple)
+        //    {
+        //        AreAppBarButtonsEnabled = e?.AddedItems.Any() == true;
+        //        return;
+        //    }
 
-            // When in single selection mode, go to the selected item's details page
-            if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
-            {
-                if (contribution.IsEditable == false)
-                {
-                    await new MessageDialog("This contribution is marked as non-editable by Microsoft. If you feel this is an error, contact your CPM.", "Readonly Contribution").ShowAsync();
-                    return;
-                }
+        //    // When in single selection mode, go to the selected item's details page
+        //    if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
+        //    {
+        //        if (contribution.IsEditable == false)
+        //        {
+        //            await new MessageDialog("This contribution is marked as non-editable by Microsoft. If you feel this is an error, contact your CPM.", "Readonly Contribution").ShowAsync();
+        //            return;
+        //        }
 
-                if(ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-                {
-                    var editDialog = new ContributionEditorDialog(contribution, false);
+        //        if(ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
+        //        {
+        //            var editDialog = new ContributionEditorDialog(contribution, false);
 
-                    await editDialog.ShowAsync();
+        //            await editDialog.ShowAsync();
 
-                    if (editDialog.ContributionResult != null)
-                    {
-                        Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-                    }
-                }
-                else
-                {
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
-                }
-            }
-        }
+        //            if (editDialog.ContributionResult != null)
+        //            {
+        //                Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
+        //            }
+        //        }
+        //        else
+        //        {
+        //            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
+        //        }
+        //    }
+        //}
 
         public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
@@ -406,6 +416,159 @@ namespace MvpApi.Uwp.ViewModels
 
             IsBusyMessage = "";
             IsBusy = false;
+        }
+
+        public async void CloneButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContributionsModel originalContribution)
+            {
+                var editDialog = new ContributionEditorDialog(originalContribution, true);
+
+                await editDialog.ShowAsync();
+
+                if (editDialog.ContributionResult != null)
+                {
+                    Debug.WriteLine($"Cloned item uploaded {editDialog.ContributionResult.ContributionTypeName}");
+
+                    var refreshData = await AskForDataRefreshAsync();
+
+                    if (refreshData)
+                    {
+                        IsBusyMessage = "refreshing contributions...";
+
+                        var itemIndex = Contributions.IndexOf(originalContribution);
+
+                        await RefreshAndReturnToPositionAsync(Convert.ToUInt32(itemIndex));
+                    }
+                    else
+                    {
+                        Contributions.Insert(0, editDialog.ContributionResult);
+                    }
+                }
+            }
+        }
+
+        public async void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContributionsModel contribution)
+            {
+                if (contribution.IsEditable == false)
+                {
+                    await new MessageDialog("This contribution is marked as non-editable by Microsoft. If you feel this is an error, contact your CPM.", "Readonly Contribution").ShowAsync();
+                    return;
+                }
+
+                var editDialog = new ContributionEditorDialog(contribution, false);
+
+                await editDialog.ShowAsync();
+
+                if (editDialog.ContributionResult != null)
+                {
+                    var itemIndex = Contributions.IndexOf(contribution);
+
+                    Debug.WriteLine($"Edited {editDialog.ContributionResult.ContributionTypeName}");
+
+                    if (SkipAutomaticRefresh)
+                    {
+                        Contributions.ReplaceContribution(itemIndex, editDialog.ContributionResult);
+                        return;
+                    }
+
+                    // If the user didn't mute
+
+                    var refreshData = await AskForDataRefreshAsync();
+
+                    if (refreshData)
+                    {
+                        IsBusyMessage = "refreshing contributions...";
+
+                        await RefreshAndReturnToPositionAsync(Convert.ToUInt32(itemIndex));
+                    }
+                    else
+                    {
+                        Contributions.ReplaceContribution(itemIndex, editDialog.ContributionResult);
+                    }
+                }
+            }
+        }
+
+        public async void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContributionsModel contribution)
+            {
+                if (contribution.IsEditable != true)
+                    return;
+
+                var md = new MessageDialog(
+                    "Are you sure you want to delete this? there is no way to recover it.",
+                    "Delete?");
+
+                md.Commands.Add(new UICommand("DELETE"));
+                md.Commands.Add(new UICommand("cancel"));
+                md.DefaultCommandIndex = 1;
+
+                var mdResult = await md.ShowAsync();
+
+                if (mdResult.Label != "DELETE")
+                    return;
+
+                try
+                {
+                    IsBusy = false;
+                    IsBusyMessage = $"deleting {contribution.Title}...";
+
+                    var indexToReturnTo = Contributions.IndexOf(contribution);
+
+                    var success = await App.ApiService.DeleteContributionAsync(contribution);
+
+                    if (success == true)
+                    {
+                        // IF the user has already seen the popup and selected Skip All
+                        if (SkipAutomaticRefresh)
+                        {
+                            Contributions.Remove(contribution);
+                            return;
+                        }
+
+                        // Ask for local data refresh 
+                        var refreshData = await AskForDataRefreshAsync();
+
+                        if (refreshData)
+                        {
+                            IsBusyMessage = "refreshing contributions...";
+
+                            // TODO - IMPORTANT: decide if we need a full refresh or if this custom refresh with scrolling position works
+                            await RefreshAndReturnToPositionAsync(Convert.ToUInt32(indexToReturnTo));
+                        }
+                        else
+                        {
+                            Contributions.Remove(contribution);
+                        }
+                    }
+                    else
+                    {
+                        await new MessageDialog("The API refused the request to delete this item. It may be readonly or might not be allowed via API.\r\n\n" +
+                            "Try deleting it on the MVP website if this continues to happen."
+                            , "Not Deleted").ShowAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Delete Contribution Exception: {ex}");
+                }
+                finally
+                {
+                    IsBusy = false;
+                    IsBusyMessage = "";
+                }
+            }
+        }
+        public void ExpandButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContributionsModel contribution)
+            {
+                ExpandableItemView.ToggleRowDetail(contribution);
+            }
         }
 
         #endregion
@@ -486,13 +649,50 @@ namespace MvpApi.Uwp.ViewModels
             ScrollableView.ScrollTo(rowIndexToReturnTo);
         }
 
+        public async Task<bool> AskForDataRefreshAsync()
+        {
+            var refreshDataConfirmation = new MessageDialog(
+                "Operation was successful, do you want to refresh your local data?\r\n\n" +
+                "- Refresh: Will pull the latest data from the API, but you might lose your scrolling position.\r\n" +
+                "- Skip Once: Skip now, but ask next time.\r\n" +
+                "- Skip All: Skip and don't ask again for remainder of session.\r\n\n" +
+                "Note: If you skip, you'll keep the scroll position, but fetch count may be inaccurate until a refresh.",
+                "Success! Refresh Data Now?");
+
+            refreshDataConfirmation.Commands.Add(new UICommand("Refresh"));
+            refreshDataConfirmation.Commands.Add(new UICommand("No (skip once)"));
+            refreshDataConfirmation.Commands.Add(new UICommand("No (skip all)"));
+            refreshDataConfirmation.DefaultCommandIndex = 0;
+
+            var md2Result = await refreshDataConfirmation.ShowAsync();
+
+            if (md2Result.Label == "No (skip all)")
+            {
+                SkipAutomaticRefresh = true;
+
+                return false;
+            }
+            else if (md2Result.Label == "No (skip once)")
+            {
+                SkipAutomaticRefresh = false;
+
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
+
         //private async Task LoadContributionsAsync()
         //{
         //    try
         //    {
         //        IsBusy = true;
         //        IsBusyMessage = $"Fetching {PreferredAwardDataDataCycle} award cycle contributions...";
-                
+
         //        ContributionViewModel result;
 
         //        switch (PreferredAwardDataDataCycle)

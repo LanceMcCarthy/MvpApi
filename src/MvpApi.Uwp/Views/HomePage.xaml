@@ -120,22 +120,6 @@
                           UserGroupMode="Disabled"
                           GridLinesThickness="1"
                           Grid.Row="1">
-            <animations:Implicit.ShowAnimations>
-                <animations:ScaleAnimation From="0.8"
-                                           To="1"
-                                           Duration="0:0:1" />
-                <animations:OpacityAnimation From="0"
-                                             To="1"
-                                             Duration="0:0:1" />
-            </animations:Implicit.ShowAnimations>
-            <animations:Implicit.HideAnimations>
-                <animations:ScaleAnimation From="1"
-                                           To="0.8"
-                                           Duration="0:0:0.6" />
-                <animations:OpacityAnimation From="1"
-                                             To="0"
-                                             Duration="0:0:0.6" />
-            </animations:Implicit.HideAnimations>
             <grid:RadDataGrid.GroupHeaderTemplate>
                 <DataTemplate>
                     <Grid>
@@ -166,24 +150,24 @@
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <Button Margin="4,2"
-                                        Click="ExpandButton_Click"
+                                        Click="{x:Bind ViewModel.ExpandButton_Click}"
                                         Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
                                     <Button.Content>
                                         <SymbolIcon Symbol="ShowBcc" />
                                     </Button.Content>
                                 </Button>
                                 <Button Margin="4,2"
-                                        Click="CloneButton_Click">
+                                        Click="{x:Bind ViewModel.CloneButton_Click}">
                                     <SymbolIcon Symbol="Copy" />
                                 </Button>
                                 <Button Margin="4,2"
-                                        Click="EditButton_Click">
+                                        Click="{x:Bind ViewModel.EditButton_Click}">
                                     <Button.Content>
                                         <SymbolIcon Symbol="Edit" />
                                     </Button.Content>
                                 </Button>
                                 <Button Margin="4,2"
-                                        Click="DeleteButton_Click"
+                                        Click="{x:Bind ViewModel.DeleteButton_Click}"
                                         IsEnabled="{Binding IsEditable}"
                                         Background="DarkRed"
                                         Foreground="White">
@@ -216,50 +200,88 @@
             <grid:RadDataGrid.RowDetailsTemplate>
                 <DataTemplate x:DataType="models:ContributionsModel">
                     <StackPanel Margin="10">
-                        <TextBlock Text="{Binding Description}"
-                                   Margin="0,0,0,10" />
                         <HyperlinkButton Content="{Binding ReferenceUrl}"
                                          NavigateUri="{Binding ReferenceUrl}"
-                                         Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}"
-                                         Margin="10" />
-                        <TextBlock Text="{Binding Visibility.Description, Converter={StaticResource StringFormatConverter}, ConverterParameter='Visibility: {0}'}"
+                                         Background="{ThemeResource AppBarBackgroundThemeBrush}"
+                                         Margin="0,5,0,5" />
+                        <TextBlock Text="Description"
+                                   FontWeight="SemiBold"
                                    Margin="0,0,0,5" />
-                        <TextBlock Text="{Binding ContributionTechnology.Name, Converter={StaticResource StringFormatConverter}, ConverterParameter='Contribution Technology: {0}'}"
-                                   Margin="0,0,0,5" />
-                        <ListView ItemsSource="{Binding AdditionalTechnologies}"
-                                  HorizontalAlignment="Left"
-                                  Margin="0,0,0,10"
-                                  Header="Additional Technologies">
-                            <ListView.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <ItemsStackPanel Orientation="Horizontal" />
-                                </ItemsPanelTemplate>
-                            </ListView.ItemsPanel>
-                            <ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="Padding"
-                                            Value="0" />
-                                </Style>
-                            </ListView.ItemContainerStyle>
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Background="Gray"
-                                          Margin="0,0,10,0">
-                                        <TextBlock Text="{Binding Name}"
-                                                   Foreground="White"
-                                                   VerticalAlignment="Center"
-                                                   Margin="5" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                        <TextBlock Text="{Binding AnnualQuantity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Annual Quantity: {0}'}"
-                                   Margin="0,0,0,10" />
-                        <TextBlock Text="{Binding SecondAnnualQuantity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Second Annual Quantity: {0}'}"
-                                   Margin="0,0,0,10" />
-                        <TextBlock Text="{Binding AnnualReach, Converter={StaticResource StringFormatConverter}, ConverterParameter='Annual Reach: {0}'}"
-                                   Margin="0,0,0,10" />
+                        <TextBlock Text="{Binding Description}"
+                                   TextWrapping="WrapWholeWords"
+                                   Margin="0,0,0,20" />
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Margin="0,0,20,0">
+                                <TextBlock Text="Technology"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,5" />
+                                <Grid Background="{ThemeResource SystemAccentColor}"
+                                      HorizontalAlignment="Left"
+                                      Margin="0,0,0,10">
+                                    <TextBlock Text="{Binding ContributionTechnology.Name}"
+                                               Foreground="White"
+                                               VerticalAlignment="Center"
+                                               Margin="7,5" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Additional Technologies"
+                                           FontWeight="SemiBold" />
+                                <ListView ItemsSource="{Binding AdditionalTechnologies}"
+                                          HorizontalAlignment="Left"
+                                          Margin="0,0,0,10">
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <ItemsStackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="Padding"
+                                                    Value="0" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Background="Gray"
+                                                  Margin="0,0,10,0">
+                                                <TextBlock Text="{Binding Name}"
+                                                           Foreground="White"
+                                                           VerticalAlignment="Center"
+                                                           Margin="7,5" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+                        </StackPanel>
                         
+                        <StackPanel Margin="0,0,0,5">
+                            <TextBlock Text="Visibility"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding Visibility.Description}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Visibility="{Binding AnnualQuantity, Converter={StaticResource NullToVisibilityConverter}}"
+                                        Margin="0,0,10,5">
+                                <TextBlock Text="Annual Quantity"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding AnnualQuantity}" />
+                            </StackPanel>
+                            <StackPanel Visibility="{Binding SecondAnnualQuantity, Converter={StaticResource NullToVisibilityConverter}}"
+                                        Margin="0,0,10,5">
+                                <TextBlock Text="Second Annual Quantity"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding SecondAnnualQuantity}" />
+                            </StackPanel>
+                            <StackPanel Visibility="{Binding AnnualReach, Converter={StaticResource NullToVisibilityConverter}}" 
+                                        Margin="0,0,0,5">
+                                <TextBlock Text="AnnualReach"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding AnnualReach}" />
+                            </StackPanel>
+                        </StackPanel>
                     </StackPanel>
                 </DataTemplate>
             </grid:RadDataGrid.RowDetailsTemplate>
@@ -288,13 +310,12 @@
                                Margin="15,15,0,0"
                                Style="{ThemeResource CaptionTextBlockStyle}" />
                 </StackPanel>
-                
             </CommandBar.Content>
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export All Contributions"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
             </CommandBar.SecondaryCommands>
-            <AppBarButton Label="clear selection"
+            <!--<AppBarButton Label="clear selection"
                           Icon="ClearSelection"
                           Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
                           IsEnabled="{Binding AreAppBarButtonsEnabled}"
@@ -307,7 +328,7 @@
             <AppBarToggleButton Label="multiple selection"
                                 Icon="Bullets"
                                 IsChecked="{Binding IsMultipleSelectionEnabled, Mode=TwoWay}" />
-            <AppBarSeparator />
+            <AppBarSeparator />-->
             <AppBarButton Icon="Refresh"
                           Label="refresh"
                           Click="{x:Bind ViewModel.RefreshButton_Click}" />
