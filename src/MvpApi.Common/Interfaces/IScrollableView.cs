@@ -4,6 +4,10 @@ namespace MvpApi.Common.Interfaces
 {
     public interface IScrollableView
     {
+        int GetCurrentVisibleIndex();
+
+        object GetCurrentVisibleItem();
+
         void ScrollToTop();
 
         void ScrollTo(object item);

@@ -4,15 +4,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.Foundation.Metadata;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
+using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
 using MvpCompanion.UI.Common.Extensions;
 using MvpCompanion.UI.Common.Helpers;
 using MvpApi.Uwp.Views;
-using Template10.Common;
 using Template10.Mvvm;
 using Template10.Services.PopupService;
 using Template10.Utils;
@@ -152,11 +153,17 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _editingExistingContribution, value);
         }
 
+        #endregion
+
+        #region Commands
+
         // Commands
 
         public DelegateCommand<ContributionTechnologyModel> RemoveAdditionalTechAreaCommand { get; set; }
-        
-        // Methods
+
+        #endregion
+
+        #region Event Handlers
 
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
@@ -199,6 +206,10 @@ namespace MvpApi.Uwp.ViewModels
             var popup = foPresenter?.Parent as Popup;
             popup?.Hide();
         }
+
+        #endregion
+
+        #region Tasks
 
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
         {
@@ -307,12 +318,6 @@ namespace MvpApi.Uwp.ViewModels
                                 AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
                             };
                         }
-                        
-                        // TODO prevent accidental back navigation
-                        if (BootStrapper.Current.NavigationService.FrameFacade != null)
-                        {
-                            BootStrapper.Current.NavigationService.FrameFacade.BackRequested += FrameFacade_BackRequested;
-                        }
                     }
                     catch (Exception ex)
                     {
@@ -330,31 +335,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public void OnDialogClosingAsync()
         {
-            if (BootStrapper.Current.NavigationService.FrameFacade != null)
-            {
-                BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacade_BackRequested;
-            }
-        }
 
-        private async void FrameFacade_BackRequested(object sender, HandledEventArgs e)
-        {
-            try
-            {
-                var md = new MessageDialog("Navigating away will lose any pending edits, continue?", "Close Editor?");
-                md.Commands.Add(new UICommand("yes"));
-                md.Commands.Add(new UICommand("no"));
-                md.CancelCommandIndex = 1;
-                md.DefaultCommandIndex = 1;
-
-                var result = await md.ShowAsync();
-
-                // If the user clicked no, then make the back request as handled to prevent closure of dialog
-                e.Handled = result.Label != "yes";
-            }
-            catch (Exception ex)
-            {
-                await ex.LogExceptionAsync();
-            }
         }
         
         #endregion

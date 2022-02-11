@@ -1,7 +1,10 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Models;
+using MvpApi.Uwp.Views;
 using MvpCompanion.UI.Common.Extensions;
 
 namespace MvpApi.Uwp.Dialogs
@@ -19,7 +22,7 @@ namespace MvpApi.Uwp.Dialogs
             get => (ContributionsModel)GetValue(ContributionResultProperty);
             set => SetValue(ContributionResultProperty, value);
         }
-
+        
         public ContributionEditorDialog()
         {
             InitializeComponent();
@@ -35,14 +38,24 @@ namespace MvpApi.Uwp.Dialogs
             Unloaded += ContributionEditorDialog_Unloaded;
         }
 
-        public ContributionEditorDialog(ContributionsModel originalContribution)
+        public ContributionEditorDialog(ContributionsModel originalContribution, bool cloneContribution)
         {
             InitializeComponent();
-
-            // If the dialog is editing an existing contribution.
+            
             ViewModel.SelectedContribution = originalContribution;
-            ViewModel.EditingExistingContribution = true;
+            
+            if (cloneContribution)
+            {
+                // Strip the ID to prevent accidentally overwriting an existing contribution
+                ViewModel.SelectedContribution.ContributionId = null;
 
+                ViewModel.EditingExistingContribution = false;
+            }
+            else
+            {
+                ViewModel.EditingExistingContribution = true;
+            }
+            
             AnnualReachNumericBox.Minimum = 0;
             SecondAnnualQuantityNumericBox.Minimum = 0;
             AnnualReachNumericBox.Minimum = 0;
@@ -75,6 +88,8 @@ namespace MvpApi.Uwp.Dialogs
         {
             var deferral = args.GetDeferral();
 
+            var saveSucceeded = false;
+
             try
             {
                 ContributionResult = ViewModel.SelectedContribution;
@@ -83,17 +98,63 @@ namespace MvpApi.Uwp.Dialogs
 
                 if (isValid)
                 {
-                    Hide();
+                    ViewModel.SelectedContribution.UploadStatus = UploadStatus.InProgress;
+
+                    if (ViewModel.EditingExistingContribution)
+                    {
+                        // Update an existing contribution
+                        var contributionUpdated = await App.ApiService.UpdateContributionAsync(ViewModel.SelectedContribution);
+
+                        if (contributionUpdated == true)
+                        {
+                            saveSucceeded = true;
+                            ContributionResult = ViewModel.SelectedContribution;
+                        }
+                    }
+                    else
+                    {
+                        // Submit a new contribution
+                        var newSubmissionResult = await App.ApiService.SubmitContributionAsync(ViewModel.SelectedContribution);
+
+                        if (newSubmissionResult != null)
+                        {
+                            // IMPORTANT = Uploading a new contribution returns the saved submission, which comes with an ID
+                            ContributionResult = newSubmissionResult;
+
+                            // copying back the ID which was created on the server once the item was added to the database
+                            ViewModel.SelectedContribution.ContributionId = newSubmissionResult.ContributionId;
+
+                            saveSucceeded = true;
+                        }
+                    }
+
+                    // Show the result in the UI-bound object
+                    ViewModel.SelectedContribution.UploadStatus = saveSucceeded ? UploadStatus.Success : UploadStatus.Failed;
+
+                    if (saveSucceeded)
+                    {
+                        Hide();
+                    }
+                    else
+                    {
+                        args.Cancel = true;
+                    }
                 }
                 else
                 {
+                    // prevent the closing of the dialog
                     args.Cancel = true;
-                }
 
+                    await new MessageDialog("Check for errors or missing data and try again.", "Invalid Contribution").ShowAsync();
+                }
             }
-            catch
+            catch(Exception ex)
             {
+                // prevent the closing of the dialog
                 args.Cancel = true;
+                
+                await new MessageDialog("Something went wrong saving the contribution.", "Error").ShowAsync();
+                
             }
             finally
             {
@@ -103,33 +164,38 @@ namespace MvpApi.Uwp.Dialogs
 
         private void CancelButton_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
-            var match = ViewModel.SelectedContribution.Compare(ContributionResult);
+            ContributionResult = null;
 
-            if (match)
-            {
-                ContributionResult = null;
-                Hide();
-            }
-            else
-            {
-                //var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
-                //md.Commands.Add(new UICommand("yes"));
-                //md.Commands.Add(new UICommand("no"));
-                //md.CancelCommandIndex = 1;
-                //md.DefaultCommandIndex = 1;
+            Hide();
 
-                //var result = await md.ShowAsync();
+            //var match = ViewModel.SelectedContribution.Compare(ContributionResult);
 
-                //if (result.Label == "yes")
-                //{
-                //    CurrentContribution = null;
-                //    Hide();
-                //}
-                //else
-                //{
-                //    args.Cancel = true;
-                //}
-            }
+            //if (match)
+            //{
+            //    ContributionResult = null;
+            //    Hide();
+            //}
+            //else
+            //{
+            //    //var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
+            //    //md.Commands.Add(new UICommand("yes"));
+            //    //md.Commands.Add(new UICommand("no"));
+            //    //md.CancelCommandIndex = 1;
+            //    //md.DefaultCommandIndex = 1;
+
+            //    //var result = await md.ShowAsync();
+
+            //    //if (result.Label == "yes")
+            //    //{
+            //    //    CurrentContribution = null;
+            //    //    Hide();
+            //    //}
+            //    //else
+            //    //{
+            //    //    args.Cancel = true;
+            //    //}
+            //}
         }
+        
     }
 }

@@ -9,6 +9,7 @@
       xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+      xmlns:models="using:MvpApi.Common.Models"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -111,12 +112,12 @@
 
         <grid:RadDataGrid x:Name="ContributionsGrid"
                           ItemsSource="{Binding Contributions}"
-                          SelectionMode="{Binding GridSelectionMode}"
+                          SelectionMode="None"
+                          RowDetailsDisplayMode="Single"
                           IncrementalLoadingMode="Auto"
                           AutoGenerateColumns="False"
                           CanUserChooseColumns="False"
                           UserGroupMode="Disabled"
-                          SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
                           GridLinesThickness="1"
                           Grid.Row="1">
             <animations:Implicit.ShowAnimations>
@@ -160,6 +161,41 @@
                 </DataTemplate>
             </grid:RadDataGrid.GroupHeaderTemplate>
             <grid:RadDataGrid.Columns>
+                <grid:DataGridTemplateColumn Header="Options">
+                    <grid:DataGridTemplateColumn.CellContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Margin="4,2"
+                                        Click="ExpandButton_Click"
+                                        Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
+                                    <Button.Content>
+                                        <SymbolIcon Symbol="ShowBcc" />
+                                    </Button.Content>
+                                </Button>
+                                <Button Margin="4,2"
+                                        Click="CloneButton_Click">
+                                    <SymbolIcon Symbol="Copy" />
+                                </Button>
+                                <Button Margin="4,2"
+                                        Click="EditButton_Click">
+                                    <Button.Content>
+                                        <SymbolIcon Symbol="Edit" />
+                                    </Button.Content>
+                                </Button>
+                                <Button Margin="4,2"
+                                        Click="DeleteButton_Click"
+                                        IsEnabled="{Binding IsEditable}"
+                                        Background="DarkRed"
+                                        Foreground="White">
+                                    <Button.Content>
+                                        <SymbolIcon Symbol="Delete" />
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </grid:DataGridTemplateColumn.CellContentTemplate>
+                </grid:DataGridTemplateColumn>
+
                 <grid:DataGridDateColumn PropertyName="StartDate"
                                          CellContentFormat="{}{0:d}"
                                          Header="Start Date" />
@@ -172,15 +208,61 @@
                 <grid:DataGridTextColumn PropertyName="Description"
                                          Header="Description"
                                          CellContentStyle="{StaticResource MediumCellContentStyle}" />
-                <!--<grid:DataGridNumericalColumn PropertyName="AnnualQuantity"
-                                              Header="Annual Quantity" />
-                <grid:DataGridNumericalColumn PropertyName="AnnualReach"
-                                              Header="Annual Reach" />-->
                 <grid:DataGridTextColumn PropertyName="ReferenceUrl"
                                          Width="100"
                                          Header="Url"
                                          CellContentStyle="{StaticResource MediumCellContentStyle}" />
             </grid:RadDataGrid.Columns>
+            <grid:RadDataGrid.RowDetailsTemplate>
+                <DataTemplate x:DataType="models:ContributionsModel">
+                    <StackPanel Margin="10">
+                        <TextBlock Text="{Binding Description}"
+                                   Margin="0,0,0,10" />
+                        <HyperlinkButton Content="{Binding ReferenceUrl}"
+                                         NavigateUri="{Binding ReferenceUrl}"
+                                         Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}"
+                                         Margin="10" />
+                        <TextBlock Text="{Binding Visibility.Description, Converter={StaticResource StringFormatConverter}, ConverterParameter='Visibility: {0}'}"
+                                   Margin="0,0,0,5" />
+                        <TextBlock Text="{Binding ContributionTechnology.Name, Converter={StaticResource StringFormatConverter}, ConverterParameter='Contribution Technology: {0}'}"
+                                   Margin="0,0,0,5" />
+                        <ListView ItemsSource="{Binding AdditionalTechnologies}"
+                                  HorizontalAlignment="Left"
+                                  Margin="0,0,0,10"
+                                  Header="Additional Technologies">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <ItemsStackPanel Orientation="Horizontal" />
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Padding"
+                                            Value="0" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Background="Gray"
+                                          Margin="0,0,10,0">
+                                        <TextBlock Text="{Binding Name}"
+                                                   Foreground="White"
+                                                   VerticalAlignment="Center"
+                                                   Margin="5" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        <TextBlock Text="{Binding AnnualQuantity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Annual Quantity: {0}'}"
+                                   Margin="0,0,0,10" />
+                        <TextBlock Text="{Binding SecondAnnualQuantity, Converter={StaticResource StringFormatConverter}, ConverterParameter='Second Annual Quantity: {0}'}"
+                                   Margin="0,0,0,10" />
+                        <TextBlock Text="{Binding AnnualReach, Converter={StaticResource StringFormatConverter}, ConverterParameter='Annual Reach: {0}'}"
+                                   Margin="0,0,0,10" />
+                        
+                    </StackPanel>
+                </DataTemplate>
+            </grid:RadDataGrid.RowDetailsTemplate>
         </grid:RadDataGrid>
 
         <primitives:RadBusyIndicator Content="{x:Bind ViewModel.LoadingMoreItemsMessage, Mode=OneWay}"
@@ -201,9 +283,12 @@
         <CommandBar Grid.Row="2"
                     Background="{ThemeResource AppBarBackgroundThemeBrush}">
             <CommandBar.Content>
-                <TextBlock Text="{Binding DisplayTotal}"
-                           Margin="15,15,0,0"
-                           Style="{ThemeResource CaptionTextBlockStyle}"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding DisplayTotal}"
+                               Margin="15,15,0,0"
+                               Style="{ThemeResource CaptionTextBlockStyle}" />
+                </StackPanel>
+                
             </CommandBar.Content>
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export All Contributions"

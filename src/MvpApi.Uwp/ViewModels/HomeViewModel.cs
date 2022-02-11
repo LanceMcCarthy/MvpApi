@@ -141,7 +141,7 @@ namespace MvpApi.Uwp.ViewModels
             get => _displayTotal;
             set => Set(ref _displayTotal, value);
         }
-
+        
         public List<string> AwardDataCycles => new List<string> { "All", "Current", "Historical" };
 
         public string PreferredAwardDataDataCycle
@@ -231,30 +231,60 @@ namespace MvpApi.Uwp.ViewModels
 
                 foreach (ContributionsModel contribution in SelectedContributions)
                 {
-                    // Try to grab an index in the overall list so that we can scroll back to it after deletion
-                    if (indexToReturnTo == null)
+                    if (contribution.IsEditable == true)
                     {
-                        indexToReturnTo = Contributions.IndexOf(contribution);
+                        // Try to grab an index in the overall list so that we can scroll back to it after deletion
+                        if (indexToReturnTo == null)
+                        {
+                            indexToReturnTo = Contributions.IndexOf(contribution);
+                        }
+
+                        IsBusyMessage = $"deleting {contribution.Title}...";
+
+
+                        var success = await App.ApiService.DeleteContributionAsync(contribution);
+
+                        // Quality assurance, only logs a successful or failed delete.
+                        if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                            StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
                     }
+                }
+                
+                var md = new MessageDialog(
+                    "The contribution(s) was successfully deleted, do you want to refresh your local data?\r\n\n" +
+                    "Skipping refresh will keep your position in the list, but your fetch numbers will be inaccurate until you do a refresh.",
+                    "Success - Refresh Data?");
 
-                    IsBusyMessage = $"deleting {contribution.Title}...";
+                md.Commands.Add(new UICommand("Yes, refresh data now"));
+                md.Commands.Add(new UICommand("No, I'll refresh later"));
+                md.DefaultCommandIndex = 0;
 
-                    var success = await App.ApiService.DeleteContributionAsync(contribution);
+                var mdResult = await md.ShowAsync();
 
-                    // Quality assurance, only logs a successful or failed delete.
-                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                        StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
+                if (mdResult.Label == "No, I'll refresh later")
+                {
+                    var itemsToRemove = SelectedContributions.ToArray();
+
+                    foreach (var item in itemsToRemove)
+                    {
+                        Contributions.Remove((ContributionsModel)item);
+                    }
+                    
+                    return;
+                }
+                else
+                {
+                    // After deleting contributions, we need to fetch updated list
+                    IsBusyMessage = "refreshing contributions...";
+
+                    // TODO - IMPORTANT: decide if we need a full refresh or if this custom refresh with scrolling position works
+                    await RefreshAndReturnToPositionAsync(Convert.ToUInt32(indexToReturnTo));
+
+                    // or start them at the beginning because we cant programmatically get the right number of items in one fetch
+                    //Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
                 }
                 
                 SelectedContributions.Clear();
-
-                // After deleting contributions, we need to fetch updated list
-                IsBusyMessage = "refreshing contributions...";
-                
-                // TODO - IMPORTANT: decide if we need a full refresh or if this custom refresh with scrolling position works
-                await RefreshAndReturnToPositionAsync(Convert.ToUInt32(indexToReturnTo));
-                // or start them at the beginning because we cant programmatically get the right number of items in one fetch
-                //Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
             }
             catch (Exception ex)
             {
@@ -279,9 +309,15 @@ namespace MvpApi.Uwp.ViewModels
             // When in single selection mode, go to the selected item's details page
             if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
             {
+                if (contribution.IsEditable == false)
+                {
+                    await new MessageDialog("This contribution is marked as non-editable by Microsoft. If you feel this is an error, contact your CPM.", "Readonly Contribution").ShowAsync();
+                    return;
+                }
+
                 if(ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
                 {
-                    var editDialog = new ContributionEditorDialog(contribution);
+                    var editDialog = new ContributionEditorDialog(contribution, false);
 
                     await editDialog.ShowAsync();
 
@@ -380,10 +416,9 @@ namespace MvpApi.Uwp.ViewModels
         {
             try
             {
-                // Here we use a different flag when the view model is busy loading items because we don't want to cover the UI
-                // The IsBusy flag is used for when deleting items, when we want to block the UI
+                // Here we use a different flag for busy status so we don't block the entire UI
                 IsLoadingMoreItems = true;
-                LoadingMoreItemsMessage = $"fetching the next {count} items...";
+                LoadingMoreItemsMessage = $"Loading {count} items from the server...";
 
                 if (_currentOffset == null)
                 {
@@ -439,7 +474,7 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        private async Task RefreshAndReturnToPositionAsync(uint rowIndexToReturnTo)
+        public async Task RefreshAndReturnToPositionAsync(uint rowIndexToReturnTo)
         {
             Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
 
