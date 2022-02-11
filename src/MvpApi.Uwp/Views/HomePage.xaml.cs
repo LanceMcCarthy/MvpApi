@@ -3,7 +3,6 @@ using MvpApi.Common.Models;
 using System.Collections;
 using System.Linq;
 using Windows.Foundation;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
 namespace MvpApi.Uwp.Views
@@ -29,9 +28,6 @@ namespace MvpApi.Uwp.Views
 
         public void CloseFlyout()
         {
-            if (AwardCyclePreferenceFlyout.IsOpen)
-                AwardCyclePreferenceFlyout.Hide();
-
             if (GroupingFlyout.IsOpen)
                 GroupingFlyout.Hide();
         }

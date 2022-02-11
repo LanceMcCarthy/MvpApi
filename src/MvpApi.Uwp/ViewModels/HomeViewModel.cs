@@ -36,16 +36,16 @@ namespace MvpApi.Uwp.ViewModels
         #region Fields
 
         private IncrementalLoadingCollection<ContributionsModel> _contributions;
-        private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
-        private bool _isMultipleSelectionEnabled;
+        //private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
+        //private bool _isMultipleSelectionEnabled;
         private bool _areAppBarButtonsEnabled;
         private bool _isInternetDisabled;
         private bool _isLoadingMoreItems;
         private string _loadingMoreItemsMessage;
-        private string _preferredAwardDataCycle;
 
         private int? _currentOffset = 0;
         private string _displayTotal = "0 Items";
+        private bool _skipAutomaticRefresh;
 
         #endregion
 
@@ -67,16 +67,9 @@ namespace MvpApi.Uwp.ViewModels
 
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                var designItems = DesignTimeHelpers.GenerateContributions();
+                var sampleDataTask = Task.FromResult<IEnumerable<ContributionsModel>>(DesignTimeHelpers.GenerateContributions());
 
-                Contributions = new IncrementalLoadingCollection<ContributionsModel>(null);
-
-                foreach (var contribution in designItems)
-                {
-                    Contributions.Add(contribution);
-                }
-
-                PreferredAwardDataDataCycle = AwardDataCycles[0];
+                Contributions = new IncrementalLoadingCollection<ContributionsModel>((c)=>sampleDataTask) { BatchSize = 0 };
             }
         }
 
@@ -143,49 +136,15 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _displayTotal, value);
         }
 
-        private bool _skipAutomaticRefresh;
         public bool SkipAutomaticRefresh
         {
             get => _skipAutomaticRefresh;
             set => Set(ref _skipAutomaticRefresh, value);
         }
 
-        public List<string> AwardDataCycles => new List<string> { "All", "Current", "Historical" };
+        #endregion
 
-        public string PreferredAwardDataDataCycle
-        {
-            get
-            {
-                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(PreferredAwardDataDataCycle), out var rawValue))
-                {
-                    _preferredAwardDataCycle = (string)rawValue;
-                }
-                else
-                {
-                    _preferredAwardDataCycle = "Current";
-                    ApplicationData.Current.LocalSettings.Values[nameof(PreferredAwardDataDataCycle)] = _preferredAwardDataCycle;
-                }
-
-                return _preferredAwardDataCycle;
-            }
-            set
-            {
-                Debug.WriteLine($"PreferredAwardDataDataCycle SET: Before ${_preferredAwardDataCycle}");
-
-                if (_preferredAwardDataCycle == value)
-                    return;
-
-                _preferredAwardDataCycle = value;
-
-                ApplicationData.Current.LocalSettings.Values[nameof(PreferredAwardDataDataCycle)] = _preferredAwardDataCycle;
-
-                RaisePropertyChanged(nameof(PreferredAwardDataDataCycle));
-
-                FlyoutView?.CloseFlyout();
-
-                Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
-            }
-        }
+        #region Interfaces
 
         public IFlyoutView FlyoutView { get; set; }
 
@@ -227,7 +186,7 @@ namespace MvpApi.Uwp.ViewModels
             if (SelectedContributions.Any())
                 SelectedContributions.Clear();
             
-            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
+            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
         }
 
         public async void DeleteSelectionButton_Click(object sender, RoutedEventArgs e)
@@ -370,52 +329,12 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
         
+        [Deprecated("This will be removed in a future update.", DeprecationType.Deprecate, 1)]
         public async void ExportButton_OnClick(object sender, RoutedEventArgs e)
         {
-            IsBusy = true;
-            IsBusyMessage = "exporting all contributions...";
-
-            var jsonData = await App.ApiService.ExportAllContributionsAsync();
-
-            if (string.IsNullOrEmpty(jsonData))
-                return;
-
-            var savePicker = new FileSavePicker
-            {
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
-                SuggestedFileName = $"MVP Contributions {DateTime.Now:yyyy-dd-M--HH-mm-ss}"
-            };
-
-            savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
-
-            var file = await savePicker.PickSaveFileAsync();
-
-            if (file != null)
-            {
-                IsBusyMessage = "saving file...";
-
-                // prevents file changes by syncing services like OneDrive
-                CachedFileManager.DeferUpdates(file);
-
-                await FileIO.WriteTextAsync(file, jsonData);
-
-                // releases the hold on the file so syncing services can make changes
-                var status = await CachedFileManager.CompleteUpdatesAsync(file);
-
-                if (status == FileUpdateStatus.Complete)
-                {
-                    var message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
-                                  "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
-                                  "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
-                                  "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
-                                  "4. Now you can us 'Save As' to xlsx file or csv.";
-
-                    await new MessageDialog(message, "Export Saved").ShowAsync();
-                }
-            }
-
-            IsBusyMessage = "";
-            IsBusy = false;
+            await new MessageDialog("The new Export feature is located on the Settings page.\r\n\n" +
+                                    "You can now choose which award cycle to export your data from: Current, Historical or All.", 
+                "Export has Moved").ShowAsync();
         }
 
         public async void CloneButton_Click(object sender, RoutedEventArgs e)
@@ -563,6 +482,7 @@ namespace MvpApi.Uwp.ViewModels
                 }
             }
         }
+
         public void ExpandButton_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is ContributionsModel contribution)
@@ -582,28 +502,14 @@ namespace MvpApi.Uwp.ViewModels
                 // Here we use a different flag for busy status so we don't block the entire UI
                 IsLoadingMoreItems = true;
                 LoadingMoreItemsMessage = $"Loading {count} items from the server...";
-
+                
                 if (_currentOffset == null)
                 {
                     _currentOffset = 0;
                 }
-                
-                ContributionViewModel fetchResult;
 
-                switch (PreferredAwardDataDataCycle)
-                {
-                    case "All":
-                        fetchResult = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
-                        break;
-                    case "Historical":
-                        fetchResult = await App.ApiService.GetHistoricalContributionsAsync(_currentOffset, (int)count);
-                        break;
-                    case "Current":
-                    default:
-                        fetchResult = await App.ApiService.GetCurrentCycleContributionsAsync(_currentOffset, (int)count);
-                        break;
-                }
-                
+                var fetchResult = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
+
                 Debug.WriteLine($"** LoadMoreItems **\nPagingIndex: {fetchResult.PagingIndex}, Count: {fetchResult.Contributions.Count}, TotalContributions: {fetchResult.TotalContributions}");
 
                 // Current offset is the number of items we've already fetched
@@ -611,8 +517,11 @@ namespace MvpApi.Uwp.ViewModels
 
                 DisplayTotal = $"{fetchResult.PagingIndex} of {fetchResult.TotalContributions} items";
 
-                // If we've received all the contributions, return null to stop automatic loading because we've retrived all the available items
-                if (fetchResult.PagingIndex + fetchResult.Contributions.Count == fetchResult.TotalContributions)
+
+                // If we've received all the contributions, return null to stop automatic loading because we've retrieved all the available items
+                // To check if we have all the items downloaded, simply add the pagingIndex (the total downloaded) to the current result's total
+                // // Then see if it equal to (or greater than) the total amount
+                if (fetchResult.PagingIndex + fetchResult.Contributions.Count >= fetchResult.TotalContributions)
                 {
                     return null;
                 }
@@ -639,7 +548,7 @@ namespace MvpApi.Uwp.ViewModels
 
         public async Task RefreshAndReturnToPositionAsync(uint rowIndexToReturnTo)
         {
-            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
+            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
 
             if (Contributions.Count < rowIndexToReturnTo)
             {
@@ -683,9 +592,7 @@ namespace MvpApi.Uwp.ViewModels
                 return true;
             }
         }
-
-
-
+        
         //private async Task LoadContributionsAsync()
         //{
         //    try
@@ -757,7 +664,7 @@ namespace MvpApi.Uwp.ViewModels
                 // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
                 if (shellVm.IsLoggedIn)
                 {
-                    Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
+                    Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
                 }
 
                 if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)

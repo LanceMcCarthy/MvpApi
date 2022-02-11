@@ -103,7 +103,7 @@ namespace MvpApi.Services.Apis
 
                         if (!IsDataValid(json))
                             return null;
-
+                        
                         return JsonConvert.DeserializeObject<ProfileViewModel>(json);
                     }
                     else
@@ -1301,40 +1301,71 @@ namespace MvpApi.Services.Apis
 
         public async Task<string> ExportAllContributionsAsync()
         {
-            string json = string.Empty;
+            var json = string.Empty;
 
             try
             {
-                int totalCount = 0;
-
+                var minBatchSize = 100;
+                var totalContributions = 0;
+                
+                // REQUIRED first fetch to get total
                 using (var response = await client.GetAsync($"contributions/0/0"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
                         var firstJson = await response.Content.ReadAsStringAsync();
 
-                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(firstJson);
+                        var result = JsonConvert.DeserializeObject<ContributionViewModel>(firstJson);
 
                         // Read the total count
-                        totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
-                    }
-                    else
-                    {
-                        await ProcessRefreshOrBadRequestAsync(response);
+                        totalContributions = Convert.ToInt32(result.TotalContributions);
                     }
                 }
-
-                // Get all the contribution data
-                using (var response = await client.GetAsync($"contributions/{0}/{totalCount}"))
+                
+                // If the batch size is larger than the total amount, just get everything in the first fetch.
+                if (totalContributions < minBatchSize) 
                 {
-                    if (response.IsSuccessStatusCode)
+                    using (var response = await client.GetAsync($"contributions/{0}/{totalContributions}"))
                     {
-                        json = await response.Content.ReadAsStringAsync();
+                        if (response.IsSuccessStatusCode)
+                        {
+                            json = await response.Content.ReadAsStringAsync();
+                        }
                     }
-                    else
+                }
+                else // Else if the batch size is less than the total, get the data in batches. This is necessary for MVPs who have thousands of contributions
+                {
+                    var contributions = new List<ContributionsModel>();
+                    var pagingIndex = 0;
+                    var needsMoreItems = true;
+                    
+                    while (needsMoreItems)
                     {
-                        await ProcessRefreshOrBadRequestAsync(response);
+                        using (var response = await client.GetAsync($"contributions/{pagingIndex}/{minBatchSize}"))
+                        {
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var loopResultJson = await response.Content.ReadAsStringAsync();
+                                var loopResultData = JsonConvert.DeserializeObject<ContributionViewModel>(loopResultJson);
+                                
+                                pagingIndex = Convert.ToInt32(loopResultData.PagingIndex);
+                                contributions.AddRange(loopResultData.Contributions);
+
+                                // To get the actual number of data items we have locally,
+                                // we get the number of previously downloaded items (the PagingIndex)
+                                // and add it to the number of items in this loop's fetch (the Contributions.Count)
+                                var totalDownloaded = pagingIndex + loopResultData.Contributions.Count;
+
+                                // If we have all the data, we're done!
+                                if (totalDownloaded >= totalContributions)
+                                {
+                                    needsMoreItems = false;
+                                }
+                            }
+                        }
                     }
+                    
+                    json = JsonConvert.SerializeObject(contributions);
                 }
             }
             catch (HttpRequestException e)
