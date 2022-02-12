@@ -675,9 +675,9 @@ namespace MvpApi.Uwp.ViewModels
                         MessageTitle = "Home Page",
                         Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
                                   "- Group or sort the contributions by any column.\r\n" +
-                                  "- Select a contribution to view its details or edit it.\r\n" +
-                                  "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
-                                  "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
+                                  "- Use the Options column to edit, clone or delete a contribution.\r\n" +
+                                  "- Use the 'Add' button to upload new contributions (single or in bulk).\r\n" +
+                                  "- Expand any row to see all the details for that contribution."
                     };
 
                     await td.ShowAsync();
