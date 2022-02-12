@@ -119,6 +119,7 @@
                                 </Button>
                                 <Button Click="{x:Bind ViewModel.EditButton_Click}" 
                                         ToolTipService.ToolTip="Edit this contribution"
+                                        Visibility="{Binding IsEditable, Converter={StaticResource BoolToVisibilityConverter}}"
                                         IsEnabled="{Binding IsEditable}"
                                         Margin="4,2">
                                     <Button.Content>
@@ -127,6 +128,7 @@
                                 </Button>
                                 <Button Click="{x:Bind ViewModel.DeleteButton_Click}" 
                                         ToolTipService.ToolTip="Delete this contribution"
+                                        Visibility="{Binding IsEditable, Converter={StaticResource BoolToVisibilityConverter}}"
                                         IsEnabled="{Binding IsEditable}"
                                         Background="DarkRed"
                                         Foreground="White"
@@ -139,7 +141,6 @@
                         </DataTemplate>
                     </grid:DataGridTemplateColumn.CellContentTemplate>
                 </grid:DataGridTemplateColumn>
-
                 <grid:DataGridDateColumn PropertyName="StartDate"
                                          CellContentFormat="{}{0:d}"
                                          Header="Start Date" />
@@ -149,9 +150,9 @@
                 <grid:DataGridTextColumn PropertyName="ContributionTypeName"
                                          Header="Contribution Type"
                                          CellContentStyle="{StaticResource WideCellContentStyle}" />
-                <grid:DataGridTextColumn PropertyName="Description"
+                <!--<grid:DataGridTextColumn PropertyName="Description"
                                          Header="Description"
-                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />
+                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />-->
                 <grid:DataGridTextColumn PropertyName="ReferenceUrl"
                                          Width="100"
                                          Header="Url"
@@ -175,7 +176,7 @@
                                 <TextBlock Text="Technology"
                                            FontWeight="SemiBold"
                                            Margin="0,0,0,5" />
-                                <Grid Background="{ThemeResource SystemAccentColor}"
+                                <Grid Background="{ThemeResource SystemControlBackgroundAccentBrush}"
                                       HorizontalAlignment="Left"
                                       Margin="0,0,0,10">
                                     <TextBlock Text="{Binding ContributionTechnology.Name}"
@@ -263,12 +264,26 @@
                 Grid.Row="1" />
 
         <CommandBar Grid.Row="2"
-                    Background="{ThemeResource AppBarBackgroundThemeBrush}">
+                    Background="{ThemeResource AppBarBackgroundThemeBrush}"
+                    VerticalContentAlignment="Center">
             <CommandBar.Content>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding DisplayTotal}"
-                               Margin="15,15,0,0"
+                               VerticalAlignment="Center"
+                               Margin="15,0,0,15"
                                Style="{ThemeResource CaptionTextBlockStyle}" />
+                    <Border Background="Gold"
+                            Visibility="{Binding SkipAutomaticRefresh, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Margin="15,0,0,15"
+                            Padding="8,4">
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Symbol="BlockContact"
+                                        Margin="0,0,8,0"/>
+                            <TextBlock Text="AUTO REFRESH PAUSED"
+                                       Foreground="Black"/>
+
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </CommandBar.Content>
             <CommandBar.SecondaryCommands>
