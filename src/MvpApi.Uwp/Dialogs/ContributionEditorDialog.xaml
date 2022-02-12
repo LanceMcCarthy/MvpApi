@@ -11,32 +11,18 @@
                xmlns:converters="using:MvpApi.Uwp.Converters"
                xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
                mc:Ignorable="d"
-               Title="Contribution Editor"
-               PrimaryButtonText="Save"
-               SecondaryButtonText="Cancel"
-               PrimaryButtonClick="SaveButton_OnClick"
-               SecondaryButtonClick="CancelButton_OnClick"
                MinWidth="400">
 
     <ContentDialog.DataContext>
         <viewModels:ContributionEditorDialogViewModel x:Name="ViewModel" />
     </ContentDialog.DataContext>
 
-    <ContentDialog.TitleTemplate>
-        <DataTemplate>
-            <TextBlock Text="{Binding}"
-                       Style="{StaticResource SubtitleTextBlockStyle}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
-        </DataTemplate>
-    </ContentDialog.TitleTemplate>
-
-    <ContentDialog.Resources>
+    <!--<ContentDialog.Resources>
         <CollectionViewSource x:Name="awardCategoriesCvs"
                               Source="{Binding CategoryAreas}"
                               ItemsPath="ContributionAreas"
                               IsSourceGrouped="True" />
-    </ContentDialog.Resources>
+    </ContentDialog.Resources>-->
 
     <Grid MinWidth="400">
         <Grid.RowDefinitions>
@@ -45,21 +31,26 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Background="Red"
-              Visibility="{Binding WarningMessage, Converter={StaticResource NullToVisibilityConverter}}">
-            <TextBlock Text="{Binding WarningMessage}"
+        <Grid x:Name="HeaderMessageGrid"
+              Background="Red"
+              Margin="0,0,0,20"
+              Padding="10"
+              Visibility="{Binding HeaderMessage, Converter={StaticResource NullToVisibilityConverter}}">
+            <TextBlock Text="{Binding HeaderMessage}"
                        Foreground="White"
                        TextWrapping="WrapWholeWords"
                        VerticalAlignment="Center"
+                       Style="{StaticResource SubtitleTextBlockStyle}"
                        HorizontalAlignment="Center" />
         </Grid>
 
         <ScrollViewer Grid.Row="1">
             <StackPanel>
-                <ComboBox ItemsSource="{Binding Types}"
+                <!-- SelectedItem="{Binding Contribution.ContributionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                          ItemsSource="{Binding Types}"
+                          SelectionChanged="{x:Bind ViewModel.ActivityType_SelectionChanged}"-->
+                <ComboBox x:Name="ContributionTypeComboBox"
                           Visibility="{Binding EditingExistingContribution, Converter={StaticResource InvertedBoolToVisibilityConverter}}"
-                          SelectedItem="{Binding SelectedContribution.ContributionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          SelectionChanged="{x:Bind ViewModel.ActivityType_SelectionChanged}"
                           DisplayMemberPath="Name"
                           HorizontalAlignment="Left"
                           MinWidth="300"
@@ -77,15 +68,18 @@
                     </ComboBox.Header>
                 </ComboBox>
 
-                <ComboBox ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                          SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                <!-- SelectedItem="{Binding Contribution.ContributionTechnology, Mode=TwoWay}" 
+                          ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"-->
+                <ComboBox x:Name="ContributionTechnologyComboBox"
                           Style="{StaticResource TechnologyAreaComboBoxStyle}" />
 
                 <TextBlock Text="Optional: Select up to 2 additional technology areas."
                            Margin="0,10,0,0" />
 
+                <!-- ItemsSource="{Binding Contribution.AdditionalTechnologies}" -->
                 <ListView x:Name="SelectedAdditionalTechnologiesListView"
-                          ItemsSource="{Binding SelectedContribution.AdditionalTechnologies}"
+                          d:ItemsSource="{Binding Contribution.AdditionalTechnologies}"
+                          SelectionMode="None"
                           HorizontalAlignment="Left"
                           Margin="0,5,10,0">
                     <ListView.ItemsPanel>
@@ -101,7 +95,7 @@
                     </ListView.ItemContainerStyle>
                     <ListView.Footer>
                         <Button x:Name="AddButton"
-                                Visibility="{Binding SelectedContribution.AdditionalTechnologies.Count, Converter={StaticResource CountToVisibilityConverter}}"
+                                Visibility="{Binding Contribution.AdditionalTechnologies.Count, Converter={StaticResource CountToVisibilityConverter}}"
                                 Content="+"
                                 FontWeight="Bold"
                                 VerticalAlignment="Center"
@@ -110,10 +104,10 @@
                                 Margin="0,0,0,0">
                             <Button.Flyout>
                                 <Flyout x:Name="AdditionalTechAreaFlyout">
+                                    <!-- DataContext="{x:Bind ViewModel}"
+                                    ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
+                                              ItemClick="{x:Bind ViewModel.AdditionalTechnologiesListView_OnItemClick}" -->
                                     <ListView x:Name="AdditionalTechnologiesListView"
-                                              DataContext="{x:Bind ViewModel}"
-                                              ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                                              ItemClick="{x:Bind ViewModel.AdditionalTechnologiesListView_OnItemClick}"
                                               Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
                                               IsItemClickEnabled="True"
                                               SelectionMode="None"
@@ -153,26 +147,34 @@
                     </ListView.ItemTemplate>
                 </ListView>
 
-                <DatePicker Date="{Binding SelectedContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}, UpdateSourceTrigger=PropertyChanged}"
+                <!-- Date="{Binding Contribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}, UpdateSourceTrigger=PropertyChanged}"
+                     DateChanged="{x:Bind ViewModel.DatePicker_OnDateChanged}"  -->
+                <DatePicker x:Name="StartDatePicker"
                             HorizontalAlignment="Left"
                             MinWidth="300"
-                            Margin="0,10"
-                            DateChanged="{x:Bind ViewModel.DatePicker_OnDateChanged}">
+                            Margin="0,10">
                     <DatePicker.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Start Date"
-                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                       Margin="0,0,5,0" />
-                            <TextBlock Text="(required)"
-                                       Margin="5,0"
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Start Date"
+                                           Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                           Margin="0,0,5,0" />
+                                <TextBlock Text="(required)"
+                                           Margin="5,0"
+                                           FontStyle="Italic"
+                                           Foreground="Red" />
+                            </StackPanel>
+                            <TextBlock x:Name="DateValidationMessageTextBlock"
+                                       Foreground="{ThemeResource SystemControlHighlightAccentBrush}"
                                        FontStyle="Italic"
-                                       Foreground="Red" />
+                                       Text="Error! This date must be after the start of the current award period and before March 31st in order for it to count towards your evaluation." 
+                                       TextWrapping="WrapWholeWords"/>
                         </StackPanel>
                     </DatePicker.Header>
                 </DatePicker>
 
+                <!-- Text="{Binding Contribution.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
                 <TextBox x:Name="TitleTextBox"
-                         Text="{Binding SelectedContribution.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Left"
                          MinWidth="300"
                          Margin="0,10">
@@ -188,16 +190,16 @@
                     </TextBox.Header>
                 </TextBox>
 
+                <!-- Text="{Binding Contribution.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
                 <TextBox x:Name="DescriptionTextBox"
-                         Text="{Binding SelectedContribution.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          AcceptsReturn="True"
                          Header="Description"
                          MinWidth="300"
                          HorizontalAlignment="Left"
                          Margin="0,10" />
 
+                <!-- Text="{Binding Contribution.ReferenceUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
                 <TextBox x:Name="UrlTextBox"
-                         Text="{Binding SelectedContribution.ReferenceUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Left"
                          MinWidth="300"
                          Margin="0,10">
@@ -216,8 +218,8 @@
                 </TextBox>
 
                 <StackPanel x:Name="NumericInputStackPanel">
+                    <!-- Value="{Binding Contribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
                     <input:RadNumericBox x:Name="AnnualQuantityNumericBox"
-                                         Value="{Binding SelectedContribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Visibility="{Binding AnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                          AcceptsDecimalSeparator="False"
                                          ValueFormat="{}{0:N0}"
@@ -239,8 +241,8 @@
                         </input:RadNumericBox.Header>
                     </input:RadNumericBox>
 
+                    <!-- Value="{Binding Contribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
                     <input:RadNumericBox x:Name="SecondAnnualQuantityNumericBox"
-                                         Value="{Binding SelectedContribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Visibility="{Binding SecondAnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                          AcceptsDecimalSeparator="False"
                                          ValueFormat="{}{0:N0}"
@@ -262,8 +264,8 @@
                         </input:RadNumericBox.Header>
                     </input:RadNumericBox>
 
+                    <!-- Value="{Binding Contribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
                     <input:RadNumericBox x:Name="AnnualReachNumericBox"
-                                         Value="{Binding SelectedContribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Visibility="{Binding AnnualReachHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                          AcceptsDecimalSeparator="False"
                                          ValueFormat="{}{0:N0}"
@@ -285,8 +287,9 @@
                     </input:RadNumericBox>
                 </StackPanel>
 
-                <ComboBox ItemsSource="{x:Bind ViewModel.Visibilities}"
-                          SelectedItem="{Binding SelectedContribution.Visibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                <!-- SelectedItem="{Binding Contribution.Visibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
+                <ComboBox x:Name="VisibilitiesComboBox"
+                          ItemsSource="{x:Bind ViewModel.Visibilities}"
                           IsTextSearchEnabled="True"
                           DisplayMemberPath="Description"
                           HorizontalAlignment="Left"

@@ -25,7 +25,7 @@ namespace MvpApi.Uwp.ViewModels
         #region Fields
 
         private ContributionsModel _originalContribution;
-        private ContributionsModel _selectedContribution;
+        private ContributionsModel contribution;
         private string _urlHeader = "Url";
         private string _annualQuantityHeader = "Annual Quantity";
         private string _secondAnnualQuantityHeader = "Second Annual Quantity";
@@ -35,10 +35,11 @@ namespace MvpApi.Uwp.ViewModels
         private bool _isSecondAnnualQuantityRequired;
         private bool _isAnnualReachRequired;
         private bool _canSave = true;
-        private string _warningMessage;
+        private string headerMessage;
         private bool _isBusy;
         private string _isBusyMessage;
         private bool _editingExistingContribution;
+        private bool _isCloningContribution;
 
         #endregion
 
@@ -49,7 +50,7 @@ namespace MvpApi.Uwp.ViewModels
                 Types = DesignTimeHelpers.GenerateContributionTypes();
                 Visibilities = DesignTimeHelpers.GenerateVisibilities();
                 UploadQueue = DesignTimeHelpers.GenerateContributions();
-                SelectedContribution = UploadQueue.FirstOrDefault();
+                Contribution = UploadQueue.FirstOrDefault();
             }
             
             RemoveAdditionalTechAreaCommand = new DelegateCommand<ContributionTechnologyModel>(RemoveAdditionalArea);
@@ -67,13 +68,13 @@ namespace MvpApi.Uwp.ViewModels
 
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
 
-        public ContributionsModel SelectedContribution
+        public ContributionsModel Contribution
         {
-            get => _selectedContribution;
-            set => Set(ref _selectedContribution, value);
+            get => contribution;
+            set => Set(ref contribution, value);
         }
 
-        // Data entry control headers, using VM properties to alert validation violations
+        // Data entry control headers (using VM properties to dynamically change text to show data validation errors)
 
         public string AnnualQuantityHeader
         {
@@ -129,10 +130,10 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _canSave, value);
         }
 
-        public string WarningMessage
+        public string HeaderMessage
         {
-            get => _warningMessage;
-            set => Set(ref _warningMessage, value);
+            get => headerMessage;
+            set => Set(ref headerMessage, value);
         }
 
         public bool IsBusy
@@ -153,6 +154,12 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _editingExistingContribution, value);
         }
 
+        public bool IsCloningContribution
+        {
+            get => _isCloningContribution;
+            set => Set(ref _isCloningContribution, value);
+        }
+
         #endregion
 
         #region Commands
@@ -169,174 +176,176 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (e.NewDate < (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline)
             {
-                WarningMessage = "The contribution date must be after the start of your current award period and before March 31st in order for it to count towards your evaluation";
+                HeaderMessage = "The contribution date must be after the start of your current award period and before March 31st in order for it to count towards your evaluation";
             }
             else
             {
-                WarningMessage = "";
+                HeaderMessage = "";
             }
         }
 
-        public void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.FirstOrDefault() is ContributionTypeModel type)
-            {
-                // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
-                DetermineContributionTypeRequirements(type);
+        //public void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (e.AddedItems.FirstOrDefault() is ContributionTypeModel type)
+        //    {
+        //        // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
+        //        DetermineContributionTypeRequirements(type);
 
-                // Also need set the type name
-                SelectedContribution.ContributionTypeName = type.EnglishName;
-            }
-        }
+        //        // Also need set the type name
+        //        Contribution.ContributionTypeName = type.EnglishName;
+        //    }
+        //}
 
-        public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
-        {
-            if (SelectedContribution.AdditionalTechnologies.Count < 2)
-            {
-                AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
-            }
-            else
-            {
-                await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
-            }
+        //public async void AdditionalTechnologiesListView_OnItemClick(object sender, ItemClickEventArgs e)
+        //{
+        //    if (Contribution.AdditionalTechnologies.Count < 2)
+        //    {
+        //        AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
+        //    }
+        //    else
+        //    {
+        //        await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
+        //    }
             
-            // Manually find the flyout's popup to close it
-            var lv = sender as ListView;
-            var foPresenter = lv?.Parent as FlyoutPresenter;
-            var popup = foPresenter?.Parent as Popup;
-            popup?.Hide();
-        }
+        //    // Manually find the ComboBox popup to close it
+        //    if (sender is ListView lv && 
+        //        lv.Parent is FlyoutPresenter presenter && 
+        //        presenter.Parent is Popup popup)
+        //    {
+        //        popup.Hide();
+        //    }
+        //}
 
         #endregion
 
         #region Tasks
 
-        public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
-        {
-            // Each activity type has a unique set of field names and which ones are required.
-            // This extension method will parse it and return a Tuple of the unqie requirements.
-            var contributionTypeRequirements = contributionType.GetContributionTypeRequirements();
+        //public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
+        //{
+        //    // Each activity type has a unique set of field names and which ones are required.
+        //    // This extension method will parse it and return a Tuple of the unique requirements.
+        //    var contributionTypeRequirements = contributionType.GetContributionTypeRequirements();
 
-            // Set the headers of the input boxes
-            AnnualQuantityHeader = contributionTypeRequirements.Item1;
-            SecondAnnualQuantityHeader = contributionTypeRequirements.Item2;
-            AnnualReachHeader = contributionTypeRequirements.Item3;
+        //    // Set the headers of the input boxes
+        //    AnnualQuantityHeader = contributionTypeRequirements.Item1;
+        //    SecondAnnualQuantityHeader = contributionTypeRequirements.Item2;
+        //    AnnualReachHeader = contributionTypeRequirements.Item3;
 
-            // Determine the required fields for upload.
-            IsUrlRequired = contributionTypeRequirements.Item4;
-            IsAnnualQuantityRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item1);
-            IsSecondAnnualQuantityRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item2);
-            IsAnnualReachRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item3);
-        }
+        //    // Determine the required fields for upload.
+        //    IsUrlRequired = contributionTypeRequirements.Item4;
+        //    IsAnnualQuantityRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item1);
+        //    IsSecondAnnualQuantityRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item2);
+        //    IsAnnualReachRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item3);
+        //}
 
-        private void AddAdditionalArea(ContributionTechnologyModel area)
-        {
-            if (!SelectedContribution.AdditionalTechnologies.Contains(area))
-            {
-                SelectedContribution.AdditionalTechnologies.Add(area);
-            }
-        }
+        //private void AddAdditionalArea(ContributionTechnologyModel area)
+        //{
+        //    if (!Contribution.AdditionalTechnologies.Contains(area))
+        //    {
+        //        Contribution.AdditionalTechnologies.Add(area);
+        //    }
+        //}
 
-        private void RemoveAdditionalArea(ContributionTechnologyModel area)
-        {
-            if (SelectedContribution.AdditionalTechnologies.Contains(area))
-            {
-                SelectedContribution.AdditionalTechnologies.Remove(area);
-            }
-        }
+        //private void RemoveAdditionalArea(ContributionTechnologyModel area)
+        //{
+        //    if (Contribution.AdditionalTechnologies.Contains(area))
+        //    {
+        //        Contribution.AdditionalTechnologies.Remove(area);
+        //    }
+        //}
         
-        public async Task OnDialogLoadedAsync()
-        {
-            if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
-            {
-                WarningMessage = "No Internet Available";
-                return;
-            }
+        //public async Task OnDialogLoadedAsync()
+        //{
+        //    if (!NetworkHelper.Instance.ConnectionInformation.IsInternetAvailable)
+        //    {
+        //        HeaderMessage = "No Internet Available";
+        //        return;
+        //    }
 
-            if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
-            {
-                // Verify the user is logged in
-                if (!shellVm.IsLoggedIn)
-                {
-                    IsBusy = true;
-                    IsBusyMessage = "logging in...";
+        //    if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
+        //    {
+        //        // Verify the user is logged in
+        //        if (!shellVm.IsLoggedIn)
+        //        {
+        //            IsBusy = true;
+        //            IsBusyMessage = "logging in...";
 
-                    await ShellPage.Instance.SignInAsync();
+        //            await ShellPage.Instance.SignInAsync();
 
-                    IsBusyMessage = "";
-                    IsBusy = false;
-                }
+        //            IsBusyMessage = "";
+        //            IsBusy = false;
+        //        }
 
-                if (shellVm.IsLoggedIn)
-                {
-                    try
-                    {
-                        IsBusy = true;
-                        IsBusyMessage = "loading types...";
+        //        if (shellVm.IsLoggedIn)
+        //        {
+        //            try
+        //            {
+        //                IsBusy = true;
+        //                IsBusyMessage = "loading types...";
 
-                        var types = await App.ApiService.GetContributionTypesAsync();
+        //                var types = await App.ApiService.GetContributionTypesAsync();
 
-                        types.ForEach(type =>
-                        {
-                            Types.Add(type);
-                        });
+        //                types.ForEach(type =>
+        //                {
+        //                    Types.Add(type);
+        //                });
 
-                        IsBusyMessage = "loading technologies...";
+        //                IsBusyMessage = "loading technologies...";
 
-                        var areaRoots = await App.ApiService.GetContributionAreasAsync();
+        //                var areaRoots = await App.ApiService.GetContributionAreasAsync();
 
-                        // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-                        var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+        //                // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
+        //                var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
 
-                        areas.ForEach(area =>
-                        {
-                            CategoryAreas.Add(area);
-                        });
+        //                areas.ForEach(area =>
+        //                {
+        //                    CategoryAreas.Add(area);
+        //                });
 
-                        // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
+        //                // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
 
-                        IsBusyMessage = "loading visibility options...";
+        //                IsBusyMessage = "loading visibility options...";
 
-                        var visibilities = await App.ApiService.GetVisibilitiesAsync();
+        //                var visibilities = await App.ApiService.GetVisibilitiesAsync();
 
-                        visibilities.ForEach(visibility =>
-                        {
-                            Visibilities.Add(visibility);
-                        });
+        //                visibilities.ForEach(visibility =>
+        //                {
+        //                    Visibilities.Add(visibility);
+        //                });
 
-                        // If the contribution object wasn't passed during Dialog creation, setup a blank one.
-                        if (SelectedContribution == null)
-                        {
-                            SelectedContribution = new ContributionsModel
-                            {
-                                ContributionId = 0,
-                                StartDate = DateTime.Now,
-                                Visibility = Visibilities.FirstOrDefault(),
-                                ContributionType = Types.FirstOrDefault(),
-                                ContributionTypeName = SelectedContribution?.ContributionType?.Name,
-                                ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas.FirstOrDefault(),
-                                AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
-                            };
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
-                        await ex.LogExceptionAsync();
-                    }
-                    finally
-                    {
-                        IsBusyMessage = "";
-                        IsBusy = false;
-                    }
-                }
-            }
-        }
+        //                // If the contribution object wasn't passed during Dialog creation, this is a new entry
+        //                if (Contribution == null)
+        //                {
+        //                    Contribution = new ContributionsModel
+        //                    {
+        //                        ContributionId = 0,
+        //                        StartDate = DateTime.Now,
+        //                        Visibility = Visibilities.FirstOrDefault(),
+        //                        ContributionType = Types.FirstOrDefault(),
+        //                        ContributionTypeName = Contribution?.ContributionType?.Name,
+        //                        ContributionTechnology = CategoryAreas?.FirstOrDefault()?.ContributionAreas.FirstOrDefault(),
+        //                        AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
+        //                    };
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Debug.WriteLine($"AddContributions OnNavigatedToAsync Exception {ex}");
+        //                await ex.LogExceptionAsync();
+        //            }
+        //            finally
+        //            {
+        //                IsBusyMessage = "";
+        //                IsBusy = false;
+        //            }
+        //        }
+        //    }
+        //}
 
-        public void OnDialogClosingAsync()
-        {
+        //public void OnDialogClosingAsync()
+        //{
 
-        }
+        //}
         
         #endregion
     }

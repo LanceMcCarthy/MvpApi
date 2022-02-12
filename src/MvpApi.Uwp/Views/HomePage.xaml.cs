@@ -16,7 +16,7 @@ namespace MvpApi.Uwp.Views
             InitializeComponent();
 
             // Note: The is a workaround because there's no OneWayToSource binding option for UWP
-            ViewModel.SelectedContributions = ContributionsGrid.SelectedItems;
+            //ViewModel.SelectedContributions = ContributionsGrid.SelectedItems;
             ViewModel.GroupDescriptors = ContributionsGrid.GroupDescriptors;
 
             ViewModel.FlyoutView = this;
