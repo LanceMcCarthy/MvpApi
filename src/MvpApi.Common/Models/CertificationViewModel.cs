@@ -50,5 +50,20 @@ namespace MvpApi.Common.Models
 		/// </summary>
 		[Newtonsoft.Json.JsonProperty(PropertyName = "CertificationVisibility")]
 		public VisibilityViewModel CertificationVisibility { get; set; }
-	}
+        
+        public override bool Equals(object obj)
+        {
+            if (obj is CertificationViewModel incoming)
+            {
+                return this.Id == incoming.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+    }
 }

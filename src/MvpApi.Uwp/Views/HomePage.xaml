@@ -9,6 +9,7 @@
       xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
       xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       xmlns:controls="using:Microsoft.UI.Xaml.Controls"
+      xmlns:models="using:MvpApi.Common.Models"
       mc:Ignorable="d">
 
     <Page.DataContext>
@@ -29,51 +30,6 @@
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
-
-            <Button x:Name="AwardCycleButton"
-                    HorizontalAlignment="Left"
-                    Margin="8">
-                <Button.Content>
-                    <StackPanel Orientation="Horizontal">
-                        <SymbolIcon Symbol="Calendar"
-                                    Margin="5" />
-                        <TextBlock Text="Award Cycle:"
-                                   Margin="5,5,0,5" />
-                        <TextBlock Text="{Binding PreferredAwardDataDataCycle}"
-                                   FontWeight="SemiBold"
-                                   Margin="5" />
-                    </StackPanel>
-                </Button.Content>
-                <Button.Flyout>
-                    <Flyout x:Name="AwardCyclePreferenceFlyout">
-                        <StackPanel Margin="10,10,10,5"
-                                    MaxWidth="400">
-                            <ComboBox x:Name="AwardCycleComboBox"
-                                      ItemsSource="{Binding AwardDataCycles}"
-                                      SelectedItem="{Binding PreferredAwardDataDataCycle, Mode=TwoWay}"
-                                      IsEnabled="{Binding IsBusy, Converter={StaticResource InvertBoolConverter}}"
-                                      Header="Selected Award Cycle Preference"
-                                      HorizontalAlignment="Stretch" />
-                            <TextBlock TextWrapping="WrapWholeWords"
-                                       Margin="0,10,0,0">
-                                <Run Text="Award cycle preference options:" />
-                                <LineBreak />
-                                <Run Text="- Current:"
-                                     FontWeight="Bold" />
-                                <Run Text="Show current cycle's contributions (fastest)." />
-                                <LineBreak />
-                                <Run Text="- Historical:"
-                                     FontWeight="Bold" />
-                                <Run Text="Show prior award cycle contributions." />
-                                <LineBreak />
-                                <Run Text="- All:"
-                                     FontWeight="Bold" />
-                                <Run Text="Shows everything you have, but can take a while to load." />
-                            </TextBlock>
-                        </StackPanel>
-                    </Flyout>
-                </Button.Flyout>
-            </Button>
 
             <Button x:Name="GroupByButton"
                     HorizontalAlignment="Right"
@@ -111,30 +67,14 @@
 
         <grid:RadDataGrid x:Name="ContributionsGrid"
                           ItemsSource="{Binding Contributions}"
-                          SelectionMode="{Binding GridSelectionMode}"
+                          SelectionMode="None"
+                          RowDetailsDisplayMode="Single"
                           IncrementalLoadingMode="Auto"
                           AutoGenerateColumns="False"
                           CanUserChooseColumns="False"
                           UserGroupMode="Disabled"
-                          SelectionChanged="{x:Bind ViewModel.RadDataGrid_OnSelectionChanged}"
                           GridLinesThickness="1"
                           Grid.Row="1">
-            <animations:Implicit.ShowAnimations>
-                <animations:ScaleAnimation From="0.8"
-                                           To="1"
-                                           Duration="0:0:1" />
-                <animations:OpacityAnimation From="0"
-                                             To="1"
-                                             Duration="0:0:1" />
-            </animations:Implicit.ShowAnimations>
-            <animations:Implicit.HideAnimations>
-                <animations:ScaleAnimation From="1"
-                                           To="0.8"
-                                           Duration="0:0:0.6" />
-                <animations:OpacityAnimation From="1"
-                                             To="0"
-                                             Duration="0:0:0.6" />
-            </animations:Implicit.HideAnimations>
             <grid:RadDataGrid.GroupHeaderTemplate>
                 <DataTemplate>
                     <Grid>
@@ -160,6 +100,47 @@
                 </DataTemplate>
             </grid:RadDataGrid.GroupHeaderTemplate>
             <grid:RadDataGrid.Columns>
+                <grid:DataGridTemplateColumn Header="Options">
+                    <grid:DataGridTemplateColumn.CellContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Click="{x:Bind ViewModel.ExpandButton_Click}"
+                                        ToolTipService.ToolTip="Expand the details row"
+                                        Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}"
+                                        Margin="4,2">
+                                    <Button.Content>
+                                        <SymbolIcon Symbol="ShowBcc" />
+                                    </Button.Content>
+                                </Button>
+                                <Button Click="{x:Bind ViewModel.CloneButton_Click}"
+                                        ToolTipService.ToolTip="Start a new submission using this contribution's information"
+                                        Margin="4,2">
+                                    <SymbolIcon Symbol="Copy" />
+                                </Button>
+                                <Button Click="{x:Bind ViewModel.EditButton_Click}" 
+                                        ToolTipService.ToolTip="Edit this contribution"
+                                        Visibility="{Binding IsEditable, Converter={StaticResource BoolToVisibilityConverter}}"
+                                        IsEnabled="{Binding IsEditable}"
+                                        Margin="4,2">
+                                    <Button.Content>
+                                        <SymbolIcon Symbol="Edit" />
+                                    </Button.Content>
+                                </Button>
+                                <Button Click="{x:Bind ViewModel.DeleteButton_Click}" 
+                                        ToolTipService.ToolTip="Delete this contribution"
+                                        Visibility="{Binding IsEditable, Converter={StaticResource BoolToVisibilityConverter}}"
+                                        IsEnabled="{Binding IsEditable}"
+                                        Background="DarkRed"
+                                        Foreground="White"
+                                        Margin="4,2">
+                                    <Button.Content>
+                                        <SymbolIcon Symbol="Delete" />
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </grid:DataGridTemplateColumn.CellContentTemplate>
+                </grid:DataGridTemplateColumn>
                 <grid:DataGridDateColumn PropertyName="StartDate"
                                          CellContentFormat="{}{0:d}"
                                          Header="Start Date" />
@@ -169,18 +150,102 @@
                 <grid:DataGridTextColumn PropertyName="ContributionTypeName"
                                          Header="Contribution Type"
                                          CellContentStyle="{StaticResource WideCellContentStyle}" />
-                <grid:DataGridTextColumn PropertyName="Description"
+                <!--<grid:DataGridTextColumn PropertyName="Description"
                                          Header="Description"
-                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />
-                <!--<grid:DataGridNumericalColumn PropertyName="AnnualQuantity"
-                                              Header="Annual Quantity" />
-                <grid:DataGridNumericalColumn PropertyName="AnnualReach"
-                                              Header="Annual Reach" />-->
+                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />-->
                 <grid:DataGridTextColumn PropertyName="ReferenceUrl"
                                          Width="100"
                                          Header="Url"
                                          CellContentStyle="{StaticResource MediumCellContentStyle}" />
             </grid:RadDataGrid.Columns>
+            <grid:RadDataGrid.RowDetailsTemplate>
+                <DataTemplate x:DataType="models:ContributionsModel">
+                    <StackPanel Margin="10">
+                        <HyperlinkButton Content="{Binding ReferenceUrl}"
+                                         NavigateUri="{Binding ReferenceUrl}"
+                                         Background="{ThemeResource AppBarBackgroundThemeBrush}"
+                                         Margin="0,5,0,5" />
+                        <TextBlock Text="Description"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,5" />
+                        <TextBlock Text="{Binding Description}"
+                                   TextWrapping="WrapWholeWords"
+                                   Margin="0,0,0,20" />
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Margin="0,0,20,0">
+                                <TextBlock Text="Technology"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,5" />
+                                <Grid Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                      HorizontalAlignment="Left"
+                                      Margin="0,0,0,10">
+                                    <TextBlock Text="{Binding ContributionTechnology.Name}"
+                                               Foreground="White"
+                                               VerticalAlignment="Center"
+                                               Margin="7,5" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Additional Technologies"
+                                           FontWeight="SemiBold" />
+                                <ListView ItemsSource="{Binding AdditionalTechnologies}"
+                                          HorizontalAlignment="Left"
+                                          Margin="0,0,0,10">
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <ItemsStackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="Padding"
+                                                    Value="0" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Background="Gray"
+                                                  Margin="0,0,10,0">
+                                                <TextBlock Text="{Binding Name}"
+                                                           Foreground="White"
+                                                           VerticalAlignment="Center"
+                                                           Margin="7,5" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        <StackPanel Margin="0,0,0,5">
+                            <TextBlock Text="Visibility"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding Visibility.Description}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Visibility="{Binding AnnualQuantity, Converter={StaticResource NullToVisibilityConverter}}"
+                                        Margin="0,0,10,5">
+                                <TextBlock Text="Annual Quantity"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding AnnualQuantity}" />
+                            </StackPanel>
+                            <StackPanel Visibility="{Binding SecondAnnualQuantity, Converter={StaticResource NullToVisibilityConverter}}"
+                                        Margin="0,0,10,5">
+                                <TextBlock Text="Second Annual Quantity"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding SecondAnnualQuantity}" />
+                            </StackPanel>
+                            <StackPanel Visibility="{Binding AnnualReach, Converter={StaticResource NullToVisibilityConverter}}" 
+                                        Margin="0,0,0,5">
+                                <TextBlock Text="AnnualReach"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding AnnualReach}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </grid:RadDataGrid.RowDetailsTemplate>
         </grid:RadDataGrid>
 
         <primitives:RadBusyIndicator Content="{x:Bind ViewModel.LoadingMoreItemsMessage, Mode=OneWay}"
@@ -199,17 +264,33 @@
                 Grid.Row="1" />
 
         <CommandBar Grid.Row="2"
-                    Background="{ThemeResource AppBarBackgroundThemeBrush}">
+                    Background="{ThemeResource AppBarBackgroundThemeBrush}"
+                    VerticalContentAlignment="Center">
             <CommandBar.Content>
-                <TextBlock Text="{Binding DisplayTotal}"
-                           Margin="15,15,0,0"
-                           Style="{ThemeResource CaptionTextBlockStyle}"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding DisplayTotal}"
+                               VerticalAlignment="Center"
+                               Margin="15,0,0,15"
+                               Style="{ThemeResource CaptionTextBlockStyle}" />
+                    <Border Background="Gold"
+                            Visibility="{Binding IsAutomaticRefreshPaused, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Margin="15,0,0,15"
+                            Padding="8,4">
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Symbol="BlockContact"
+                                        Margin="0,0,8,0"/>
+                            <TextBlock Text="AUTO REFRESH PAUSED"
+                                       Foreground="Black"/>
+
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
             </CommandBar.Content>
             <CommandBar.SecondaryCommands>
-                <AppBarButton Label="Export All Contributions"
+                <AppBarButton Label="Export Contributions"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
             </CommandBar.SecondaryCommands>
-            <AppBarButton Label="clear selection"
+            <!--<AppBarButton Label="clear selection"
                           Icon="ClearSelection"
                           Visibility="{Binding IsMultipleSelectionEnabled, Converter={StaticResource BoolToVisibilityConverter}}"
                           IsEnabled="{Binding AreAppBarButtonsEnabled}"
@@ -222,7 +303,7 @@
             <AppBarToggleButton Label="multiple selection"
                                 Icon="Bullets"
                                 IsChecked="{Binding IsMultipleSelectionEnabled, Mode=TwoWay}" />
-            <AppBarSeparator />
+            <AppBarSeparator />-->
             <AppBarButton Icon="Refresh"
                           Label="refresh"
                           Click="{x:Bind ViewModel.RefreshButton_Click}" />

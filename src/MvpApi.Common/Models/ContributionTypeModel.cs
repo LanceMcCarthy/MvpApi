@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace MvpApi.Common.Models
 {
-    public partial class ContributionTypeModel : BindableBase
+    public class ContributionTypeModel : BindableBase
     {
         private string id;
         private string name;
@@ -57,6 +57,21 @@ namespace MvpApi.Common.Models
         {
             get => englishName;
             set => SetProperty(ref englishName, value);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ContributionTypeModel incoming)
+            {
+                return this.Id == incoming.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
         }
     }
 }

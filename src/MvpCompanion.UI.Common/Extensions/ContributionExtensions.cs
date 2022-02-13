@@ -295,15 +295,23 @@ namespace MvpCompanion.UI.Common.Extensions
         }
 
         /// <summary>
-        /// Deep clones the ContributionsModel (no reference to original)
+        /// Deep clones the ContributionsModel using a JSON serialize-deserialize cycle
         /// </summary>
-        /// <param name="source"></param>
+        /// <param name="source">Contribution to clone</param>
+        /// <param name="stripContributionId">Determines if the ID of the item is removed (this is helpful when using an old contribution to create a new one</param>
         /// <returns></returns>
-        public static ContributionsModel Clone(this ContributionsModel source)
+        public static ContributionsModel Clone(this ContributionsModel source, bool stripContributionId = false)
         {
             // Deep clone using json.net
             var json = JsonConvert.SerializeObject(source);
-            return JsonConvert.DeserializeObject<ContributionsModel>(json);
+            var item = JsonConvert.DeserializeObject<ContributionsModel>(json);
+
+            if (stripContributionId)
+            {
+                item.ContributionId = null;
+            }
+
+            return item;
         }
 
         /// <summary>
