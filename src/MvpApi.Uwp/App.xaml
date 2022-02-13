@@ -142,7 +142,7 @@
                                 <TextBlock Text="(required)"
                                            Margin="5,0"
                                            FontStyle="Italic"
-                                           Foreground="Red" />
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                             </StackPanel>
                         </DataTemplate>
                     </Setter.Value>

@@ -115,7 +115,7 @@
                                 <TextBlock Text="(required)"
                                            Margin="5,0"
                                            FontStyle="Italic"
-                                           Foreground="Red" />
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                             </StackPanel>
                         </ComboBox.Header>
                     </ComboBox>
@@ -209,7 +209,7 @@
                                 <TextBlock Text="(required)"
                                            Margin="5,0"
                                            FontStyle="Italic"
-                                           Foreground="Red" />
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                             </StackPanel>
                         </DatePicker.Header>
                     </DatePicker>
@@ -226,7 +226,7 @@
                                 <TextBlock Text="(required)"
                                            Margin="5,0"
                                            FontStyle="Italic"
-                                           Foreground="Red" />
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                             </StackPanel>
                         </TextBox.Header>
                     </TextBox>
@@ -252,7 +252,7 @@
                                 <TextBlock Text="(required)"
                                            Margin="5,0"
                                            FontStyle="Italic"
-                                           Foreground="Red"
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                            Visibility="{Binding IsUrlRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                             </StackPanel>
                         </TextBox.Header>
@@ -277,7 +277,7 @@
                                     <TextBlock Text="(required)"
                                                Margin="5,0"
                                                FontStyle="Italic"
-                                               Foreground="Red"
+                                               Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                                Visibility="{Binding IsAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                                 </StackPanel>
                             </input:RadNumericBox.Header>
@@ -299,7 +299,7 @@
                                                Margin="0,0,5,0" />
                                     <TextBlock Text="(required)"
                                                Margin="5,0"
-                                               Foreground="Red"
+                                               Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                                FontStyle="Italic"
                                                Visibility="{Binding IsSecondAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                                 </StackPanel>
@@ -321,7 +321,7 @@
                                                Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
                                     <TextBlock Text="(required)"
                                                Margin="5,0"
-                                               Foreground="Red"
+                                               Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                                FontStyle="Italic"
                                                Visibility="{Binding IsAnnualReachRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                                 </StackPanel>
@@ -344,7 +344,7 @@
                                 <TextBlock Text="(required)"
                                            FontStyle="Italic"
                                            Margin="5,0"
-                                           Foreground="Red" />
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                             </StackPanel>
                         </ComboBox.Header>
                     </ComboBox>
