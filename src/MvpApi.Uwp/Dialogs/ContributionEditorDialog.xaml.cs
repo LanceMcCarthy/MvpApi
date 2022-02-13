@@ -53,13 +53,16 @@ namespace MvpApi.Uwp.Dialogs
 
         public ContributionEditorDialog(ContributionsModel originalContribution, bool cloneContribution = false)
         {
+            if (originalContribution == null)
+                throw new ArgumentNullException(nameof(originalContribution), "You need to use an originating contribution in order to use the ContributionEditorDialog for either editing or cloning.");
+
             InitializeComponent();
 
             ViewModel.IsCloningContribution = cloneContribution;
 
             // If we are cloning, make a new copy of the object to prevent making changes to the original reference
             ViewModel.Contribution = cloneContribution
-                ? ViewModel.Contribution.Clone(stripContributionId: true)
+                ? originalContribution.Clone(stripContributionId: true)
                 : originalContribution;
 
             // Show the correct text for the buttons and subscribe to the clicked event
