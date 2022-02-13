@@ -13,6 +13,22 @@
                mc:Ignorable="d"
                MinWidth="400">
 
+    <ContentDialog.Resources>
+        <Style x:Key="SegmentLoadingIndicatorStyle"
+               TargetType="primitives:RadBusyIndicator">
+            <Setter Property="Background"
+                    Value="#55000000" />
+            <Setter Property="Foreground"
+                    Value="White" />
+            <Setter Property="AnimationStyle"
+                    Value="AnimationStyle5" />
+            <Setter Property="HorizontalAlignment"
+                    Value="Left" />
+            <Setter Property="FontSize"
+                    Value="12" />
+        </Style>
+    </ContentDialog.Resources>
+
     <ContentDialog.DataContext>
         <viewModels:ContributionEditorDialogViewModel x:Name="ViewModel" />
     </ContentDialog.DataContext>
@@ -39,30 +55,114 @@
 
         <ScrollViewer Grid.Row="1">
             <StackPanel>
+                <StackPanel x:Name="ReadonlyContributionTypePanel"
+                            Margin="0,10,10,10"
+                            Visibility="Collapsed">
+                    <TextBlock Text="Contribution Type:"
+                               Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                               Margin="0,0,5,0" />
+                    <TextBlock x:Name="ReadonlyContributionTypeTextBlock"
+                               Text="Windows Development"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
+                </StackPanel>
+
                 <!-- SelectedItem="{Binding Contribution.ContributionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                           ItemsSource="{Binding Types}"
                           SelectionChanged="{x:Bind ViewModel.ActivityType_SelectionChanged}"
                           Visibility="{Binding IsCloningContribution, Converter={StaticResource BoolToVisibilityConverter}}"-->
-                <ComboBox x:Name="ContributionTypeComboBox"
-                          DisplayMemberPath="Name"
-                          HorizontalAlignment="Left"
-                          MinWidth="300"
-                          Margin="0,10,10,10">
-                    <ComboBox.Header>
+                <Grid x:Name="ContributionTypeGrid">
+                    <ComboBox x:Name="ContributionTypeComboBox"
+                              DisplayMemberPath="Name"
+                              HorizontalAlignment="Left"
+                              MinWidth="300"
+                              Margin="0,10,10,10">
+                        <ComboBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Select Contribution Type"
+                                           Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                           Margin="0,0,5,0" />
+                                <TextBlock Text="(required)"
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
+                            </StackPanel>
+                        </ComboBox.Header>
+                    </ComboBox>
+
+                    <primitives:RadBusyIndicator x:Name="ContributionTypeBusyIndicator"
+                                                 Width="{Binding Path=ActualWidth, ElementName=ContributionTypeComboBox}"
+                                                 Height="{Binding Path=ActualHeight, ElementName=ContributionTypeComboBox}"
+                                                 Style="{StaticResource SegmentLoadingIndicatorStyle}"
+                                                 HorizontalAlignment="Left" />
+                </Grid>
+
+                <Grid>
+                    <StackPanel x:Name="ContributionTechnologyPanel"
+                                Margin="0,10,10,10">
+                        <TextBlock Text="Contribution Technology Area:"
+                                   Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                   Margin="0,0,0,5" />
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Select Contribution Type"
+                            <Button x:Name="EditTechAreaButton"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0">
+                                <Button.Content>
+                                    <FontIcon FontSize="12"
+                                              Glyph="&#xE104;"
+                                              FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                </Button.Content>
+                                <Button.Flyout>
+                                    <Flyout x:Name="ContributionTechAreaFlyout">
+                                        <ListView x:Name="ContributionTechnologiesListView"
+                                                  Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
+                                                  IsItemClickEnabled="True"
+                                                  SelectionMode="None"
+                                                  HorizontalAlignment="Stretch"
+                                                  VerticalAlignment="Stretch" />
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                            <TextBlock x:Name="SelectedContributionTypeTextBlock"
+                                       Text=""
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <primitives:RadBusyIndicator x:Name="ContributionTechnologyBusyIndicator"
+                                                 Width="{Binding Path=ActualWidth, ElementName=ContributionTechnologyPanel}"
+                                                 Height="{Binding Path=ActualHeight, ElementName=ContributionTechnologyPanel}"
+                                                 Style="{StaticResource SegmentLoadingIndicatorStyle}" />
+                </Grid>
+
+                
+
+                <!-- SelectedItem="{Binding Contribution.ContributionTechnology, Mode=TwoWay}" 
+                          ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"-->
+                <!--<Grid>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Contribution Technology Area"
                                        Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
                                        Margin="0,0,5,0" />
                             <TextBlock Text="(required)"
                                        Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                         </StackPanel>
-                    </ComboBox.Header>
-                </ComboBox>
 
-                <!-- SelectedItem="{Binding Contribution.ContributionTechnology, Mode=TwoWay}" 
-                          ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"-->
-                <ComboBox x:Name="ContributionTechnologyComboBox"
-                          Style="{StaticResource TechnologyAreaComboBoxStyle}" />
+                    </StackPanel>
+
+
+                    <ComboBox x:Name="ContributionTechnologyComboBox"
+                              Style="{StaticResource TechnologyAreaComboBoxStyle}" />
+
+
+
+                    <primitives:RadBusyIndicator x:Name="ContributionTechnologyBusyIndicator"
+                                                 Width="{Binding Path=ActualWidth, ElementName=ContributionTechnologyComboBox}"
+                                                 Height="{Binding Path=ActualHeight, ElementName=ContributionTechnologyComboBox}"
+                                                 Style="{StaticResource SegmentLoadingIndicatorStyle}"/>
+                </Grid>-->
+
 
                 <TextBlock Text="Optional: Select up to 2 additional technology areas."
                            Margin="0,10,0,0" />
@@ -275,26 +375,32 @@
 
                 <!-- SelectedItem="{Binding Contribution.Visibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           ItemsSource="{x:Bind ViewModel.Visibilities}" -->
-                <ComboBox x:Name="VisibilitiesComboBox"
-                          IsTextSearchEnabled="True"
-                          DisplayMemberPath="Description"
-                          HorizontalAlignment="Left"
-                          MinWidth="300"
-                          Margin="0,10">
-                    <ComboBox.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Contribution Visibility"
-                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                       Margin="0,0,5,0" />
-                            <TextBlock Text="(required)"
-                                       Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
-                        </StackPanel>
-                    </ComboBox.Header>
-                </ComboBox>
+                <Grid>
+                    <ComboBox x:Name="VisibilitiesComboBox"
+                              IsTextSearchEnabled="True"
+                              DisplayMemberPath="Description"
+                              HorizontalAlignment="Left"
+                              MinWidth="300"
+                              Margin="0,10">
+                        <ComboBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Contribution Visibility"
+                                           Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                           Margin="0,0,5,0" />
+                                <TextBlock Text="(required)"
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
+                            </StackPanel>
+                        </ComboBox.Header>
+                    </ComboBox>
+                    <primitives:RadBusyIndicator x:Name="VisibilitiesBusyIndicator"
+                                                 Width="{Binding Path=ActualWidth, ElementName=VisibilitiesComboBox}"
+                                                 Height="{Binding Path=ActualHeight, ElementName=VisibilitiesComboBox}"
+                                                 Style="{StaticResource SegmentLoadingIndicatorStyle}" />
+                </Grid>
             </StackPanel>
         </ScrollViewer>
 
-        <primitives:RadBusyIndicator x:Name="BusyIndicator"
+        <primitives:RadBusyIndicator x:Name="MainBusyIndicator"
                                      Content="{Binding IsBusyMessage}"
                                      IsActive="{Binding IsBusy}"
                                      Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"

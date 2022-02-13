@@ -59,11 +59,23 @@ namespace MvpApi.Uwp.Dialogs
             InitializeComponent();
 
             ViewModel.IsCloningContribution = cloneContribution;
+            
+            if (ViewModel.IsCloningContribution)
+            {
+                // If we are cloning, make a new copy of the object to prevent making changes to the original reference
+                ViewModel.Contribution = originalContribution.Clone(stripContributionId: true);
 
-            // If we are cloning, make a new copy of the object to prevent making changes to the original reference
-            ViewModel.Contribution = cloneContribution
-                ? originalContribution.Clone(stripContributionId: true)
-                : originalContribution;
+                HeaderMessageGrid.Background = new SolidColorBrush(Colors.Goldenrod);
+                ViewModel.HeaderMessage = "Cloning Contribution";
+            }
+            else
+            {
+                ViewModel.Contribution = originalContribution;
+
+                HeaderMessageGrid.Background = new SolidColorBrush(Colors.DarkSlateGray);
+                ViewModel.HeaderMessage = "Editing Contribution";
+            }
+
 
             // Show the correct text for the buttons and subscribe to the clicked event
             PrimaryButtonText = cloneContribution ? "Save" : "Update";
@@ -109,33 +121,10 @@ namespace MvpApi.Uwp.Dialogs
                     }
                 }
             }
-
-            // Phase 2 - configure for edit or clone
-
-            if (ViewModel.IsCloningContribution)
-            {
-                // Strip the the original contribution's ID to prevent accidentally overwriting an existing contribution
-                ViewModel.Contribution.ContributionId = null;
-
-                HeaderMessageGrid.Background = new SolidColorBrush(Colors.Goldenrod);
-                ViewModel.HeaderMessage = "Cloning Contribution";
-            }
-            else
-            {
-                HeaderMessageGrid.Background = new SolidColorBrush(Colors.DarkSlateGray);
-                ViewModel.HeaderMessage = "Editing Contribution";
-
-                // Hide contributionType comboBox because you cannot edit the type after it has been submitted
-                ContributionTypeComboBox.Visibility = Visibility.Collapsed;
-            }
-
-            // Phase 3 - Load data for combobox ItemsSource and set selected
-
-            await LoadDataSourcesAsync();
-
-            // Phase 4 - Set all the selected values
-
-            await AssignSelectedValuesAsync();
+            
+            // Load the data and set selected values
+            
+            await LoadDataAsync();
         }
 
         private void ContributionEditorDialog_Unloaded(object sender, RoutedEventArgs e)
@@ -143,7 +132,7 @@ namespace MvpApi.Uwp.Dialogs
             // Unsubscribe manually added handlers
             
             ContributionTypeComboBox.SelectionChanged -= ContributionTypeComboBox_SelectionChanged;
-            ContributionTechnologyComboBox.SelectionChanged -= ContributionTechnologyComboBox_SelectionChanged;
+            ContributionTechnologiesListView.ItemClick -= ContributionTechnologiesListView_ItemClick;
             AvailableTechnologiesListView.ItemClick -= AvailableTechnologiesListView_ItemClick;
             StartDatePicker.SelectedDateChanged -= StartDatePicker_SelectedDateChanged;
             TitleTextBox.TextChanged -= TitleTextBox_TextChanged;
@@ -162,6 +151,9 @@ namespace MvpApi.Uwp.Dialogs
             try
             {
                 IsPrimaryButtonEnabled = false;
+
+                ViewModel.IsBusy = true;
+                ViewModel.IsBusyMessage = "saving...";
 
                 var saveSucceeded = false;
 
@@ -218,6 +210,9 @@ namespace MvpApi.Uwp.Dialogs
                     // prevent the closing of the dialog
                     args.Cancel = true;
 
+                    ViewModel.IsBusy = false;
+                    ViewModel.IsBusyMessage = "";
+
                     await new MessageDialog("Check for errors or missing data and try again.", "Invalid Contribution").ShowAsync();
                 }
             }
@@ -226,11 +221,16 @@ namespace MvpApi.Uwp.Dialogs
                 // prevent the closing of the dialog
                 args.Cancel = true;
 
+                Debug.WriteLine($"AssignSelectedValues Exception {ex}", "ContributionEditorDialog");
+
                 await new MessageDialog("Something went wrong saving the contribution.", "Error").ShowAsync();
 
             }
             finally
             {
+                ViewModel.IsBusy = false;
+                ViewModel.IsBusyMessage = "";
+
                 deferral.Complete();
             }
         }
@@ -252,14 +252,6 @@ namespace MvpApi.Uwp.Dialogs
             Hide();
         }
 
-        private void ContributionTechnologyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.FirstOrDefault() is ContributionTechnologyModel tech)
-            {
-                ViewModel.Contribution.ContributionTechnology = tech;
-            }
-        }
-
         private void ContributionTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.FirstOrDefault() is ContributionTypeModel type)
@@ -271,6 +263,21 @@ namespace MvpApi.Uwp.Dialogs
 
                 // Also need set the type name
                 ViewModel.Contribution.ContributionTypeName = type.EnglishName;
+            }
+        }
+        
+        private void ContributionTechnologiesListView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is ContributionTechnologyModel selectedItem)
+            {
+                ViewModel.Contribution.ContributionTechnology = selectedItem;
+                SelectedContributionTypeTextBlock.Text = ViewModel.Contribution.ContributionTechnology.Name;
+            }
+
+            // Close popup
+            if (ContributionTechnologiesListView.Parent is FlyoutPresenter presenter && presenter.Parent is Popup popup)
+            {
+                popup.Hide();
             }
         }
 
@@ -287,7 +294,7 @@ namespace MvpApi.Uwp.Dialogs
                 ? Visibility.Visible
                 : Visibility.Collapsed;
 
-            // Manually find the ComboBox popup to close it
+            // Close popup
             if (AvailableTechnologiesListView.Parent is FlyoutPresenter presenter && presenter.Parent is Popup popup)
             {
                 popup.Hide();
@@ -379,27 +386,72 @@ namespace MvpApi.Uwp.Dialogs
 
         #region Tasks
 
-        private async Task LoadDataSourcesAsync()
+        private async Task LoadDataAsync()
         {
+            IsPrimaryButtonEnabled = false;
+            
+            // ********* Setup ContributionType ComboBox ********* //
             try
             {
-                ViewModel.IsBusy = true;
+                if (ViewModel.IsCloningContribution)
+                {
+                    ContributionTypeBusyIndicator.Visibility = Visibility.Visible;
+                    ContributionTypeBusyIndicator.IsActive = true;
 
-                // ********* Setup ContributionType ComboBox ********* //
+                    _contTypes = new ObservableCollection<ContributionTypeModel>();
 
-                ViewModel.IsBusyMessage = "loading contribution types...";
+                    var types = await App.ApiService.GetContributionTypesAsync();
+                    types.ForEach(type => { _contTypes.Add(type); });
 
-                _contTypes = new ObservableCollection<ContributionTypeModel>();
+                    ContributionTypeComboBox.ItemsSource = types;
 
-                var types = await App.ApiService.GetContributionTypesAsync();
-                types.ForEach(type => { _contTypes.Add(type); });
+                    //ContributionTypeComboBox.SelectedItem = ViewModel.Contribution.ContributionType;
 
-                ContributionTypeComboBox.ItemsSource = types;
+                    if (ContributionTypeComboBox.Items != null)
+                    {
+                        foreach (var item in ContributionTypeComboBox.Items)
+                        {
+                            if (!(item is ContributionTypeModel cbType))
+                                continue;
+
+                            if (cbType.Id == ViewModel.Contribution.ContributionType.Id)
+                            {
+                                ContributionTypeComboBox.SelectedItem = ViewModel.Contribution.ContributionType;
+                            }
+                        }
+                    }
+
+                    ContributionTypeComboBox.SelectionChangedTrigger = ComboBoxSelectionChangedTrigger.Committed;
+                    ContributionTypeComboBox.SelectionChanged += ContributionTypeComboBox_SelectionChanged;
+                }
+                else // if editing, we cannot change the Type
+                {
+                    ContributionTypeComboBox.Visibility = Visibility.Collapsed;
+
+                    ReadonlyContributionTypePanel.Visibility = Visibility.Visible;
+                    ReadonlyContributionTypeTextBlock.Text = ViewModel.Contribution.ContributionTypeName;
+                }
+                
+                Debug.WriteLine($"Setup ContributionType complete. Selected ContributionType: {ViewModel.Contribution.ContributionType.EnglishName}", "ContributionEditorDialog");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Setup ContributionType Exception {ex}", "ContributionEditorDialog");
+                await ex.LogExceptionAsync();
+            }
+            finally
+            {
+                ContributionTypeBusyIndicator.IsActive = false;
+                ContributionTypeBusyIndicator.Visibility = Visibility.Collapsed;
+            }
 
 
-                // ********* Setup ContributionTechnology ComboBox ********* //
 
-                ViewModel.IsBusyMessage = "loading technologies...";
+            // ********* Setup ContributionTechnology ListBox ********* //
+            try
+            {
+                ContributionTechnologyBusyIndicator.Visibility = Visibility.Visible;
+                ContributionTechnologyBusyIndicator.IsActive = true;
 
                 var areaRoots = await App.ApiService.GetContributionAreasAsync();
 
@@ -407,102 +459,101 @@ namespace MvpApi.Uwp.Dialogs
                 _contAreas = new ObservableCollection<ContributionAreaContributionModel>();
 
                 var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
+
                 areas.ForEach(area => { _contAreas.Add(area); });
 
                 _contTechnologyCvs = new CollectionViewSource
                 {
                     Source = _contAreas,
                     IsSourceGrouped = true,
-                    ItemsPath = new PropertyPath("ContributionAreas")
+                    ItemsPath = new PropertyPath("ContributionAreas"),
                 };
+
+                ContributionTechnologiesListView.ItemsSource = _contTechnologyCvs.View;
+
+                SelectedContributionTypeTextBlock.Text = ViewModel.Contribution.ContributionTechnology.Name;
+
+                ContributionTechnologiesListView.ItemClick += ContributionTechnologiesListView_ItemClick;
                 
-                ContributionTechnologyComboBox.ItemsSource = _contTechnologyCvs;
-                AvailableTechnologiesListView.ItemsSource = _contTechnologyCvs; // this is inside a popup
-
-
-                // ********* Setup Visibilities ComboBox ********* //
-
-                ViewModel.IsBusyMessage = "loading visibilities...";
-
-                _contVisibilities = new ObservableCollection<VisibilityViewModel>();
-
-                var visibilities = await App.ApiService.GetVisibilitiesAsync();
-                visibilities.ForEach(visibility => { _contVisibilities.Add(visibility); });
-
-                VisibilitiesComboBox.ItemsSource = _contVisibilities;
-                
+                Debug.WriteLine($"Setup ContributionTechnology complete. Selected ContributionTechnology: {ViewModel.Contribution.ContributionTechnology.Name}", "ContributionEditorDialog");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"ContributionEditorDialog LoadDataSourcesAsync Exception {ex}");
+                Debug.WriteLine($"Setup ContributionTechnology Exception {ex}", "ContributionEditorDialog");
                 await ex.LogExceptionAsync();
             }
             finally
             {
-                ViewModel.IsBusyMessage = "";
-                ViewModel.IsBusy = false;
+                ContributionTechnologyBusyIndicator.Visibility = Visibility.Collapsed;
+                ContributionTechnologyBusyIndicator.IsActive = false;
             }
-        }
 
-        private async Task AssignSelectedValuesAsync()
-        {
+
+            // ********* Setup SelectedAdditionalTechnologies and AvailableTechnologiesListView section ********* //
             try
             {
-                // This setup follows the same order that the elements are defined in XAML
-
-                ViewModel.IsBusy = true;
-                ViewModel.IsBusyMessage = "setting selected values...";
-
-                // ContributionType ComboBox
-
-                ContributionTypeComboBox.SelectedItem = ViewModel.Contribution.ContributionType;
-                ContributionTypeComboBox.SelectionChangedTrigger = ComboBoxSelectionChangedTrigger.Committed;
-                ContributionTypeComboBox.SelectionChanged += ContributionTypeComboBox_SelectionChanged;
-
-                // ContributionTechnology ComboBox
-
-                ContributionTechnologyComboBox.SelectedItem = ViewModel.Contribution.ContributionTechnology;
-                ContributionTechnologyComboBox.SelectionChangedTrigger = ComboBoxSelectionChangedTrigger.Committed;
-                ContributionTechnologyComboBox.SelectionChanged += ContributionTechnologyComboBox_SelectionChanged;
-
-                AvailableTechnologiesListView.ItemClick += AvailableTechnologiesListView_ItemClick;
-
-                // SelectedAdditionalTechnologies ListView
-
                 SelectedAdditionalTechnologiesListView.ItemsSource = ViewModel.Contribution.AdditionalTechnologies;
 
-                // Hide the Add button based on number of SelectedAdditionalTechnologies
+                AvailableTechnologiesListView.ItemsSource = _contTechnologyCvs.View; // uses the same data source as ContributionTechnologyComboBox
+                AvailableTechnologiesListView.ItemClick += AvailableTechnologiesListView_ItemClick;
 
+                // Hide/Show the Add button based on number of SelectedAdditionalTechnologies
                 AddButton.Visibility = ViewModel.Contribution.AdditionalTechnologies.Count < 2
                     ? Visibility.Visible
                     : Visibility.Collapsed;
 
-                
-                // StartDate DatePicker
+                Debug.WriteLine($"Setup SelectedAdditionalTechnologies complete.", "ContributionEditorDialog");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Setup SelectedAdditionalTechnologies Exception {ex}", "ContributionEditorDialog");
+                await ex.LogExceptionAsync();
+            }
 
+
+            // ********* Setup StartDate DatePicker ********* //
+            try
+            {
                 StartDatePicker.Date = ViewModel.Contribution.StartDate != null
                     ? new DateTimeOffset((DateTime)ViewModel.Contribution.StartDate)
                     : DateTimeOffset.Now;
 
                 StartDatePicker.SelectedDateChanged += StartDatePicker_SelectedDateChanged;
 
-                // Title TextBox
+                Debug.WriteLine($"Setup StartDate complete.", "ContributionEditorDialog");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Setup StartDate Exception {ex}", "ContributionEditorDialog");
+                await ex.LogExceptionAsync();
+            }
+
+
+            // ********* Setup TextBoxes ********* //
+            try
+            {
 
                 TitleTextBox.Text = ViewModel.Contribution.Title;
                 TitleTextBox.TextChanged += TitleTextBox_TextChanged;
-
-                // Description TextBox
-
+                
                 DescriptionTextBox.Text = ViewModel.Contribution.Description;
                 DescriptionTextBox.TextChanged += DescriptionTextBox_TextChanged;
-
-                // URL TextBox
-
+                
                 UrlTextBox.Text = ViewModel.Contribution.Description;
                 UrlTextBox.TextChanged += UrlTextBox_TextChanged;
 
-                // Quantities panel items
+                Debug.WriteLine($"Setup TextBoxes complete.", "ContributionEditorDialog");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Setup TextBoxes Exception {ex}", "ContributionEditorDialog");
+                await ex.LogExceptionAsync();
+            }
 
+
+            // ********* Setup Annual Quantities panel ********* //
+            try
+            {
                 AnnualQuantityNumericBox.Minimum = 0;
                 AnnualQuantityNumericBox.Maximum = int.MaxValue;
                 AnnualQuantityNumericBox.Value = Convert.ToDouble(ViewModel.Contribution.AnnualQuantity);
@@ -518,21 +569,46 @@ namespace MvpApi.Uwp.Dialogs
                 AnnualReachNumericBox.Value = Convert.ToDouble(ViewModel.Contribution.AnnualReach);
                 AnnualReachNumericBox.ValueChanged += AnnualReachNumericBox_ValueChanged;
 
-                // Visibilities ComboBox
-                VisibilitiesComboBox.SelectedItem = ViewModel.Contribution.Visibility;
-                VisibilitiesComboBox.SelectionChangedTrigger = ComboBoxSelectionChangedTrigger.Committed;
-                VisibilitiesComboBox.SelectionChanged += VisibilitiesComboBox_SelectionChanged;
+                Debug.WriteLine($"Setup Annual quantities complete.", "ContributionEditorDialog");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"ContributionEditorDialog AssignSelectedValues Exception {ex}");
+                Debug.WriteLine($"Setup Annual Quantities Exception {ex}", "ContributionEditorDialog");
+                await ex.LogExceptionAsync();
+            }
+
+
+            // ********* Setup Visibilities ComboBox ********* //
+            try
+            {
+                VisibilitiesBusyIndicator.Visibility = Visibility.Visible;
+                VisibilitiesBusyIndicator.IsActive = true;
+
+                _contVisibilities = new ObservableCollection<VisibilityViewModel>();
+
+                var visibilities = await App.ApiService.GetVisibilitiesAsync();
+                visibilities.ForEach(visibility => { _contVisibilities.Add(visibility); });
+
+                VisibilitiesComboBox.ItemsSource = _contVisibilities;
+
+                VisibilitiesComboBox.SelectedItem = ViewModel.Contribution.Visibility;
+                VisibilitiesComboBox.SelectionChangedTrigger = ComboBoxSelectionChangedTrigger.Committed;
+                VisibilitiesComboBox.SelectionChanged += VisibilitiesComboBox_SelectionChanged;
+
+                Debug.WriteLine($"Setup Visibilities complete. Selected Visibility: {ViewModel.Contribution.Visibility}", "ContributionEditorDialog");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Setup Visibilities Exception {ex}", "ContributionEditorDialog");
                 await ex.LogExceptionAsync();
             }
             finally
             {
-                ViewModel.IsBusyMessage = "";
-                ViewModel.IsBusy = false;
+                VisibilitiesBusyIndicator.IsActive = false;
+                VisibilitiesBusyIndicator.Visibility = Visibility.Collapsed;
             }
+            
+            IsPrimaryButtonEnabled = true;
         }
 
         public void UpdateAnnualNumericalRequirements(ContributionTypeModel contributionType)
