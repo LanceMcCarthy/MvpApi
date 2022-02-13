@@ -49,20 +49,20 @@ namespace MvpApi.Uwp.ViewModels
 
         public bool UseBetaEditor
         {
-            get => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor;
-            set => (ShellPage.Instance.DataContext as ShellViewModel).UseBetaEditor = value;
+            get => ((ShellViewModel)ShellPage.Instance.DataContext).UseBetaEditor;
+            set => ((ShellViewModel)ShellPage.Instance.DataContext).UseBetaEditor = value;
         }
 
         public DateTime SubmissionStartDate
         {
-            get => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate;
-            set => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate = value;
+            get => ((ShellViewModel)ShellPage.Instance.DataContext).SubmissionStartDate;
+            set => ((ShellViewModel)ShellPage.Instance.DataContext).SubmissionStartDate = value;
         }
 
         public DateTime SubmissionDeadline
         {
-            get => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline;
-            set => (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline = value;
+            get => ((ShellViewModel)ShellPage.Instance.DataContext).SubmissionDeadline;
+            set => ((ShellViewModel)ShellPage.Instance.DataContext).SubmissionDeadline = value;
         }
 
         public DelegateCommand ExportContributionsCommand { get; set; }
@@ -78,7 +78,8 @@ namespace MvpApi.Uwp.ViewModels
                 var picker = new FileOpenPicker
                 {
                     ViewMode = PickerViewMode.List,
-                    SuggestedStartLocation = PickerLocationId.Downloads
+                    SuggestedStartLocation = PickerLocationId.Downloads,
+                    CommitButtonText = "Start Test"
                 };
                 picker.FileTypeFilter.Add(".json");
                 
@@ -89,9 +90,9 @@ namespace MvpApi.Uwp.ViewModels
 
                 var jsonData = await FileIO.ReadTextAsync(file);
 
-                var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(jsonData);
+                var deserializedResult = JsonConvert.DeserializeObject<List<ContributionsModel>>(jsonData);
                 
-                await new MessageDialog($"The json data was successfully been deserialized, found ({deserializedResult.TotalContributions}) records.\r\n\nThe app shouldn't have any problem using that award cycle's data from the MVP API.", "Successful Deserialization").ShowAsync();
+                await new MessageDialog($"The json data was successfully been deserialized, found ({deserializedResult.Count}) records.\r\n\nThe app shouldn't have any problem using that award cycle's data from the MVP API.", "Successful Deserialization").ShowAsync();
 
             }
             catch (Exception ex)
@@ -125,7 +126,7 @@ namespace MvpApi.Uwp.ViewModels
                 
                 var savePicker = new FileSavePicker
                 {
-                    SuggestedFileName = $"MVPCompanion_{SelectedExportType}_Activities.json",
+                    SuggestedFileName = $"MVPCompanion_{SelectedExportType}_Activities {DateTime.Now:yyyy-dd-M--HH-mm-ss}.json",
                     SuggestedStartLocation = PickerLocationId.Downloads
                 };
                 savePicker.FileTypeChoices.Add("MVP Companion Export", new List<string>() { ".json" });
@@ -140,11 +141,7 @@ namespace MvpApi.Uwp.ViewModels
 
                     var status = await CachedFileManager.CompleteUpdatesAsync(file);
 
-                    var resultMessage = status == FileUpdateStatus.Complete
-                        ? $"{file.Name} was successfully saved."
-                        : "Something went wrong saving the file. Try again or in a different destination";
-
-                    await new MessageDialog(resultMessage).ShowAsync();
+                    await ShowFileSaveResultAsync(status);
                 }
 
                 IsBusyMessage = "";
@@ -173,7 +170,7 @@ namespace MvpApi.Uwp.ViewModels
                 
                 var savePicker = new FileSavePicker
                 {
-                    SuggestedFileName = "MVPCompanion_OnlineIdentities.json",
+                    SuggestedFileName = $"MVPCompanion_OnlineIdentities {DateTime.Now:yyyy-dd-M--HH-mm-ss}.json",
                     SuggestedStartLocation = PickerLocationId.Downloads
                 };
                 savePicker.FileTypeChoices.Add("MVP Companion Export", new List<string>() { ".json" });
@@ -187,12 +184,8 @@ namespace MvpApi.Uwp.ViewModels
                     await FileIO.WriteTextAsync(file, json);
 
                     var status = await CachedFileManager.CompleteUpdatesAsync(file);
-                    
-                    var resultMessage = status == FileUpdateStatus.Complete 
-                        ? $"{file.Name} was successfully saved." 
-                        : "Something went wrong saving the file. Try again or in a different destination";
 
-                    await new MessageDialog(resultMessage).ShowAsync();
+                    await ShowFileSaveResultAsync(status);
                 }
 
                 IsBusyMessage = "";
@@ -210,7 +203,27 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
+        private static async Task ShowFileSaveResultAsync(FileUpdateStatus status)
+        {
+            if (status == FileUpdateStatus.Complete || status == FileUpdateStatus.CompleteAndRenamed)
+            {
+                var message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
+                              "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
+                              "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
+                              "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
+                              "4. Now you can us 'Save As' to xlsx file or csv.";
 
+                await new MessageDialog(message, "Export Saved!").ShowAsync();
+            }
+            else
+            {
+                await new MessageDialog(
+                    $"Unfortunately, something went wrong saving the file (Status: '{status}').\r\n\n" +
+                    $"If you got an Unavailable or Fail status, wait and try again or use a different file name.",
+                    "Unsuccessful").ShowAsync();
+            }
+        }
+        
         public override async Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
         {
             if (ShellPage.Instance.DataContext is ShellViewModel shellVm)
