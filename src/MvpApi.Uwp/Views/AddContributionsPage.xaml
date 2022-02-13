@@ -113,8 +113,6 @@
                                            Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
                                            Margin="0,0,5,0" />
                                 <TextBlock Text="(required)"
-                                           Margin="5,0"
-                                           FontStyle="Italic"
                                            Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                             </StackPanel>
                         </ComboBox.Header>
@@ -207,8 +205,6 @@
                                            Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
                                            Margin="0,0,5,0" />
                                 <TextBlock Text="(required)"
-                                           Margin="5,0"
-                                           FontStyle="Italic"
                                            Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                             </StackPanel>
                         </DatePicker.Header>
@@ -224,8 +220,6 @@
                                 <TextBlock Text="Title"
                                            Margin="0,0,5,0" />
                                 <TextBlock Text="(required)"
-                                           Margin="5,0"
-                                           FontStyle="Italic"
                                            Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                             </StackPanel>
                         </TextBox.Header>
@@ -250,8 +244,6 @@
                                            Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
                                            Margin="0,0,5,0" />
                                 <TextBlock Text="(required)"
-                                           Margin="5,0"
-                                           FontStyle="Italic"
                                            Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                            Visibility="{Binding IsUrlRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                             </StackPanel>
@@ -275,8 +267,6 @@
                                                Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
                                                Margin="0,0,5,0" />
                                     <TextBlock Text="(required)"
-                                               Margin="5,0"
-                                               FontStyle="Italic"
                                                Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                                Visibility="{Binding IsAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                                 </StackPanel>
@@ -298,9 +288,7 @@
                                                Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
                                                Margin="0,0,5,0" />
                                     <TextBlock Text="(required)"
-                                               Margin="5,0"
                                                Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
-                                               FontStyle="Italic"
                                                Visibility="{Binding IsSecondAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                                 </StackPanel>
                             </input:RadNumericBox.Header>
@@ -320,9 +308,7 @@
                                     <TextBlock Text="{Binding AnnualReachHeader}"
                                                Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
                                     <TextBlock Text="(required)"
-                                               Margin="5,0"
                                                Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
-                                               FontStyle="Italic"
                                                Visibility="{Binding IsAnnualReachRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                                 </StackPanel>
                             </input:RadNumericBox.Header>
@@ -342,8 +328,6 @@
                                            Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
                                            Margin="0,0,5,0" />
                                 <TextBlock Text="(required)"
-                                           FontStyle="Italic"
-                                           Margin="5,0"
                                            Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                             </StackPanel>
                         </ComboBox.Header>
@@ -438,16 +422,14 @@
                                         CommandParameter="{Binding}"
                                         Margin="5">
                                     <Button.Content>
-                                        <SymbolIcon Symbol="Edit"
-                                                    Foreground="White" />
+                                        <SymbolIcon Symbol="Edit"/>
                                     </Button.Content>
                                 </Button>
                                 <Button Command="{Binding ElementName=Page, Path=DataContext.RemoveQueuedContributionCommand}"
                                         CommandParameter="{Binding}"
                                         Margin="5">
                                     <Button.Content>
-                                        <SymbolIcon Symbol="Delete"
-                                                    Foreground="White" />
+                                        <SymbolIcon Symbol="Delete"/>
                                     </Button.Content>
                                 </Button>
                             </StackPanel>
