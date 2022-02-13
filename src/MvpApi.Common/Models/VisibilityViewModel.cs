@@ -50,5 +50,20 @@ namespace MvpApi.Common.Models
             get => localizeKey;
             set => SetProperty(ref localizeKey, value);
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is VisibilityViewModel incoming)
+            {
+                return this.Id == incoming.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }

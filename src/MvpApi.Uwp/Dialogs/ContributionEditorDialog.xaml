@@ -11,32 +11,27 @@
                xmlns:converters="using:MvpApi.Uwp.Converters"
                xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
                mc:Ignorable="d"
-               Title="Contribution Editor"
-               PrimaryButtonText="Save"
-               SecondaryButtonText="Cancel"
-               PrimaryButtonClick="SaveButton_OnClick"
-               SecondaryButtonClick="CancelButton_OnClick"
                MinWidth="400">
+
+    <ContentDialog.Resources>
+        <Style x:Key="SegmentLoadingIndicatorStyle"
+               TargetType="primitives:RadBusyIndicator">
+            <Setter Property="Background"
+                    Value="#55000000" />
+            <Setter Property="Foreground"
+                    Value="White" />
+            <Setter Property="AnimationStyle"
+                    Value="AnimationStyle5" />
+            <Setter Property="HorizontalAlignment"
+                    Value="Left" />
+            <Setter Property="FontSize"
+                    Value="12" />
+        </Style>
+    </ContentDialog.Resources>
 
     <ContentDialog.DataContext>
         <viewModels:ContributionEditorDialogViewModel x:Name="ViewModel" />
     </ContentDialog.DataContext>
-
-    <ContentDialog.TitleTemplate>
-        <DataTemplate>
-            <TextBlock Text="{Binding}"
-                       Style="{StaticResource SubtitleTextBlockStyle}"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center" />
-        </DataTemplate>
-    </ContentDialog.TitleTemplate>
-
-    <ContentDialog.Resources>
-        <CollectionViewSource x:Name="awardCategoriesCvs"
-                              Source="{Binding CategoryAreas}"
-                              ItemsPath="ContributionAreas"
-                              IsSourceGrouped="True" />
-    </ContentDialog.Resources>
 
     <Grid MinWidth="400">
         <Grid.RowDefinitions>
@@ -45,63 +40,105 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Background="Red"
-              Visibility="{Binding WarningMessage, Converter={StaticResource NullToVisibilityConverter}}">
-            <TextBlock Text="{Binding WarningMessage}"
+        <Grid x:Name="HeaderMessageGrid"
+              Background="Red"
+              Margin="0,0,0,20"
+              Padding="10"
+              Visibility="{Binding HeaderMessage, Converter={StaticResource NullToVisibilityConverter}}">
+            <TextBlock Text="{Binding HeaderMessage}"
                        Foreground="White"
                        TextWrapping="WrapWholeWords"
                        VerticalAlignment="Center"
+                       Style="{StaticResource SubtitleTextBlockStyle}"
                        HorizontalAlignment="Center" />
         </Grid>
 
         <ScrollViewer Grid.Row="1">
             <StackPanel>
-                <ComboBox ItemsSource="{Binding Types}"
-                          Visibility="{Binding EditingExistingContribution, Converter={StaticResource InvertedBoolToVisibilityConverter}}"
-                          SelectedItem="{Binding SelectedContribution.ContributionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          SelectionChanged="{x:Bind ViewModel.ActivityType_SelectionChanged}"
-                          DisplayMemberPath="Name"
-                          HorizontalAlignment="Left"
-                          MinWidth="300"
-                          Margin="0,10,10,10">
-                    <ComboBox.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Select Contribution Type"
-                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                       Margin="0,0,5,0" />
-                            <TextBlock Text="(required)"
-                                       Margin="5,0"
-                                       FontStyle="Italic"
-                                       Foreground="Red" />
-                        </StackPanel>
-                    </ComboBox.Header>
-                </ComboBox>
+                <StackPanel x:Name="ReadonlyContributionTypePanel"
+                            Margin="0,10,10,10"
+                            Visibility="Collapsed">
+                    <TextBlock Text="Contribution Type:"
+                               Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                               Margin="0,0,5,0" />
+                    <TextBlock x:Name="ReadonlyContributionTypeTextBlock"
+                               Text="Windows Development"
+                               FontWeight="SemiBold"
+                               Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
+                </StackPanel>
 
-                <ComboBox ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                          SelectedItem="{Binding SelectedContribution.ContributionTechnology, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          Style="{StaticResource TechnologyAreaComboBoxStyle}" />
+                <Grid x:Name="ContributionTypeGrid">
+                    <ComboBox x:Name="ContributionTypeComboBox"
+                              DisplayMemberPath="Name"
+                              HorizontalAlignment="Left"
+                              MinWidth="300"
+                              Margin="0,10,10,10">
+                        <ComboBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Select Contribution Type"
+                                           Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                           Margin="0,0,5,0" />
+                                <TextBlock Text="(required)"
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
+                            </StackPanel>
+                        </ComboBox.Header>
+                    </ComboBox>
+
+                    <primitives:RadBusyIndicator x:Name="ContributionTypeBusyIndicator"
+                                                 Width="{Binding Path=ActualWidth, ElementName=ContributionTypeComboBox}"
+                                                 Height="{Binding Path=ActualHeight, ElementName=ContributionTypeComboBox}"
+                                                 Style="{StaticResource SegmentLoadingIndicatorStyle}" />
+                </Grid>
+
+                <Grid>
+                    <StackPanel x:Name="ContributionTechnologyPanel"
+                                Margin="0,10,10,10">
+                        <TextBlock Text="Contribution Technology Area:"
+                                   Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                   Margin="0,0,0,5" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="EditTechAreaButton"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0">
+                                <Button.Content>
+                                    <FontIcon FontSize="12"
+                                              Glyph="&#xE104;"
+                                              FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                </Button.Content>
+                                <Button.Flyout>
+                                    <Flyout x:Name="ContributionTechAreaFlyout">
+                                        <ListView x:Name="ContributionTechnologiesListView"
+                                                  Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
+                                                  IsItemClickEnabled="True"
+                                                  SelectionMode="None"
+                                                  HorizontalAlignment="Stretch"
+                                                  VerticalAlignment="Stretch" />
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                            <TextBlock x:Name="SelectedContributionTypeTextBlock"
+                                       Text=""
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"
+                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <primitives:RadBusyIndicator x:Name="ContributionTechnologyBusyIndicator"
+                                                 Width="{Binding Path=ActualWidth, ElementName=ContributionTechnologyPanel}"
+                                                 Height="{Binding Path=ActualHeight, ElementName=ContributionTechnologyPanel}"
+                                                 Style="{StaticResource SegmentLoadingIndicatorStyle}" />
+                </Grid>
 
                 <TextBlock Text="Optional: Select up to 2 additional technology areas."
                            Margin="0,10,0,0" />
 
                 <ListView x:Name="SelectedAdditionalTechnologiesListView"
-                          ItemsSource="{Binding SelectedContribution.AdditionalTechnologies}"
+                          SelectionMode="None"
                           HorizontalAlignment="Left"
                           Margin="0,5,10,0">
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <ItemsStackPanel Orientation="Horizontal" />
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="Padding"
-                                    Value="0" />
-                        </Style>
-                    </ListView.ItemContainerStyle>
                     <ListView.Footer>
                         <Button x:Name="AddButton"
-                                Visibility="{Binding SelectedContribution.AdditionalTechnologies.Count, Converter={StaticResource CountToVisibilityConverter}}"
                                 Content="+"
                                 FontWeight="Bold"
                                 VerticalAlignment="Center"
@@ -110,10 +147,7 @@
                                 Margin="0,0,0,0">
                             <Button.Flyout>
                                 <Flyout x:Name="AdditionalTechAreaFlyout">
-                                    <ListView x:Name="AdditionalTechnologiesListView"
-                                              DataContext="{x:Bind ViewModel}"
-                                              ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                                              ItemClick="{x:Bind ViewModel.AdditionalTechnologiesListView_OnItemClick}"
+                                    <ListView x:Name="AvailableTechnologiesListView"
                                               Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
                                               IsItemClickEnabled="True"
                                               SelectionMode="None"
@@ -132,8 +166,10 @@
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
 
-                                <Button Content="X"
-                                        Command="{Binding ElementName=Page, Path=DataContext.RemoveAdditionalTechAreaCommand}"
+                                <!-- Command="{Binding ElementName=Page, Path=DataContext.RemoveAdditionalTechAreaCommand}" -->
+                                <Button x:Name="RemoveAdditionalTechAreaButton"
+                                        Content="X"
+                                        Click="RemoveAdditionalTechAreaButton_OnClick"
                                         CommandParameter="{Binding}"
                                         VerticalAlignment="Stretch"
                                         Foreground="White"
@@ -151,28 +187,47 @@
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsStackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Padding"
+                                    Value="0" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
                 </ListView>
 
-                <DatePicker Date="{Binding SelectedContribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}, UpdateSourceTrigger=PropertyChanged}"
+                <DatePicker x:Name="StartDatePicker"
                             HorizontalAlignment="Left"
                             MinWidth="300"
-                            Margin="0,10"
-                            DateChanged="{x:Bind ViewModel.DatePicker_OnDateChanged}">
+                            Margin="0,10">
                     <DatePicker.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Start Date"
-                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                       Margin="0,0,5,0" />
-                            <TextBlock Text="(required)"
-                                       Margin="5,0"
-                                       FontStyle="Italic"
-                                       Foreground="Red" />
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Start Date"
+                                           Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                           Margin="0,0,5,0" />
+                                <TextBlock Text="(required)"
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
+                            </StackPanel>
+                            <Border x:Name="DateValidationBorder"
+                                    Background="DarkRed"
+                                    Visibility="Collapsed"
+                                    Padding="4"
+                                    Margin="0,5,0,0">
+                                <TextBlock Text="This date must be within July 1st and March 31st of the current award cycle (you can override these dates on the Settings page, but the upload might not be accepted)."
+                                           Foreground="WhiteSmoke"
+                                           TextWrapping="WrapWholeWords"
+                                           FontSize="12" />
+                            </Border>
                         </StackPanel>
                     </DatePicker.Header>
                 </DatePicker>
 
                 <TextBox x:Name="TitleTextBox"
-                         Text="{Binding SelectedContribution.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Left"
                          MinWidth="300"
                          Margin="0,10">
@@ -182,14 +237,12 @@
                                        Margin="0,0,5,0" />
                             <TextBlock Text="(required)"
                                        Margin="5,0"
-                                       FontStyle="Italic"
-                                       Foreground="Red" />
+                                       Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
                         </StackPanel>
                     </TextBox.Header>
                 </TextBox>
 
                 <TextBox x:Name="DescriptionTextBox"
-                         Text="{Binding SelectedContribution.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          AcceptsReturn="True"
                          Header="Description"
                          MinWidth="300"
@@ -197,7 +250,6 @@
                          Margin="0,10" />
 
                 <TextBox x:Name="UrlTextBox"
-                         Text="{Binding SelectedContribution.ReferenceUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          HorizontalAlignment="Left"
                          MinWidth="300"
                          Margin="0,10">
@@ -207,18 +259,16 @@
                                        Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
                                        Margin="0,0,5,0" />
                             <TextBlock Text="(required)"
-                                       Margin="5,0"
-                                       FontStyle="Italic"
-                                       Foreground="Red"
+                                       Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                        Visibility="{Binding IsUrlRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                         </StackPanel>
                     </TextBox.Header>
                 </TextBox>
 
                 <StackPanel x:Name="NumericInputStackPanel">
+                    <!-- Value="{Binding Contribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="{Binding AnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}" -->
                     <input:RadNumericBox x:Name="AnnualQuantityNumericBox"
-                                         Value="{Binding SelectedContribution.AnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                         Visibility="{Binding AnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                          AcceptsDecimalSeparator="False"
                                          ValueFormat="{}{0:N0}"
                                          SmallChange="1"
@@ -231,17 +281,15 @@
                                            Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
                                            Margin="0,0,5,0" />
                                 <TextBlock Text="(required)"
-                                           Margin="5,0"
-                                           FontStyle="Italic"
-                                           Foreground="Red"
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                            Visibility="{Binding IsAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                             </StackPanel>
                         </input:RadNumericBox.Header>
                     </input:RadNumericBox>
 
+                    <!-- Value="{Binding Contribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                         Visibility="{Binding SecondAnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"-->
                     <input:RadNumericBox x:Name="SecondAnnualQuantityNumericBox"
-                                         Value="{Binding SelectedContribution.SecondAnnualQuantity, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                         Visibility="{Binding SecondAnnualQuantityHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                          AcceptsDecimalSeparator="False"
                                          ValueFormat="{}{0:N0}"
                                          SmallChange="1"
@@ -254,17 +302,15 @@
                                            Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
                                            Margin="0,0,5,0" />
                                 <TextBlock Text="(required)"
-                                           Margin="5,0"
-                                           Foreground="Red"
-                                           FontStyle="Italic"
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                            Visibility="{Binding IsSecondAnnualQuantityRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                             </StackPanel>
                         </input:RadNumericBox.Header>
                     </input:RadNumericBox>
 
+                    <!-- Value="{Binding Contribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="{Binding AnnualReachHeader, Converter={StaticResource NullToVisibilityConverter}}" -->
                     <input:RadNumericBox x:Name="AnnualReachNumericBox"
-                                         Value="{Binding SelectedContribution.AnnualReach, Converter={StaticResource DoubleToIntConverter}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                         Visibility="{Binding AnnualReachHeader, Converter={StaticResource NullToVisibilityConverter}}"
                                          AcceptsDecimalSeparator="False"
                                          ValueFormat="{}{0:N0}"
                                          SmallChange="1"
@@ -276,38 +322,39 @@
                                 <TextBlock Text="{Binding AnnualReachHeader}"
                                            Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
                                 <TextBlock Text="(required)"
-                                           Margin="5,0"
-                                           Foreground="Red"
-                                           FontStyle="Italic"
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
                                            Visibility="{Binding IsAnnualReachRequired, Converter={StaticResource BoolToVisibilityConverter}}" />
                             </StackPanel>
                         </input:RadNumericBox.Header>
                     </input:RadNumericBox>
                 </StackPanel>
 
-                <ComboBox ItemsSource="{x:Bind ViewModel.Visibilities}"
-                          SelectedItem="{Binding SelectedContribution.Visibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          IsTextSearchEnabled="True"
-                          DisplayMemberPath="Description"
-                          HorizontalAlignment="Left"
-                          MinWidth="300"
-                          Margin="0,10">
-                    <ComboBox.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Contribution Visibility"
-                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                       Margin="0,0,5,0" />
-                            <TextBlock Text="(required)"
-                                       FontStyle="Italic"
-                                       Margin="5,0"
-                                       Foreground="Red" />
-                        </StackPanel>
-                    </ComboBox.Header>
-                </ComboBox>
+                <Grid>
+                    <ComboBox x:Name="VisibilitiesComboBox"
+                              IsTextSearchEnabled="True"
+                              DisplayMemberPath="Description"
+                              HorizontalAlignment="Left"
+                              MinWidth="300"
+                              Margin="0,10">
+                        <ComboBox.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Contribution Visibility"
+                                           Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
+                                           Margin="0,0,5,0" />
+                                <TextBlock Text="(required)"
+                                           Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
+                            </StackPanel>
+                        </ComboBox.Header>
+                    </ComboBox>
+                    <primitives:RadBusyIndicator x:Name="VisibilitiesBusyIndicator"
+                                                 Width="{Binding Path=ActualWidth, ElementName=VisibilitiesComboBox}"
+                                                 Height="{Binding Path=ActualHeight, ElementName=VisibilitiesComboBox}"
+                                                 Style="{StaticResource SegmentLoadingIndicatorStyle}" />
+                </Grid>
             </StackPanel>
         </ScrollViewer>
 
-        <primitives:RadBusyIndicator x:Name="BusyIndicator"
+        <primitives:RadBusyIndicator x:Name="MainBusyIndicator"
                                      Content="{Binding IsBusyMessage}"
                                      IsActive="{Binding IsBusy}"
                                      Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}"

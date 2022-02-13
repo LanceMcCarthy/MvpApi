@@ -103,7 +103,7 @@ namespace MvpApi.Services.Apis
 
                         if (!IsDataValid(json))
                             return null;
-
+                        
                         return JsonConvert.DeserializeObject<ProfileViewModel>(json);
                     }
                     else
@@ -1299,42 +1299,93 @@ namespace MvpApi.Services.Apis
 
         #region Export Operations
 
-        public async Task<string> ExportAllContributionsAsync()
+        /// <summary>
+        /// Exports all contributions for the currently signed in user.
+        /// </summary>
+        /// <param name="batchSize">Sets the batch size to use for each fetch, useful for MVPs who have more data than can fit in a single HTTP response. If the user's contributions total is less than the batch size, everything is fetched at once. </param>
+        /// <returns>Serialized json data as a string</returns>
+        public async Task<string> ExportAllContributionsAsync(int batchSize = 100)
         {
-            string json = string.Empty;
+            string jsonDataToReturn = string.Empty;
 
             try
             {
-                int totalCount = 0;
+                var totalContributions = 0;
+                var contributions = new List<ContributionsModel>();
 
+                // REQUIRED first fetch to get total
                 using (var response = await client.GetAsync($"contributions/0/0"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
                         var firstJson = await response.Content.ReadAsStringAsync();
 
-                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(firstJson);
+                        var result = JsonConvert.DeserializeObject<ContributionViewModel>(firstJson);
 
                         // Read the total count
-                        totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
-                    }
-                    else
-                    {
-                        await ProcessRefreshOrBadRequestAsync(response);
+                        totalContributions = Convert.ToInt32(result.TotalContributions);
                     }
                 }
 
-                // Get all the contribution data
-                using (var response = await client.GetAsync($"contributions/{0}/{totalCount}"))
+                // If the batch size is larger than the total amount, just get everything in the first fetch.
+                if (totalContributions < batchSize)
                 {
-                    if (response.IsSuccessStatusCode)
+                    using (var response = await client.GetAsync($"contributions/{0}/{totalContributions}"))
                     {
-                        json = await response.Content.ReadAsStringAsync();
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var singleResultJson = await response.Content.ReadAsStringAsync();
+                            var singleResultData = JsonConvert.DeserializeObject<ContributionViewModel>(singleResultJson);
+
+                            if (singleResultData != null)
+                            {
+                                contributions.AddRange(singleResultData.Contributions);
+
+                                jsonDataToReturn = JsonConvert.SerializeObject(contributions);
+                            }
+                            else
+                            {
+                                jsonDataToReturn = "Deserialization Error in singleResultJson fetch";
+                            }
+                        }
+                        else
+                        {
+                            jsonDataToReturn = $"Error from API: {response.ReasonPhrase}";
+                        }
                     }
-                    else
+                }
+                else // Else if the batch size is less than the total, get the data in batches. This is necessary for MVPs who have thousands of contributions
+                {
+                    var pagingIndex = 0;
+                    var needsMoreItems = true;
+
+                    while (needsMoreItems)
                     {
-                        await ProcessRefreshOrBadRequestAsync(response);
+                        using (var response = await client.GetAsync($"contributions/{pagingIndex}/{batchSize}"))
+                        {
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var loopResultJson = await response.Content.ReadAsStringAsync();
+                                var loopResultData = JsonConvert.DeserializeObject<ContributionViewModel>(loopResultJson);
+
+                                pagingIndex = Convert.ToInt32(loopResultData.PagingIndex);
+                                contributions.AddRange(loopResultData.Contributions);
+
+                                // To get the actual number of data items we have locally,
+                                // we get the number of previously downloaded items (the PagingIndex)
+                                // and add it to the number of items in this loop's fetch (the Contributions.Count)
+                                var totalDownloaded = pagingIndex + loopResultData.Contributions.Count;
+
+                                // If we have all the data, we're done!
+                                if (totalDownloaded >= totalContributions)
+                                {
+                                    needsMoreItems = false;
+                                }
+                            }
+                        }
                     }
+
+                    jsonDataToReturn = JsonConvert.SerializeObject(contributions);
                 }
             }
             catch (HttpRequestException e)
@@ -1344,54 +1395,109 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
-                Trace.WriteLine($"ExportContributionsAsync HttpRequestException: {e}");
+                jsonDataToReturn = $"HTTP Request Exception: {e}";
+
+                Trace.WriteLine($"ExportAllContributionsAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
+                jsonDataToReturn = $"Other Exception: {e}";
+
                 await e.LogExceptionAsync();
 
-                Trace.WriteLine($"ExportContributionsAsync Exception: {e}");
+                Trace.WriteLine($"ExportAllContributionsAsync Exception: {e}");
             }
 
-            return json;
+            return jsonDataToReturn;
         }
 
-        public async Task<string> ExportCurrentContributionsAsync()
+        /// <summary>
+        /// Exports the current cycle's contributions for the currently signed in user.
+        /// </summary>
+        /// <param name="batchSize">Sets the batch size to use for each fetch, useful for MVPs who have more data than can fit in a single HTTP response. If the user's contributions total is less than the batch size, everything is fetched at once. </param>
+        /// <returns>Serialized json data as a string</returns>
+        public async Task<string> ExportCurrentContributionsAsync(int batchSize = 100)
         {
-            string json = string.Empty;
+            string jsonDataToReturn = string.Empty;
 
             try
             {
-                int totalCount = 0;
+                var totalContributions = 0;
+                var contributions = new List<ContributionsModel>();
 
+                // REQUIRED first fetch to get total
                 using (var response = await client.GetAsync($"contributions/current/0/0"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
                         var firstJson = await response.Content.ReadAsStringAsync();
-                        
-                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(firstJson);
+
+                        var result = JsonConvert.DeserializeObject<ContributionViewModel>(firstJson);
 
                         // Read the total count
-                        totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
-                    }
-                    else
-                    {
-                        await ProcessRefreshOrBadRequestAsync(response);
+                        totalContributions = Convert.ToInt32(result.TotalContributions);
                     }
                 }
 
-                // Get all the contribution data
-                using (var response = await client.GetAsync($"contributions/current/{0}/{totalCount}"))
+                // If the batch size is larger than the total amount, just get everything in the first fetch.
+                if (totalContributions < batchSize)
                 {
-                    if (response.IsSuccessStatusCode)
+                    using (var response = await client.GetAsync($"contributions/current/{0}/{totalContributions}"))
                     {
-                        json = await response.Content.ReadAsStringAsync();
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var singleResultJson = await response.Content.ReadAsStringAsync();
+                            var singleResultData = JsonConvert.DeserializeObject<ContributionViewModel>(singleResultJson);
+
+                            if (singleResultData != null)
+                            {
+                                contributions.AddRange(singleResultData.Contributions);
+
+                                jsonDataToReturn = JsonConvert.SerializeObject(contributions);
+                            }
+                            else
+                            {
+                                jsonDataToReturn = "Deserialization Error in singleResultJson fetch";
+                            }
+                        }
+                        else
+                        {
+                            jsonDataToReturn = $"Error from API: {response.ReasonPhrase}";
+                        }
                     }
-                    else
+                }
+                else // Else if the batch size is less than the total, get the data in batches. This is necessary for MVPs who have thousands of contributions
+                {
+                    var pagingIndex = 0;
+                    var needsMoreItems = true;
+
+                    while (needsMoreItems)
                     {
-                        await ProcessRefreshOrBadRequestAsync(response);
+                        using (var response = await client.GetAsync($"contributions/current/{pagingIndex}/{batchSize}"))
+                        {
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var loopResultJson = await response.Content.ReadAsStringAsync();
+                                var loopResultData = JsonConvert.DeserializeObject<ContributionViewModel>(loopResultJson);
+
+                                pagingIndex = Convert.ToInt32(loopResultData.PagingIndex);
+                                contributions.AddRange(loopResultData.Contributions);
+
+                                // To get the actual number of data items we have locally,
+                                // we get the number of previously downloaded items (the PagingIndex)
+                                // and add it to the number of items in this loop's fetch (the Contributions.Count)
+                                var totalDownloaded = pagingIndex + loopResultData.Contributions.Count;
+
+                                // If we have all the data, we're done!
+                                if (totalDownloaded >= totalContributions)
+                                {
+                                    needsMoreItems = false;
+                                }
+                            }
+                        }
                     }
+
+                    jsonDataToReturn = JsonConvert.SerializeObject(contributions);
                 }
             }
             catch (HttpRequestException e)
@@ -1401,54 +1507,109 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
+                jsonDataToReturn = $"HTTP Request Exception: {e}";
+
                 Trace.WriteLine($"ExportCurrentContributionsAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
+                jsonDataToReturn = $"Other Exception: {e}";
+
                 await e.LogExceptionAsync();
 
                 Trace.WriteLine($"ExportCurrentContributionsAsync Exception: {e}");
             }
 
-            return json;
+            return jsonDataToReturn;
         }
 
-        public async Task<string> ExportHistoricalContributionsAsync()
+        /// <summary>
+        /// Exports contributions from previous award cycles for the currently signed in user. 
+        /// </summary>
+        /// <param name="batchSize">Sets the batch size to use for each fetch, useful for MVPs who have more data than can fit in a single HTTP response. If the user's contributions total is less than the batch size, everything is fetched at once. </param>
+        /// <returns>Serialized json data as a string</returns>
+        public async Task<string> ExportHistoricalContributionsAsync(int batchSize = 100)
         {
-            string json = string.Empty;
+            string jsonDataToReturn = string.Empty;
 
             try
             {
-                int totalCount = 0;
+                var totalContributions = 0;
+                var contributions = new List<ContributionsModel>();
 
+                // REQUIRED first fetch to get total
                 using (var response = await client.GetAsync($"contributions/historical/0/0"))
                 {
                     if (response.IsSuccessStatusCode)
                     {
                         var firstJson = await response.Content.ReadAsStringAsync();
 
-                        var deserializedResult = JsonConvert.DeserializeObject<ContributionViewModel>(firstJson);
+                        var result = JsonConvert.DeserializeObject<ContributionViewModel>(firstJson);
 
                         // Read the total count
-                        totalCount = Convert.ToInt32(deserializedResult.TotalContributions);
-                    }
-                    else
-                    {
-                        await ProcessRefreshOrBadRequestAsync(response);
+                        totalContributions = Convert.ToInt32(result.TotalContributions);
                     }
                 }
 
-                // Get all the contribution data
-                using (var response = await client.GetAsync($"contributions/historical/{0}/{totalCount}"))
+                // If the batch size is larger than the total amount, just get everything in the first fetch.
+                if (totalContributions < batchSize)
                 {
-                    if (response.IsSuccessStatusCode)
+                    using (var response = await client.GetAsync($"contributions/historical/{0}/{totalContributions}"))
                     {
-                        json = await response.Content.ReadAsStringAsync();
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var singleResultJson = await response.Content.ReadAsStringAsync();
+                            var singleResultData = JsonConvert.DeserializeObject<ContributionViewModel>(singleResultJson);
+
+                            if (singleResultData != null)
+                            {
+                                contributions.AddRange(singleResultData.Contributions);
+
+                                jsonDataToReturn = JsonConvert.SerializeObject(contributions);
+                            }
+                            else
+                            {
+                                jsonDataToReturn = "Deserialization Error in singleResultJson fetch";
+                            }
+                        }
+                        else
+                        {
+                            jsonDataToReturn = $"Error from API: {response.ReasonPhrase}";
+                        }
                     }
-                    else
+                }
+                else // Else if the batch size is less than the total, get the data in batches. This is necessary for MVPs who have thousands of contributions
+                {
+                    var pagingIndex = 0;
+                    var needsMoreItems = true;
+
+                    while (needsMoreItems)
                     {
-                        await ProcessRefreshOrBadRequestAsync(response);
+                        using (var response = await client.GetAsync($"contributions/historical/{pagingIndex}/{batchSize}"))
+                        {
+                            if (response.IsSuccessStatusCode)
+                            {
+                                var loopResultJson = await response.Content.ReadAsStringAsync();
+                                var loopResultData = JsonConvert.DeserializeObject<ContributionViewModel>(loopResultJson);
+
+                                pagingIndex = Convert.ToInt32(loopResultData.PagingIndex);
+                                contributions.AddRange(loopResultData.Contributions);
+
+                                // To get the actual number of data items we have locally,
+                                // we get the number of previously downloaded items (the PagingIndex)
+                                // and add it to the number of items in this loop's fetch (the Contributions.Count)
+                                var totalDownloaded = pagingIndex + loopResultData.Contributions.Count;
+
+                                // If we have all the data, we're done!
+                                if (totalDownloaded >= totalContributions)
+                                {
+                                    needsMoreItems = false;
+                                }
+                            }
+                        }
                     }
+
+                    jsonDataToReturn = JsonConvert.SerializeObject(contributions);
                 }
             }
             catch (HttpRequestException e)
@@ -1458,16 +1619,20 @@ namespace MvpApi.Services.Apis
                     RequestErrorOccurred?.Invoke(this, new ApiServiceEventArgs { IsServerError = true });
                 }
 
+                jsonDataToReturn = $"HTTP Request Exception: {e}";
+
                 Trace.WriteLine($"ExportHistoricalContributionsAsync HttpRequestException: {e}");
             }
             catch (Exception e)
             {
+                jsonDataToReturn = $"Other Exception: {e}";
+
                 await e.LogExceptionAsync();
 
                 Trace.WriteLine($"ExportHistoricalContributionsAsync Exception: {e}");
             }
 
-            return json;
+            return jsonDataToReturn;
         }
 
         public async Task<string> ExportOnlineIdentitiesAsync()

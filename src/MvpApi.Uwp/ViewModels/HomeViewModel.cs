@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
-using Windows.Storage.Pickers;
-using Windows.Storage.Provider;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Interfaces;
 using MvpApi.Common.Models;
@@ -24,7 +19,6 @@ using MvpApi.Uwp.Views;
 using MvpCompanion.UI.Common.Helpers;
 using Telerik.Core.Data;
 using Telerik.Data.Core;
-using Telerik.UI.Xaml.Controls.Grid;
 using Template10.Common;
 using Template10.Mvvm;
 
@@ -35,16 +29,16 @@ namespace MvpApi.Uwp.ViewModels
         #region Fields
 
         private IncrementalLoadingCollection<ContributionsModel> _contributions;
-        private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
-        private bool _isMultipleSelectionEnabled;
+        //private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
+        //private bool _isMultipleSelectionEnabled;
         private bool _areAppBarButtonsEnabled;
         private bool _isInternetDisabled;
         private bool _isLoadingMoreItems;
         private string _loadingMoreItemsMessage;
-        private string _preferredAwardDataCycle;
 
         private int? _currentOffset = 0;
         private string _displayTotal = "0 Items";
+        private bool _isAutomaticRefreshPaused;
 
         #endregion
 
@@ -66,16 +60,9 @@ namespace MvpApi.Uwp.ViewModels
 
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
-                var designItems = DesignTimeHelpers.GenerateContributions();
+                var sampleDataTask = Task.FromResult<IEnumerable<ContributionsModel>>(DesignTimeHelpers.GenerateContributions());
 
-                Contributions = new IncrementalLoadingCollection<ContributionsModel>(null);
-
-                foreach (var contribution in designItems)
-                {
-                    Contributions.Add(contribution);
-                }
-
-                PreferredAwardDataDataCycle = AwardDataCycles[0];
+                Contributions = new IncrementalLoadingCollection<ContributionsModel>((c)=>sampleDataTask) { BatchSize = 0 };
             }
         }
 
@@ -87,30 +74,30 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _contributions, value);
         }
 
-        public ObservableCollection<object> SelectedContributions { get; set; }
+        //public ObservableCollection<object> SelectedContributions { get; set; }
 
         public GroupDescriptorCollection GroupDescriptors { get; set; }
 
         public DelegateCommand RefreshAfterDisconnectCommand { get; }
 
-        public bool IsMultipleSelectionEnabled
-        {
-            get => _isMultipleSelectionEnabled;
-            set
-            {
-                Set(ref _isMultipleSelectionEnabled, value);
+        //public bool IsMultipleSelectionEnabled
+        //{
+        //    get => _isMultipleSelectionEnabled;
+        //    set
+        //    {
+        //        Set(ref _isMultipleSelectionEnabled, value);
 
-                GridSelectionMode = value
-                    ? DataGridSelectionMode.Multiple
-                    : DataGridSelectionMode.Single;
-            }
-        }
+        //        GridSelectionMode = value
+        //            ? DataGridSelectionMode.Multiple
+        //            : DataGridSelectionMode.Single;
+        //    }
+        //}
 
-        public DataGridSelectionMode GridSelectionMode
-        {
-            get => _gridSelectionMode;
-            set => Set(ref _gridSelectionMode, value);
-        }
+        //public DataGridSelectionMode GridSelectionMode
+        //{
+        //    get => _gridSelectionMode;
+        //    set => Set(ref _gridSelectionMode, value);
+        //}
 
         public bool AreAppBarButtonsEnabled
         {
@@ -142,46 +129,21 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _displayTotal, value);
         }
 
-        public List<string> AwardDataCycles => new List<string> { "All", "Current", "Historical" };
-
-        public string PreferredAwardDataDataCycle
+        public bool IsAutomaticRefreshPaused
         {
-            get
-            {
-                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(PreferredAwardDataDataCycle), out var rawValue))
-                {
-                    _preferredAwardDataCycle = (string)rawValue;
-                }
-                else
-                {
-                    _preferredAwardDataCycle = "Current";
-                    ApplicationData.Current.LocalSettings.Values[nameof(PreferredAwardDataDataCycle)] = _preferredAwardDataCycle;
-                }
-
-                return _preferredAwardDataCycle;
-            }
-            set
-            {
-                Debug.WriteLine($"PreferredAwardDataDataCycle SET: Before ${_preferredAwardDataCycle}");
-
-                if (_preferredAwardDataCycle == value)
-                    return;
-
-                _preferredAwardDataCycle = value;
-
-                ApplicationData.Current.LocalSettings.Values[nameof(PreferredAwardDataDataCycle)] = _preferredAwardDataCycle;
-
-                RaisePropertyChanged(nameof(PreferredAwardDataDataCycle));
-
-                FlyoutView?.CloseFlyout();
-
-                Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
-            }
+            get => _isAutomaticRefreshPaused;
+            set => Set(ref _isAutomaticRefreshPaused, value);
         }
+
+        #endregion
+
+        #region Interfaces
 
         public IFlyoutView FlyoutView { get; set; }
 
         public IScrollableView ScrollableView { get; set; }
+
+        public IExpandableItemView ExpandableItemView { get; set; }
 
         #endregion
 
@@ -189,112 +151,12 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-            {
-                var editDialog = new ContributionEditorDialog();
-
-                await editDialog.ShowAsync();
-
-                if (editDialog.ContributionResult != null)
-                {
-                    Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-                }
-            }
-            else
-            {
-                await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
-            }
+            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
         }
-
-        public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
+        
+        public async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedContributions.Any())
-                SelectedContributions.Clear();
-        }
-
-        public void RefreshButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (SelectedContributions.Any())
-                SelectedContributions.Clear();
-            
-            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
-        }
-
-        public async void DeleteSelectionButton_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                IsBusy = true;
-                IsBusyMessage = "preparing to delete contributions...";
-                
-                int? indexToReturnTo = null;
-
-                foreach (ContributionsModel contribution in SelectedContributions)
-                {
-                    // Try to grab an index in the overall list so that we can scroll back to it after deletion
-                    if (indexToReturnTo == null)
-                    {
-                        indexToReturnTo = Contributions.IndexOf(contribution);
-                    }
-
-                    IsBusyMessage = $"deleting {contribution.Title}...";
-
-                    var success = await App.ApiService.DeleteContributionAsync(contribution);
-
-                    // Quality assurance, only logs a successful or failed delete.
-                    if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                        StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
-                }
-                
-                SelectedContributions.Clear();
-
-                // After deleting contributions, we need to fetch updated list
-                IsBusyMessage = "refreshing contributions...";
-                
-                // TODO - IMPORTANT: decide if we need a full refresh or if this custom refresh with scrolling position works
-                await RefreshAndReturnToPositionAsync(Convert.ToUInt32(indexToReturnTo));
-                // or start them at the beginning because we cant programmatically get the right number of items in one fetch
-                //Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"DeleteSelectedContributions Exception: {ex}");
-            }
-            finally
-            {
-                IsBusy = false;
-                IsBusyMessage = "";
-            }
-        }
-
-        public async void RadDataGrid_OnSelectionChanged(object sender, DataGridSelectionChangedEventArgs e)
-        {
-            // When in multiple selection mode, enable/disable delete instead of navigating to details page
-            if (GridSelectionMode == DataGridSelectionMode.Multiple)
-            {
-                AreAppBarButtonsEnabled = e?.AddedItems.Any() == true;
-                return;
-            }
-
-            // When in single selection mode, go to the selected item's details page
-            if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
-            {
-                if(ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-                {
-                    var editDialog = new ContributionEditorDialog(contribution);
-
-                    await editDialog.ShowAsync();
-
-                    if (editDialog.ContributionResult != null)
-                    {
-                        Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-                    }
-                }
-                else
-                {
-                    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
-                }
-            }
+            await RefreshAndReturnToPositionAsync(0);
         }
 
         public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
@@ -324,52 +186,162 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
         
+        [Deprecated("This will be removed in a future update.", DeprecationType.Deprecate, 1)]
         public async void ExportButton_OnClick(object sender, RoutedEventArgs e)
         {
-            IsBusy = true;
-            IsBusyMessage = "exporting all contributions...";
+            await new MessageDialog("The new Export feature is located on the Settings page.\r\n\n" +
+                                    "You can now choose which award cycle to export your data from: Current, Historical or All.", 
+                "Export has Moved").ShowAsync();
+        }
 
-            var jsonData = await App.ApiService.ExportAllContributionsAsync();
-
-            if (string.IsNullOrEmpty(jsonData))
-                return;
-
-            var savePicker = new FileSavePicker
+        public async void CloneButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContributionsModel originalContribution)
             {
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
-                SuggestedFileName = $"MVP Contributions {DateTime.Now:yyyy-dd-M--HH-mm-ss}"
-            };
+                var itemIndex = Contributions.IndexOf(originalContribution);
 
-            savePicker.FileTypeChoices.Add("JSON Data", new List<string> { ".json" });
+                var editDialog = new ContributionEditorDialog(originalContribution, true);
 
-            var file = await savePicker.PickSaveFileAsync();
+                await editDialog.ShowAsync();
 
-            if (file != null)
-            {
-                IsBusyMessage = "saving file...";
-
-                // prevents file changes by syncing services like OneDrive
-                CachedFileManager.DeferUpdates(file);
-
-                await FileIO.WriteTextAsync(file, jsonData);
-
-                // releases the hold on the file so syncing services can make changes
-                var status = await CachedFileManager.CompleteUpdatesAsync(file);
-
-                if (status == FileUpdateStatus.Complete)
+                if (editDialog.ContributionResult != null)
                 {
-                    var message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
-                                  "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
-                                  "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
-                                  "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
-                                  "4. Now you can us 'Save As' to xlsx file or csv.";
+                    Debug.WriteLine($"Cloned item uploaded {editDialog.ContributionResult.ContributionTypeName}");
 
-                    await new MessageDialog(message, "Export Saved").ShowAsync();
+                    Contributions.Insert(0, editDialog.ContributionResult);
+
+                    if (IsAutomaticRefreshPaused)
+                    {
+                        var refreshData = await AskForDataRefreshAsync();
+
+                        if (refreshData)
+                        {
+                            IsBusyMessage = "refreshing contributions...";
+                            
+                            await RefreshAndReturnToPositionAsync(Convert.ToUInt32(itemIndex));
+                        }
+                    }
                 }
             }
+        }
 
-            IsBusyMessage = "";
-            IsBusy = false;
+        public async void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContributionsModel originalContribution)
+            {
+                if (originalContribution.IsEditable == false)
+                {
+                    await new MessageDialog("This contribution is marked as non-editable by Microsoft. If you feel this is an error, contact your CPM.", "Readonly Contribution").ShowAsync();
+                    return;
+                }
+
+                var itemIndex = Contributions.IndexOf(originalContribution);
+
+                var editDialog = new ContributionEditorDialog(originalContribution);
+
+                await editDialog.ShowAsync();
+
+                if (editDialog.ContributionResult != null)
+                {
+                    Debug.WriteLine($"Edited {editDialog.ContributionResult.ContributionTypeName}");
+
+                    Contributions.Remove(originalContribution);
+                    Contributions.Insert(itemIndex, editDialog.ContributionResult);
+
+                    // If user has paused refreshing, only update local collection
+                    if (!IsAutomaticRefreshPaused)
+                    {
+                        var refreshData = await AskForDataRefreshAsync();
+
+                        if (refreshData)
+                        {
+                            IsBusyMessage = "refreshing contributions...";
+
+                            await RefreshAndReturnToPositionAsync(Convert.ToUInt32(itemIndex));
+                        }
+                    }
+                }
+            }
+        }
+
+        public async void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContributionsModel contribution)
+            {
+                if (contribution.IsEditable != true)
+                    return;
+
+                var md = new MessageDialog(
+                    "Are you sure you want to delete this? there is no way to recover it.",
+                    "Delete?");
+
+                md.Commands.Add(new UICommand("DELETE"));
+                md.Commands.Add(new UICommand("cancel"));
+                md.DefaultCommandIndex = 1;
+
+                var mdResult = await md.ShowAsync();
+
+                if (mdResult.Label != "DELETE")
+                    return;
+
+                try
+                {
+                    IsBusy = true;
+                    IsBusyMessage = $"deleting {contribution.Title}...";
+
+                    var indexToReturnTo = Contributions.IndexOf(contribution);
+
+                    var success = await App.ApiService.DeleteContributionAsync(contribution);
+
+                    if (success == true)
+                    {
+                        // IF the user has already seen the popup and selected Skip All
+                        if (IsAutomaticRefreshPaused)
+                        {
+                            Contributions.Remove(contribution);
+                            return;
+                        }
+
+                        // Ask for local data refresh 
+                        var refreshData = await AskForDataRefreshAsync();
+
+                        if (refreshData)
+                        {
+                            IsBusyMessage = "refreshing contributions...";
+
+                            // TODO - IMPORTANT: decide if we need a full refresh or if this custom refresh with scrolling position works
+                            await RefreshAndReturnToPositionAsync(Convert.ToUInt32(indexToReturnTo));
+                        }
+                        else
+                        {
+                            Contributions.Remove(contribution);
+                        }
+                    }
+                    else
+                    {
+                        await new MessageDialog("The API refused the request to delete this item. It may be readonly or might not be allowed via API.\r\n\n" +
+                            "Try deleting it on the MVP website if this continues to happen."
+                            , "Not Deleted").ShowAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Delete Contribution Exception: {ex}");
+                }
+                finally
+                {
+                    IsBusy = false;
+                    IsBusyMessage = "";
+                }
+            }
+        }
+
+        public void ExpandButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContributionsModel contribution)
+            {
+                ExpandableItemView.ToggleRowDetail(contribution);
+            }
         }
 
         #endregion
@@ -380,32 +352,17 @@ namespace MvpApi.Uwp.ViewModels
         {
             try
             {
-                // Here we use a different flag when the view model is busy loading items because we don't want to cover the UI
-                // The IsBusy flag is used for when deleting items, when we want to block the UI
+                // Here we use a different flag for busy status so we don't block the entire UI
                 IsLoadingMoreItems = true;
-                LoadingMoreItemsMessage = $"fetching the next {count} items...";
-
+                LoadingMoreItemsMessage = $"Loading {count} items from the server...";
+                
                 if (_currentOffset == null)
                 {
                     _currentOffset = 0;
                 }
-                
-                ContributionViewModel fetchResult;
 
-                switch (PreferredAwardDataDataCycle)
-                {
-                    case "All":
-                        fetchResult = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
-                        break;
-                    case "Historical":
-                        fetchResult = await App.ApiService.GetHistoricalContributionsAsync(_currentOffset, (int)count);
-                        break;
-                    case "Current":
-                    default:
-                        fetchResult = await App.ApiService.GetCurrentCycleContributionsAsync(_currentOffset, (int)count);
-                        break;
-                }
-                
+                var fetchResult = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
+
                 Debug.WriteLine($"** LoadMoreItems **\nPagingIndex: {fetchResult.PagingIndex}, Count: {fetchResult.Contributions.Count}, TotalContributions: {fetchResult.TotalContributions}");
 
                 // Current offset is the number of items we've already fetched
@@ -413,8 +370,11 @@ namespace MvpApi.Uwp.ViewModels
 
                 DisplayTotal = $"{fetchResult.PagingIndex} of {fetchResult.TotalContributions} items";
 
-                // If we've received all the contributions, return null to stop automatic loading because we've retrived all the available items
-                if (fetchResult.PagingIndex + fetchResult.Contributions.Count == fetchResult.TotalContributions)
+
+                // If we've received all the contributions, return null to stop automatic loading because we've retrieved all the available items
+                // To check if we have all the items downloaded, simply add the pagingIndex (the total downloaded) to the current result's total
+                // // Then see if it equal to (or greater than) the total amount
+                if (fetchResult.PagingIndex + fetchResult.Contributions.Count >= fetchResult.TotalContributions)
                 {
                     return null;
                 }
@@ -439,9 +399,17 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        private async Task RefreshAndReturnToPositionAsync(uint rowIndexToReturnTo)
+        public async Task RefreshAndReturnToPositionAsync(uint rowIndexToReturnTo)
         {
-            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
+            if (IsAutomaticRefreshPaused)
+            {
+                IsAutomaticRefreshPaused = false;
+            }
+
+            _currentOffset = 0;
+            DisplayTotal = "loading...";
+
+            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
 
             if (Contributions.Count < rowIndexToReturnTo)
             {
@@ -451,52 +419,41 @@ namespace MvpApi.Uwp.ViewModels
             ScrollableView.ScrollTo(rowIndexToReturnTo);
         }
 
-        //private async Task LoadContributionsAsync()
-        //{
-        //    try
-        //    {
-        //        IsBusy = true;
-        //        IsBusyMessage = $"Fetching {PreferredAwardDataDataCycle} award cycle contributions...";
-                
-        //        ContributionViewModel result;
+        public async Task<bool> AskForDataRefreshAsync()
+        {
+            var refreshDataConfirmation = new MessageDialog(
+                "Operation was successful, do you want to refresh your local data?\r\n\n" +
+                "- Refresh: Will pull the latest data from the API, but you might lose your scrolling position.\r\n" +
+                "- Skip Once: Skip now, but ask next time.\r\n" +
+                "- Skip All: Skip and don't ask again for remainder of session.\r\n\n" +
+                "Note: If you skip, you'll keep the scroll position, but fetch count may be inaccurate until a refresh.",
+                "Success! Refresh Data Now?");
 
-        //        switch (PreferredAwardDataDataCycle)
-        //        {
-        //            case "All":
-        //                // Get the entire list of contributions for the user (current and historical)
-        //                //result = await App.ApiService.GetAllContributionsAsync();
+            refreshDataConfirmation.Commands.Add(new UICommand("Refresh"));
+            refreshDataConfirmation.Commands.Add(new UICommand("No (skip once)"));
+            refreshDataConfirmation.Commands.Add(new UICommand("No (skip all)"));
+            refreshDataConfirmation.DefaultCommandIndex = 0;
 
-        //                result = await App.ApiService.GetAllContributionsAsync();
-        //                break;
-        //            case "Historical":
-        //                // Get only the historical contributions from previous cycles
-        //                result = await App.ApiService.GetAllHistoricalContributionsAsync();
-        //                break;
-        //            case "Current":
-        //            default:
-        //                // Get only the current cycle's contributions
-        //                result = await App.ApiService.GetAllCurrentCycleContributionsAsync();
-        //                break;
-        //        }
+            var md2Result = await refreshDataConfirmation.ShowAsync();
 
-        //        Contributions = new ObservableCollection<ContributionsModel>();
+            if (md2Result.Label == "No (skip all)")
+            {
+                IsAutomaticRefreshPaused = true;
 
-        //        foreach (var cont in result.Contributions)
-        //        {
-        //            Contributions.Add(cont);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await ex.LogExceptionWithUserMessage();
-        //    }
-        //    finally
-        //    {
-        //        IsBusyMessage = "";
-        //        IsBusy = false;
-        //    }
-        //}
+                return false;
+            }
+            else if (md2Result.Label == "No (skip once)")
+            {
+                IsAutomaticRefreshPaused = false;
 
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        
         #endregion
 
         #region Navigation
@@ -517,12 +474,13 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     await ShellPage.Instance.SignInAsync();
                 }
-
-                // Although user should be logged in at this point, still check
-                // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
+                
                 if (shellVm.IsLoggedIn)
                 {
-                    Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
+                    _currentOffset = 0;
+                    DisplayTotal = "loading...";
+
+                    Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
                 }
 
                 if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
@@ -533,9 +491,9 @@ namespace MvpApi.Uwp.ViewModels
                         MessageTitle = "Home Page",
                         Message = "Welcome MVP! This page lists your contributions, which are automatically loaded on-demand as you scroll down.\r\n\n" +
                                   "- Group or sort the contributions by any column.\r\n" +
-                                  "- Select a contribution to view its details or edit it.\r\n" +
-                                  "- Select the 'Add' button to upload new contributions (single or in bulk).\r\n" +
-                                  "- Select the 'Multi-Select' button to enter multi-select mode (for item deletion)."
+                                  "- Use the Options column to edit, clone or delete a contribution.\r\n" +
+                                  "- Use the 'Add' button to upload new contributions (single or in bulk).\r\n" +
+                                  "- Expand any row to see all the details for that contribution."
                     };
 
                     await td.ShowAsync();

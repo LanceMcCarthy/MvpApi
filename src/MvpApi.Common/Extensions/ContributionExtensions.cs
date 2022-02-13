@@ -355,5 +355,17 @@ namespace MvpApi.Common.Extensions
             // If all comparisons pass, true to signify a perfect match
             return true;
         }
+
+        /// <summary>
+        /// Replace an item in the collection at a certain index with a new item. This helps maintain collection integrity by doing a direct replacement.
+        /// </summary>
+        /// <param name="coll">ObservableCollection that contains the contributions</param>
+        /// <param name="itemToInsert">The new item being inserted</param>
+        /// <param name="itemIndex">The index of the item to replace</param>
+        public static void ReplaceContribution(this ObservableCollection<ContributionsModel> coll, int itemIndex, ContributionsModel itemToInsert)
+        {
+            coll.RemoveAt(itemIndex);
+            coll.Insert(itemIndex, itemToInsert);
+        }
     }
 }
