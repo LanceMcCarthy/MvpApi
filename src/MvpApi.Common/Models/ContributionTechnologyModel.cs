@@ -102,5 +102,22 @@ namespace MvpApi.Common.Models
             get => active;
             set => SetProperty(ref active, value);
         }
+
+
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ContributionTechnologyModel incoming)
+            {
+                return this.Id == incoming.Id;
+            }
+
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }
