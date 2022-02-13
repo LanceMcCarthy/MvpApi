@@ -1,8 +1,17 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Uwp.Connectivity;
+using MvpApi.Common.Models;
+using MvpApi.Uwp.ViewModels;
+using MvpApi.Uwp.Views;
+using MvpCompanion.UI.Common.Extensions;
+using MvpCompanion.UI.Common.Helpers;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Telerik.UI.Xaml.Controls.Input;
+using Template10.Services.PopupService;
+using Template10.Utils;
 using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -10,15 +19,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
-using Microsoft.Toolkit.Uwp.Connectivity;
-using MvpApi.Common.Models;
-using MvpApi.Uwp.ViewModels;
-using MvpApi.Uwp.Views;
-using MvpCompanion.UI.Common.Extensions;
-using MvpCompanion.UI.Common.Helpers;
-using Telerik.UI.Xaml.Controls.Input;
-using Template10.Services.PopupService;
-using Template10.Utils;
 
 namespace MvpApi.Uwp.Dialogs
 {
@@ -26,9 +26,10 @@ namespace MvpApi.Uwp.Dialogs
     {
         #region fields
 
-        private ObservableCollection<ContributionTypeModel> contTypes;
-        private ObservableCollection<VisibilityViewModel> contVisibilities;
-        private ObservableCollection<ContributionAreaContributionModel> contAreas;
+        private ObservableCollection<ContributionTypeModel> _contTypes;
+        private ObservableCollection<VisibilityViewModel> _contVisibilities;
+        private ObservableCollection<ContributionAreaContributionModel> _contAreas;
+        private CollectionViewSource _contTechnologyCvs;
 
         #endregion
 
@@ -48,7 +49,7 @@ namespace MvpApi.Uwp.Dialogs
 
         #endregion
 
-        #region constructors
+        #region Constructors
 
         public ContributionEditorDialog(ContributionsModel originalContribution, bool cloneContribution = false)
         {
@@ -58,7 +59,7 @@ namespace MvpApi.Uwp.Dialogs
 
             // If we are cloning, make a new copy of the object to prevent making changes to the original reference
             ViewModel.Contribution = cloneContribution
-                ? ViewModel.Contribution.Clone(stripContributionId:true)
+                ? ViewModel.Contribution.Clone(stripContributionId: true)
                 : originalContribution;
 
             // Show the correct text for the buttons and subscribe to the clicked event
@@ -73,7 +74,7 @@ namespace MvpApi.Uwp.Dialogs
 
         #endregion
 
-        #region event handlers
+        #region Event handlers
 
         private async void ContributionEditorDialog_Loaded(object sender, RoutedEventArgs e)
         {
@@ -98,14 +99,14 @@ namespace MvpApi.Uwp.Dialogs
                     ViewModel.IsBusyMessage = "";
                     ViewModel.IsBusy = false;
 
-                    // They still can't login, close the dialog window
+                    // They still can't login, close the dialog window.
                     if (!shellVm.IsLoggedIn)
                     {
                         Hide();
                     }
                 }
             }
-            
+
             // Phase 2 - configure for edit or clone
 
             if (ViewModel.IsCloningContribution)
@@ -115,13 +116,14 @@ namespace MvpApi.Uwp.Dialogs
 
                 HeaderMessageGrid.Background = new SolidColorBrush(Colors.Goldenrod);
                 ViewModel.HeaderMessage = "Cloning Contribution";
-                ViewModel.EditingExistingContribution = false;
             }
             else
             {
                 HeaderMessageGrid.Background = new SolidColorBrush(Colors.DarkSlateGray);
                 ViewModel.HeaderMessage = "Editing Contribution";
-                ViewModel.EditingExistingContribution = true;
+
+                // Hide contributionType comboBox because you cannot edit the type after it has been submitted
+                ContributionTypeComboBox.Visibility = Visibility.Collapsed;
             }
 
             // Phase 3 - Load data for combobox ItemsSource and set selected
@@ -130,47 +132,45 @@ namespace MvpApi.Uwp.Dialogs
 
             // Phase 4 - Set all the selected values
 
-
             await AssignSelectedValuesAsync();
-
-
-            //await ViewModel.OnDialogLoadedAsync();
-
         }
 
         private void ContributionEditorDialog_Unloaded(object sender, RoutedEventArgs e)
         {
-            //ViewModel.OnDialogClosingAsync();
+            // Unsubscribe manually added handlers
+            
+            ContributionTypeComboBox.SelectionChanged -= ContributionTypeComboBox_SelectionChanged;
+            ContributionTechnologyComboBox.SelectionChanged -= ContributionTechnologyComboBox_SelectionChanged;
+            AvailableTechnologiesListView.ItemClick -= AvailableTechnologiesListView_ItemClick;
+            StartDatePicker.SelectedDateChanged -= StartDatePicker_SelectedDateChanged;
+            TitleTextBox.TextChanged -= TitleTextBox_TextChanged;
+            DescriptionTextBox.TextChanged -= DescriptionTextBox_TextChanged;
+            UrlTextBox.TextChanged -= UrlTextBox_TextChanged;
+            AnnualQuantityNumericBox.ValueChanged -= AnnualQuantityNumericBox_ValueChanged;
+            SecondAnnualQuantityNumericBox.ValueChanged -= SecondAnnualQuantityNumericBox_ValueChanged;
+            AnnualReachNumericBox.ValueChanged -= AnnualReachNumericBox_ValueChanged;
+            VisibilitiesComboBox.SelectionChanged -= VisibilitiesComboBox_SelectionChanged;
         }
 
         private async void SaveButton_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
             var deferral = args.GetDeferral();
 
-            var saveSucceeded = false;
-
             try
             {
-                ContributionResult = ViewModel.Contribution;
+                IsPrimaryButtonEnabled = false;
 
-                var isValid = await ContributionResult.Validate(true);
+                var saveSucceeded = false;
+
+                ContributionResult = null;
+
+                var isValid = await ViewModel.Contribution.Validate(true);
 
                 if (isValid)
                 {
                     ViewModel.Contribution.UploadStatus = UploadStatus.InProgress;
 
-                    if (ViewModel.EditingExistingContribution)
-                    {
-                        // Update an existing contribution
-                        var contributionUpdated = await App.ApiService.UpdateContributionAsync(ViewModel.Contribution);
-
-                        if (contributionUpdated == true)
-                        {
-                            saveSucceeded = true;
-                            ContributionResult = ViewModel.Contribution;
-                        }
-                    }
-                    else
+                    if (ViewModel.IsCloningContribution)
                     {
                         // Submit a new contribution
                         var newSubmissionResult = await App.ApiService.SubmitContributionAsync(ViewModel.Contribution);
@@ -184,6 +184,17 @@ namespace MvpApi.Uwp.Dialogs
                             ViewModel.Contribution.ContributionId = newSubmissionResult.ContributionId;
 
                             saveSucceeded = true;
+                        }
+                    }
+                    else
+                    {
+                        // Update an existing contribution
+                        var contributionUpdated = await App.ApiService.UpdateContributionAsync(ViewModel.Contribution);
+
+                        if (contributionUpdated == true)
+                        {
+                            saveSucceeded = true;
+                            ContributionResult = ViewModel.Contribution;
                         }
                     }
 
@@ -221,44 +232,149 @@ namespace MvpApi.Uwp.Dialogs
             }
         }
 
-        private void CancelButton_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+        private async void CancelButton_OnClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
         {
+            if (ViewModel.Contribution.UploadStatus == UploadStatus.InProgress)
+            {
+                await new MessageDialog(
+                    "You cannot cancel an edit while submission is in progress.\r\n\n" +
+                    "If you did not intend to submit it, you can either edit or delete it after this operation is complete.",
+                    "In Progress").ShowAsync();
+
+                return;
+            }
+
             ContributionResult = null;
 
             Hide();
+        }
 
-            //var match = ViewModel.Contribution.Compare(ContributionResult);
+        private void ContributionTechnologyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.FirstOrDefault() is ContributionTechnologyModel tech)
+            {
+                ViewModel.Contribution.ContributionTechnology = tech;
+            }
+        }
 
-            //if (match)
-            //{
-            //    ContributionResult = null;
-            //    Hide();
-            //}
-            //else
-            //{
-            //    //var md = new MessageDialog("Navigating away now will lose your pending uploads, continue?", "Warning: Pending Uploads");
-            //    //md.Commands.Add(new UICommand("yes"));
-            //    //md.Commands.Add(new UICommand("no"));
-            //    //md.CancelCommandIndex = 1;
-            //    //md.DefaultCommandIndex = 1;
+        private void ContributionTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.FirstOrDefault() is ContributionTypeModel type)
+            {
+                // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
+                UpdateAnnualNumericalRequirements(type);
 
-            //    //var result = await md.ShowAsync();
+                ViewModel.Contribution.ContributionType = type;
 
-            //    //if (result.Label == "yes")
-            //    //{
-            //    //    CurrentContribution = null;
-            //    //    Hide();
-            //    //}
-            //    //else
-            //    //{
-            //    //    args.Cancel = true;
-            //    //}
-            //}
+                // Also need set the type name
+                ViewModel.Contribution.ContributionTypeName = type.EnglishName;
+            }
+        }
+
+        private void AvailableTechnologiesListView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            // Add the selected AdditionalTechnology
+            if (ViewModel.Contribution.AdditionalTechnologies.Count < 2)
+            {
+                AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
+            }
+
+            // Show or hide the Add button based on the total selected
+            AddButton.Visibility = ViewModel.Contribution.AdditionalTechnologies.Count < 2
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            // Manually find the ComboBox popup to close it
+            if (AvailableTechnologiesListView.Parent is FlyoutPresenter presenter && presenter.Parent is Popup popup)
+            {
+                popup.Hide();
+            }
+        }
+
+        private void RemoveAdditionalTechAreaButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.DataContext is ContributionTechnologyModel area)
+            {
+                if (ViewModel.Contribution.AdditionalTechnologies.Contains(area))
+                {
+                    ViewModel.Contribution.AdditionalTechnologies.Remove(area);
+
+                    // If the Add button was hidden, we need to show it again
+                    if (AddButton.Visibility == Visibility.Collapsed)
+                    {
+                        AddButton.Visibility = Visibility.Visible;
+                    }
+                }
+            }
+        }
+
+        private void StartDatePicker_SelectedDateChanged(DatePicker sender, DatePickerSelectedValueChangedEventArgs args)
+        {
+            if (args.NewDate != null && ShellPage.Instance.DataContext is ShellViewModel shellViewModel)
+            {
+                if (args.NewDate < shellViewModel.SubmissionStartDate || args.NewDate > shellViewModel.SubmissionDeadline)
+                {
+                    DateValidationBorder.Visibility = Visibility.Visible;
+                    
+                    IsPrimaryButtonEnabled = ViewModel.CanSave = false;
+                }
+                else
+                {
+                    DateValidationBorder.Visibility = Visibility.Collapsed;
+
+                    ViewModel.Contribution.StartDate = args.NewDate.Value.DateTime;
+                    
+                    IsPrimaryButtonEnabled = ViewModel.CanSave = true;
+                }
+            }
+        }
+
+        private void TitleTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ViewModel.Contribution.Title = ((TextBox)sender).Text;
+        }
+
+        private void DescriptionTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ViewModel.Contribution.Description = ((TextBox)sender).Text;
+        }
+
+        private void UrlTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ViewModel.Contribution.ReferenceUrl = ((TextBox)sender).Text;
+        }
+
+        private void AnnualQuantityNumericBox_ValueChanged(object sender, EventArgs e)
+        {
+            ViewModel.Contribution.AnnualQuantity = Convert.ToInt32(((RadNumericBox)sender).Value);
+        }
+
+        private void SecondAnnualQuantityNumericBox_ValueChanged(object sender, EventArgs e)
+        {
+            ViewModel.Contribution.SecondAnnualQuantity = Convert.ToInt32(((RadNumericBox)sender).Value);
+        }
+
+        private void AnnualReachNumericBox_ValueChanged(object sender, EventArgs e)
+        {
+            ViewModel.Contribution.AnnualReach = Convert.ToInt32(((RadNumericBox)sender).Value);
+        }
+
+        private void VisibilitiesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems != null && e.AddedItems.Count > 0)
+            {
+                var item = e.AddedItems.FirstOrDefault();
+
+                if (item is VisibilityViewModel selectedVisibility)
+                {
+                    ViewModel.Contribution.Visibility = selectedVisibility;
+                }
+            }
         }
 
         #endregion
 
-        #region tasks
+        #region Tasks
 
         private async Task LoadDataSourcesAsync()
         {
@@ -267,13 +383,13 @@ namespace MvpApi.Uwp.Dialogs
                 ViewModel.IsBusy = true;
 
                 // ********* Setup ContributionType ComboBox ********* //
-                
+
                 ViewModel.IsBusyMessage = "loading contribution types...";
 
-                contTypes = new ObservableCollection<ContributionTypeModel>();
+                _contTypes = new ObservableCollection<ContributionTypeModel>();
 
                 var types = await App.ApiService.GetContributionTypesAsync();
-                types.ForEach(type => { contTypes.Add(type); });
+                types.ForEach(type => { _contTypes.Add(type); });
 
                 ContributionTypeComboBox.ItemsSource = types;
 
@@ -285,41 +401,33 @@ namespace MvpApi.Uwp.Dialogs
                 var areaRoots = await App.ApiService.GetContributionAreasAsync();
 
                 // Flatten out the result so that we only have a single level of grouped data, this is used for the CollectionViewSource, defined in the XAML.
-                contAreas = new ObservableCollection<ContributionAreaContributionModel>();
+                _contAreas = new ObservableCollection<ContributionAreaContributionModel>();
 
                 var areas = areaRoots.SelectMany(areaRoot => areaRoot.Contributions);
-                areas.ForEach(area => { contAreas.Add(area); });
+                areas.ForEach(area => { _contAreas.Add(area); });
 
-                var areasCvs = new CollectionViewSource
+                _contTechnologyCvs = new CollectionViewSource
                 {
-                    Source = contTypes,
+                    Source = _contAreas,
                     IsSourceGrouped = true,
                     ItemsPath = new PropertyPath("ContributionAreas")
                 };
-
-                ContributionTechnologyComboBox.ItemsSource = areasCvs;
+                
+                ContributionTechnologyComboBox.ItemsSource = _contTechnologyCvs;
+                AvailableTechnologiesListView.ItemsSource = _contTechnologyCvs; // this is inside a popup
 
 
                 // ********* Setup Visibilities ComboBox ********* //
 
                 ViewModel.IsBusyMessage = "loading visibilities...";
 
-                contVisibilities = new ObservableCollection<VisibilityViewModel>();
+                _contVisibilities = new ObservableCollection<VisibilityViewModel>();
 
                 var visibilities = await App.ApiService.GetVisibilitiesAsync();
-                visibilities.ForEach(visibility => { contVisibilities.Add(visibility); });
+                visibilities.ForEach(visibility => { _contVisibilities.Add(visibility); });
 
-                VisibilitiesComboBox.ItemsSource = contVisibilities;
-
-
-                // ********* Setup SelectedAdditionalTechnologies ListView ********* //
-
-                SelectedAdditionalTechnologiesListView.ItemsSource = ViewModel.Contribution.AdditionalTechnologies;
-
-                // This is the popup for selecting additional areas. It uses the same CVS
-                AdditionalTechnologiesListView.ItemsSource = areasCvs;
-
-
+                VisibilitiesComboBox.ItemsSource = _contVisibilities;
+                
             }
             catch (Exception ex)
             {
@@ -353,16 +461,24 @@ namespace MvpApi.Uwp.Dialogs
                 ContributionTechnologyComboBox.SelectedItem = ViewModel.Contribution.ContributionTechnology;
                 ContributionTechnologyComboBox.SelectionChangedTrigger = ComboBoxSelectionChangedTrigger.Committed;
                 ContributionTechnologyComboBox.SelectionChanged += ContributionTechnologyComboBox_SelectionChanged;
+
+                AvailableTechnologiesListView.ItemClick += AvailableTechnologiesListView_ItemClick;
+
+                // SelectedAdditionalTechnologies ListView
+
+                SelectedAdditionalTechnologiesListView.ItemsSource = ViewModel.Contribution.AdditionalTechnologies;
+
+                // Hide the Add button based on number of SelectedAdditionalTechnologies
+
+                AddButton.Visibility = ViewModel.Contribution.AdditionalTechnologies.Count < 2
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+
                 
-                // AdditionalTechnologies ListView
-                // (inside the popup of the SelectedAdditionalTechnologies ListView)
-
-                AdditionalTechnologiesListView.ItemClick += AdditionalTechnologiesListView_ItemClick;
-
                 // StartDate DatePicker
 
-                StartDatePicker.Date = ViewModel.Contribution.StartDate != null 
-                    ? new DateTimeOffset((DateTime)ViewModel.Contribution.StartDate) 
+                StartDatePicker.Date = ViewModel.Contribution.StartDate != null
+                    ? new DateTimeOffset((DateTime)ViewModel.Contribution.StartDate)
                     : DateTimeOffset.Now;
 
                 StartDatePicker.SelectedDateChanged += StartDatePicker_SelectedDateChanged;
@@ -416,7 +532,7 @@ namespace MvpApi.Uwp.Dialogs
             }
         }
 
-        public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
+        public void UpdateAnnualNumericalRequirements(ContributionTypeModel contributionType)
         {
             // Each activity type has a unique set of field names and which ones are required.
             // This extension method will parse it and return a Tuple of the unique requirements.
@@ -428,10 +544,10 @@ namespace MvpApi.Uwp.Dialogs
             ViewModel.AnnualReachHeader = contributionTypeRequirements.Item3;
 
             // Determine the required fields for upload.
-            ViewModel.IsUrlRequired = contributionTypeRequirements.Item4;
             ViewModel.IsAnnualQuantityRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item1);
             ViewModel.IsSecondAnnualQuantityRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item2);
             ViewModel.IsAnnualReachRequired = !string.IsNullOrEmpty(contributionTypeRequirements.Item3);
+            ViewModel.IsUrlRequired = contributionTypeRequirements.Item4;
         }
 
         private void AddAdditionalArea(ContributionTechnologyModel area)
@@ -442,132 +558,6 @@ namespace MvpApi.Uwp.Dialogs
             }
         }
 
-        private void RemoveAdditionalArea(ContributionTechnologyModel area)
-        {
-            if (ViewModel.Contribution.AdditionalTechnologies.Contains(area))
-            {
-                ViewModel.Contribution.AdditionalTechnologies.Remove(area);
-            }
-        }
-
-        #endregion
-
-        #region event handlers
-
-
-        private void ContributionTechnologyComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ContributionTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.FirstOrDefault() is ContributionTypeModel type)
-            {
-                // There are complex rules around the names of the properties, this method determines the requirements and updates the UI accordingly
-                DetermineContributionTypeRequirements(type);
-
-                // Also need set the type name
-                ViewModel.Contribution.ContributionTypeName = type.EnglishName;
-            }
-        }
-
-        private async void AdditionalTechnologiesListView_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            if (ViewModel.Contribution.AdditionalTechnologies.Count < 2)
-            {
-                AddAdditionalArea(e.ClickedItem as ContributionTechnologyModel);
-            }
-            else
-            {
-                await new MessageDialog("You can only have two additional areas selected, remove one and try again.").ShowAsync();
-            }
-            
-            // Manually find the ComboBox popup to close it
-            if (AdditionalTechnologiesListView.Parent is FlyoutPresenter presenter && presenter.Parent is Popup popup)
-            {
-                popup.Hide();
-            }
-        }
-
-        private void StartDatePicker_SelectedDateChanged(DatePicker sender, DatePickerSelectedValueChangedEventArgs args)
-        {
-            if (args.NewDate != null)
-            {
-                if (args.NewDate < (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate 
-                    || args.NewDate > (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline)
-                {
-
-                    DateValidationMessageTextBlock.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    if(DateValidationMessageTextBlock.Visibility == Visibility.Visible)
-                    {
-                        DateValidationMessageTextBlock.Visibility = Visibility.Collapsed;
-                    }
-
-                    ViewModel.Contribution.StartDate = args.NewDate.Value.DateTime;
-                }
-            }
-        }
-
-        private void TitleTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            ViewModel.Contribution.Title = ((TextBox)sender).Text;
-        }
-
-        private void DescriptionTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            ViewModel.Contribution.Description = ((TextBox)sender).Text;
-        }
-
-        private void UrlTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            ViewModel.Contribution.ReferenceUrl = ((TextBox)sender).Text;
-        }
-
-        private void AnnualQuantityNumericBox_ValueChanged(object sender, EventArgs e)
-        {
-            ViewModel.Contribution.AnnualQuantity = Convert.ToInt32(((RadNumericBox)sender).Value);
-        }
-
-        private void SecondAnnualQuantityNumericBox_ValueChanged(object sender, EventArgs e)
-        {
-            ViewModel.Contribution.SecondAnnualQuantity = Convert.ToInt32(((RadNumericBox)sender).Value);
-        }
-
-        private void AnnualReachNumericBox_ValueChanged(object sender, EventArgs e)
-        {
-            ViewModel.Contribution.AnnualReach = Convert.ToInt32(((RadNumericBox)sender).Value);
-        }
-
-        private void VisibilitiesComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
     }
 }
-
-//ContributionTypeComboBox.SelectedItem = new Binding
-//{
-//    Path = new PropertyPath("Contribution.ContributionType"),
-//    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-//    Mode = BindingMode.TwoWay
-//};
-
-//ContributionTechnologyComboBox.SelectedItem = new Binding
-//{
-//    Path = new PropertyPath("Contribution.ContributionTechnology"),
-//    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-//    Mode = BindingMode.TwoWay
-//};
-
-//VisibilitiesComboBox.SelectedItem = new Binding
-//{
-//    Path = new PropertyPath("Contribution.Visibility"),
-//    UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-//    Mode = BindingMode.TwoWay
-//};
