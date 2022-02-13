@@ -67,10 +67,6 @@
                                Foreground="{ThemeResource ApplicationForegroundThemeBrush}" />
                 </StackPanel>
 
-                <!-- SelectedItem="{Binding Contribution.ContributionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                          ItemsSource="{Binding Types}"
-                          SelectionChanged="{x:Bind ViewModel.ActivityType_SelectionChanged}"
-                          Visibility="{Binding IsCloningContribution, Converter={StaticResource BoolToVisibilityConverter}}"-->
                 <Grid x:Name="ContributionTypeGrid">
                     <ComboBox x:Name="ContributionTypeComboBox"
                               DisplayMemberPath="Name"
@@ -91,8 +87,7 @@
                     <primitives:RadBusyIndicator x:Name="ContributionTypeBusyIndicator"
                                                  Width="{Binding Path=ActualWidth, ElementName=ContributionTypeComboBox}"
                                                  Height="{Binding Path=ActualHeight, ElementName=ContributionTypeComboBox}"
-                                                 Style="{StaticResource SegmentLoadingIndicatorStyle}"
-                                                 HorizontalAlignment="Left" />
+                                                 Style="{StaticResource SegmentLoadingIndicatorStyle}" />
                 </Grid>
 
                 <Grid>
@@ -135,45 +130,14 @@
                                                  Style="{StaticResource SegmentLoadingIndicatorStyle}" />
                 </Grid>
 
-                
-
-                <!-- SelectedItem="{Binding Contribution.ContributionTechnology, Mode=TwoWay}" 
-                          ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"-->
-                <!--<Grid>
-                    <StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Contribution Technology Area"
-                                       Foreground="{ThemeResource ApplicationForegroundThemeBrush}"
-                                       Margin="0,0,5,0" />
-                            <TextBlock Text="(required)"
-                                       Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
-                        </StackPanel>
-
-                    </StackPanel>
-
-
-                    <ComboBox x:Name="ContributionTechnologyComboBox"
-                              Style="{StaticResource TechnologyAreaComboBoxStyle}" />
-
-
-
-                    <primitives:RadBusyIndicator x:Name="ContributionTechnologyBusyIndicator"
-                                                 Width="{Binding Path=ActualWidth, ElementName=ContributionTechnologyComboBox}"
-                                                 Height="{Binding Path=ActualHeight, ElementName=ContributionTechnologyComboBox}"
-                                                 Style="{StaticResource SegmentLoadingIndicatorStyle}"/>
-                </Grid>-->
-
-
                 <TextBlock Text="Optional: Select up to 2 additional technology areas."
                            Margin="0,10,0,0" />
 
-                <!-- ItemsSource="{Binding Contribution.AdditionalTechnologies}" -->
                 <ListView x:Name="SelectedAdditionalTechnologiesListView"
                           SelectionMode="None"
                           HorizontalAlignment="Left"
                           Margin="0,5,10,0">
                     <ListView.Footer>
-                        <!-- Visibility="{Binding Contribution.AdditionalTechnologies.Count, Converter={StaticResource CountToVisibilityConverter}}" -->
                         <Button x:Name="AddButton"
                                 Content="+"
                                 FontWeight="Bold"
@@ -183,9 +147,6 @@
                                 Margin="0,0,0,0">
                             <Button.Flyout>
                                 <Flyout x:Name="AdditionalTechAreaFlyout">
-                                    <!-- DataContext="{x:Bind ViewModel}"
-                                    ItemsSource="{Binding Source={StaticResource awardCategoriesCvs}}"
-                                              ItemClick="{x:Bind ViewModel.AdditionalTechnologiesListView_OnItemClick}" -->
                                     <ListView x:Name="AvailableTechnologiesListView"
                                               Style="{StaticResource AdditionalTechnologyAreasListViewStyle}"
                                               IsItemClickEnabled="True"
@@ -239,8 +200,6 @@
                     </ListView.ItemContainerStyle>
                 </ListView>
 
-                <!-- Date="{Binding Contribution.StartDate, Mode=TwoWay, Converter={StaticResource DateTimeOffsetConverter}, UpdateSourceTrigger=PropertyChanged}"
-                     DateChanged="{x:Bind ViewModel.DatePicker_OnDateChanged}"  -->
                 <DatePicker x:Name="StartDatePicker"
                             HorizontalAlignment="Left"
                             MinWidth="300"
@@ -268,7 +227,6 @@
                     </DatePicker.Header>
                 </DatePicker>
 
-                <!-- Text="{Binding Contribution.Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
                 <TextBox x:Name="TitleTextBox"
                          HorizontalAlignment="Left"
                          MinWidth="300"
@@ -284,7 +242,6 @@
                     </TextBox.Header>
                 </TextBox>
 
-                <!-- Text="{Binding Contribution.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
                 <TextBox x:Name="DescriptionTextBox"
                          AcceptsReturn="True"
                          Header="Description"
@@ -292,7 +249,6 @@
                          HorizontalAlignment="Left"
                          Margin="0,10" />
 
-                <!-- Text="{Binding Contribution.ReferenceUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" -->
                 <TextBox x:Name="UrlTextBox"
                          HorizontalAlignment="Left"
                          MinWidth="300"
@@ -373,8 +329,6 @@
                     </input:RadNumericBox>
                 </StackPanel>
 
-                <!-- SelectedItem="{Binding Contribution.Visibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                          ItemsSource="{x:Bind ViewModel.Visibilities}" -->
                 <Grid>
                     <ComboBox x:Name="VisibilitiesComboBox"
                               IsTextSearchEnabled="True"

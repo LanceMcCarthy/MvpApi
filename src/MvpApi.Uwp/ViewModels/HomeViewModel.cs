@@ -1,20 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Foundation.Metadata;
 using Windows.Storage;
-using Windows.Storage.Pickers;
-using Windows.Storage.Provider;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
-using Microsoft.Services.Store.Engagement;
 using Microsoft.Toolkit.Uwp.Connectivity;
 using MvpApi.Common.Interfaces;
 using MvpApi.Common.Models;
@@ -24,10 +19,8 @@ using MvpApi.Uwp.Views;
 using MvpCompanion.UI.Common.Helpers;
 using Telerik.Core.Data;
 using Telerik.Data.Core;
-using Telerik.UI.Xaml.Controls.Grid;
 using Template10.Common;
 using Template10.Mvvm;
-using MvpApi.Common.Extensions;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -45,7 +38,7 @@ namespace MvpApi.Uwp.ViewModels
 
         private int? _currentOffset = 0;
         private string _displayTotal = "0 Items";
-        private bool _skipAutomaticRefresh;
+        private bool _isAutomaticRefreshPaused;
 
         #endregion
 
@@ -136,10 +129,10 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _displayTotal, value);
         }
 
-        public bool SkipAutomaticRefresh
+        public bool IsAutomaticRefreshPaused
         {
-            get => _skipAutomaticRefresh;
-            set => Set(ref _skipAutomaticRefresh, value);
+            get => _isAutomaticRefreshPaused;
+            set => Set(ref _isAutomaticRefreshPaused, value);
         }
 
         #endregion
@@ -159,151 +152,12 @@ namespace MvpApi.Uwp.ViewModels
         public async void AddActivityButton_Click(object sender, RoutedEventArgs e)
         {
             await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
-
-            // NOTE: App should always go to upload page for new contributions, popup editor is best used for edit and clones
-            //if (ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-            //{
-            //    var editDialog = new ContributionEditorDialog();
-
-            //    await editDialog.ShowAsync();
-
-            //    if (editDialog.ContributionResult != null)
-            //    {
-            //        Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-            //    }
-            //}
-            //else
-            //{
-            //    await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
-            //}
         }
-
-        //public void ClearSelectionButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    if (SelectedContributions.Any())
-        //        SelectedContributions.Clear();
-        //}
-
-        public void RefreshButton_Click(object sender, RoutedEventArgs e)
+        
+        public async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
-            //if (SelectedContributions.Any())
-            //    SelectedContributions.Clear();
-            
-            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
+            await RefreshAndReturnToPositionAsync(0);
         }
-
-        //public async void DeleteSelectionButton_Click(object sender, RoutedEventArgs e)
-        //{
-        //    try
-        //    {
-        //        IsBusy = true;
-        //        IsBusyMessage = "preparing to delete contributions...";
-                
-        //        int? indexToReturnTo = null;
-
-        //        foreach (ContributionsModel contribution in SelectedContributions)
-        //        {
-        //            if (contribution.IsEditable == true)
-        //            {
-        //                // Try to grab an index in the overall list so that we can scroll back to it after deletion
-        //                if (indexToReturnTo == null)
-        //                {
-        //                    indexToReturnTo = Contributions.IndexOf(contribution);
-        //                }
-
-        //                IsBusyMessage = $"deleting {contribution.Title}...";
-
-
-        //                var success = await App.ApiService.DeleteContributionAsync(contribution);
-
-        //                // Quality assurance, only logs a successful or failed delete.
-        //                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-        //                    StoreServicesCustomEventLogger.GetDefault().Log(success == true ? "DeleteContributionSuccess" : "DeleteContributionFailure");
-        //            }
-        //        }
-                
-        //        var md = new MessageDialog(
-        //            "The contribution(s) was successfully deleted, do you want to refresh your local data?\r\n\n" +
-        //            "Skipping refresh will keep your position in the list, but your fetch numbers will be inaccurate until you do a refresh.",
-        //            "Success - Refresh Data?");
-
-        //        md.Commands.Add(new UICommand("Yes, refresh data now"));
-        //        md.Commands.Add(new UICommand("No, I'll refresh later"));
-        //        md.DefaultCommandIndex = 0;
-
-        //        var mdResult = await md.ShowAsync();
-
-        //        if (mdResult.Label == "No, I'll refresh later")
-        //        {
-        //            var itemsToRemove = SelectedContributions.ToArray();
-
-        //            foreach (var item in itemsToRemove)
-        //            {
-        //                Contributions.Remove((ContributionsModel)item);
-        //            }
-                    
-        //            return;
-        //        }
-        //        else
-        //        {
-        //            // After deleting contributions, we need to fetch updated list
-        //            IsBusyMessage = "refreshing contributions...";
-
-        //            // TODO - IMPORTANT: decide if we need a full refresh or if this custom refresh with scrolling position works
-        //            await RefreshAndReturnToPositionAsync(Convert.ToUInt32(indexToReturnTo));
-
-        //            // or start them at the beginning because we cant programmatically get the right number of items in one fetch
-        //            //Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems);
-        //        }
-                
-        //        SelectedContributions.Clear();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Debug.WriteLine($"DeleteSelectedContributions Exception: {ex}");
-        //    }
-        //    finally
-        //    {
-        //        IsBusy = false;
-        //        IsBusyMessage = "";
-        //    }
-        //}
-
-        //public async void RadDataGrid_OnSelectionChanged(object sender, DataGridSelectionChangedEventArgs e)
-        //{
-        //    // When in multiple selection mode, enable/disable delete instead of navigating to details page
-        //    if (GridSelectionMode == DataGridSelectionMode.Multiple)
-        //    {
-        //        AreAppBarButtonsEnabled = e?.AddedItems.Any() == true;
-        //        return;
-        //    }
-
-        //    // When in single selection mode, go to the selected item's details page
-        //    if (GridSelectionMode == DataGridSelectionMode.Single && e?.AddedItems?.FirstOrDefault() is ContributionsModel contribution)
-        //    {
-        //        if (contribution.IsEditable == false)
-        //        {
-        //            await new MessageDialog("This contribution is marked as non-editable by Microsoft. If you feel this is an error, contact your CPM.", "Readonly Contribution").ShowAsync();
-        //            return;
-        //        }
-
-        //        if(ShellPage.Instance.DataContext is ShellViewModel vm && vm.UseBetaEditor)
-        //        {
-        //            var editDialog = new ContributionEditorDialog(contribution, false);
-
-        //            await editDialog.ShowAsync();
-
-        //            if (editDialog.ContributionResult != null)
-        //            {
-        //                Debug.WriteLine($"Created {editDialog.ContributionResult.ContributionTypeName}");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(ContributionDetailPage), contribution, new SuppressNavigationTransitionInfo());
-        //        }
-        //    }
-        //}
 
         public void GroupingToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
@@ -344,6 +198,8 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (sender is Button btn && btn.DataContext is ContributionsModel originalContribution)
             {
+                var itemIndex = Contributions.IndexOf(originalContribution);
+
                 var editDialog = new ContributionEditorDialog(originalContribution, true);
 
                 await editDialog.ShowAsync();
@@ -352,19 +208,18 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     Debug.WriteLine($"Cloned item uploaded {editDialog.ContributionResult.ContributionTypeName}");
 
-                    var refreshData = await AskForDataRefreshAsync();
+                    Contributions.Insert(0, editDialog.ContributionResult);
 
-                    if (refreshData)
+                    if (IsAutomaticRefreshPaused)
                     {
-                        IsBusyMessage = "refreshing contributions...";
+                        var refreshData = await AskForDataRefreshAsync();
 
-                        var itemIndex = Contributions.IndexOf(originalContribution);
-
-                        await RefreshAndReturnToPositionAsync(Convert.ToUInt32(itemIndex));
-                    }
-                    else
-                    {
-                        Contributions.Insert(0, editDialog.ContributionResult);
+                        if (refreshData)
+                        {
+                            IsBusyMessage = "refreshing contributions...";
+                            
+                            await RefreshAndReturnToPositionAsync(Convert.ToUInt32(itemIndex));
+                        }
                     }
                 }
             }
@@ -372,30 +227,29 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void EditButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.DataContext is ContributionsModel contribution)
+            if (sender is Button btn && btn.DataContext is ContributionsModel originalContribution)
             {
-                if (contribution.IsEditable == false)
+                if (originalContribution.IsEditable == false)
                 {
                     await new MessageDialog("This contribution is marked as non-editable by Microsoft. If you feel this is an error, contact your CPM.", "Readonly Contribution").ShowAsync();
                     return;
                 }
 
-                var editDialog = new ContributionEditorDialog(contribution);
+                var itemIndex = Contributions.IndexOf(originalContribution);
+
+                var editDialog = new ContributionEditorDialog(originalContribution);
 
                 await editDialog.ShowAsync();
 
                 if (editDialog.ContributionResult != null)
                 {
-                    var itemIndex = Contributions.IndexOf(contribution);
-
                     Debug.WriteLine($"Edited {editDialog.ContributionResult.ContributionTypeName}");
 
+                    Contributions.Remove(originalContribution);
+                    Contributions.Insert(itemIndex, editDialog.ContributionResult);
+
                     // If user has paused refreshing, only update local collection
-                    if (SkipAutomaticRefresh)
-                    {
-                        Contributions.ReplaceContribution(itemIndex, editDialog.ContributionResult);
-                    }
-                    else
+                    if (!IsAutomaticRefreshPaused)
                     {
                         var refreshData = await AskForDataRefreshAsync();
 
@@ -404,10 +258,6 @@ namespace MvpApi.Uwp.ViewModels
                             IsBusyMessage = "refreshing contributions...";
 
                             await RefreshAndReturnToPositionAsync(Convert.ToUInt32(itemIndex));
-                        }
-                        else
-                        {
-                            Contributions.ReplaceContribution(itemIndex, editDialog.ContributionResult);
                         }
                     }
                 }
@@ -436,7 +286,7 @@ namespace MvpApi.Uwp.ViewModels
 
                 try
                 {
-                    IsBusy = false;
+                    IsBusy = true;
                     IsBusyMessage = $"deleting {contribution.Title}...";
 
                     var indexToReturnTo = Contributions.IndexOf(contribution);
@@ -446,7 +296,7 @@ namespace MvpApi.Uwp.ViewModels
                     if (success == true)
                     {
                         // IF the user has already seen the popup and selected Skip All
-                        if (SkipAutomaticRefresh)
+                        if (IsAutomaticRefreshPaused)
                         {
                             Contributions.Remove(contribution);
                             return;
@@ -551,6 +401,14 @@ namespace MvpApi.Uwp.ViewModels
 
         public async Task RefreshAndReturnToPositionAsync(uint rowIndexToReturnTo)
         {
+            if (IsAutomaticRefreshPaused)
+            {
+                IsAutomaticRefreshPaused = false;
+            }
+
+            _currentOffset = 0;
+            DisplayTotal = "loading...";
+
             Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
 
             if (Contributions.Count < rowIndexToReturnTo)
@@ -580,13 +438,13 @@ namespace MvpApi.Uwp.ViewModels
 
             if (md2Result.Label == "No (skip all)")
             {
-                SkipAutomaticRefresh = true;
+                IsAutomaticRefreshPaused = true;
 
                 return false;
             }
             else if (md2Result.Label == "No (skip once)")
             {
-                SkipAutomaticRefresh = false;
+                IsAutomaticRefreshPaused = false;
 
                 return false;
             }
@@ -596,52 +454,6 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
         
-        //private async Task LoadContributionsAsync()
-        //{
-        //    try
-        //    {
-        //        IsBusy = true;
-        //        IsBusyMessage = $"Fetching {PreferredAwardDataDataCycle} award cycle contributions...";
-
-        //        ContributionViewModel result;
-
-        //        switch (PreferredAwardDataDataCycle)
-        //        {
-        //            case "All":
-        //                // Get the entire list of contributions for the user (current and historical)
-        //                //result = await App.ApiService.GetAllContributionsAsync();
-
-        //                result = await App.ApiService.GetAllContributionsAsync();
-        //                break;
-        //            case "Historical":
-        //                // Get only the historical contributions from previous cycles
-        //                result = await App.ApiService.GetAllHistoricalContributionsAsync();
-        //                break;
-        //            case "Current":
-        //            default:
-        //                // Get only the current cycle's contributions
-        //                result = await App.ApiService.GetAllCurrentCycleContributionsAsync();
-        //                break;
-        //        }
-
-        //        Contributions = new ObservableCollection<ContributionsModel>();
-
-        //        foreach (var cont in result.Contributions)
-        //        {
-        //            Contributions.Add(cont);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        await ex.LogExceptionWithUserMessage();
-        //    }
-        //    finally
-        //    {
-        //        IsBusyMessage = "";
-        //        IsBusy = false;
-        //    }
-        //}
-
         #endregion
 
         #region Navigation
@@ -662,11 +474,12 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     await ShellPage.Instance.SignInAsync();
                 }
-
-                // Although user should be logged in at this point, still check
-                // TODO Use NeedsHomePageRefresh property to determine to reload the contributions
+                
                 if (shellVm.IsLoggedIn)
                 {
+                    _currentOffset = 0;
+                    DisplayTotal = "loading...";
+
                     Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
                 }
 

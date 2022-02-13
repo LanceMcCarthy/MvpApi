@@ -273,7 +273,7 @@
                                Margin="15,0,0,15"
                                Style="{ThemeResource CaptionTextBlockStyle}" />
                     <Border Background="Gold"
-                            Visibility="{Binding SkipAutomaticRefresh, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Visibility="{Binding IsAutomaticRefreshPaused, Converter={StaticResource BoolToVisibilityConverter}}"
                             Margin="15,0,0,15"
                             Padding="8,4">
                         <StackPanel Orientation="Horizontal">
