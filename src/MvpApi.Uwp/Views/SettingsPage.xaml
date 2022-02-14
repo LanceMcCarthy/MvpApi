@@ -358,13 +358,13 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Margin="20">
-                        <TextBlock Text="Export" 
-                                   Style="{ThemeResource SubtitleTextBlockStyle}"/>
+                    <StackPanel Margin="20,0,0,10">
+                        <TextBlock Text="Export"
+                                   Style="{ThemeResource SubtitleTextBlockStyle}" />
 
                         <TextBlock Text="The following options can be used to export your contribution activities, types or areas data to help diagnose problems with the app (or if you're just a data nerd 🤓)."
                                    TextWrapping="Wrap"
-                                   Margin="0,0,0,15">
+                                   Margin="0,0,0,0">
                             <animations:Implicit.ShowAnimations>
                                 <animations:ScaleAnimation From="0.8"
                                                            To="1.0"
@@ -381,39 +381,43 @@
                                                              To="0"
                                                              Duration="0:0:0.6" />
                             </animations:Implicit.HideAnimations>
-                        </TextBlock>
+                        </TextBlock>   
+                        
+                        <HyperlinkButton Content="If you would like to import this data into Excel, see this tutorial." 
+                                         NavigateUri="https://www.howtogeek.com/775651/how-to-convert-a-json-file-to-microsoft-excel/"
+                                         Margin="-10,0,0,0"/>
+
+                        <TextBlock Text="Contributions Data Export"
+                                   FontWeight="SemiBold"
+                                   Margin="0,10,0,10" />
 
                         <StackPanel Orientation="Horizontal">
                             <ComboBox ItemsSource="{Binding ContributionExportTypes}"
                                       SelectedItem="{Binding SelectedExportType, Mode=TwoWay}"
                                       Header="Select Contributions Award cycle" />
-
                             <Button Content="Export Contributions"
                                     Command="{Binding ExportContributionsCommand}"
                                     VerticalAlignment="Bottom"
                                     Margin="10,0,0,0" />
+                        </StackPanel> 
 
-                        </StackPanel>
-
-
-                        <TextBlock Text="Online Identities"
+                        <TextBlock Text="Online Identities Data Export"
                                    FontWeight="SemiBold"
-                                   Margin="0,40,0,0" />
+                                   Margin="0,20,0,0" />
 
                         <TextBlock Text="Export data of your MVP profile's online identities list."
                                    Margin="0,10,0,0" />
 
-
                         <Button Content="Export Online Identities"
                                 Command="{Binding ExportOnlineIdentitiesCommand}"
                                 Margin="0,10,0,0" />
-                    </StackPanel>
+                     </StackPanel>
 
-                    <StackPanel Margin="20"
+                    <StackPanel Margin="0,0,20,10"
                                 Grid.Column="1">
                         <TextBlock Text="Import"
                                    Style="{ThemeResource SubtitleTextBlockStyle}" />
-                        <TextBlock Text="The following import options can be used to test your JSON data and validate the deserialization logic against that data."
+                        <TextBlock Text="The following options can be used to test your json data file and validate the deserialization logic, which helps to identify API issues. Select the appropriate json data files that you have exported."
                                    TextWrapping="Wrap"
                                    Margin="0,0,0,0">
                             <animations:Implicit.ShowAnimations>
@@ -433,21 +437,46 @@
                                                              Duration="0:0:0.6" />
                             </animations:Implicit.HideAnimations>
                         </TextBlock>
-                        <Border BorderThickness="0"
-                                BorderBrush="{ThemeResource SystemControlHighlightAccentBrush}"
-                                HorizontalAlignment="Left"
-                                Margin="0,0,0,10">
-                            <StackPanel Margin="0,20,0,0">
-                                <TextBlock Text="Contributions Deserialization Test" 
-                                           FontWeight="SemiBold"/>
+                        <Grid Margin="0,0,0,10">
+                            <StackPanel Margin="0,10,0,0">
+                                <TextBlock Text="Verify Data"
+                                           FontWeight="SemiBold" />
 
-                                <TextBlock Text="Select one of the json data files that you have exported. This will test the deserialization logic and help identify issues." />
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="0,10,0,0">
+                                    <Button Content="Select Contributions json File"
+                                            Command="{Binding ImportContributionsTestCommand}"
+                                            Margin="0,0,10,0" />
+                                    <TextBlock Text="{Binding ImportContributionsStatus, FallbackValue=import_was_successful}"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
 
-                                <Button Content="Select Data File"
-                                        Command="{Binding ImportContributionsTestCommand}"
-                                        Margin="0,10,0,0" />
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="0,10,0,0">
+                                    <Button Content="Select Online Identities json File"
+                                            Command="{Binding ImportOnlineIdentitiesTestCommand}"
+                                            Margin="0,0,10,0" />
+                                    <TextBlock Text="{Binding ImportOnlineIdentitiesStatus, FallbackValue=import_was_successful}"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
                             </StackPanel>
-                        </Border>
+                        </Grid>
+                        <!--<Grid HorizontalAlignment="Left"
+                              Margin="0,0,0,10">
+                            <StackPanel Margin="0,10,0,0">
+                                <TextBlock Text="Verify - Online Identities Data"
+                                           FontWeight="SemiBold" />
+
+                                <StackPanel Orientation="Horizontal"
+                                            Margin="0,10,0,0">
+                                    <Button Content="Select Online Identities json File"
+                                            Command="{Binding ImportOnlineIdentitiesTestCommand}"
+                                            Margin="0,0,10,0" />
+                                    <TextBlock Text="{Binding ImportOnlineIdentitiesStatus, FallbackValue=import_was_successful}"
+                                               VerticalAlignment="Center" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>-->
 
                     </StackPanel>
                 </Grid>
@@ -458,46 +487,7 @@
                                       HeaderStyle="{StaticResource MyHeaderToggleButtonStyle}"
                                       HorizontalContentAlignment="Stretch">
                 <toolkitControls:Expander.Header>
-                    <TextBlock Text="Editor"
-                               Style="{ThemeResource SubtitleTextBlockStyle}" />
-                </toolkitControls:Expander.Header>
-
-                <StackPanel Margin="20">
-                    <TextBlock Text="Enables the new experimental popup editor instead of navigating to a separate page."
-                               Foreground="{ThemeResource SystemControlForegroundAccentBrush}"
-                               VerticalAlignment="Center"
-                               TextWrapping="Wrap"
-                               Margin="0,0,0,5">
-                        <animations:Implicit.ShowAnimations>
-                            <animations:ScaleAnimation From="0.8"
-                                                       To="1"
-                                                       Duration="0:0:0.4" />
-                            <animations:OpacityAnimation From="0"
-                                                         To="1"
-                                                         Duration="0:0:0.4" />
-                        </animations:Implicit.ShowAnimations>
-                        <animations:Implicit.HideAnimations>
-                            <animations:ScaleAnimation From="1"
-                                                       To="0.8"
-                                                       Duration="0:0:0.6" />
-                            <animations:OpacityAnimation From="1"
-                                                         To="0"
-                                                         Duration="0:0:0.6" />
-                        </animations:Implicit.HideAnimations>
-                    </TextBlock>
-
-                    <ToggleSwitch IsOn="{Binding UseBetaEditor, Mode=TwoWay}"
-                                  Header="Use Experimental Editor"
-                                  VerticalAlignment="Center" />
-                </StackPanel>
-            </toolkitControls:Expander>
-
-            <toolkitControls:Expander IsExpanded="False"
-                                      Background="Transparent"
-                                      HeaderStyle="{StaticResource MyHeaderToggleButtonStyle}"
-                                      HorizontalContentAlignment="Stretch">
-                <toolkitControls:Expander.Header>
-                    <TextBlock Text="Contribution Uploads"
+                    <TextBlock Text="Override Award Year Date Range"
                                Style="{ThemeResource SubtitleTextBlockStyle}" />
                 </toolkitControls:Expander.Header>
 

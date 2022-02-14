@@ -1,35 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Windows.ApplicationModel;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.UI.Popups;
-using Windows.UI.Xaml.Navigation;
-using CommonHelpers.Mvvm;
+﻿using CommonHelpers.Mvvm;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Views;
 using MvpCompanion.UI.Common.Helpers;
-using Windows.Storage.Pickers;
-using Windows.Storage;
-using Windows.Storage.Provider;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.Storage.Provider;
+using Windows.UI.Popups;
+using Windows.UI.Xaml.Navigation;
 
 namespace MvpApi.Uwp.ViewModels
 {
     public class SettingsViewModel : PageViewModelBase
     {
         private string selectedExportType = "All";
+        private string _importContributionsStatus = "All";
+        private string importOnlineIdentitiesStatus = "All";
 
         public SettingsViewModel()
         {
-            if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
-            {
-                UseBetaEditor = true;
-            }
-            
             ExportContributionsCommand = new DelegateCommand(async () => await ExportContributionsAsync());
             ExportOnlineIdentitiesCommand = new DelegateCommand(async () => await ExportOnlineIdentitiesAsync());
             ImportContributionsTestCommand = new DelegateCommand(async () => await ImportContributionsTestAsync());
+            ImportOnlineIdentitiesTestCommand = new DelegateCommand(async () => await ImportOnlineIdentitiesTestAsync());
         }
 
         public List<string> ContributionExportTypes => new List<string> { "All", "Current", "Historical" };
@@ -37,20 +33,26 @@ namespace MvpApi.Uwp.ViewModels
         public string SelectedExportType 
         { 
             get => selectedExportType;
-            set
-            {
-                if (selectedExportType == value)
-                    return;
-
-                selectedExportType = value;
-                RaisePropertyChanged(nameof(SelectedExportType));
-            }
+            set => Set(ref selectedExportType, value);
         }
 
-        public bool UseBetaEditor
+        public string ImportContributionsStatus
         {
-            get => ((ShellViewModel)ShellPage.Instance.DataContext).UseBetaEditor;
-            set => ((ShellViewModel)ShellPage.Instance.DataContext).UseBetaEditor = value;
+            get => _importContributionsStatus;
+            set
+            {
+                if (_importContributionsStatus == value)
+                    return;
+
+                _importContributionsStatus = value;
+                RaisePropertyChanged(nameof(ImportContributionsStatus));
+            }
+        }
+        
+        public string ImportOnlineIdentitiesStatus
+        {
+            get => importOnlineIdentitiesStatus;
+            set => Set(ref importOnlineIdentitiesStatus, value);
         }
 
         public DateTime SubmissionStartDate
@@ -64,40 +66,102 @@ namespace MvpApi.Uwp.ViewModels
             get => ((ShellViewModel)ShellPage.Instance.DataContext).SubmissionDeadline;
             set => ((ShellViewModel)ShellPage.Instance.DataContext).SubmissionDeadline = value;
         }
-
+        
         public DelegateCommand ExportContributionsCommand { get; set; }
 
         public DelegateCommand ExportOnlineIdentitiesCommand { get; set; }
 
         public DelegateCommand ImportContributionsTestCommand { get; set; }
 
+        public DelegateCommand ImportOnlineIdentitiesTestCommand { get; set; }
+
         private async Task ImportContributionsTestAsync()
         {
             try
             {
+                ImportContributionsStatus = "waiting for file selection...";
+
                 var picker = new FileOpenPicker
                 {
                     ViewMode = PickerViewMode.List,
                     SuggestedStartLocation = PickerLocationId.Downloads,
                     CommitButtonText = "Start Test"
                 };
+
                 picker.FileTypeFilter.Add(".json");
                 
                 var file = await picker.PickSingleFileAsync();
 
-                if (file == null)
-                    return;
+                if (file != null)
+                {
+                    ImportContributionsStatus = "reading data file contents...";
 
-                var jsonData = await FileIO.ReadTextAsync(file);
+                    var jsonData = await FileIO.ReadTextAsync(file);
 
-                var deserializedResult = JsonConvert.DeserializeObject<List<ContributionsModel>>(jsonData);
-                
-                await new MessageDialog($"The json data was successfully been deserialized, found ({deserializedResult.Count}) records.\r\n\nThe app shouldn't have any problem using that award cycle's data from the MVP API.", "Successful Deserialization").ShowAsync();
+                    ImportContributionsStatus = "deserializing json...";
 
+                    var deserializedResult = JsonConvert.DeserializeObject<List<ContributionsModel>>(jsonData);
+                    
+                    ImportContributionsStatus = $"Import Test Successful! The data contained {deserializedResult.Count} contributions.";
+                }
+                else
+                {
+                    ImportContributionsStatus = "file selection cancelled.";
+                }
             }
             catch (Exception ex)
             {
-               await new MessageDialog($"The json file was NOT able to be deserialized, contact awesome.apps@outlook.com and share this error sp we can fix it: \r\n{ex.Message}", "Unsuccessful").ShowAsync();
+                ImportContributionsStatus = $"Error: {ex.Message}";
+
+                await new MessageDialog("The json data could not be deserialized, make sure you have chosen the correct file.\r\n\n" +
+                                        "If this keeps happening, it could be a sign of corrupt API data. Contact awesome.apps@outlook.com and share the file so we investigate.\r\n\n" +
+                                        $"Error: {ex.Message}",
+                    "Unsuccessful").ShowAsync();
+            }
+        }
+
+        private async Task ImportOnlineIdentitiesTestAsync()
+        {
+            try
+            {
+                ImportOnlineIdentitiesStatus = "waiting for file selection...";
+
+                var picker = new FileOpenPicker
+                {
+                    ViewMode = PickerViewMode.List,
+                    SuggestedStartLocation = PickerLocationId.Downloads,
+                    CommitButtonText = "Start Test"
+                };
+
+                picker.FileTypeFilter.Add(".json");
+
+                var file = await picker.PickSingleFileAsync();
+
+                if (file != null)
+                {
+                    ImportOnlineIdentitiesStatus = "reading data file contents...";
+
+                    var jsonData = await FileIO.ReadTextAsync(file);
+
+                    ImportOnlineIdentitiesStatus = "deserializing json...";
+
+                    var deserializedResult = JsonConvert.DeserializeObject<List<OnlineIdentityViewModel>>(jsonData);
+
+                    ImportOnlineIdentitiesStatus = $"Import Test Successful! The data contained {deserializedResult.Count} OnlineIdentities.";
+                }
+                else
+                {
+                    ImportOnlineIdentitiesStatus = "file selection cancelled.";
+                }
+            }
+            catch (Exception ex)
+            {
+                ImportOnlineIdentitiesStatus = $"Error: {ex.Message}";
+
+                await new MessageDialog("The json data could not be deserialized, make sure you have chosen the correct file.\r\n\n" +
+                                        "If this keeps happening, it could be a sign of corrupt API data. Contact awesome.apps@outlook.com and share the file so we investigate.\r\n\n" +
+                                        $"Error: {ex.Message}", 
+                    "Unsuccessful").ShowAsync();
             }
         }
 
@@ -149,7 +213,6 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
-
                 await ex.LogExceptionWithUserMessage();
             }
             finally
@@ -207,13 +270,13 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (status == FileUpdateStatus.Complete || status == FileUpdateStatus.CompleteAndRenamed)
             {
-                var message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
-                              "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
-                              "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
-                              "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
-                              "4. Now you can us 'Save As' to xlsx file or csv.";
+                //const string message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
+                //                       "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
+                //                       "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
+                //                       "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
+                //                       "4. Now you can us 'Save As' to xlsx file or csv.";
 
-                await new MessageDialog(message, "Export Saved!").ShowAsync();
+                await new MessageDialog("The data has been successfully serialized and saved as a json data file.", "Export Saved!").ShowAsync();
             }
             else
             {
