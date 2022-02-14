@@ -460,6 +460,9 @@
 
             <CommandBar x:Name="UploadQueueCommandBar" 
                         Grid.Row="2">
+                <AppBarButton Label="import CSV/XLSX"
+                              Icon="ImportAll"
+                              Click="{x:Bind ViewModel.ClearQueueButton_Click}" />
                 <AppBarButton Label="clear queue"
                               Icon="Clear"
                               Click="{x:Bind ViewModel.ClearQueueButton_Click}" />

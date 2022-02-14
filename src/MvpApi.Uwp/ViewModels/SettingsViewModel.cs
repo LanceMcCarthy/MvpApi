@@ -270,12 +270,6 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (status == FileUpdateStatus.Complete || status == FileUpdateStatus.CompleteAndRenamed)
             {
-                //const string message = "If you want to open this in Excel (to save as xlsx or csv), take these steps:\r\n\n" +
-                //                       "1. Click the 'Data' tab, then 'Get Data' > 'From File' > 'From JSON'. \n" +
-                //                       "2. Browse to where you saved the json file, select it, and click 'Open'. \n" +
-                //                       "3. Once the Query Editor has loaded your data, click 'Convert > Into Table', then 'Close & Load'.\n" +
-                //                       "4. Now you can us 'Save As' to xlsx file or csv.";
-
                 await new MessageDialog("The data has been successfully serialized and saved as a json data file.", "Export Saved!").ShowAsync();
             }
             else

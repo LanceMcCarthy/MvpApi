@@ -74,6 +74,7 @@
                           IncrementalLoadingMode="Auto"
                           AutoGenerateColumns="False"
                           CanUserChooseColumns="False"
+                          UserFilterMode="Auto"
                           UserGroupMode="Disabled"
                           GridLinesThickness="1"
                           Grid.Row="1">

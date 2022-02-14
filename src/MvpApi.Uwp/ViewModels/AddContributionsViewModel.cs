@@ -1,28 +1,30 @@
-﻿using System;
+﻿using Microsoft.Services.Store.Engagement;
+using Microsoft.Toolkit.Uwp.Connectivity;
+using MvpApi.Common.Models;
+using MvpApi.Services.Utilities;
+using MvpApi.Uwp.Dialogs;
+using MvpApi.Uwp.Views;
+using MvpCompanion.UI.Common.Extensions;
+using MvpCompanion.UI.Common.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.ApplicationModel;
-using Windows.Foundation.Metadata;
-using Windows.Storage;
-using Windows.UI.Popups;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
-using Microsoft.Services.Store.Engagement;
-using Microsoft.Toolkit.Uwp.Connectivity;
-using MvpApi.Common.Models;
-using MvpApi.Uwp.Dialogs;
-using MvpCompanion.UI.Common.Extensions;
-using MvpCompanion.UI.Common.Helpers;
-using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Mvvm;
 using Template10.Services.NavigationService;
 using Template10.Utils;
+using Windows.ApplicationModel;
+using Windows.Foundation.Metadata;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -242,6 +244,75 @@ namespace MvpApi.Uwp.ViewModels
         public void ClearCurrentItemButton_Click(object sender, RoutedEventArgs e)
         {
             SetupNextEntry();
+        }
+
+        public async void ImportDataButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var md = new MessageDialog(
+                    "Do you want to import data from XLSX or CSV file and add them to add to the upload queue?\r\n\nThis is still very early experimental, see the Settings page for data import prerequisites.",
+                    "Import (experimental)");
+                md.Commands.Add(new UICommand("import"));
+                md.Commands.Add(new UICommand("cancel"));
+
+                var dialogResult = await md.ShowAsync();
+
+                if (dialogResult.Label == "cancel")
+                    return;
+
+                IsBusy = true;
+                IsBusyMessage = "waiting for file selection...";
+
+                var picker = new FileOpenPicker
+                {
+                    ViewMode = PickerViewMode.List,
+                    SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                    CommitButtonText = "Import"
+                };
+
+                picker.FileTypeFilter.Add(".xlsx");
+                picker.FileTypeFilter.Add(".csv");
+
+                var file = await picker.PickSingleFileAsync();
+
+                if (file != null)
+                {
+                    IsBusyMessage = "setting up import service...";
+
+                    var service = new ImportService();
+
+                    var contributionTechnologies = CategoryAreas.SelectMany(categoryArea => categoryArea.ContributionAreas).ToList();
+
+                    IsBusyMessage = "importing...";
+
+                    // TODO - confirm async work as expected
+                    // sync way
+                    //var importResult = service.ImportContributionsFile(file.Path, Types, contributionTechnologies, Visibilities);
+                    // async task test
+                    var importResult = await Task.FromResult<ContributionViewModel>(service.ImportContributionsFile(file.Path, Types, contributionTechnologies, Visibilities));
+                    
+                    IsBusyMessage = $"imported {importResult.TotalContributions} contributions...";
+
+                    foreach (var importedContribution in importResult.Contributions)
+                    {
+                        IsBusyMessage = $"adding {importedContribution.Title} to the upload queue...";
+
+                        UploadQueue.Add(importedContribution);
+                    }
+
+                    IsBusyMessage = "import complete!";
+                }
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog($"Something went wrong during the import. Error: {ex.Message}").ShowAsync();
+            }
+            finally
+            {
+                IsBusy = false;
+                IsBusyMessage = "";
+            }
         }
 
         public async void ClearQueueButton_Click(object sender, RoutedEventArgs e)
@@ -607,7 +678,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
-                await ex.LogExceptionAsync();
+                await UwpExceptionLogger.LogExceptionAsync(ex);
             }
         }
 
