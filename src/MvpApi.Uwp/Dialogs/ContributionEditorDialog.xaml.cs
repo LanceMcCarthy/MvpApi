@@ -234,7 +234,7 @@ namespace MvpApi.Uwp.Dialogs
                 DescriptionTextBox.Text = ViewModel.Contribution.Description;
                 DescriptionTextBox.TextChanged += DescriptionTextBox_TextChanged;
                 
-                UrlTextBox.Text = ViewModel.Contribution.Description;
+                UrlTextBox.Text = ViewModel.Contribution.ReferenceUrl;
                 UrlTextBox.TextChanged += UrlTextBox_TextChanged;
 
                 Debug.WriteLine($"Setup TextBoxes complete.", "ContributionEditorDialog");
