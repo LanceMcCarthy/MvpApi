@@ -90,11 +90,17 @@
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
                 <Grid Background="Red" Visibility="{Binding WarningMessage, Converter={StaticResource NullToVisibilityConverter}}">
-                    <TextBlock Text="{Binding WarningMessage}"
-                               Foreground="White"
-                               TextWrapping="WrapWholeWords"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"/>
+                    <StackPanel VerticalAlignment="Center"
+                               HorizontalAlignment="Center">
+                        <Button x:Name="DateRangeOverrideButton"
+                                Content="Override Date Range"
+                                Visibility="{Binding DateOverrideButtonVisibility}"
+                                Click="{x:Bind ViewModel.DateRangeOverrideButton_Click}"
+                                Margin="5"/>
+                        <TextBlock Text="{Binding WarningMessage}"
+                                   Foreground="White"
+                                   TextWrapping="WrapWholeWords" />
+                    </StackPanel>
                 </Grid>
             </Grid>
 
@@ -492,7 +498,7 @@
                         <Setter Target="TitleTextBox.HorizontalAlignment"
                                 Value="Left" />
                         <Setter Target="DescriptionTextBox.HorizontalAlignment"
-                                Value="Left" />
+                                Value="Stretch" />
                         <Setter Target="UrlTextBox.HorizontalAlignment"
                                 Value="Left" />
                         <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
@@ -513,7 +519,7 @@
                         <Setter Target="TitleTextBox.HorizontalAlignment"
                                 Value="Left" />
                         <Setter Target="DescriptionTextBox.HorizontalAlignment"
-                                Value="Left" />
+                                Value="Stretch" />
                         <Setter Target="UrlTextBox.HorizontalAlignment"
                                 Value="Left" />
                         <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
