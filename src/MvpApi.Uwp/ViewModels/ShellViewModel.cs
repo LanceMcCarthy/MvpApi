@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using MvpApi.Services.Utilities;
@@ -12,7 +11,6 @@ namespace MvpApi.Uwp.ViewModels
         private MvpApi.Common.Models.ProfileViewModel _mvp;
         private string _profileImagePath;
         private bool _isLoggedIn;
-        private bool _useBetaEditor;
         private DateTime _submissionStartDate = ServiceConstants.SubmissionStartDate;
         private DateTime _submissionDeadline = ServiceConstants.SubmissionDeadline;
 
@@ -49,31 +47,7 @@ namespace MvpApi.Uwp.ViewModels
             get => _isLoggedIn;
             set => Set(ref _isLoggedIn, value);
         }
-
-        public bool UseBetaEditor
-        {
-            get
-            {
-                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(UseBetaEditor), out object rawValue))
-                {
-                    _useBetaEditor = (bool)rawValue;
-                }
-                else
-                {
-                    ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
-                }
-
-                return _useBetaEditor;
-            }
-            set
-            {
-                if (Set(ref _useBetaEditor, value))
-                {
-                    ApplicationData.Current.LocalSettings.Values[nameof(UseBetaEditor)] = _useBetaEditor;
-                }
-            }
-        }
-
+        
         public DateTime SubmissionStartDate
         {
             get
