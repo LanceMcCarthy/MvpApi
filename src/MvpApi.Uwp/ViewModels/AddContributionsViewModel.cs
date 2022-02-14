@@ -1,28 +1,30 @@
-﻿using System;
+﻿using Microsoft.Services.Store.Engagement;
+using Microsoft.Toolkit.Uwp.Connectivity;
+using MvpApi.Common.Models;
+using MvpApi.Services.Utilities;
+using MvpApi.Uwp.Dialogs;
+using MvpApi.Uwp.Views;
+using MvpCompanion.UI.Common.Extensions;
+using MvpCompanion.UI.Common.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.ApplicationModel;
-using Windows.Foundation.Metadata;
-using Windows.Storage;
-using Windows.UI.Popups;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
-using Microsoft.Services.Store.Engagement;
-using Microsoft.Toolkit.Uwp.Connectivity;
-using MvpApi.Common.Models;
-using MvpApi.Uwp.Dialogs;
-using MvpCompanion.UI.Common.Extensions;
-using MvpCompanion.UI.Common.Helpers;
-using MvpApi.Uwp.Views;
 using Template10.Common;
 using Template10.Mvvm;
 using Template10.Services.NavigationService;
 using Template10.Utils;
+using Windows.ApplicationModel;
+using Windows.Foundation.Metadata;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.UI.Popups;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -42,6 +44,7 @@ namespace MvpApi.Uwp.ViewModels
         private bool _canUpload = true;
         private bool _isEditingQueuedItem;
         private string _warningMessage;
+        private Visibility _dateOverrideButtonVisibility;
 
         #endregion
 
@@ -150,6 +153,12 @@ namespace MvpApi.Uwp.ViewModels
             set => Set(ref _warningMessage, value);
         }
 
+        public Visibility DateOverrideButtonVisibility
+        {
+            get => _dateOverrideButtonVisibility;
+            set => Set(ref _dateOverrideButtonVisibility, value);
+        }
+
         // Commands
 
         public DelegateCommand<ContributionsModel> EditQueuedContributionCommand { get; set; }
@@ -169,18 +178,23 @@ namespace MvpApi.Uwp.ViewModels
         
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
-            if (e.NewDate < (ShellPage.Instance.DataContext as ShellViewModel).SubmissionStartDate || e.NewDate > (ShellPage.Instance.DataContext as ShellViewModel).SubmissionDeadline)
+            if (ShellPage.Instance.DataContext is ShellViewModel svm)
             {
-                WarningMessage = "The date must be after the start of your current award period and before March 31st of the next award year.";
+                if (e.NewDate <= svm.SubmissionStartDate ||
+                    e.NewDate >= svm.SubmissionDeadline)
+                {
+                    DateOverrideButtonVisibility = Visibility.Visible;
+                    WarningMessage = "The activity's date is not within your current award year's valid start and deadline dates.";
+                    
+                    CanUpload = false;
+                }
+                else
+                {
+                    DateOverrideButtonVisibility = Visibility.Collapsed;
+                    WarningMessage = "";
 
-                //await new MessageDialog(WarningMessage, "Notice: Out of range").ShowAsync();
-
-                CanUpload = false;
-            }
-            else
-            {
-                WarningMessage = "";
-                //CanUpload = true;
+                    //CanUpload = true;
+                }
             }
         }
         
@@ -232,6 +246,75 @@ namespace MvpApi.Uwp.ViewModels
             SetupNextEntry();
         }
 
+        public async void ImportDataButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var md = new MessageDialog(
+                    "Do you want to import data from XLSX or CSV file and add them to add to the upload queue?\r\n\nThis is still very early experimental, see the Settings page for data import prerequisites.",
+                    "Import (experimental)");
+                md.Commands.Add(new UICommand("import"));
+                md.Commands.Add(new UICommand("cancel"));
+
+                var dialogResult = await md.ShowAsync();
+
+                if (dialogResult.Label == "cancel")
+                    return;
+
+                IsBusy = true;
+                IsBusyMessage = "waiting for file selection...";
+
+                var picker = new FileOpenPicker
+                {
+                    ViewMode = PickerViewMode.List,
+                    SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                    CommitButtonText = "Import"
+                };
+
+                picker.FileTypeFilter.Add(".xlsx");
+                picker.FileTypeFilter.Add(".csv");
+
+                var file = await picker.PickSingleFileAsync();
+
+                if (file != null)
+                {
+                    IsBusyMessage = "setting up import service...";
+
+                    var service = new ImportService();
+
+                    var contributionTechnologies = CategoryAreas.SelectMany(categoryArea => categoryArea.ContributionAreas).ToList();
+
+                    IsBusyMessage = "importing...";
+
+                    // TODO - confirm async work as expected
+                    // sync way
+                    //var importResult = service.ImportContributionsFile(file.Path, Types, contributionTechnologies, Visibilities);
+                    // async task test
+                    var importResult = await Task.FromResult<ContributionViewModel>(service.ImportContributionsFile(file.Path, Types, contributionTechnologies, Visibilities));
+                    
+                    IsBusyMessage = $"imported {importResult.TotalContributions} contributions...";
+
+                    foreach (var importedContribution in importResult.Contributions)
+                    {
+                        IsBusyMessage = $"adding {importedContribution.Title} to the upload queue...";
+
+                        UploadQueue.Add(importedContribution);
+                    }
+
+                    IsBusyMessage = "import complete!";
+                }
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog($"Something went wrong during the import. Error: {ex.Message}").ShowAsync();
+            }
+            finally
+            {
+                IsBusy = false;
+                IsBusyMessage = "";
+            }
+        }
+
         public async void ClearQueueButton_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -257,39 +340,48 @@ namespace MvpApi.Uwp.ViewModels
 
         public async void UploadQueue_Click(object sender, RoutedEventArgs e)
         {
-            bool refreshNeeded = false;
-
             foreach (var contribution in UploadQueue)
             {
                 contribution.UploadStatus = UploadStatus.InProgress;
-
-                var success = await UploadContributionAsync(contribution);
-
-                if (success && !refreshNeeded)
+                
+                try
                 {
-                    refreshNeeded = true;
+                    var submissionResult = await App.ApiService.SubmitContributionAsync(contribution);
+
+                    if (submissionResult == null)
+                    {
+                        contribution.UploadStatus = UploadStatus.Failed;
+                    }
+                    else
+                    {
+                        contribution.UploadStatus = UploadStatus.Success;
+
+                        // copying back the ID which was created on the server once the item was added to the database
+                        contribution.ContributionId = submissionResult.ContributionId;
+                    }
                 }
+                catch (Exception ex)
+                {
+                    contribution.UploadStatus = UploadStatus.Failed;
+                }
+
+                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
+                {
+                    StoreServicesCustomEventLogger.GetDefault().Log(contribution.UploadStatus == UploadStatus.Success 
+                        ? "ContributionUploadSuccess" 
+                        : "ContributionUploadFailure");
+                }  
+            }
             
-                contribution.UploadStatus = success
-                    ? UploadStatus.Success
-                    : UploadStatus.Failed;
+            if (UploadQueue.Any(c => c.UploadStatus == UploadStatus.Failed))
+            {
+                await new MessageDialog($"Something went wrong saving one or more items in the queue, it will remain in the queue for you to try again.\r\n\nDouble check that's you've filled out all required information for that activity type", 
+                    "Failed Upload").ShowAsync();
             }
 
             // remove successfully uploaded items form the queue
             UploadQueue.Remove(c => c.UploadStatus == UploadStatus.Success);
 
-            // Update the Contributions list cache from the API if there were any uploads.
-            if (refreshNeeded)
-            {
-                IsBusy = true;
-                IsBusyMessage = "refreshing contributions...";
-
-                await App.ApiService.GetAllContributionsAsync(true);
-
-                IsBusyMessage = string.Empty;
-                IsBusy = false;
-            }
-            
             if (UploadQueue.Any())
             {
                 // If there was a failure, there will still be items in the Queue, select the last one in the list
@@ -297,12 +389,36 @@ namespace MvpApi.Uwp.ViewModels
             }
             else
             {
-                // If everything was uploaded, navigate away.
+                // If everything was uploaded, navigate back to home.
                 if (BootStrapper.Current.NavigationService.CanGoBack)
                     BootStrapper.Current.NavigationService.GoBack();
             }
         }
-        
+
+        public async void DateRangeOverrideButton_Click(object sender, RoutedEventArgs e)
+        {
+            var result = await new AwardYearDateRangeEditorDialog().ShowAsync();
+            
+            if (result == ContentDialogResult.Primary && ShellPage.Instance.DataContext is ShellViewModel svm)
+            {
+                if (SelectedContribution.StartDate <= svm.SubmissionStartDate ||
+                    SelectedContribution.StartDate >= svm.SubmissionDeadline)
+                {
+                    DateOverrideButtonVisibility = Visibility.Visible;
+                    WarningMessage = "The activity's date is not within your current award year's valid start and deadline dates.";
+
+                    CanUpload = false;
+                }
+                else
+                {
+                    DateOverrideButtonVisibility = Visibility.Collapsed;
+                    WarningMessage = "";
+
+                    //CanUpload = true;
+                }
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -415,34 +531,7 @@ namespace MvpApi.Uwp.ViewModels
                 //await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
             }
         }
-
-        public async Task<bool> UploadContributionAsync(ContributionsModel contribution)
-        {
-            try
-            {
-                var submissionResult = await App.ApiService.SubmitContributionAsync(contribution);
-
-                // copying back the ID which was created on the server once the item was added to the database
-                contribution.ContributionId = submissionResult.ContributionId;
-
-                // Quality assurance, only logs a successful upload.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadSuccess");
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-
-                // Quality assurance, only logs a failed upload.
-                if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
-                    StoreServicesCustomEventLogger.GetDefault().Log("ContributionUploadFailure");
-
-                //await new MessageDialog($"Something went wrong saving '{contribution.Title}', it will remain in the queue for you to try again.\r\n\nError: {ex.Message}").ShowAsync();
-                return false;
-            }
-        }
-
+        
         private async Task LoadSupportingDataAsync()
         {
             IsBusyMessage = "loading types...";
@@ -589,7 +678,7 @@ namespace MvpApi.Uwp.ViewModels
             }
             catch (Exception ex)
             {
-                await ex.LogExceptionAsync();
+                await UwpExceptionLogger.LogExceptionAsync(ex);
             }
         }
 
