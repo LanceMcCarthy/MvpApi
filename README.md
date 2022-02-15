@@ -4,7 +4,7 @@ A client application to allow for faster contribution browsing, editing and uplo
 
 ## Installation
 - [Microsoft Store](https://www.microsoft.com/store/apps/9NRXNX3WLH77)
-- [AppInstaller (fully code-signed packages)]()
+- [AppInstaller (fully code-signed packages)](https://dvlup.blob.core.windows.net/general-app-files/Installers/MvpCompanion/index.html)
 - iOS (in progress)
 - Android (in progress)
 - Mac (pending demand)
