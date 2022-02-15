@@ -29,7 +29,6 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
             <Button Content="Kudos Guide"
-                    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                     HorizontalAlignment="Right"
                     Margin="0,0,6,0">
                 <Button.Flyout>
@@ -38,12 +37,6 @@
                             <TextBlock Text="Kudos Guide"
                                        Style="{StaticResource TitleTextBlockStyle}" />
                             <TextBlock TextWrapping="Wrap">
-                                <Run Text="Video Ad"
-                                     FontWeight="SemiBold" />
-                                <LineBreak />
-                                <Run Text="You can play a quick video ad to generate revenue for the developer (if you see a loading indicator, the next ad is being prepared)." />
-                                <LineBreak />
-                                <LineBreak />
                                 <Run Text="Rating"
                                      FontWeight="SemiBold" />
                                 <LineBreak />

@@ -371,9 +371,6 @@
     <PackageReference Include="Template10">
       <Version>1.1.12</Version>
     </PackageReference>
-    <PackageReference Include="VungleSDK">
-      <Version>6.10.1</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj">

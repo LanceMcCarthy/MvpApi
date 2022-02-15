@@ -5,18 +5,14 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Core;
 using Windows.Foundation.Metadata;
 using Windows.Services.Store;
-using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using VungleSDK;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -24,13 +20,9 @@ namespace MvpApi.Uwp.ViewModels
     {
         private StoreContext _context;
         private Visibility _feedbackHubButtonVisibility;
-        VungleAd sdkInstance;
-        private string vungleAppId = "5f765c14d870a360a1d6f906";
-        private string vungleAdPlacementId = "KUDOSPAGEINTERSTITIAL-9395221";
 
         public KudosViewModel()
         {
-            KudosCollection.Add(new Kudos { Title = "Video Ad", Price = "Free", ImageUrl = "/Images/VideoAd.png" });
             KudosCollection.Add(new Kudos { Title = "Store Rating", Price = "Free", ImageUrl = "/Images/4starStar.png" });
             KudosCollection.Add(new Kudos { Title = "Small Coffee", ProductId = "MvpCompanion_SmallCoffee", StoreId = "9NJ9NKHQF7C4", Price = "$1.49", ImageUrl = "/Images/CoffeeKudo.png" });
             KudosCollection.Add(new Kudos { Title = "Lunch", ProductId = "MvpCompanion_Lunch", StoreId = "9N999Z3H3GPK", Price = "$4.89", ImageUrl = "/Images/LunchKudo.png" });
@@ -60,21 +52,6 @@ namespace MvpApi.Uwp.ViewModels
             if (kudo.Title == "Store Rating")
             {
                 await ShowRatingReviewDialog();
-            }
-
-            if (kudo.Title == "Video Ad")
-            {
-                if (kudo.IsBusy)
-                {
-                    await new MessageDialog("Ad is being fetched right now, wait for busy indicator disappear and try again.").ShowAsync();
-                }
-                else
-                {
-                    AdConfig adConfig = new AdConfig();
-                    adConfig.SoundEnabled = false;
-
-                    sdkInstance.PlayAdAsync(adConfig, vungleAdPlacementId);
-                }
             }
         }
 
@@ -189,21 +166,6 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        private async void SdkInstance_OnAdPlayableChanged(object sender, AdPlayableEventArgs e)
-        {
-            Debug.WriteLine($"AdPlayable changed: {e.Placement}, Playable: {e.AdPlayable}");
-
-            var kudo = KudosCollection.FirstOrDefault(a => a.Title == "Video Ad");
-
-            await CoreApplication.MainView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-            {
-                if (kudo != null)
-                {
-                    kudo.IsBusy = !e.AdPlayable;
-                }
-            });
-        }
-
         #region Navigation
 
         public override Task OnNavigatedToAsync(object parameter, NavigationMode mode, IDictionary<string, object> state)
@@ -211,18 +173,12 @@ namespace MvpApi.Uwp.ViewModels
             FeedbackHubButtonVisibility = StoreServicesFeedbackLauncher.IsSupported()
                 ? Visibility.Visible
                 : Visibility.Collapsed;
-
-            sdkInstance = AdFactory.GetInstance(vungleAppId);
-            sdkInstance.OnAdPlayableChanged += SdkInstance_OnAdPlayableChanged;
-            sdkInstance.LoadAd(vungleAdPlacementId);
-
+            
             return base.OnNavigatedToAsync(parameter, mode, state);
         }
 
         public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
         {
-            sdkInstance.OnAdPlayableChanged -= SdkInstance_OnAdPlayableChanged;
-
             return base.OnNavigatedFromAsync(pageState, suspending);
         }
 
