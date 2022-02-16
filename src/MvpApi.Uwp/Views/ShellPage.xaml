@@ -76,6 +76,24 @@
             </controls:HamburgerMenu.PrimaryButtons>
 
             <controls:HamburgerMenu.SecondaryButtons>
+                <controls:HamburgerButtonInfo Tapped="LeaveReviewButton_OnTapped">
+                    <controls:HamburgerButtonInfo.Content>
+                        <StackPanel Orientation="Horizontal"
+                                    VerticalAlignment="Center">
+                            <Grid>
+                                <FontIcon FontFamily="Segoe MDL2 Assets"
+                                          Glyph="&#xE19F;"
+                                          Foreground="{ThemeResource AppBarToggleButtonCheckedForegroundThemeBrush}"
+                                          Width="48"
+                                          Height="48" />
+                            </Grid>
+
+                            <TextBlock Text="Review"
+                                       Margin="12,0,0,0"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                    </controls:HamburgerButtonInfo.Content>
+                </controls:HamburgerButtonInfo>
                 <controls:HamburgerButtonInfo PageType="local:KudosPage">
                     <controls:HamburgerButtonInfo.NavigationTransitionInfo>
                         <SuppressNavigationTransitionInfo />
@@ -90,7 +108,7 @@
                                       Height="48" />
                             <FontIcon FontFamily="Segoe MDL2 Assets"
                                       Glyph="&#xE006;"
-                                      Foreground="White"
+                                      Foreground="{ThemeResource AppBarToggleButtonCheckedForegroundThemeBrush}"
                                       Width="48"
                                       Height="48" />
                         </Grid>
@@ -115,7 +133,7 @@
                                    VerticalAlignment="Center" />
                     </StackPanel>
                 </controls:HamburgerButtonInfo>
-                <controls:HamburgerButtonInfo Tapped="LogoutButton_OnClick">
+                <controls:HamburgerButtonInfo Tapped="LogoutButton_OnTapped">
                     <controls:HamburgerButtonInfo.NavigationTransitionInfo>
                         <SuppressNavigationTransitionInfo />
                     </controls:HamburgerButtonInfo.NavigationTransitionInfo>
@@ -135,7 +153,7 @@
                             </Ellipse>
                         </Grid>
 
-                        <Button Click="LogoutButton_OnClick"
+                        <Button Click="LogoutButton_OnTapped"
                                 Content="Logout"
                                 Background="DarkRed"
                                 Foreground="White"
@@ -190,7 +208,7 @@
                                     Foreground="White"
                                     HorizontalAlignment="Stretch"
                                     Margin="5"
-                                    Click="LogoutButton_OnClick" />
+                                    Click="LogoutButton_OnTapped" />
                         </StackPanel>
                     </Flyout>
                 </Button.Flyout>
@@ -202,7 +220,7 @@
                 <Border HorizontalAlignment="Center"
                         Margin="0,0,0,10"
                         BorderThickness="2"
-                        BorderBrush="{ThemeResource SystemAccentColor}"
+                        BorderBrush="{ThemeResource SystemControlForegroundAccentBrush}"
                         IsHitTestVisible="False">
                     <TextBlock Text="Sign-in using the Microsoft Account associated with your MVP Profile"
                                FontWeight="SemiBold"

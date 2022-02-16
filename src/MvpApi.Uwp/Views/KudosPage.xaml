@@ -40,13 +40,13 @@
                                 <Run Text="Rating"
                                      FontWeight="SemiBold" />
                                 <LineBreak />
-                                <Run Text="You can leave an app review to let other potential users how much you like the app." />
+                                <Run Text="You can leave an app review to let other potential users how much you like the app. Click the Thumbs Up button is the side bar." />
                                 <LineBreak />
                                 <LineBreak />
                                 <Run Text="Donations"
                                      FontWeight="SemiBold" />
                                 <LineBreak />
-                                <Run Text="To make monetary donations easy, the coffee, lunch and dinner items are in-app-purchases. Since they're 'consumable', you can purchase these items as often as you want to (e.g. a reward after a major update, etc)." />
+                                <Run Text="To make monetary donations easy, the 'coffee', 'lunch' and 'dinner' items are Microsoft Store in-app-purchases. Since they're 'consumable', you can purchase these items as often as you want to (e.g. a reward after a major update, etc)." />
                             </TextBlock>
                         </StackPanel>
                     </Flyout>
@@ -62,7 +62,7 @@
                   Margin="20,10"
                   Grid.Row="1">
             <GridView.Header>
-                <TextBlock Text="Available Kudos"
+                <TextBlock Text="Available Kudos - Microsoft Store In-App Purchase Items"
                            Style="{ThemeResource TitleTextBlockStyle}" />
             </GridView.Header>
             <GridView.ItemTemplate>
