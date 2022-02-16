@@ -15,14 +15,13 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="260" />
+            <RowDefinition Height="48" />
+            <RowDefinition Height="240" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid x:Name="HeaderGrid"
-              Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
             <TextBlock Text="Profile"
                        Style="{StaticResource TitleTextBlockStyle}"
@@ -40,8 +39,8 @@
             <Ellipse x:Name="ProfileImageEllipse"
                      Stroke="{ThemeResource ApplicationForegroundThemeBrush}"
                      Margin="20"
-                     Width="220"
-                     Height="220">
+                     Width="170"
+                     Height="170">
                 <animations:Implicit.ShowAnimations>
                     <animations:ScaleAnimation From="0.6"
                                                To="1"
@@ -66,7 +65,7 @@
 
             <Grid x:Name="DetailsGrid"
                   Grid.Column="1">
-                <StackPanel Margin="20"
+                <StackPanel Margin="20,27,20,35"
                             Grid.Row="0"
                             VerticalAlignment="Top">
                     <animations:Implicit.ShowAnimations>
@@ -91,10 +90,10 @@
                                Style="{ThemeResource HeaderTextBlockStyle}"
                                TextWrapping="Wrap" />
                     <TextBlock Text="{Binding Mvp.Headline}"
-                               Style="{StaticResource TitleTextBlockStyle}" />
+                               Style="{StaticResource SubtitleTextBlockStyle}" />
                 </StackPanel>
 
-                <StackPanel Margin="20"
+                <StackPanel Margin="20,0,20,35"
                             Grid.Row="0"
                             VerticalAlignment="Bottom">
                     <animations:Implicit.ShowAnimations>
@@ -115,24 +114,14 @@
                                                      To="0"
                                                      Duration="0:0:0.6" />
                     </animations:Implicit.HideAnimations>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="First MVP award in:"
-                                   Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Margin="0,0,10,0" />
-                        <TextBlock Text="{Binding Mvp.FirstAwardYear}"
-                                   Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   FontWeight="SemiBold"
-                                   TextWrapping="Wrap" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Years as MVP:"
-                                   Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   Margin="0,0,10,0" />
-                        <TextBlock Text="{Binding Mvp.YearsAsMvp}"
-                                   Style="{ThemeResource SubtitleTextBlockStyle}"
-                                   FontWeight="SemiBold"
-                                   TextWrapping="Wrap" />
-                    </StackPanel>
+                    <TextBlock Text="{Binding Mvp.FirstAwardYear, Converter={StaticResource StringFormatConverter}, ConverterParameter='First Award Year: {0}'}"
+                               Style="{ThemeResource SubtitleTextBlockStyle}"
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Mvp.YearsAsMvp, Converter={StaticResource StringFormatConverter}, ConverterParameter='Years as MVP: {0}'}"
+                               Style="{ThemeResource BodyTextBlockStyle}"
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap" />
                 </StackPanel>
             </Grid>
         </Grid>
@@ -330,7 +319,8 @@
                                          Grid.Column="1" />
         </Grid>
 
-        <CommandBar Grid.Row="3">
+        <CommandBar Background="{ThemeResource AppBarBackgroundThemeBrush}"
+                    Grid.Row="3">
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export Online Identities"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
