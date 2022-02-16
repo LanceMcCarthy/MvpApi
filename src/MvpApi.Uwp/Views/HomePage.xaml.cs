@@ -15,13 +15,12 @@ namespace MvpApi.Uwp.Views
         {
             InitializeComponent();
 
-            // Note: The is a workaround because there's no OneWayToSource binding option for UWP
-            //ViewModel.SelectedContributions = ContributionsGrid.SelectedItems;
-            ViewModel.GroupDescriptors = ContributionsGrid.GroupDescriptors;
-
             ViewModel.FlyoutView = this;
             ViewModel.ScrollableView = this;
             ViewModel.ExpandableItemView = this;
+
+            // Note: The is a workaround because there's no OneWayToSource binding option for UWP
+            ViewModel.GroupDescriptors = ContributionsGrid.GroupDescriptors;
         }
 
         #region Interface methods

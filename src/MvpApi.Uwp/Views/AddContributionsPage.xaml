@@ -34,7 +34,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="48" />
             <RowDefinition />
             <RowDefinition x:Name="BottomRowDefinition"
                            Height="Auto"/>
@@ -46,7 +46,6 @@
         </Grid.ColumnDefinitions>
 
         <Grid x:Name="HeaderGrid"
-              Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}"
               Grid.ColumnSpan="3">
             <TextBlock Text="Add Contributions"

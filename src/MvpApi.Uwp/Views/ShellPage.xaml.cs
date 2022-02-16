@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.Services.Store;
 using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -13,8 +14,10 @@ using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Extensions;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
+using MvpApi.Uwp.ViewModels;
 using MvpCompanion.UI.Common.Helpers;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Template10.Common;
 using Template10.Controls;
 using Template10.Services.NavigationService;
@@ -60,7 +63,7 @@ namespace MvpApi.Uwp.Views
             }
         }
         
-        public async void LogoutButton_OnClick(object sender, RoutedEventArgs e)
+        public async void LogoutButton_OnTapped(object sender, RoutedEventArgs e)
         {
             var md = new MessageDialog("Do you wish to sign out?");
             md.Commands.Add(new UICommand("Logout"));
@@ -71,6 +74,23 @@ namespace MvpApi.Uwp.Views
             if (result.Label == "Logout")
             {
                 await SignOutAsync();
+
+                // If we are on the HomePage, clear HomeViewModel contributions after logout 
+
+                if (Menu.NavigationService.Frame.Content is HomePage page)
+                {
+                    ((HomeViewModel)page.DataContext).Contributions.Clear();
+                }
+            }
+        }
+
+        private async void LeaveReviewButton_OnTapped(object sender, RoutedEventArgs e)
+        {
+            if (sender is HamburgerButtonInfo button)
+            {
+                button.IsChecked = false;
+
+                await ViewModel.ShowRatingReviewDialog();
             }
         }
 
