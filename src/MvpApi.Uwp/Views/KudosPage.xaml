@@ -16,20 +16,18 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="48" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid x:Name="HeaderGrid"
-              Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
             <TextBlock Text="Kudos"
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center" />
             <Button Content="Kudos Guide"
-                    Foreground="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                     HorizontalAlignment="Right"
                     Margin="0,0,6,0">
                 <Button.Flyout>
@@ -38,22 +36,16 @@
                             <TextBlock Text="Kudos Guide"
                                        Style="{StaticResource TitleTextBlockStyle}" />
                             <TextBlock TextWrapping="Wrap">
-                                <Run Text="Video Ad"
-                                     FontWeight="SemiBold" />
-                                <LineBreak />
-                                <Run Text="You can play a quick video ad to generate revenue for the developer (if you see a loading indicator, the next ad is being prepared)." />
-                                <LineBreak />
-                                <LineBreak />
                                 <Run Text="Rating"
                                      FontWeight="SemiBold" />
                                 <LineBreak />
-                                <Run Text="You can leave an app review to let other potential users how much you like the app." />
+                                <Run Text="You can leave an app review to let other potential users how much you like the app. Click the Thumbs Up button is the side bar." />
                                 <LineBreak />
                                 <LineBreak />
                                 <Run Text="Donations"
                                      FontWeight="SemiBold" />
                                 <LineBreak />
-                                <Run Text="To make monetary donations easy, the coffee, lunch and dinner items are in-app-purchases. Since they're 'consumable', you can purchase these items as often as you want to (e.g. a reward after a major update, etc)." />
+                                <Run Text="To make monetary donations easy, the 'coffee', 'lunch' and 'dinner' items are Microsoft Store in-app-purchases. Since they're 'consumable', you can purchase these items as often as you want to (e.g. a reward after a major update, etc)." />
                             </TextBlock>
                         </StackPanel>
                     </Flyout>
@@ -69,7 +61,7 @@
                   Margin="20,10"
                   Grid.Row="1">
             <GridView.Header>
-                <TextBlock Text="Available Kudos"
+                <TextBlock Text="Available Kudos - Microsoft Store In-App Purchase Items"
                            Style="{ThemeResource TitleTextBlockStyle}" />
             </GridView.Header>
             <GridView.ItemTemplate>

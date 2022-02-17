@@ -62,7 +62,7 @@ namespace MvpApi.Uwp.ViewModels
             {
                 var sampleDataTask = Task.FromResult<IEnumerable<ContributionsModel>>(DesignTimeHelpers.GenerateContributions());
 
-                Contributions = new IncrementalLoadingCollection<ContributionsModel>((c)=>sampleDataTask) { BatchSize = 0 };
+                Contributions = new IncrementalLoadingCollection<ContributionsModel>((c)=>sampleDataTask) { BatchSize = 10 };
             }
         }
 

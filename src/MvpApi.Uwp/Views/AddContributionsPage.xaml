@@ -34,7 +34,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="48" />
             <RowDefinition />
             <RowDefinition x:Name="BottomRowDefinition"
                            Height="Auto"/>
@@ -46,7 +46,6 @@
         </Grid.ColumnDefinitions>
 
         <Grid x:Name="HeaderGrid"
-              Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}"
               Grid.ColumnSpan="3">
             <TextBlock Text="Add Contributions"
@@ -90,11 +89,17 @@
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center" />
                 <Grid Background="Red" Visibility="{Binding WarningMessage, Converter={StaticResource NullToVisibilityConverter}}">
-                    <TextBlock Text="{Binding WarningMessage}"
-                               Foreground="White"
-                               TextWrapping="WrapWholeWords"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"/>
+                    <StackPanel VerticalAlignment="Center"
+                               HorizontalAlignment="Center">
+                        <Button x:Name="DateRangeOverrideButton"
+                                Content="Override Date Range"
+                                Visibility="{Binding DateOverrideButtonVisibility}"
+                                Click="{x:Bind ViewModel.DateRangeOverrideButton_Click}"
+                                Margin="5"/>
+                        <TextBlock Text="{Binding WarningMessage}"
+                                   Foreground="White"
+                                   TextWrapping="WrapWholeWords" />
+                    </StackPanel>
                 </Grid>
             </Grid>
 
@@ -454,6 +459,9 @@
 
             <CommandBar x:Name="UploadQueueCommandBar" 
                         Grid.Row="2">
+                <AppBarButton Label="import CSV/XLSX"
+                              Icon="ImportAll"
+                              Click="{x:Bind ViewModel.ClearQueueButton_Click}" />
                 <AppBarButton Label="clear queue"
                               Icon="Clear"
                               Click="{x:Bind ViewModel.ClearQueueButton_Click}" />
@@ -492,7 +500,7 @@
                         <Setter Target="TitleTextBox.HorizontalAlignment"
                                 Value="Left" />
                         <Setter Target="DescriptionTextBox.HorizontalAlignment"
-                                Value="Left" />
+                                Value="Stretch" />
                         <Setter Target="UrlTextBox.HorizontalAlignment"
                                 Value="Left" />
                         <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
@@ -513,7 +521,7 @@
                         <Setter Target="TitleTextBox.HorizontalAlignment"
                                 Value="Left" />
                         <Setter Target="DescriptionTextBox.HorizontalAlignment"
-                                Value="Left" />
+                                Value="Stretch" />
                         <Setter Target="UrlTextBox.HorizontalAlignment"
                                 Value="Left" />
                         <Setter Target="AnnualQuantityNumericBox.HorizontalAlignment"
