@@ -94,7 +94,7 @@
                         </StackPanel>
                     </controls:HamburgerButtonInfo.Content>
                 </controls:HamburgerButtonInfo>
-                <controls:HamburgerButtonInfo PageType="local:KudosPage">
+                <!--<controls:HamburgerButtonInfo PageType="local:KudosPage">
                     <controls:HamburgerButtonInfo.NavigationTransitionInfo>
                         <SuppressNavigationTransitionInfo />
                     </controls:HamburgerButtonInfo.NavigationTransitionInfo>
@@ -117,7 +117,7 @@
                                    Margin="12,0,0,0"
                                    VerticalAlignment="Center" />
                     </StackPanel>
-                </controls:HamburgerButtonInfo>
+                </controls:HamburgerButtonInfo>-->
                 <controls:HamburgerButtonInfo PageType="local:AboutPage">
                     <controls:HamburgerButtonInfo.NavigationTransitionInfo>
                         <SuppressNavigationTransitionInfo />
