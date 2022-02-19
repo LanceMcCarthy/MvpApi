@@ -10,10 +10,21 @@ A client application to allow for faster contribution browsing, editing and uplo
 - Mac (pending demand)
 
 ## Pipelines
-### Builds
-| Platform | Dev | Master | Release |
-|----------|-----|--------|---------|
-| UWP | [![UWP Dev](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BDev%5D)](https://dev.azure.com/lance/MVP%20Companion%20Ops/_build/latest?definitionId=8) | [![UWP Master](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BMaster%5D)](https://dev.azure.com/lance/MVP%20Companion%20Ops/_build/latest?definitionId=14) |  [![UWP Release](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BRelease%5D)](https://dev.azure.com/lance/MVP%20Companion%20Ops/_build/latest?definitionId=15) |
+
+You can view [the Azure DevOps pipelines](https://dev.azure.com/lance/MVP%20Companion%20Ops/_build) directly or glance at the status tables below.
+
+### Build Pipelines
+
+| Platform | Dev | Master | Prerelease (Appinstaller) | Release (Microsoft Store) |
+|----------|-----|--------|-----------------|------------------------|
+| UWP | ![UWP Dev](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BDev%5D) | ![UWP Master](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BMaster%5D) | ![Release Appinstaller](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BRelease%20Appinstaller%5D) | ![Release Microsoft Store](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BRelease%5D?branchName=release)|
+
+### Release Pipelines
+
+| Pipeline | Stages |
+|----------|--------|
+| Microsoft Store | Beta ![beta](https://vsrm.dev.azure.com/lance/_apis/public/Release/badge/343301de-d63e-46b2-8816-7da7ade8002d/2/2) Publish ![Publish](https://vsrm.dev.azure.com/lance/_apis/public/Release/badge/343301de-d63e-46b2-8816-7da7ade8002d/2/6) |
+| Google Play | Beta ![beta](https://vsrm.dev.azure.com/lance/_apis/public/Release/badge/343301de-d63e-46b2-8816-7da7ade8002d/3/4) Publish ![Publish](https://vsrm.dev.azure.com/lance/_apis/public/Release/badge/343301de-d63e-46b2-8816-7da7ade8002d/3/5) |
 
 ## Features
 
