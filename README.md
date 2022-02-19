@@ -11,9 +11,9 @@ A client application to allow for faster contribution browsing, editing and uplo
 
 ## Pipelines
 ### Builds
-| Platform | Dev | Master | Release |
-|----------|-----|--------|---------|
-| UWP | [![UWP Dev](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BDev%5D)](https://dev.azure.com/lance/MVP%20Companion%20Ops/_build/latest?definitionId=8) | [![UWP Master](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BMaster%5D)](https://dev.azure.com/lance/MVP%20Companion%20Ops/_build/latest?definitionId=14) |  [![UWP Release](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BRelease%5D)](https://dev.azure.com/lance/MVP%20Companion%20Ops/_build/latest?definitionId=15) |
+| Platform | Dev | Master | Release (Store) | Release (Appinstaller) |
+|----------|-----|--------|-----------------|------------------------|
+| UWP | [![UWP Dev](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BDev%5D)](https://dev.azure.com/lance/MVP%20Companion%20Ops/_build/latest?definitionId=8) | [![UWP Master](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BMaster%5D)](https://dev.azure.com/lance/MVP%20Companion%20Ops/_build/latest?definitionId=14) |  [![Msft Store Build Status](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BRelease%5D?branchName=release&jobName=Build%20Store%20Packages)](https://dev.azure.com/lance/MVP%20Companion%20Ops/_build/latest?definitionId=15&branchName=release) | [![Appinstaller Build Status](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BRelease%5D?branchName=release&jobName=Build%20Sideload%20Packages)](https://dev.azure.com/lance/MVP%20Companion%20Ops/_build/latest?definitionId=15&branchName=release) |
 
 ## Features
 
