@@ -15,7 +15,7 @@ You can view [the Azure DevOps pipelines](https://dev.azure.com/lance/MVP%20Comp
 
 ### Build Pipelines
 
-| Platform | Dev | Master | Release (Appinstaller) | Release (Microsoft Store) |
+| Platform | Dev | Master | Prerelease (Appinstaller) | Release (Microsoft Store) |
 |----------|-----|--------|-----------------|------------------------|
 | UWP | ![UWP Dev](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BDev%5D) | ![UWP Master](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BMaster%5D) | ![Release Appinstaller](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BRelease%20Appinstaller%5D) | ![Release Microsoft Store](https://dev.azure.com/lance/MVP%20Companion%20Ops/_apis/build/status/UWP%20%5BRelease%5D?branchName=release)|
 
