@@ -1,0 +1,197 @@
+﻿<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:MvpCompanion.Maui"
+             xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.Maui.Controls.Compatibility"
+             xmlns:telerikMauiControls="clr-namespace:Telerik.Maui.Controls;assembly=Telerik.Maui.Controls"
+             xmlns:input="clr-namespace:Telerik.XamarinForms.Input;assembly=Telerik.Maui.Controls.Compatibility"
+             x:Class="MvpCompanion.Maui.App">
+
+    <Application.Resources>
+        <Color x:Key="PrimaryColor">#512bdf</Color>
+        <Color x:Key="SecondaryColor">White</Color>
+
+        <Style TargetType="Label">
+            <Setter Property="TextColor" Value="{DynamicResource PrimaryColor}" />
+            <Setter Property="FontFamily" Value="OpenSansRegular" />
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="TextColor" Value="{DynamicResource SecondaryColor}" />
+            <Setter Property="FontFamily" Value="OpenSansRegular" />
+            <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
+            <Setter Property="Padding" Value="14,10" />
+        </Style>
+
+        <Color x:Key="LightTextColor">#FFFFFF</Color>
+        <Color x:Key="MediumTextColor">#FF888888</Color>
+        <Color x:Key="DarkTextColor">#FF444444</Color>
+        <Color x:Key="LightBlueColor">#BCE0FD</Color>
+        <Color x:Key="MediumBlueColor">#2699FB</Color>
+        <Color x:Key="DarkBlueColor">#007FEB</Color>
+
+        <Color x:Key="LightBackgroundColor">#FAFAFA</Color>
+        <Color x:Key="GrayBackgroundColor">#C0C0C0</Color>
+
+        <Color x:Key="LightTranslucentBackgroundColor">#CCEAEAEC</Color>
+        <Color x:Key="MediumTranslucentBackgroundColor">#AA000000</Color>
+        <Color x:Key="DarkTranslucentBackgroundColor">#CC000000</Color>
+
+        <!--<converters:ConfigurableBoolConverter x:Key="InvertBoolConverter"
+	                                          x:TypeArguments="x:Boolean"
+	                                          TrueResult="False"
+	                                          FalseResult="True" />
+        <converters:ConfigurableBoolConverter x:Key="BoolToGreenRedConverter"
+	                                          x:TypeArguments="Color"
+	                                          TrueResult="MediumSeaGreen"
+	                                          FalseResult="DarkRed" />
+        <converters:MvcContentUrlConverter x:Key="MvcContentUrlConverter" />
+        <converters:PrivacyLevelToColorConverter x:Key="PrivacyLevelToColorConverter" />-->
+
+        <RowDefinitionCollection x:Key="AutoStarRowDefinitions">
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </RowDefinitionCollection>
+
+        <RowDefinitionCollection x:Key="OneTwoStarRowDefinitions">
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="2*" />
+        </RowDefinitionCollection>
+
+        <!-- Full icon list here - https://docs.telerik.com/devtools/xamarin/styling-and-appearance/telerik-font-icons -->
+        <x:String x:Key="StarIcon">&#xE805;</x:String>
+        <x:String x:Key="MenuIcon">&#xE808;</x:String>
+        <x:String x:Key="PlusIcon">&#xF0FE;</x:String>
+        <x:String x:Key="MinusIcon">&#xF146;</x:String>
+        <x:String x:Key="RightArrowEnclosedIcon">&#xF138;</x:String>
+        <x:String x:Key="LeftArrowEnclosedIcon">&#xF137;</x:String>
+        <x:String x:Key="CancelEnclosedIcon">&#xE851;</x:String>
+        <x:String x:Key="InfoEnclosedIcon">&#xE815;</x:String>
+        <x:String x:Key="TrashIcon">&#xE827;</x:String>
+        <x:String x:Key="CheckMarkIcon">&#xE809;</x:String>
+        <x:String x:Key="GearSolidIcon">&#xE80F;</x:String>
+        <x:String x:Key="GearOutlinedIcon">&#xE822;</x:String>
+        <x:String x:Key="StarSolidIcon">&#xE805;</x:String>
+        <x:String x:Key="StarOutlinedIcon">&#xE801;</x:String>
+        <x:String x:Key="DraftIcon">&#xE828;</x:String>
+        <x:String x:Key="GaugeIcon">&#xE84F;</x:String>
+        <x:String x:Key="CancelIcon">&#xE80A;</x:String>
+        <x:String x:Key="ArrowsUpIcon">&#xE800;</x:String>
+        <x:String x:Key="ArrowsDownIcon">&#xE803;</x:String>
+
+        <Style x:Key="LargeIconRadButtonStyle"
+               TargetType="input:RadButton">
+            <Setter Property="BackgroundColor"
+                    Value="{StaticResource LightBlueColor}"/>
+            <Setter Property="BorderColor"
+                    Value="Transparent" />
+            <Setter Property="TextColor"
+                    Value="{StaticResource DarkBlueColor}" />
+            <Setter Property="BorderThickness"
+                    Value="0" />
+            <Setter Property="CornerRadius"
+                    Value="25" />
+            <Setter Property="Margin"
+                    Value="10" />
+            <Setter Property="WidthRequest"
+                    Value="50" />
+            <Setter Property="HeightRequest"
+                    Value="50" />
+            <Setter Property="FontFamily"
+                    Value="{StaticResource TelerikIconsFont}" />
+            <Setter Property="FontSize">
+                <Setter.Value>
+                    <OnPlatform x:TypeArguments="x:Double">
+                        <On Platform="iOS">28</On>
+                        <On Platform="Android">26</On>
+                        <On Platform="UWP">28</On>
+                    </OnPlatform>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MediumIconRadButtonStyle"
+               TargetType="input:RadButton"
+               BasedOn="{StaticResource LargeIconRadButtonStyle}">
+            <Setter Property="FontSize">
+                <Setter.Value>
+                    <OnPlatform x:TypeArguments="x:Double">
+                        <On Platform="iOS">18</On>
+                        <On Platform="Android">16</On>
+                        <On Platform="UWP">18</On>
+                    </OnPlatform>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="ImageBorderCircleStyle"
+               TargetType="telerikMauiControls:RadBorder">
+            <Setter Property="BorderThickness"
+                    Value="2" />
+            <Setter Property="CornerRadius"
+                    Value="90" />
+            <Setter Property="BorderColor"
+                    Value="{StaticResource LightBlueColor}" />
+        </Style>
+
+        <Style x:Key="TopPageBusyIndicatorStyle"
+               TargetType="primitives:RadBusyIndicator">
+            <Setter Property="AnimationType"
+                    Value="Animation6" />
+            <Setter Property="AnimationContentHeightRequest"
+                    Value="100" />
+            <Setter Property="AnimationContentWidthRequest"
+                    Value="100" />
+            <Setter Property="BackgroundColor"
+                    Value="Transparent" />
+            <Setter Property="AnimationContentColor"
+                    Value="{StaticResource DarkBlueColor}" />
+            <Setter Property="BusyContentTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <ContentPresenter Content="{TemplateBinding Path=AnimationContent}"
+                                              Grid.Row="1" />
+                            <ContentPresenter Content="{TemplateBinding Path=BusyContent}"
+                                              Grid.Row="2" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BusyIndicatorStyle"
+               TargetType="primitives:RadBusyIndicator"
+               BasedOn="{StaticResource TopPageBusyIndicatorStyle}">
+            <Setter Property="BackgroundColor"
+                    Value="{StaticResource LightTranslucentBackgroundColor}" />
+        </Style>
+
+        <Style x:Key="PageHeaderGridStyle"
+               TargetType="Grid">
+            <Setter Property="BackgroundColor"
+                    Value="{StaticResource LightBlueColor}" />
+        </Style>
+
+        <Style x:Key="PageHeaderStackLayoutStyle"
+               TargetType="StackLayout">
+            <Setter Property="BackgroundColor"
+                    Value="{StaticResource LightBlueColor}" />
+        </Style>
+
+        <Style x:Key="HintOverlayLabelStyle"
+               TargetType="Label">
+            <Setter Property="HorizontalTextAlignment"
+                    Value="Center" />
+            <Setter Property="LineBreakMode"
+                    Value="WordWrap" />
+            <Setter Property="TextColor"
+                    Value="{StaticResource LightTextColor}" />
+        </Style>
+    </Application.Resources>
+</Application>
