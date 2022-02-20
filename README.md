@@ -3,8 +3,9 @@
 A client application to allow for faster contribution browsing, editing and upload to help renewing MVPs get up to date for renewal.
 
 ## Installation
-- [Microsoft Store](https://www.microsoft.com/store/apps/9NRXNX3WLH77)
-- [AppInstaller (fully code-signed packages)](https://dvlup.blob.core.windows.net/general-app-files/Installers/MvpCompanion/index.html)
+- Windows
+  - [Microsoft Store](https://www.microsoft.com/store/apps/9NRXNX3WLH77): Latest
+  - [App Installer](https://dvlup.blob.core.windows.net/general-app-files/Installers/MvpCompanion/MvpApi.Uwp.appinstaller): Prerelease, code-signed.
 - iOS (in progress)
 - Android (in progress)
 - Mac (pending demand)
