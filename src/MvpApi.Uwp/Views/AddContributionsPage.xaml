@@ -461,11 +461,10 @@
                         Grid.Row="2">
                 <AppBarButton Label="import CSV/XLSX"
                               Icon="ImportAll"
-                              Click="{x:Bind ViewModel.ClearQueueButton_Click}" />
+                              Click="{x:Bind ViewModel.ImportDataButton_Click}" />
                 <AppBarButton Label="clear queue"
                               Icon="Clear"
                               Click="{x:Bind ViewModel.ClearQueueButton_Click}" />
-
                 <AppBarButton Label="upload all"
                               Icon="Upload"
                               IsEnabled="{Binding CanUpload}"
