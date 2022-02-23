@@ -73,38 +73,11 @@ namespace MvpApi.Uwp.ViewModels
             get => _contributions;
             set => Set(ref _contributions, value);
         }
-
-        //public ObservableCollection<object> SelectedContributions { get; set; }
-
+        
         public GroupDescriptorCollection GroupDescriptors { get; set; }
 
         public DelegateCommand RefreshAfterDisconnectCommand { get; }
-
-        //public bool IsMultipleSelectionEnabled
-        //{
-        //    get => _isMultipleSelectionEnabled;
-        //    set
-        //    {
-        //        Set(ref _isMultipleSelectionEnabled, value);
-
-        //        GridSelectionMode = value
-        //            ? DataGridSelectionMode.Multiple
-        //            : DataGridSelectionMode.Single;
-        //    }
-        //}
-
-        //public DataGridSelectionMode GridSelectionMode
-        //{
-        //    get => _gridSelectionMode;
-        //    set => Set(ref _gridSelectionMode, value);
-        //}
-
-        public bool AreAppBarButtonsEnabled
-        {
-            get => _areAppBarButtonsEnabled;
-            set => Set(ref _areAppBarButtonsEnabled, value);
-        }
-
+        
         public bool IsInternetDisabled
         {
             get => _isInternetDisabled;
