@@ -287,6 +287,12 @@
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export Contributions"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
+                <AppBarButton Label="Batch Size">
+                    <AppBarButton.Flyout>
+                        <ListPickerFlyout ItemsSource="{Binding BatchSizes}"
+                                          SelectedItem="{Binding BatchSize, Mode=TwoWay}"/>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
             </CommandBar.SecondaryCommands>
             <AppBarButton x:Name="RefreshAppBarButton"
                           Icon="Refresh"
