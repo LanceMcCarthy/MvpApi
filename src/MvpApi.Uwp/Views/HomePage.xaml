@@ -6,8 +6,6 @@
       xmlns:viewModels="using:MvpApi.Uwp.ViewModels"
       xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
       xmlns:primitives="using:Telerik.UI.Xaml.Controls.Primitives"
-      xmlns:telerikControls="using:Telerik.UI.Xaml.Controls"
-      xmlns:animations="using:Microsoft.Toolkit.Uwp.UI.Animations"
       xmlns:controls="using:Microsoft.UI.Xaml.Controls"
       xmlns:models="using:MvpApi.Common.Models"
       xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
@@ -27,7 +25,6 @@
 
         <Grid x:Name="HeaderGrid"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
-
             <TextBlock Text="Home"
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
@@ -35,7 +32,8 @@
 
             <Button x:Name="GroupByButton"
                     HorizontalAlignment="Right"
-                    Margin="8">
+                    Margin="8"
+                    Padding="0">
                 <Button.Content>
                     <StackPanel Orientation="Horizontal">
                         <SymbolIcon Symbol="ShowBcc"
@@ -79,7 +77,7 @@
                           GridLinesThickness="1"
                           Grid.Row="1">
             <grid:RadDataGrid.GroupHeaderTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="grid:GroupHeaderContext">
                     <Grid>
                         <StackPanel Orientation="Horizontal">
                             <Border Background="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToBackgroundConverter}}"
@@ -94,7 +92,7 @@
                             <TextBlock Text="-"
                                        Style="{ThemeResource BodyTextBlockStyle}"
                                        VerticalAlignment="Center" />
-                            <TextBlock Text="{Binding Group.Items.Count}"
+                            <TextBlock Text="{Binding Group.ChildItems.Count}"
                                        Style="{ThemeResource BodyTextBlockStyle}"
                                        VerticalAlignment="Center"
                                        Margin="10,0" />
@@ -153,9 +151,6 @@
                 <grid:DataGridTextColumn PropertyName="ContributionTypeName"
                                          Header="Contribution Type"
                                          CellContentStyle="{StaticResource WideCellContentStyle}" />
-                <!--<grid:DataGridTextColumn PropertyName="Description"
-                                         Header="Description"
-                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />-->
                 <grid:DataGridTextColumn PropertyName="ReferenceUrl"
                                          Width="100"
                                          Header="Url"
@@ -260,10 +255,10 @@
                                      Grid.Column="0" />
 
         <Button Content="Refresh Data (after internet connection is established)"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
                 Command="{Binding RefreshAfterDisconnectCommand}"
                 Visibility="{Binding IsInternetDisabled, Converter={StaticResource BoolToVisibilityConverter}}"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
                 Grid.Row="1" />
 
         <CommandBar Grid.Row="2"
@@ -292,6 +287,12 @@
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="Export Contributions"
                               Click="{x:Bind ViewModel.ExportButton_OnClick}" />
+                <AppBarButton Label="Batch Size">
+                    <AppBarButton.Flyout>
+                        <ListPickerFlyout ItemsSource="{Binding BatchSizes}"
+                                          SelectedItem="{Binding BatchSize, Mode=TwoWay}"/>
+                    </AppBarButton.Flyout>
+                </AppBarButton>
             </CommandBar.SecondaryCommands>
             <AppBarButton x:Name="RefreshAppBarButton"
                           Icon="Refresh"
@@ -319,7 +320,5 @@
                                      Grid.Row="1"
                                      Grid.RowSpan="2"
                                      Grid.Column="0" />
-
-        
     </Grid>
 </Page>
