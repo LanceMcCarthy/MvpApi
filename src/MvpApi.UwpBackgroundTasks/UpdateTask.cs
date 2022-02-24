@@ -22,11 +22,12 @@ namespace MvpApi.UwpBackgroundTasks
                             },
                             new AdaptiveText
                             {
-                                Text = "Welcome to the 2019-2020 MVP year! The MVP Companion is here to help keep your contributions updated."
+                                Text = "You have the latest and greatest version. MVP Companion helps you keep your contributions updated throughout the year (or in the last 2 weeks of panic 😁)."
                             },
                             new AdaptiveImage
                             {
-                                Source = "https://dvlup.blob.core.windows.net/general-app-files/MVP%20Companion/MVPCompanion_1.9.2.png"
+                                // New Home page experience screenshot
+                                Source = "https://user-images.githubusercontent.com/3520532/153973369-b3a44f1d-024e-4243-a363-51054454cd09.png"
                             }
                         }
                     }

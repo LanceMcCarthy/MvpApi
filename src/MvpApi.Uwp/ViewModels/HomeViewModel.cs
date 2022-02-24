@@ -29,13 +29,10 @@ namespace MvpApi.Uwp.ViewModels
         #region Fields
 
         private IncrementalLoadingCollection<ContributionsModel> _contributions;
-        //private DataGridSelectionMode _gridSelectionMode = DataGridSelectionMode.Single;
-        //private bool _isMultipleSelectionEnabled;
-        private bool _areAppBarButtonsEnabled;
         private bool _isInternetDisabled;
         private bool _isLoadingMoreItems;
         private string _loadingMoreItemsMessage;
-
+        private uint _batchSize = 50;
         private int? _currentOffset = 0;
         private string _displayTotal = "0 Items";
         private bool _isAutomaticRefreshPaused;
@@ -73,43 +70,47 @@ namespace MvpApi.Uwp.ViewModels
             get => _contributions;
             set => Set(ref _contributions, value);
         }
-
-        //public ObservableCollection<object> SelectedContributions { get; set; }
-
+        
         public GroupDescriptorCollection GroupDescriptors { get; set; }
 
         public DelegateCommand RefreshAfterDisconnectCommand { get; }
-
-        //public bool IsMultipleSelectionEnabled
-        //{
-        //    get => _isMultipleSelectionEnabled;
-        //    set
-        //    {
-        //        Set(ref _isMultipleSelectionEnabled, value);
-
-        //        GridSelectionMode = value
-        //            ? DataGridSelectionMode.Multiple
-        //            : DataGridSelectionMode.Single;
-        //    }
-        //}
-
-        //public DataGridSelectionMode GridSelectionMode
-        //{
-        //    get => _gridSelectionMode;
-        //    set => Set(ref _gridSelectionMode, value);
-        //}
-
-        public bool AreAppBarButtonsEnabled
-        {
-            get => _areAppBarButtonsEnabled;
-            set => Set(ref _areAppBarButtonsEnabled, value);
-        }
-
+        
         public bool IsInternetDisabled
         {
             get => _isInternetDisabled;
             set => Set(ref _isInternetDisabled, value);
         }
+
+        public uint BatchSize
+        {
+            get
+            {
+                if (ApplicationData.Current.LocalSettings.Values.TryGetValue(nameof(BatchSize), out var rawValue))
+                {
+                    _batchSize = (uint)rawValue;
+                }
+                else
+                {
+                    ApplicationData.Current.LocalSettings.Values[nameof(BatchSize)] = _batchSize;
+                }
+
+                return _batchSize;
+            }
+            set
+            {
+                if (Set(ref _batchSize, value))
+                {
+                    ApplicationData.Current.LocalSettings.Values[nameof(BatchSize)] = _batchSize;
+
+                    _currentOffset = 0;
+                    DisplayTotal = "recalculating new batch size...";
+
+                    Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = this.BatchSize };
+                }
+            }
+        }
+
+        public List<uint> BatchSizes { get; } = new List<uint> {10, 25, 50, 100};
 
         public bool IsLoadingMoreItems
         {
@@ -409,11 +410,12 @@ namespace MvpApi.Uwp.ViewModels
             _currentOffset = 0;
             DisplayTotal = "loading...";
 
-            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
+            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = this.BatchSize};
 
             if (Contributions.Count < rowIndexToReturnTo)
             {
-                await Contributions.LoadMoreItemsAsync(rowIndexToReturnTo);
+                var countToFetch = rowIndexToReturnTo;
+                await Contributions.LoadMoreItemsAsync(countToFetch);
             }
             
             ScrollableView.ScrollTo(rowIndexToReturnTo);
@@ -480,7 +482,7 @@ namespace MvpApi.Uwp.ViewModels
                     _currentOffset = 0;
                     DisplayTotal = "loading...";
 
-                    Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = 50 };
+                    Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = this.BatchSize };
                 }
 
                 if (!(ApplicationData.Current.LocalSettings.Values["HomePageTutorialShown"] is bool tutorialShown) || !tutorialShown)
