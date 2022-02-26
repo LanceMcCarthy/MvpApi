@@ -9,20 +9,58 @@
       mc:Ignorable="d"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
       Title="Import Result"
-      PrimaryButtonText="close"
+      PrimaryButtonText="import"
+      SecondaryButtonText="cancel"
       PrimaryButtonClick="ImportContributionsDialog_OnPrimaryButtonClick"
+      SecondaryButtonClick="ImportContributionsDialog_OnSecondaryButtonClick"
       MinWidth="640"
       MinHeight="640">
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <CheckBox x:Name="SelectAllCheckBox"
+                  Checked="SelectAllCheckBox_OnChecked"
+                  Unchecked="SelectAllCheckBox_OnUnchecked"
+                  Content="Select All"/>
+
         <grid:RadDataGrid x:Name="DataGrid1"
-                          SelectionMode="None"
+                          SelectionMode="Extended"
                           RowDetailsDisplayMode="Single"
                           AutoGenerateColumns="False"
                           CanUserChooseColumns="False"
                           UserFilterMode="Auto"
+                          UserSortMode="Auto"
                           UserGroupMode="Disabled"
-                          GridLinesThickness="1">
+                          GridLinesThickness="1"
+                          Grid.Row="1">
+            <grid:RadDataGrid.GroupHeaderTemplate>
+                <DataTemplate x:DataType="grid:GroupHeaderContext">
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Background="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToBackgroundConverter}}"
+                                    BorderThickness="2"
+                                    Width="20"
+                                    Height="10"
+                                    BorderBrush="{Binding Group.Key, Converter={StaticResource ContributionTypeNameToForegroundConverter}}" />
+                            <TextBlock Text="{Binding Group.Key}"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0" />
+                            <TextBlock Text="-"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding Group.ChildItems.Count}"
+                                       Style="{ThemeResource BodyTextBlockStyle}"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </grid:RadDataGrid.GroupHeaderTemplate>
             <grid:RadDataGrid.Columns>
                 <grid:DataGridTemplateColumn Header="Options">
                     <grid:DataGridTemplateColumn.CellContentTemplate>

@@ -105,8 +105,11 @@ namespace MvpApi.Uwp.ViewModels
                     var deserializedResult = JsonConvert.DeserializeObject<List<ContributionsModel>>(jsonData);
                     
                     ImportContributionsStatus = $"Test Successful, {deserializedResult.Count} contributions deserialized.";
+                    
+                    var testImportDialog = new ImportContributionsDialog(deserializedResult);
+                    testImportDialog.IsPrimaryButtonEnabled = false;
 
-                    await new ImportContributionsDialog(deserializedResult).ShowAsync();
+                    await testImportDialog.ShowAsync();
                 }
                 else
                 {

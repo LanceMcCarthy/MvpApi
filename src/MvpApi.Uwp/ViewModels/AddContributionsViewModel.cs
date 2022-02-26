@@ -31,7 +31,7 @@ namespace MvpApi.Uwp.ViewModels
     public class AddContributionsViewModel : PageViewModelBase
     {
         #region Fields
-        
+
         private ContributionsModel _selectedContribution;
         private string _urlHeader = "Url";
         private string _annualQuantityHeader = "Annual Quantity";
@@ -76,7 +76,7 @@ namespace MvpApi.Uwp.ViewModels
         public ObservableCollection<ContributionTypeModel> Types { get; } = new ObservableCollection<ContributionTypeModel>();
 
         public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
-        
+
         public ObservableCollection<ContributionAreaContributionModel> CategoryAreas { get; } = new ObservableCollection<ContributionAreaContributionModel>();
 
         public ContributionsModel SelectedContribution
@@ -84,9 +84,9 @@ namespace MvpApi.Uwp.ViewModels
             get => _selectedContribution;
             set => Set(ref _selectedContribution, value);
         }
-        
+
         // Data entry control headers, using VM properties to alert validation violations
-        
+
         public string AnnualQuantityHeader
         {
             get => _annualQuantityHeader;
@@ -166,16 +166,16 @@ namespace MvpApi.Uwp.ViewModels
         public DelegateCommand<ContributionsModel> RemoveQueuedContributionCommand { get; set; }
 
         public DelegateCommand<ContributionTechnologyModel> RemoveAdditionalTechAreaCommand { get; set; }
-        
+
         #endregion
-        
+
         #region Event handlers
 
         private void UploadQueue_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             CanUpload = UploadQueue.Any();
         }
-        
+
         public void DatePicker_OnDateChanged(object sender, DatePickerValueChangedEventArgs e)
         {
             if (ShellPage.Instance.DataContext is ShellViewModel svm)
@@ -185,7 +185,7 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     DateOverrideButtonVisibility = Visibility.Visible;
                     WarningMessage = "The activity's date is not within your current award year's valid start and deadline dates.";
-                    
+
                     CanUpload = false;
                 }
                 else
@@ -197,7 +197,7 @@ namespace MvpApi.Uwp.ViewModels
                 }
             }
         }
-        
+
         public void ActivityType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.FirstOrDefault() is ContributionTypeModel type)
@@ -227,17 +227,17 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (!await SelectedContribution.Validate(true))
                 return;
-            
+
             if (IsEditingQueuedItem)
             {
                 IsEditingQueuedItem = false;
             }
             else
             {
-                if(!UploadQueue.Contains(SelectedContribution))
+                if (!UploadQueue.Contains(SelectedContribution))
                     UploadQueue.Add(SelectedContribution);
             }
-            
+
             SetupNextEntry();
         }
 
@@ -290,15 +290,21 @@ namespace MvpApi.Uwp.ViewModels
                     // sync way
                     //var importResult = service.ImportContributionsFile(file.Path, Types, contributionTechnologies, Visibilities);
                     // async task test
-                    var importResult = await Task.FromResult<ContributionViewModel>(service.ImportContributionsFile(file.Path, Types, contributionTechnologies, Visibilities));
-                    
-                    IsBusyMessage = $"imported {importResult.TotalContributions} contributions...";
+                    var importResult = await Task.FromResult(service.ImportContributionsFile(file.Path, Types, contributionTechnologies, Visibilities));
 
-                    foreach (var importedContribution in importResult.Contributions)
+                    IsBusyMessage = $"parsed {importResult.TotalContributions} contributions...";
+
+                    var importDialog = new ImportContributionsDialog(importResult.Contributions);
+                    var importDialogResult = await importDialog.ShowAsync();
+
+                    if (importDialogResult == ContentDialogResult.Primary)
                     {
-                        IsBusyMessage = $"adding {importedContribution.Title} to the upload queue...";
+                        foreach (var importedContribution in importDialog.SelectedContributions)
+                        {
+                            IsBusyMessage = $"adding {importedContribution.Title} to the upload queue...";
 
-                        UploadQueue.Add(importedContribution);
+                            UploadQueue.Add(importedContribution);
+                        }
                     }
 
                     IsBusyMessage = "import complete!";
@@ -343,7 +349,7 @@ namespace MvpApi.Uwp.ViewModels
             foreach (var contribution in UploadQueue)
             {
                 contribution.UploadStatus = UploadStatus.InProgress;
-                
+
                 try
                 {
                     var submissionResult = await App.ApiService.SubmitContributionAsync(contribution);
@@ -367,15 +373,15 @@ namespace MvpApi.Uwp.ViewModels
 
                 if (ApiInformation.IsTypePresent("Microsoft.Services.Store.Engagement.StoreServicesCustomEventLogger"))
                 {
-                    StoreServicesCustomEventLogger.GetDefault().Log(contribution.UploadStatus == UploadStatus.Success 
-                        ? "ContributionUploadSuccess" 
+                    StoreServicesCustomEventLogger.GetDefault().Log(contribution.UploadStatus == UploadStatus.Success
+                        ? "ContributionUploadSuccess"
                         : "ContributionUploadFailure");
-                }  
+                }
             }
-            
+
             if (UploadQueue.Any(c => c.UploadStatus == UploadStatus.Failed))
             {
-                await new MessageDialog($"Something went wrong saving one or more items in the queue, it will remain in the queue for you to try again.\r\n\nDouble check that's you've filled out all required information for that activity type", 
+                await new MessageDialog($"Something went wrong saving one or more items in the queue, it will remain in the queue for you to try again.\r\n\nDouble check that's you've filled out all required information for that activity type",
                     "Failed Upload").ShowAsync();
             }
 
@@ -398,7 +404,7 @@ namespace MvpApi.Uwp.ViewModels
         public async void DateRangeOverrideButton_Click(object sender, RoutedEventArgs e)
         {
             var result = await new AwardYearDateRangeEditorDialog().ShowAsync();
-            
+
             if (result == ContentDialogResult.Primary && ShellPage.Instance.DataContext is ShellViewModel svm)
             {
                 if (SelectedContribution.StartDate <= svm.SubmissionStartDate ||
@@ -438,7 +444,7 @@ namespace MvpApi.Uwp.ViewModels
                 AdditionalTechnologies = new ObservableCollection<ContributionTechnologyModel>()
             };
         }
-        
+
         public void DetermineContributionTypeRequirements(ContributionTypeModel contributionType)
         {
             // Each activity type has a unique set of field names and which ones are required.
@@ -531,7 +537,7 @@ namespace MvpApi.Uwp.ViewModels
                 //await new MessageDialog($"Something went wrong deleting this item, please try again. Error: {ex.Message}").ShowAsync();
             }
         }
-        
+
         private async Task LoadSupportingDataAsync()
         {
             IsBusyMessage = "loading types...";
@@ -556,7 +562,7 @@ namespace MvpApi.Uwp.ViewModels
             });
 
             // TODO Try and get the CollectionViewSource to invoke now so that the LoadNextEntry will be able to preselected award category.
-            
+
             IsBusyMessage = "loading visibility options...";
 
             var visibilities = await App.ApiService.GetVisibilitiesAsync();
@@ -644,7 +650,7 @@ namespace MvpApi.Uwp.ViewModels
         {
             if (BootStrapper.Current.NavigationService.FrameFacade != null)
                 BootStrapper.Current.NavigationService.FrameFacade.BackRequested -= FrameFacadeBackRequested;
-            
+
             return base.OnNavigatingFromAsync(args);
         }
 
