@@ -10,14 +10,16 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.UI.Popups;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using MvpApi.Uwp.Dialogs;
 
 namespace MvpApi.Uwp.ViewModels
 {
     public class SettingsViewModel : PageViewModelBase
     {
         private string selectedExportType = "All";
-        private string _importContributionsStatus = "All";
+        private string importContributionsStatus = "All";
         private string importOnlineIdentitiesStatus = "All";
 
         public SettingsViewModel()
@@ -38,13 +40,13 @@ namespace MvpApi.Uwp.ViewModels
 
         public string ImportContributionsStatus
         {
-            get => _importContributionsStatus;
+            get => importContributionsStatus;
             set
             {
-                if (_importContributionsStatus == value)
+                if (importContributionsStatus == value)
                     return;
 
-                _importContributionsStatus = value;
+                importContributionsStatus = value;
                 RaisePropertyChanged(nameof(ImportContributionsStatus));
             }
         }
@@ -102,7 +104,9 @@ namespace MvpApi.Uwp.ViewModels
 
                     var deserializedResult = JsonConvert.DeserializeObject<List<ContributionsModel>>(jsonData);
                     
-                    ImportContributionsStatus = $"Import Test Successful! The data contained {deserializedResult.Count} contributions.";
+                    ImportContributionsStatus = $"Test Successful, {deserializedResult.Count} contributions deserialized.";
+
+                    await new ImportContributionsDialog(deserializedResult).ShowAsync();
                 }
                 else
                 {
@@ -147,7 +151,7 @@ namespace MvpApi.Uwp.ViewModels
 
                     var deserializedResult = JsonConvert.DeserializeObject<List<OnlineIdentityViewModel>>(jsonData);
 
-                    ImportOnlineIdentitiesStatus = $"Import Test Successful! The data contained {deserializedResult.Count} OnlineIdentities.";
+                    ImportOnlineIdentitiesStatus = $"Test Successful,{deserializedResult.Count} records deserialized.";
                 }
                 else
                 {

@@ -1,0 +1,147 @@
+﻿<ContentDialog x:Class="MvpApi.Uwp.Dialogs.ImportContributionsDialog"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="using:MvpApi.Uwp.Dialogs"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:grid="using:Telerik.UI.Xaml.Controls.Grid"
+      xmlns:models="using:MvpApi.Common.Models"
+      mc:Ignorable="d"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+      Title="Import Result"
+      PrimaryButtonText="close"
+      PrimaryButtonClick="ImportContributionsDialog_OnPrimaryButtonClick"
+      MinWidth="640"
+      MinHeight="640">
+
+    <Grid>
+        <grid:RadDataGrid x:Name="DataGrid1"
+                          SelectionMode="None"
+                          RowDetailsDisplayMode="Single"
+                          AutoGenerateColumns="False"
+                          CanUserChooseColumns="False"
+                          UserFilterMode="Auto"
+                          UserGroupMode="Disabled"
+                          GridLinesThickness="1">
+            <grid:RadDataGrid.Columns>
+                <grid:DataGridTemplateColumn Header="Options">
+                    <grid:DataGridTemplateColumn.CellContentTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Click="ExpandButton_Click"
+                                        ToolTipService.ToolTip="Expand the details row"
+                                        Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}"
+                                        Margin="4,2">
+                                    <Button.Content>
+                                        <SymbolIcon Symbol="ShowBcc" />
+                                    </Button.Content>
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </grid:DataGridTemplateColumn.CellContentTemplate>
+                </grid:DataGridTemplateColumn>
+                <grid:DataGridDateColumn PropertyName="StartDate"
+                                         CellContentFormat="{}{0:d}"
+                                         Header="Start Date" />
+                <grid:DataGridTextColumn PropertyName="Title"
+                                         Header="Title"
+                                         CellContentStyle="{StaticResource WideCellContentStyle}" />
+                <grid:DataGridTextColumn PropertyName="ContributionTypeName"
+                                         Header="Contribution Type"
+                                         CellContentStyle="{StaticResource WideCellContentStyle}" />
+                <grid:DataGridTextColumn PropertyName="ReferenceUrl"
+                                         Width="100"
+                                         Header="Url"
+                                         CellContentStyle="{StaticResource MediumCellContentStyle}" />
+            </grid:RadDataGrid.Columns>
+            <grid:RadDataGrid.RowDetailsTemplate>
+                <DataTemplate x:DataType="models:ContributionsModel">
+                    <StackPanel Margin="10">
+                        <HyperlinkButton Content="{Binding ReferenceUrl}"
+                                         NavigateUri="{Binding ReferenceUrl}"
+                                         Background="{ThemeResource AppBarBackgroundThemeBrush}"
+                                         Margin="0,5,0,5" />
+                        <TextBlock Text="Description"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,5" />
+                        <TextBlock Text="{Binding Description}"
+                                   TextWrapping="WrapWholeWords"
+                                   Margin="0,0,0,20" />
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Margin="0,0,20,0">
+                                <TextBlock Text="Technology"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,5" />
+                                <Grid Background="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                      HorizontalAlignment="Left"
+                                      Margin="0,0,0,10">
+                                    <TextBlock Text="{Binding ContributionTechnology.Name}"
+                                               Foreground="White"
+                                               VerticalAlignment="Center"
+                                               Margin="7,5" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Additional Technologies"
+                                           FontWeight="SemiBold" />
+                                <ListView ItemsSource="{Binding AdditionalTechnologies}"
+                                          HorizontalAlignment="Left"
+                                          Margin="0,0,0,10">
+                                    <ListView.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <ItemsStackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ListView.ItemsPanel>
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="Padding"
+                                                    Value="0" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Background="Gray"
+                                                  Margin="0,0,10,0">
+                                                <TextBlock Text="{Binding Name}"
+                                                           Foreground="White"
+                                                           VerticalAlignment="Center"
+                                                           Margin="7,5" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        <StackPanel Margin="0,0,0,5">
+                            <TextBlock Text="Visibility"
+                                       FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding Visibility.Description}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Visibility="{Binding AnnualQuantity, Converter={StaticResource NullToVisibilityConverter}}"
+                                        Margin="0,0,10,5">
+                                <TextBlock Text="Annual Quantity"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding AnnualQuantity}" />
+                            </StackPanel>
+                            <StackPanel Visibility="{Binding SecondAnnualQuantity, Converter={StaticResource NullToVisibilityConverter}}"
+                                        Margin="0,0,10,5">
+                                <TextBlock Text="Second Annual Quantity"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding SecondAnnualQuantity}" />
+                            </StackPanel>
+                            <StackPanel Visibility="{Binding AnnualReach, Converter={StaticResource NullToVisibilityConverter}}" 
+                                        Margin="0,0,0,5">
+                                <TextBlock Text="AnnualReach"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding AnnualReach}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </grid:RadDataGrid.RowDetailsTemplate>
+        </grid:RadDataGrid>
+    </Grid>
+</ContentDialog>
