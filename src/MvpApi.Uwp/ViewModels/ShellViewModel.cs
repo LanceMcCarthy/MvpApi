@@ -4,7 +4,6 @@ using Windows.ApplicationModel;
 using Windows.Services.Store;
 using Windows.Storage;
 using Windows.UI.Popups;
-using CommonHelpers.Mvvm;
 using MvpApi.Services.Utilities;
 using MvpCompanion.UI.Common.Helpers;
 using Newtonsoft.Json.Linq;

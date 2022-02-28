@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using Microsoft.Toolkit.Uwp.Connectivity;
+using Microsoft.Toolkit.Uwp.UI;
 using MvpApi.Common.Interfaces;
 using MvpApi.Common.Models;
 using MvpApi.Uwp.Common;
@@ -21,6 +22,7 @@ using Telerik.Core.Data;
 using Telerik.Data.Core;
 using Template10.Common;
 using Template10.Mvvm;
+using DesignTimeHelpers = MvpCompanion.UI.Common.Helpers.DesignTimeHelpers;
 
 namespace MvpApi.Uwp.ViewModels
 {
@@ -32,11 +34,12 @@ namespace MvpApi.Uwp.ViewModels
         private bool _isInternetDisabled;
         private bool _isLoadingMoreItems;
         private string _loadingMoreItemsMessage;
+        private int _fetchCount = 0;
+        private int? _currentOffset = null;
+        private int? _totalContributions = null;
         private uint _batchSize = 50;
-        private int? _currentOffset = 0;
         private string _displayTotal = "0 Items";
         private bool _isAutomaticRefreshPaused;
-
         #endregion
 
         public HomeViewModel()
@@ -49,32 +52,28 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     await new MessageDialog("Internet is still not available, please check your connection and try again.", "No Internet").ShowAsync();
                 }
-                else
-                {
-
-                }
             });
 
             if (DesignMode.DesignModeEnabled || DesignMode.DesignMode2Enabled)
             {
                 var sampleDataTask = Task.FromResult<IEnumerable<ContributionsModel>>(DesignTimeHelpers.GenerateContributions());
 
-                Contributions = new IncrementalLoadingCollection<ContributionsModel>((c)=>sampleDataTask) { BatchSize = 10 };
+                Contributions = new IncrementalLoadingCollection<ContributionsModel>((c) => sampleDataTask) { BatchSize = 10 };
             }
         }
 
         #region Properties
-        
+
         public IncrementalLoadingCollection<ContributionsModel> Contributions
         {
             get => _contributions;
             set => Set(ref _contributions, value);
         }
-        
+
         public GroupDescriptorCollection GroupDescriptors { get; set; }
 
         public DelegateCommand RefreshAfterDisconnectCommand { get; }
-        
+
         public bool IsInternetDisabled
         {
             get => _isInternetDisabled;
@@ -102,7 +101,9 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     ApplicationData.Current.LocalSettings.Values[nameof(BatchSize)] = _batchSize;
 
-                    _currentOffset = 0;
+                    _totalContributions = null;
+                    _currentOffset = null;
+
                     DisplayTotal = "recalculating new batch size...";
 
                     Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = this.BatchSize };
@@ -110,7 +111,7 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
-        public List<uint> BatchSizes { get; } = new List<uint> {10, 25, 50, 100};
+        public List<uint> BatchSizes { get; } = new List<uint> { 10, 25, 50, 100 };
 
         public bool IsLoadingMoreItems
         {
@@ -154,7 +155,7 @@ namespace MvpApi.Uwp.ViewModels
         {
             await BootStrapper.Current.NavigationService.NavigateAsync(typeof(AddContributionsPage), null, new SuppressNavigationTransitionInfo());
         }
-        
+
         public async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             await RefreshAndReturnToPositionAsync(0);
@@ -186,14 +187,6 @@ namespace MvpApi.Uwp.ViewModels
                     break;
             }
         }
-        
-        [Deprecated("This will be removed in a future update.", DeprecationType.Deprecate, 1)]
-        public async void ExportButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            await new MessageDialog("The new Export feature is located on the Settings page.\r\n\n" +
-                                    "You can now choose which award cycle to export your data from: Current, Historical or All.", 
-                "Export has Moved").ShowAsync();
-        }
 
         public async void CloneButton_Click(object sender, RoutedEventArgs e)
         {
@@ -218,7 +211,7 @@ namespace MvpApi.Uwp.ViewModels
                         if (refreshData)
                         {
                             IsBusyMessage = "refreshing contributions...";
-                            
+
                             await RefreshAndReturnToPositionAsync(Convert.ToUInt32(itemIndex));
                         }
                     }
@@ -345,41 +338,73 @@ namespace MvpApi.Uwp.ViewModels
             }
         }
 
+        public void BatchSizeComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems?.Count > 0)
+            {
+                BatchSize = (uint)e.AddedItems[0];
+            }
+
+            if((sender as ComboBox)?.FindAscendant(typeof(CommandBar)) is CommandBar commandBar)
+            {
+                commandBar.IsOpen = false;
+            }
+        }
+
         #endregion
 
         #region Methods
-
+        
         private async Task<IEnumerable<ContributionsModel>> LoadMoreItems(uint count)
         {
+            if (_currentOffset == null)
+            {
+                _currentOffset = 0;
+                _fetchCount = 0;
+            }
+
             try
             {
-                // Here we use a different flag for busy status so we don't block the entire UI
+                // Here we use a different flag for a separate BusyIndicator that doesn't cover the page
                 IsLoadingMoreItems = true;
-                LoadingMoreItemsMessage = $"Loading {count} items from the server...";
+                LoadingMoreItemsMessage = $"fetching next {count} items...";
                 
-                if (_currentOffset == null)
+                _fetchCount++;
+                
+                ContributionViewModel fetchResult = null;
+
+                if (_totalContributions == null)
                 {
-                    _currentOffset = 0;
+                    fetchResult = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
+                }
+                else 
+                {
+                    var remainingItemsCount = _totalContributions - _currentOffset;
+
+                    if (remainingItemsCount >= count)
+                    {
+                        fetchResult = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
+                    }
+                    else
+                    {
+                        fetchResult = await App.ApiService.GetContributionsAsync(_currentOffset, (int)remainingItemsCount);
+                    }
                 }
 
-                var fetchResult = await App.ApiService.GetContributionsAsync(_currentOffset, (int)count);
-
-                Debug.WriteLine($"** LoadMoreItems **\nPagingIndex: {fetchResult.PagingIndex}, Count: {fetchResult.Contributions.Count}, TotalContributions: {fetchResult.TotalContributions}");
-
-                // Current offset is the number of items we've already fetched
+                // Current offset is the number of items we've already fetched (important: this number includes the currently returned items.)
                 _currentOffset = fetchResult.PagingIndex;
+                _totalContributions = fetchResult.TotalContributions;
 
-                DisplayTotal = $"{fetchResult.PagingIndex} of {fetchResult.TotalContributions} items";
+                DisplayTotal = $"{_currentOffset} of {_totalContributions} items";
 
+                Debug.WriteLine($"******************* LoadMoreItems #{_fetchCount} *******************");
+                Debug.WriteLine($" PagingIndex: {fetchResult.PagingIndex}");
+                Debug.WriteLine($" Contributions.Count: {fetchResult.Contributions.Count}");
+                Debug.WriteLine($" TotalContributions: {fetchResult.TotalContributions}");
+                Debug.WriteLine("*********************************************************************");
 
-                // If we've received all the contributions, return null to stop automatic loading because we've retrieved all the available items
-                // To check if we have all the items downloaded, simply add the pagingIndex (the total downloaded) to the current result's total
-                // // Then see if it equal to (or greater than) the total amount
-                if (fetchResult.PagingIndex + fetchResult.Contributions.Count >= fetchResult.TotalContributions)
-                {
-                    return null;
-                }
-
+                // If we've received all the contributions, Contributions.Count should be 0 from the API
+                // If there are no items (or null) returned from this method, automatic load on demand will be disabled
                 return fetchResult.Contributions;
             }
             catch (Exception ex)
@@ -407,17 +432,18 @@ namespace MvpApi.Uwp.ViewModels
                 IsAutomaticRefreshPaused = false;
             }
 
-            _currentOffset = 0;
+            _totalContributions = null;
+            _currentOffset = null;
             DisplayTotal = "loading...";
 
-            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = this.BatchSize};
+            Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = this.BatchSize };
 
             if (Contributions.Count < rowIndexToReturnTo)
             {
                 var countToFetch = rowIndexToReturnTo;
                 await Contributions.LoadMoreItemsAsync(countToFetch);
             }
-            
+
             ScrollableView.ScrollTo(rowIndexToReturnTo);
         }
 
@@ -455,7 +481,7 @@ namespace MvpApi.Uwp.ViewModels
                 return true;
             }
         }
-        
+
         #endregion
 
         #region Navigation
@@ -476,10 +502,11 @@ namespace MvpApi.Uwp.ViewModels
                 {
                     await ShellPage.Instance.SignInAsync();
                 }
-                
+
                 if (shellVm.IsLoggedIn)
                 {
-                    _currentOffset = 0;
+                    _currentOffset = null;
+                    _totalContributions = null;
                     DisplayTotal = "loading...";
 
                     Contributions = new IncrementalLoadingCollection<ContributionsModel>(LoadMoreItems) { BatchSize = this.BatchSize };
@@ -507,11 +534,6 @@ namespace MvpApi.Uwp.ViewModels
                     IsBusyMessage = "";
                 }
             }
-        }
-
-        public override Task OnNavigatedFromAsync(IDictionary<string, object> pageState, bool suspending)
-        {
-            return base.OnNavigatedFromAsync(pageState, suspending);
         }
 
         #endregion

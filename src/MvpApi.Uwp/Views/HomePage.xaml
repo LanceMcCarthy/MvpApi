@@ -246,14 +246,6 @@
             </grid:RadDataGrid.RowDetailsTemplate>
         </grid:RadDataGrid>
 
-        <primitives:RadBusyIndicator Content="{x:Bind ViewModel.LoadingMoreItemsMessage, Mode=OneWay}"
-                                     IsActive="{x:Bind ViewModel.IsLoadingMoreItems, Mode=OneWay}"
-                                     Visibility="{x:Bind ViewModel.IsLoadingMoreItems, Mode=OneWay}"
-                                     AnimationStyle="AnimationStyle3"
-                                     VerticalAlignment="Bottom"
-                                     Grid.Row="1"
-                                     Grid.Column="0" />
-
         <Button Content="Refresh Data (after internet connection is established)"
                 Command="{Binding RefreshAfterDisconnectCommand}"
                 Visibility="{Binding IsInternetDisabled, Converter={StaticResource BoolToVisibilityConverter}}"
@@ -270,6 +262,23 @@
                                VerticalAlignment="Center"
                                Margin="15,0,0,15"
                                Style="{ThemeResource CaptionTextBlockStyle}" />
+                    <primitives:RadBusyIndicator Content="{x:Bind ViewModel.LoadingMoreItemsMessage, Mode=OneWay}"
+                                                 IsActive="{x:Bind ViewModel.IsLoadingMoreItems, Mode=OneWay}"
+                                                 Visibility="{x:Bind ViewModel.IsLoadingMoreItems, Mode=OneWay}"
+                                                 AnimationStyle="AnimationStyle5"
+                                                 FontSize="14"
+                                                 VerticalAlignment="Top"
+                                                 ContentPosition="Left"
+                                                 Margin="10,0,0,0"
+                                                 Padding="0"/>
+                     <!--<StackPanel Orientation="Horizontal"
+                                Visibility="{x:Bind ViewModel.IsLoadingMoreItems, Mode=OneWay}"
+                                Margin="10,0">
+                       <ProgressRing IsActive="{x:Bind ViewModel.IsLoadingMoreItems, Mode=OneWay}"
+                                      VerticalAlignment="Top"
+                                      Margin="0,0,10,0" />
+                        <TextBlock Text="{x:Bind ViewModel.LoadingMoreItemsMessage, Mode=OneWay}"/>
+                    </StackPanel>-->
                     <Border Background="Gold"
                             Visibility="{Binding IsAutomaticRefreshPaused, Converter={StaticResource BoolToVisibilityConverter}}"
                             Margin="15,0,0,15"
@@ -285,15 +294,15 @@
                 </StackPanel>
             </CommandBar.Content>
             <CommandBar.SecondaryCommands>
-                <AppBarButton Label="Export Contributions"
-                              Click="{x:Bind ViewModel.ExportButton_OnClick}" />
-                <AppBarButton Label="Batch Size">
-                    <AppBarButton.Flyout>
-                        <ListPickerFlyout ItemsSource="{Binding BatchSizes}"
-                                          SelectedItem="{Binding BatchSize, Mode=TwoWay}"/>
-                    </AppBarButton.Flyout>
-                </AppBarButton>
+                <AppBarElementContainer>
+                    <ComboBox Header="Default Batch Size"
+                              ItemsSource="{x:Bind ViewModel.BatchSizes}"
+                              SelectedItem="{x:Bind ViewModel.BatchSize, Mode=TwoWay}"
+                              SelectionChanged="{x:Bind ViewModel.BatchSizeComboBox_OnSelectionChanged}"
+                              Margin="10" />
+                </AppBarElementContainer>
             </CommandBar.SecondaryCommands>
+            
             <AppBarButton x:Name="RefreshAppBarButton"
                           Icon="Refresh"
                           Label="refresh"
