@@ -19,12 +19,13 @@ namespace MvpApi.Uwp.ViewModels
     public class ProfileViewModel : PageViewModelBase
     {
         private MvpApi.Common.Models.ProfileViewModel _mvp;
-        private string _profileImagePath;
         private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
+        private ObservableCollection<OnlineIdentityViewModel> _selectedOnlineIdentities;
         private ListViewSelectionMode _listViewSelectionMode = ListViewSelectionMode.Single;
+        private string _profileImagePath;
         private bool _isMultipleSelectionEnabled;
         private bool _areAppBarButtonsEnabled;
-        private ObservableCollection<OnlineIdentityViewModel> _selectedOnlineIdentities;
+        private bool _showIdentityOverlay;
 
         public ProfileViewModel()
         {
@@ -55,7 +56,12 @@ namespace MvpApi.Uwp.ViewModels
 
         //public ObservableCollection<VisibilityViewModel> Visibilities { get; } = new ObservableCollection<VisibilityViewModel>();
 
-        //public OnlineIdentityViewModel DraftOnlineIdentity { get; set; } = new OnlineIdentityViewModel();
+        //private OnlineIdentityViewModel _draftOnlineIdentityViewModel;
+        //public OnlineIdentityViewModel DraftOnlineIdentity
+        //{
+        //    get => _draftOnlineIdentityViewModel ?? (_draftOnlineIdentityViewModel = new OnlineIdentityViewModel());
+        //    set => Set(ref _draftOnlineIdentityViewModel, value);
+        //}
 
         public string ProfileImagePath
         {
@@ -69,7 +75,7 @@ namespace MvpApi.Uwp.ViewModels
             set
             {
                 Set(ref _isMultipleSelectionEnabled, value);
-                
+
                 ListViewSelectionMode = value
                     ? ListViewSelectionMode.Multiple
                     : ListViewSelectionMode.Single;
@@ -87,6 +93,12 @@ namespace MvpApi.Uwp.ViewModels
             get => _areAppBarButtonsEnabled;
             set => Set(ref _areAppBarButtonsEnabled, value);
         }
+
+        //public bool ShowIdentityEditorOverlay
+        //{
+        //    get => _showIdentityOverlay;
+        //    set => Set(ref _showIdentityOverlay, value);
+        //}
 
         // Methods
 
@@ -106,7 +118,7 @@ namespace MvpApi.Uwp.ViewModels
                     OnlineIdentities.Add(onlineIdentity);
                 }
             }
-            
+
             IsBusyMessage = "";
             IsBusy = false;
         }
@@ -149,7 +161,7 @@ namespace MvpApi.Uwp.ViewModels
         {
             await new AwardQuestionsDialog(App.ApiService).ShowAsync();
         }
-
+        
         public async void DeleteOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
         {
             IsBusy = true;
@@ -178,7 +190,7 @@ namespace MvpApi.Uwp.ViewModels
 
                 // Disable the Multiple  selection (this will also clear the LV selected items)
                 IsMultipleSelectionEnabled = false;
-                
+
                 // Handle Visual State
                 AreAppBarButtonsEnabled = false;
 
@@ -189,15 +201,7 @@ namespace MvpApi.Uwp.ViewModels
             IsBusyMessage = "";
             IsBusy = false;
         }
-
-        [Deprecated("This will be removed in a future update.", DeprecationType.Deprecate, 1)]
-        public async void ExportButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            await new MessageDialog(
-                "The new Export feature is now located on the Settings page, where you have several different export options.",
-                "Export has Moved").ShowAsync();
-        }
-
+        
         // API just recently added this capability, will add shortly
         //public async void AddOnlineIdentityButton_Click(object sender, RoutedEventArgs e)
         //{
@@ -206,10 +210,12 @@ namespace MvpApi.Uwp.ViewModels
         //    md.Commands.Add(new UICommand("Linked Identity"));
         //    md.Commands.Add(new UICommand("Other Identity"));
 
-        // URL Required, and SocialNEtwork Required
-        // Max lenth 490
-        // MinLenth 0
-        //    var regexPAtternToValidateUrl = "^((https?|ftp):\/\/)?(((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)+(\/(([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|\/|\?)*)?$";
+        //    // VALIDATION Requirements
+        //    // URL Required, and SocialNetwork Required
+        //    // Max lenth 490
+        //    // MinLenth 0
+
+        //    var regexPatternToValidateUrl = @"^((https?|ftp):\/\/)?(((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-zA-Z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)+(\/(([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-zA-Z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-fA-F]{2})|[!\$&amp;'\(\)\*\+,;=]|:|@)|\/|\?)*)?$";
 
         //    var result = await md.ShowAsync();
 
@@ -222,6 +228,8 @@ namespace MvpApi.Uwp.ViewModels
         //    {
 
         //    }
+
+        //    await App.ApiService.SubmitOnlineIdentityAsync(DraftOnlineIdentity);
         //}
 
         #region Navigation
