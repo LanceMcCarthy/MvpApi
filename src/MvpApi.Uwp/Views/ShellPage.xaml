@@ -80,15 +80,11 @@
                     <controls:HamburgerButtonInfo.Content>
                         <StackPanel Orientation="Horizontal"
                                     VerticalAlignment="Center">
-                            <Grid>
-                                <FontIcon FontFamily="Segoe MDL2 Assets"
-                                          Glyph="&#xE19F;"
-                                          Foreground="{ThemeResource AppBarToggleButtonCheckedForegroundThemeBrush}"
-                                          Width="48"
-                                          Height="48" />
-                            </Grid>
+                            <SymbolIcon Symbol="Like"
+                                        Width="48"
+                                        Height="48" />
 
-                            <TextBlock Text="Review"
+                            <TextBlock Text="Rate App (fast option)"
                                        Margin="12,0,0,0"
                                        VerticalAlignment="Center" />
                         </StackPanel>

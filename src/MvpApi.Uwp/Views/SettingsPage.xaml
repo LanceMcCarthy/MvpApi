@@ -335,7 +335,6 @@
         <Grid x:Name="HeaderGrid"
               Height="48"
               Background="{ThemeResource SystemControlHighlightAltListAccentLowBrush}">
-
             <TextBlock Text="Settings"
                        Style="{StaticResource TitleTextBlockStyle}"
                        HorizontalAlignment="Center"
@@ -448,7 +447,8 @@
                                             Command="{Binding ImportContributionsTestCommand}"
                                             Margin="0,0,10,0" />
                                     <TextBlock Text="{Binding ImportContributionsStatus, FallbackValue=import_was_successful}"
-                                               VerticalAlignment="Center" />
+                                               VerticalAlignment="Center" 
+                                               TextWrapping="WrapWholeWords" />
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal"
@@ -457,7 +457,8 @@
                                             Command="{Binding ImportOnlineIdentitiesTestCommand}"
                                             Margin="0,0,10,0" />
                                     <TextBlock Text="{Binding ImportOnlineIdentitiesStatus, FallbackValue=import_was_successful}"
-                                               VerticalAlignment="Center" />
+                                               VerticalAlignment="Center" 
+                                               TextWrapping="WrapWholeWords" />
                                 </StackPanel>
                             </StackPanel>
                         </Grid>

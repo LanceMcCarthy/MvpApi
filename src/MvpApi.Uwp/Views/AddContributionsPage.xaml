@@ -37,8 +37,8 @@
             <RowDefinition Height="48" />
             <RowDefinition />
             <RowDefinition x:Name="BottomRowDefinition"
-                           Height="Auto"/>
-        </Grid.RowDefinitions>                  
+                           Height="Auto" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
             <ColumnDefinition Width="1" />
@@ -82,7 +82,7 @@
             </Grid.RowDefinitions>
 
             <Grid Background="{ThemeResource SystemControlBackgroundBaseLowBrush}"
-                  Height="40"
+                  MinHeight="40"
                   Grid.Column="0">
                 <TextBlock Text="Contribution Form"
                            Style="{StaticResource SubtitleTextBlockStyle}"
