@@ -9,9 +9,11 @@ public partial class App : Application
 	public App()
 	{
 		InitializeComponent();
+        
+        UserAppTheme = Preferences.Get("IsDarkMode", false) ? OSAppTheme.Dark : OSAppTheme.Light;
 
-		MainPage = new MainPage();
-	}
+		MainPage = new ShellPage();
+    }
 
     protected override void OnStart()
     {

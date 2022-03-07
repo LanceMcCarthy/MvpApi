@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>$(MauiPlatforms)</TargetFrameworks>
@@ -45,12 +45,6 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
-	<ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
-		<!-- Required - WinUI does not yet have buildTransitive for everything -->
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
-		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.0.30" />
-	</ItemGroup>
-
 	<ItemGroup>
 	  <ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj" />
 	  <ProjectReference Include="..\MvpApi.Services\MvpApi.Services.csproj" />
@@ -59,5 +53,35 @@
 	<ItemGroup>
 	  <PackageReference Include="CommonHelpers" Version="1.1.3" />
 	  <PackageReference Include="Telerik.UI.for.Maui" Version="0.5.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
+		<!-- Required - WinUI does not yet have buildTransitive for everything -->
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
+		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.0.30" />
+		<PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.0.1" />
+		<PackageReference Include="PInvoke.User32" Version="0.7.104" />
+	</ItemGroup>
+
+	<!-- If the project is for windows, include the .ico icon file-->
+	<ItemGroup>
+		<None Remove="Platforms\Windows\trayicon.ico" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
+		<Content Include="Platforms\Windows\trayicon.ico">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<!-- If the project is for MacCatalyst, include the .png icon file-->
+	<ItemGroup>
+		<None Remove="Platforms\MacCatalyst\trayicon.png" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0-maccatalyst'">
+		<Content Include="Platforms\MacCatalyst\trayicon.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 </Project>

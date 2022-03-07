@@ -13,13 +13,10 @@ namespace MvpCompanion.Maui.ViewModels;
 
 public class HomeViewModel : ViewModelBase
 {
-    private ProfileViewModel _mvp;
     private ObservableCollection<ContributionsModel> _contributions;
     private ObservableCollection<OnlineIdentityViewModel> _onlineIdentities;
     private ContributionsModel _selectedContribution;
     private int _selectedSegmentIndex;
-    private string _profileImagePath;
-    private bool _isLoggedIn;
     private bool _isDrawerOpen;
     private string _status;
     private bool _isInEditMode;
@@ -33,33 +30,16 @@ public class HomeViewModel : ViewModelBase
         // TODO Restore Telerik reference
         ItemTapCommand = new Command<ItemTapCommandContext>(ItemTapped);
     }
-
-    public string ProfileImagePath
-    {
-        get => _profileImagePath;
-        set
-        {
-            // Always trigger PropertyChanged. Image may update, but file path doesn't.
-            _profileImagePath = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public ProfileViewModel Mvp
-    {
-        get => _mvp;
-        set => SetProperty(ref _mvp, value);
-    }
-
+    
     public ObservableCollection<ContributionsModel> Contributions
     {
-        get => _contributions ?? (_contributions = new ObservableCollection<ContributionsModel>());
+        get => _contributions ??= new ObservableCollection<ContributionsModel>();
         set => SetProperty(ref _contributions, value);
     }
 
     public ObservableCollection<OnlineIdentityViewModel> OnlineIdentities
     {
-        get => _onlineIdentities ?? (_onlineIdentities = new ObservableCollection<OnlineIdentityViewModel>());
+        get => _onlineIdentities ??= new ObservableCollection<OnlineIdentityViewModel>();
         set => SetProperty(ref _onlineIdentities, value);
     }
 
@@ -74,6 +54,7 @@ public class HomeViewModel : ViewModelBase
             }
         }
     }
+
     public int SelectedSegmentIndex
     {
         get => _selectedSegmentIndex;
@@ -82,12 +63,6 @@ public class HomeViewModel : ViewModelBase
             SetProperty(ref _selectedSegmentIndex, value);
             SetGrouping(value);
         }
-    }
-
-    public bool IsLoggedIn
-    {
-        get => _isLoggedIn;
-        set => SetProperty(ref _isLoggedIn, value);
     }
 
     public bool IsDrawerOpen
@@ -108,7 +83,7 @@ public class HomeViewModel : ViewModelBase
         set => SetProperty(ref _status, value);
     }
 
-    public List<string> GroupingOptions { get; } = new List<string> { "None", "Visibility", "Social" };
+    public List<string> GroupingOptions { get; } = new() { "None", "Visibility", "Social" };
 
     public ObservableCollection<GroupDescriptorBase> GroupDescriptors { get; set; }
 
@@ -148,7 +123,7 @@ public class HomeViewModel : ViewModelBase
             IsBusyMessage = "refreshing contributions...";
 
             // TODO temporary, replace with incremental loading collection
-            await RefreshContributionsAsync();
+            //await RefreshContributionsAsync();
         }
         else if ((ViewType)viewType == ViewType.Profile)
         {
@@ -159,7 +134,7 @@ public class HomeViewModel : ViewModelBase
 
             IsBusyMessage = "loading Online Identities...";
 
-            await RefreshOnlineIdentitiesAsync();
+            //await RefreshOnlineIdentitiesAsync();
         }
 
         //Close drawer if it open

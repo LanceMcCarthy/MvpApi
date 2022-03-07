@@ -8,16 +8,29 @@ using System.Text.Json;
 
 namespace MvpCompanion.Maui;
 
-public partial class MainPage : ContentPage, INavigationHandler
+public partial class ShellPage : Shell, INavigationHandler
 {
     private readonly WebView _webView;
-    private readonly HomeViewModel ViewModel;
+    private readonly ShellViewModel _viewModel;
 
-	public MainPage()
+	public ShellPage()
 	{
 		InitializeComponent();
 
-        ViewModel = new HomeViewModel
+        if (Device.Idiom == TargetIdiom.Phone)
+        {
+            CurrentItem = PhoneTabs;
+        }
+
+        Routing.RegisterRoute("home", typeof(Views.Home));
+        Routing.RegisterRoute("upload", typeof(Views.Upload));
+        Routing.RegisterRoute("detail", typeof(Views.Detail));
+        Routing.RegisterRoute("help", typeof(Views.Help));
+        Routing.RegisterRoute("profile", typeof(Views.Profile));
+        Routing.RegisterRoute("about", typeof(Views.About));
+        Routing.RegisterRoute("settings", typeof(Views.Settings));
+
+        _viewModel = new ShellViewModel
         {
             NavigationHandler = this
         };
@@ -28,10 +41,40 @@ public partial class MainPage : ContentPage, INavigationHandler
 
 	public void LoadView(ViewType viewType)
     {
-
+        switch (viewType)
+        {
+            case ViewType.Home:
+                GoToAsync("///home");
+                break;
+            case ViewType.Upload:
+                GoToAsync("///upload");
+                break;
+            case ViewType.Detail:
+                GoToAsync("///detail");
+                break;
+            case ViewType.Profile:
+                GoToAsync("///profile");
+                break;
+            case ViewType.Help:
+                GoToAsync("///help");
+                break;
+            case ViewType.Settings:
+                GoToAsync("///settings");
+                break;
+            case ViewType.About:
+                GoToAsync("///about");
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(viewType), viewType, null);
+        }
     }
 
-	protected override bool OnBackButtonPressed()
+    void TapGestureRecognizer_Tapped(System.Object sender, System.EventArgs e)
+    {
+        GoToAsync("///settings");
+    }
+
+    protected override bool OnBackButtonPressed()
     {
         // TODO Replace SideDrawer
         //if (SideDrawer.MainContent.GetType() != typeof(HomeView))
@@ -59,8 +102,8 @@ public partial class MainPage : ContentPage, INavigationHandler
         // If refresh token is available, the user has previously been logged in and we can get a refreshed access token immediately
         if (!string.IsNullOrEmpty(refreshToken))
         {
-            ViewModel.IsBusy = true;
-            ViewModel.IsBusyMessage = "refreshing session...";
+            _viewModel.IsBusy = true;
+            _viewModel.IsBusyMessage = "refreshing session...";
 
             var authorizationHeader = await RequestAuthorizationAsync(refreshToken, true);
 
@@ -74,8 +117,8 @@ public partial class MainPage : ContentPage, INavigationHandler
                 await InitializeMvpApiAsync(authorizationHeader);
             }
 
-            ViewModel.IsBusy = false;
-            ViewModel.IsBusyMessage = "";
+            _viewModel.IsBusy = false;
+            _viewModel.IsBusyMessage = "";
         }
         else
         {
@@ -89,25 +132,25 @@ public partial class MainPage : ContentPage, INavigationHandler
         try
         {
             // Indicate to user we are signing out
-            ViewModel.IsBusy = true;
-            ViewModel.IsBusyMessage = "logging out...";
+            _viewModel.IsBusy = true;
+            _viewModel.IsBusyMessage = "logging out...";
 
             // Erase cached tokens
-            ViewModel.IsBusyMessage = "deleting cache files...";
+            _viewModel.IsBusyMessage = "deleting cache files...";
             StorageHelpers.Instance.DeleteToken("access_token");
             StorageHelpers.Instance.DeleteToken("refresh_token");
 
             // Delete profile photo file
-            if (File.Exists(ViewModel.ProfileImagePath))
+            if (File.Exists(_viewModel.ProfileImagePath))
             {
-                ViewModel.IsBusyMessage = "deleting profile photo file...";
-                File.Delete(ViewModel.ProfileImagePath);
+                _viewModel.IsBusyMessage = "deleting profile photo file...";
+                File.Delete(_viewModel.ProfileImagePath);
             }
 
             // Clean up profile objects
-            ViewModel.IsBusyMessage = "resetting profile...";
-            ViewModel.Mvp = null;
-            ViewModel.ProfileImagePath = "";
+            _viewModel.IsBusyMessage = "resetting profile...";
+            _viewModel.Mvp = null;
+            _viewModel.ProfileImagePath = "";
         }
         catch (Exception ex)
         {
@@ -117,11 +160,11 @@ public partial class MainPage : ContentPage, INavigationHandler
         finally
         {
             // Hide busy indicator
-            ViewModel.IsBusy = false;
-            ViewModel.IsBusyMessage = "";
+            _viewModel.IsBusy = false;
+            _viewModel.IsBusyMessage = "";
 
             // Toggle flag
-            ViewModel.IsLoggedIn = false;
+            _viewModel.IsLoggedIn = false;
 
             LoginUsingWebView();
         }
@@ -136,8 +179,8 @@ public partial class MainPage : ContentPage, INavigationHandler
 
     private async Task InitializeMvpApiAsync(string authorizationHeader)
     {
-        ViewModel.IsBusy = true;
-        ViewModel.IsBusyMessage = "authenticating...";
+        _viewModel.IsBusy = true;
+        _viewModel.IsBusyMessage = "authenticating...";
 
         // remove any previously wired up event handlers
         if (App.ApiService != null)
@@ -151,19 +194,21 @@ public partial class MainPage : ContentPage, INavigationHandler
         App.ApiService.AccessTokenExpired += ApiService_AccessTokenExpired;
         App.ApiService.RequestErrorOccurred += ApiService_RequestErrorOccurred;
 
-        ViewModel.IsLoggedIn = true;
+        _viewModel.IsLoggedIn = true;
 
-        ViewModel.IsBusyMessage = "downloading profile info...";
-        ViewModel.Mvp = await App.ApiService.GetProfileAsync();
+        _viewModel.IsBusyMessage = "downloading profile info...";
+        _viewModel.Mvp = await App.ApiService.GetProfileAsync();
 
-        ViewModel.IsBusyMessage = "downloading profile image...";
-        ViewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+        _viewModel.IsBusyMessage = "downloading profile image...";
+        _viewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
 
         // Using ViewModel method in order to trigger appropriate data downloads for that view
-        ViewModel.LoadView(ViewType.Home);
+        //_viewModel.LoadView(ViewType.Home);
+        await GoToAsync("///home");
 
-        ViewModel.IsBusyMessage = "";
-        ViewModel.IsBusy = false;
+
+        _viewModel.IsBusyMessage = "";
+        _viewModel.IsBusy = false;
     }
 
     private async void ApiService_AccessTokenExpired(object sender, ApiServiceEventArgs e)
