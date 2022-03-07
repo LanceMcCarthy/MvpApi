@@ -3,7 +3,6 @@
              xmlns:local="clr-namespace:MvpCompanion.Maui"
              xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.Maui.Controls.Compatibility"
              xmlns:telerikMauiControls="clr-namespace:Telerik.Maui.Controls;assembly=Telerik.Maui.Controls"
-             xmlns:input="clr-namespace:Telerik.XamarinForms.Input;assembly=Telerik.Maui.Controls.Compatibility"
              x:Class="MvpCompanion.Maui.App">
 
     <Application.Resources>
@@ -79,7 +78,7 @@
         <x:String x:Key="ArrowsDownIcon">&#xE803;</x:String>
 
         <Style x:Key="LargeIconRadButtonStyle"
-               TargetType="input:RadButton">
+               TargetType="telerikMauiControls:RadButton">
             <Setter Property="BackgroundColor"
                     Value="{StaticResource LightBlueColor}"/>
             <Setter Property="BorderColor"
@@ -110,7 +109,7 @@
         </Style>
 
         <Style x:Key="MediumIconRadButtonStyle"
-               TargetType="input:RadButton"
+               TargetType="telerikMauiControls:RadButton"
                BasedOn="{StaticResource LargeIconRadButtonStyle}">
             <Setter Property="FontSize">
                 <Setter.Value>

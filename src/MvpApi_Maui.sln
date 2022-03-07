@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Common", "MvpApi.Com
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Services", "MvpApi.Services\MvpApi.Services.csproj", "{691D9B67-82AC-4192-ABB0-049BC53885CC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvpApi.Tests", "MvpApi.Tests\MvpApi.Tests.csproj", "{20776B4D-29F5-4CE1-887C-8A11BA3BD95D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,10 +29,6 @@ Global
 		{691D9B67-82AC-4192-ABB0-049BC53885CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{691D9B67-82AC-4192-ABB0-049BC53885CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{691D9B67-82AC-4192-ABB0-049BC53885CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{20776B4D-29F5-4CE1-887C-8A11BA3BD95D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{20776B4D-29F5-4CE1-887C-8A11BA3BD95D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{20776B4D-29F5-4CE1-887C-8A11BA3BD95D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{20776B4D-29F5-4CE1-887C-8A11BA3BD95D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
