@@ -205,7 +205,7 @@
                                                  To="1"
                                                  Duration="0:0:1.2" />
                     </animations:Implicit.ShowAnimations>
-                    <animations:Implicit.HideAnimations>
+                <animations:Implicit.HideAnimations>
                         <animations:ScaleAnimation From="1"
                                                To="0.8"
                                                Duration="0:0:0.6" />
@@ -244,7 +244,7 @@
                                            Style="{ThemeResource SubtitleTextBlockStyle}" />
                             </StackPanel>
 
-                            <HyperlinkButton Content="{Binding Url}"
+                            <HyperlinkButton Style="{StaticResource NoPaddingHyperlinkButtonStyle}" Content="{Binding Url}"
                                              NavigateUri="{Binding Url, Converter={StaticResource StringToUriConverter}}" />
 
                             <StackPanel Orientation="Horizontal">
@@ -261,7 +261,8 @@
             </ListView>
 
             <!--<Grid x:Name="OnlineIdentityEditor"
-                  Background="Bisque"
+                  Visibility="{Binding ShowIdentityEditorOverlay, Converter={StaticResource BoolToVisibilityConverter}}"
+                  Background="{ThemeResource BackButtonBackgroundThemeBrush}"
                   Grid.Row="1"
                   Grid.Column="1"
                   Padding="10">
@@ -300,7 +301,7 @@
 
                         <TextBlock Text="Social Network"/>
 
-                        <TextBox Header="SocialNetwork.Name" 
+                        <TextBox Header="Name" 
                                  Text="{Binding DraftOnlineIdentity.SocialNetwork.Name}" />
                         <TextBox Header="SocialNetwork"
                                  Text="{Binding DraftOnlineIdentity.SocialNetwork.IconUrl}" />
@@ -322,8 +323,6 @@
         <CommandBar Background="{ThemeResource AppBarBackgroundThemeBrush}"
                     Grid.Row="3">
             <CommandBar.SecondaryCommands>
-                <AppBarButton Label="Export Online Identities"
-                              Click="{x:Bind ViewModel.ExportButton_OnClick}" />
                 <AppBarButton Label="Renewal Award Questionnaire"
                               Icon="OpenWith"
                               Click="{x:Bind ViewModel.ShowQuestionnaireButton_Click}" />
@@ -345,6 +344,10 @@
             <AppBarButton Label="refresh identities"
                           Icon="Refresh"
                           Click="{x:Bind ViewModel.RefreshOnlineIdentitiesButton_Click}" />
+            <!--<AppBarButton Label="add identity"
+                          Icon="Add"
+                          IsEnabled="{Binding AreAppBarButtonsEnabled}"
+                          Click="{x:Bind ViewModel.AddOnlineIdentityButton_Click}" />-->
         </CommandBar>
     </Grid>
 </Page>
