@@ -24,28 +24,26 @@ public static class MauiProgram
 #if WINDOWS
             lifecycle
                 .AddWindows(windows =>
-                    windows.OnNativeMessage((app, args) => {
-                        if (WindowExtensions.Hwnd == IntPtr.Zero)
-                        {
-                            WindowExtensions.Hwnd = args.Hwnd;
-                            WindowExtensions.SetIcon("Platforms/Windows/trayicon.ico");
-                        }
+                    windows.OnNativeMessage((app, args) => 
+                    {
                         app.ExtendsContentIntoTitleBar = false;
                     }));
+                
 #endif
             });
 
         var services = builder.Services;
+
 #if WINDOWS
-        // On Windows, we can use the system tray
-        services.AddSingleton<ITrayService, WinUI.TrayService>();
-        services.AddSingleton<INotificationService, WinUI.NotificationService>();
+        services.AddSingleton<INotificationService, NotificationService_WinUI>();
+#elif IOS
+        services.AddSingleton<INotificationService, NotificationService_iOS>();
+#elif ANDROID
+        services.AddSingleton<INotificationService, NotificationService_Android>();
 #elif MACCATALYST
-        // On Mac, we also have a tray to take advantage of
-        services.AddSingleton<ITrayService, MacCatalyst.TrayService>();
-        services.AddSingleton<INotificationService, MacCatalyst.NotificationService>();
+        services.AddSingleton<INotificationService, NotificationService_Mac>();
 #endif
-        
+
         return builder.Build();
     }
 }

@@ -1,9 +1,10 @@
-﻿using Microsoft.Toolkit.Uwp.Notifications;
+﻿//#if WINDOWS
+using Microsoft.Toolkit.Uwp.Notifications;
 using MvpCompanion.Maui.Services;
 
 namespace MvpCompanion.Maui;
 
-public class NotificationService : INotificationService
+public class NotificationService_WinUI : INotificationService
 {
     public void ShowNotification(string title, string body)
     {
@@ -15,3 +16,4 @@ public class NotificationService : INotificationService
             .Show();
     }
 }
+//#endif

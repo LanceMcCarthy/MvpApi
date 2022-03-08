@@ -1,10 +1,12 @@
-﻿using MvpCompanion.Maui.Services;
+﻿//#if ANDROID
+using MvpCompanion.Maui.Services;
 using Android.Widget;
 using Android.Content;
 
 namespace MvpCompanion.Maui
 {
-    public class NotificationService : INotificationService
+
+    public class NotificationService_Android : INotificationService
     {
         public void ShowNotification(string title, string body)
         {
@@ -12,3 +14,4 @@ namespace MvpCompanion.Maui
         }
     }
 }
+//#endif

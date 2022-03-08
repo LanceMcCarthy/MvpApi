@@ -1,9 +1,10 @@
-﻿using MvpCompanion.Maui.Services;
+﻿//#if MACCATALYST
+using MvpCompanion.Maui.Services;
 using UserNotifications;
 
 namespace MvpCompanion.Maui;
 
-public class NotificationService : INotificationService
+public class NotificationService_Mac : INotificationService
 {
     public void ShowNotification(string title, string body)
     {
@@ -31,3 +32,4 @@ public class NotificationService : INotificationService
         });
     }
 }
+//#endif
