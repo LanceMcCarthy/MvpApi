@@ -60,34 +60,64 @@
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
 		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.0.30" />
 		<PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.0.1" />
-		<PackageReference Include="PInvoke.User32" Version="0.7.104" />
 	</ItemGroup>
 
-	<!-- If the project is for windows, include the .ico icon file-->
-	<ItemGroup>
-		<None Remove="Platforms\Windows\trayicon.ico" />
-	</ItemGroup>
+	<!-- PUBLISHING Android 
+	dotnet publish -f:net6.0-android -c:Release
+	I can replace some or all of the XML defined items with CLI params 
+	/p:AndroidKeyStore=True
+	/p:AndroidSigningKeyStore=dvlup.keystore
+	/p:AndroidSigningStorePass=$(android_keystore_password)
+	/p:AndroidSigningKeyAlias=dvlup.alias
+	/p:AndroidSigningKeyPass=mypassword=$(android_keystore_alias_password)
+	-->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Release'">
+		<AndroidKeyStore>True</AndroidKeyStore>
+		<AndroidSigningKeyStore>dvlup.keystore</AndroidSigningKeyStore>
+		<AndroidSigningStorePass>$(android_keystore_password)</AndroidSigningStorePass>
+		<AndroidSigningKeyAlias>dvlup.alias</AndroidSigningKeyAlias>
+		<AndroidSigningKeyPass>$(android_keystore_alias_password)</AndroidSigningKeyPass>
+	</PropertyGroup>
 
-	<ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
-		<Content Include="Platforms\Windows\trayicon.ico">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
+	<!-- PUBLISHING iOS 
+	dotnet publish -f:net6.0-ios -c:Release /p:ServerAddress=192.168.1.184 /p:ServerUser=$MACOS_USER_NAME /p:ServerPassword=$MACOS_USER_PASSWORD /p:TcpPort=58181 /p:ArchiveOnBuild=true /p:_DotNetRootRemoteDirectory=/Users/mccarthy/Library/Caches/Xamarin/XMA/SDKs/dotnet/ /p:EnableAssemblyILStripping=false
+	-->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
+		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		<!-- Only needed when you have a need for entitlements -->
+		<!-- <CodesignEntitlement>Entitlements.plist</CodesignEntitlement> -->
+		<CodesignKey>Apple Distribution: Lancelot Software, LLC (L65255N3F7)</CodesignKey>
+		<CodesignProvision>MvpCompanion_AppStore_2022.mobileprovision</CodesignProvision>
+	</PropertyGroup>
 
-	<!-- If the project is for MacCatalyst, include the .png icon file-->
-	<ItemGroup>
-		<None Remove="Platforms\MacCatalyst\trayicon.png" />
-	</ItemGroup>
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Debug'">
+		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
+		<!-- Only needed when you have a need for entitlements -->
+		<!-- <CodesignEntitlement>Entitlements.plist</CodesignEntitlement> -->
+		<CodesignKey>Apple Development: Lance McCarthy (AJ9XMDH9A2)</CodesignKey>
+		<CodesignProvision>MvpCompanion_Dev_2022.mobileprovision</CodesignProvision>
+	</PropertyGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0-maccatalyst'">
-		<Content Include="Platforms\MacCatalyst\trayicon.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
+	<!-- PUBLISHING MacCatalyst -->
+	<PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Release'">
+		<RuntimeIdentifier>maccatalyst-x64</RuntimeIdentifier>
+		<!-- Only needed when you have a need for entitlements -->
+		<!-- <CodesignEntitlement>Entitlements.plist</CodesignEntitlement> -->
+		<CodesignKey>Apple Distribution: Lancelot Software, LLC (L65255N3F7)</CodesignKey>$(apple_release_codesignIdentity)
+		<CodesignProvision>MvpCompanion_MacStore_2022.provisionprofile</CodesignProvision>
+	</PropertyGroup>
 
-	<ItemGroup>
-	  <MauiXaml Update="Views\Login.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	</ItemGroup>
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Debug'">
+		<RuntimeIdentifier>maccatalyst-x64</RuntimeIdentifier>
+		<!-- Only needed when you have a need for entitlements -->
+		<!-- <CodesignEntitlement>Entitlements.plist</CodesignEntitlement> -->
+		<CodesignKey>Apple Development: Lance McCarthy (AJ9XMDH9A2)</CodesignKey>
+		<CodesignProvision>MvpCompanion_Dev_2022.mobileprovision</CodesignProvision>
+	</PropertyGroup>
+
+	<!-- PUBLISHING Windows
+	This is just like packaging WinUI projects	
+    msbuild /restore /t:Publish /p:TargetFramework=net6.0-windows10.0.19041 /p:configuration=release /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint=$PFX_THUMBPRINT /p:PackageCe
+rtificatePassword=$PFX_PASSWORD
+    -->
 </Project>
