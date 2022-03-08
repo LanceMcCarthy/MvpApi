@@ -52,6 +52,7 @@ public class MainActivity : MauiAppCompatActivity
     }
 }
 
+// See https://docs.microsoft.com/en-us/xamarin/essentials/web-authenticator?context=xamarin%2Fxamarin-forms&tabs=android
 [Activity(NoHistory = true, LaunchMode = LaunchMode.SingleTop, Exported = true)]
 [IntentFilter(new[] { Intent.ActionView }, Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable }, DataScheme = "xamarinessentials")]
 public class WebAuthenticationCallbackActivity : Microsoft.Maui.Essentials.WebAuthenticatorCallbackActivity
