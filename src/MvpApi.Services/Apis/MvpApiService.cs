@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -243,6 +244,32 @@ namespace MvpApi.Services.Apis
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Deletes profile image file from local app data folder
+        /// </summary>
+        /// <returns>File path</returns>
+        public Task DeleteLocalProfileImageFile()
+        {
+            return Task.Run(() =>
+            {
+                try
+                {
+                    var localFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+                    var filePaths = Directory.EnumerateFiles(localFolder, "ProfilePicture.*");
+
+                    foreach (var filePath in filePaths) 
+                    {
+                        File.Delete(filePath);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine($"DeleteProfileImage Exception: {e}");
+                }
+            });
         }
 
         #endregion
