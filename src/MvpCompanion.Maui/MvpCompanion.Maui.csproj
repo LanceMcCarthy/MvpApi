@@ -70,28 +70,28 @@
 	/p:AndroidSigningKeyAlias=dvlup.alias
 	/p:AndroidSigningKeyPass=mypassword=$(android_keystore_alias_password)
 	-->
-	<!--<PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Release'">
+	<PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Release'">
 		<AndroidKeyStore>True</AndroidKeyStore>
 		<AndroidSigningKeyStore>dvlup.keystore</AndroidSigningKeyStore>
-		<AndroidSigningStorePass>android_keystore_password</AndroidSigningStorePass>
+		<AndroidSigningStorePass>$(android_keystore_password)</AndroidSigningStorePass>
 		<AndroidSigningKeyAlias>dvlup.alias</AndroidSigningKeyAlias>
-		<AndroidSigningKeyPass>android_keystore_alias_password</AndroidSigningKeyPass>
-	</PropertyGroup>-->
+		<AndroidSigningKeyPass>$(android_keystore_alias_password)</AndroidSigningKeyPass>
+	</PropertyGroup>
 
 	<!-- PUBLISHING iOS 
 	dotnet publish -f:net6.0-ios -c:Release /p:ServerAddress=192.168.1.184 /p:ServerUser=$MACOS_USER_NAME /p:ServerPassword=$MACOS_USER_PASSWORD /p:TcpPort=58181 /p:ArchiveOnBuild=true /p:_DotNetRootRemoteDirectory=/Users/mccarthy/Library/Caches/Xamarin/XMA/SDKs/dotnet/ /p:EnableAssemblyILStripping=false
 	-->
-	<!--<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		<CodesignKey>Apple Distribution: Lancelot Software, LLC (L65255N3F7)</CodesignKey>
 		<CodesignProvision>MvpCompanion_AppStore_2022.mobileprovision</CodesignProvision>
-	</PropertyGroup>-->
+	</PropertyGroup>
 
-	<!--<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Debug'">
+	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Debug'">
 		<RuntimeIdentifier>ios-arm64</RuntimeIdentifier>
 		<CodesignKey>Apple Development: Lance McCarthy (AJ9XMDH9A2)</CodesignKey>
 		<CodesignProvision>MvpCompanion_Dev_2022.mobileprovision</CodesignProvision>
-	</PropertyGroup>-->
+	</PropertyGroup>
 
 	<!-- PUBLISHING MacCatalyst -->
 	<!--<PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Release'">
