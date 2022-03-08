@@ -32,6 +32,8 @@
                         Value="14,10" />
             </Style>
 
+            <x:String  x:Key="TelerikIconsFont">telerikfontexamples</x:String>
+
             <Color x:Key="LightTextColor">#FFFFFF</Color>
             <Color x:Key="MediumTextColor">#FF888888</Color>
             <Color x:Key="DarkTextColor">#FF444444</Color>

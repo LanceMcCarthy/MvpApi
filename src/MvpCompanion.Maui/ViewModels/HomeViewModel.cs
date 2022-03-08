@@ -150,7 +150,7 @@ public class HomeViewModel : ViewModelBase
     //    }
     //}
 
-    private async Task RefreshContributionsAsync()
+    public async Task RefreshContributionsAsync()
     {
         var contributionsResult = await App.ApiService.GetContributionsAsync(0, 30);
 
@@ -166,7 +166,7 @@ public class HomeViewModel : ViewModelBase
         }
     }
 
-    private async Task RefreshOnlineIdentitiesAsync()
+    public async Task RefreshOnlineIdentitiesAsync()
     {
         var identities = await App.ApiService.GetOnlineIdentitiesAsync();
 
