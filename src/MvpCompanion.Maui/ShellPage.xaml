@@ -1,11 +1,12 @@
 <Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        x:Class="MvpCompanion.Maui.ShellPage"
+       xmlns:views="clr-namespace:MvpCompanion.Maui.Views"
+       xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.Maui.Controls.Compatibility"
        xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
        ios:Page.UseSafeArea="True"
-       FlyoutWidth="68"
        FlyoutBehavior="{OnIdiom Phone=Disabled, Default=Locked}"
-       xmlns:views="clr-namespace:MvpCompanion.Maui.Views">
+       FlyoutWidth="68">
 
     <!-- Desktop/Tablet-->
     <FlyoutItem Title="Home"
@@ -44,6 +45,16 @@
             <ShellContent ContentTemplate="{DataTemplate views:Settings}" />
         </Tab>
     </TabBar>
+
+    <primitives:RadPopup.Popup>
+        <primitives:RadPopup x:Name="LoginPopup"
+                             Placement="Center"
+                             IsModal="True"
+                             OutsideBackgroundColor="#6F000000">
+            <WebView x:Name="_webView"
+                     Navigated="WebView_OnNavigated" />
+        </primitives:RadPopup>
+    </primitives:RadPopup.Popup>
 
     <Shell.FlyoutFooterTemplate>
         <DataTemplate>

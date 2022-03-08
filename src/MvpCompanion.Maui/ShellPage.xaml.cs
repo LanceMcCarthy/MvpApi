@@ -10,12 +10,14 @@ namespace MvpCompanion.Maui;
 
 public partial class ShellPage : Shell, INavigationHandler
 {
-    private readonly WebView _webView;
+    //private readonly WebView _webView;
     private readonly ShellViewModel _viewModel;
 
 	public ShellPage()
 	{
 		InitializeComponent();
+        _viewModel = new ShellViewModel();
+        this.BindingContext = _viewModel;
 
         if (Device.Idiom == TargetIdiom.Phone)
         {
@@ -35,8 +37,8 @@ public partial class ShellPage : Shell, INavigationHandler
             NavigationHandler = this
         };
 
-        _webView = new WebView();
-        _webView.Navigated += WebView_OnNavigated;
+        //_webView = new WebView();
+        //_webView.Navigated += WebView_OnNavigated;
     }
 
 	public void LoadView(ViewType viewType)
@@ -174,6 +176,7 @@ public partial class ShellPage : Shell, INavigationHandler
     {
         // TODO Replace SideDrawer
         //SideDrawer.MainContent = _webView;
+        LoginPopup.IsOpen = true;
         _webView.Source = _signInUrl;
     }
 
@@ -204,9 +207,11 @@ public partial class ShellPage : Shell, INavigationHandler
 
         // Using ViewModel method in order to trigger appropriate data downloads for that view
         //_viewModel.LoadView(ViewType.Home);
+
+        LoginPopup.IsOpen = false;
+
         await GoToAsync("///home");
-
-
+        
         _viewModel.IsBusyMessage = "";
         _viewModel.IsBusy = false;
     }
@@ -286,10 +291,10 @@ public partial class ShellPage : Shell, INavigationHandler
                 // Construct the Form content, this is where I add the OAuth token (could be access token or refresh token)
                 var postContent = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
                     {
-                        new KeyValuePair<string, string>("client_id", _clientId),
-                        new KeyValuePair<string, string>("grant_type", isRefresh ? "refresh_token" : "authorization_code"),
-                        new KeyValuePair<string, string>(isRefresh ? "refresh_token" : "code", authCode.Split('&')[0]),
-                        new KeyValuePair<string, string>("redirect_uri", _redirectUrl)
+                        new("client_id", _clientId),
+                        new("grant_type", isRefresh ? "refresh_token" : "authorization_code"),
+                        new(isRefresh ? "refresh_token" : "code", authCode.Split('&')[0]),
+                        new("redirect_uri", _redirectUrl)
                     });
 
                 // Variable to hold the response data

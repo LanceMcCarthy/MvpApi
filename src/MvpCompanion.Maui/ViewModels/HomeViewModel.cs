@@ -23,7 +23,7 @@ public class HomeViewModel : ViewModelBase
 
     public HomeViewModel()
     {
-        GoToViewCommand = new Command(LoadView);
+        //GoToViewCommand = new Command(LoadView);
         ToggleDrawerCommand = new Command(() => IsDrawerOpen = !IsDrawerOpen);
         ToggleEditModeCommand = new Command(() => IsInEditMode = !IsInEditMode);
 
@@ -50,7 +50,7 @@ public class HomeViewModel : ViewModelBase
         {
             if (SetProperty(ref _selectedContribution, value))
             {
-                LoadView(_selectedContribution == null ? ViewType.Home : ViewType.Detail);
+                //LoadView(_selectedContribution == null ? ViewType.Home : ViewType.Detail);
             }
         }
     }
@@ -98,57 +98,57 @@ public class HomeViewModel : ViewModelBase
     public INavigationHandler NavigationHandler { private get; set; }
 
 
-    public async void LoadView(object viewType)
-    {
-        // Pre-navigation work
-        if ((ViewType)viewType == ViewType.Home)
-        {
-        }
-        else if ((ViewType)viewType == ViewType.Upload)
-        {
-            SelectedContribution = new ContributionsModel();
-        }
+    //public async void LoadView(object viewType)
+    //{
+    //    // Pre-navigation work
+    //    if ((ViewType)viewType == ViewType.Home)
+    //    {
+    //    }
+    //    else if ((ViewType)viewType == ViewType.Upload)
+    //    {
+    //        SelectedContribution = new ContributionsModel();
+    //    }
 
-        // Invoke View change
-        NavigationHandler.LoadView((ViewType)viewType);
+    //    // Invoke View change
+    //    NavigationHandler.LoadView((ViewType)viewType);
 
-        // Post-navigation work
-        if ((ViewType)viewType == ViewType.Home)
-        {
-            if (!IsBusy)
-            {
-                IsBusy = true;
-            }
+    //    // Post-navigation work
+    //    if ((ViewType)viewType == ViewType.Home)
+    //    {
+    //        if (!IsBusy)
+    //        {
+    //            IsBusy = true;
+    //        }
 
-            IsBusyMessage = "refreshing contributions...";
+    //        IsBusyMessage = "refreshing contributions...";
 
-            // TODO temporary, replace with incremental loading collection
-            //await RefreshContributionsAsync();
-        }
-        else if ((ViewType)viewType == ViewType.Profile)
-        {
-            if (!IsBusy)
-            {
-                IsBusy = true;
-            }
+    //        // TODO temporary, replace with incremental loading collection
+    //        //await RefreshContributionsAsync();
+    //    }
+    //    else if ((ViewType)viewType == ViewType.Profile)
+    //    {
+    //        if (!IsBusy)
+    //        {
+    //            IsBusy = true;
+    //        }
 
-            IsBusyMessage = "loading Online Identities...";
+    //        IsBusyMessage = "loading Online Identities...";
 
-            //await RefreshOnlineIdentitiesAsync();
-        }
+    //        //await RefreshOnlineIdentitiesAsync();
+    //    }
 
-        //Close drawer if it open
-        if (IsDrawerOpen)
-        {
-            IsDrawerOpen = false;
-        }
+    //    //Close drawer if it open
+    //    if (IsDrawerOpen)
+    //    {
+    //        IsDrawerOpen = false;
+    //    }
 
-        if (IsBusy)
-        {
-            IsBusyMessage = "";
-            IsBusy = false;
-        }
-    }
+    //    if (IsBusy)
+    //    {
+    //        IsBusyMessage = "";
+    //        IsBusy = false;
+    //    }
+    //}
 
     private async Task RefreshContributionsAsync()
     {

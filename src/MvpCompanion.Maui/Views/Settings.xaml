@@ -4,7 +4,7 @@
              x:Class="MvpCompanion.Maui.Views.Settings"
              Title="Settings">
     <StackLayout>
-        <Label Text="Welcome to .NET MAUI!"
+        <Label Text="Settings Page"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
     </StackLayout>
