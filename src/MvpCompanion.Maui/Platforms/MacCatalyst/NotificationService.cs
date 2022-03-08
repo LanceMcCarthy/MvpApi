@@ -1,7 +1,7 @@
 ﻿using MvpCompanion.Maui.Services;
 using UserNotifications;
 
-namespace MvpCompanion.Maui.MacCatalyst;
+namespace MvpCompanion.Maui;
 
 public class NotificationService : INotificationService
 {

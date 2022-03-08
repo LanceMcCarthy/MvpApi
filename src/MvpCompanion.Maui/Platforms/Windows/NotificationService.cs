@@ -1,7 +1,7 @@
 ﻿using Microsoft.Toolkit.Uwp.Notifications;
 using MvpCompanion.Maui.Services;
 
-namespace MvpCompanion.Maui.WinUI;
+namespace MvpCompanion.Maui;
 
 public class NotificationService : INotificationService
 {
@@ -9,7 +9,7 @@ public class NotificationService : INotificationService
     {
         new ToastContentBuilder()
             .AddToastActivationInfo(null, ToastActivationType.Foreground)
-            .AddAppLogoOverride(new Uri("ms-appx:///Assets/dotnet_bot.png"))
+            .AddAppLogoOverride(new Uri("ms-appx:///Assets/Square150x150Logo.scale-100.png"))
             .AddText(title, hintStyle: AdaptiveTextStyle.Header)
             .AddText(body, hintStyle: AdaptiveTextStyle.Body)
             .Show();
