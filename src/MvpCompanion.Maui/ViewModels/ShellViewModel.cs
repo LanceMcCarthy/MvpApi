@@ -1,5 +1,4 @@
 ﻿using CommonHelpers.Common;
-using MvpApi.Common.Interfaces;
 using MvpApi.Services.Utilities;
 
 namespace MvpCompanion.Maui.ViewModels
@@ -64,9 +63,7 @@ namespace MvpCompanion.Maui.ViewModels
         }
 
         public Command ChangeThemeMode { get; set; }
-
-        public INavigationHandler NavigationHandler { get; set; }
-
+        
         private void OnChangeThemeMode(bool dark) => IsDarkMode = dark;
 
         //public async void LoadView(object viewType)

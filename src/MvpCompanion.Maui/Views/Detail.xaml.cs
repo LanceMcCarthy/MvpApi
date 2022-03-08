@@ -6,4 +6,9 @@ public partial class Detail : ContentPage
 	{
 		InitializeComponent();
 	}
+
+    private async void GoBack()
+    {
+        await Shell.Current.GoToAsync("..");
+	}
 }
