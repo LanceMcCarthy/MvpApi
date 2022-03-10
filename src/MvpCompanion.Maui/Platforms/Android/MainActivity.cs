@@ -16,7 +16,7 @@ public class MainActivity : MauiAppCompatActivity
         
         Platform.Init(this, savedInstanceState);
 
-        Platform.ActivityStateChanged += Platform_ActivityStateChanged;
+        //Platform.ActivityStateChanged += Platform_ActivityStateChanged;
     }
 
     protected override void OnResume()

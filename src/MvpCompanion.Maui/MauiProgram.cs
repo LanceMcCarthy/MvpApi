@@ -10,31 +10,20 @@ public static class MauiProgram
 	{
 		var builder = MauiApp.CreateBuilder();
 
-		builder
-			.UseMauiApp<App>()
-			.UseTelerik()
-			.ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+        builder
+            .UseMauiApp<App>()
+            .UseTelerik()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-SemiBold.ttf", "OpenSansSemiBold");
-				fonts.AddFont("fa-solid-900.ttf", "FontAwesome");
-				fonts.AddFont("telerikfontexamples.ttf", "telerikfontexamples");
-			})
-            .ConfigureLifecycleEvents(lifecycle => {
-#if WINDOWS
-            lifecycle
-                .AddWindows(windows =>
-                    windows.OnNativeMessage((app, args) => 
-                    {
-                        app.ExtendsContentIntoTitleBar = false;
-                    }));
-                
-#endif
+                fonts.AddFont("fa-solid-900.ttf", "FontAwesome");
+                fonts.AddFont("telerikfontexamples.ttf", "telerikfontexamples");
             });
 
         var services = builder.Services;
 
-#if WINDOWS
+#if WINDOWS10_0_17763_0_OR_GREATER
         services.AddSingleton<INotificationService, NotificationService_WinUI>();
 #elif IOS
         services.AddSingleton<INotificationService, NotificationService_iOS>();

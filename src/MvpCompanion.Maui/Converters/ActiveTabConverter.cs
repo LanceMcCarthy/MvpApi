@@ -13,11 +13,12 @@ public class ActiveTabConverter : IValueConverter
         {
             case "Home":
                 return (target == "Home") ? "tab_home_on.png" : "tab_home.png";
-            case "Profile":
-                return (target == "Profile") ? "tab_map_on.png" : "tab_map.png";
-            case "About":
-                return (target == "About") ? "tab_favorites_on.png" : "tab_favorites.png";
+            case "Upload":
+                return (target == "Upload") ? "tab_upload_on.png" : "tab_upload.png";
+            case "Account":
+                return (target == "Account") ? "tab_account_on.png" : "tab_account.png";
             case "Settings":
+                return (target == "Settings") ? "tab_settings_on.png" : "tab_settings.png";
             default:
                 return (target == "Settings") ? "tab_settings_on.png" : "tab_settings.png";
         }

@@ -1,31 +1,40 @@
+using System.Web;
+using MvpCompanion.Maui.Services;
 using MvpCompanion.Maui.ViewModels;
 
 namespace MvpCompanion.Maui.Views;
 
-[QueryProperty(nameof(Operation), "signin")]
-public partial class Login : ContentPage
+public partial class Login : ContentPage, IQueryAttributable
 {
-    private static readonly string _scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
-    private static readonly string _clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
+    private const string _scope = "wl.emails%20wl.basic%20wl.offline_access%20wl.signin";
+    private const string _clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
     private readonly Uri _signInUrl = new($"https://login.live.com/oauth20_authorize.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf&response_type=code&scope={_scope}");
     private readonly Uri _signOutUri = new($"https://login.live.com/oauth20_logout.srf?client_id={_clientId}&redirect_uri=https:%2F%2Flogin.live.com%2Foauth20_desktop.srf");
-
-    private readonly LoginViewModel _viewModel;
     
+    private readonly LoginViewModel _viewModel;
+
+    private string _operation;
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query["operation"] is string val)
+        {
+            _operation = HttpUtility.UrlDecode(val);
+        }
+    }
+
     public Login()
-	{
+    {
 		InitializeComponent();
         _viewModel = new LoginViewModel();
         BindingContext = _viewModel;
     }
-
-    public string Operation { get; set; }
-
+    
     protected override void OnAppearing()
     {
         base.OnAppearing();
         
-        WebView1.Source = Operation == "signout"
+        WebView1.Source = _operation == "signout"
             ? _signOutUri
             : _signInUrl;
     }
@@ -53,8 +62,10 @@ public partial class Login : ContentPage
                     {
                         await (App.Current.MainPage as ShellPage).InitializeMvpApiAsync(authorizationHeader);
                     }
-                    
-                    await Shell.Current.GoToAsync("home");
+
+                    (App.Current.MainPage as ShellPage).SelectView("home");
+
+                    //await Shell.Current.GoToAsync("..");
                 }
                 else if (e.Url.Contains("lc="))
                 {

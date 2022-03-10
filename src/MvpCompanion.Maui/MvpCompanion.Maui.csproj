@@ -45,6 +45,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Images\tab_account.svg" />
+	  <None Remove="Resources\Images\tab_account_on.svg" />
+	  <None Remove="Resources\Images\tab_home.svg" />
+	  <None Remove="Resources\Images\tab_home_on.svg" />
+	  <None Remove="Resources\Images\tab_information.svg" />
+	  <None Remove="Resources\Images\tab_information_on.svg" />
+	  <None Remove="Resources\Images\tab_settings.svg" />
+	  <None Remove="Resources\Images\tab_settings_on.svg" />
+	  <None Remove="Resources\Images\tab_upload.svg" />
+	  <None Remove="Resources\Images\tab_upload_on.svg" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj" />
 	  <ProjectReference Include="..\MvpApi.Services\MvpApi.Services.csproj" />
 	</ItemGroup>

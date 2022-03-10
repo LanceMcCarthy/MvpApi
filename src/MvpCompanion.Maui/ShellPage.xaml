@@ -9,38 +9,47 @@
        FlyoutWidth="50">
 
     <!-- Desktop/Tablet-->
-    <FlyoutItem Title="Home"
+    <FlyoutItem x:Name="HomeFlyoutItem"
+                Title="Home"
                 Icon="tab_home.png">
         <ShellContent ContentTemplate="{DataTemplate views:Home}" />
     </FlyoutItem>
-    <FlyoutItem Title="Favorites"
-                Icon="tab_favorites.png">
+    <FlyoutItem x:Name="UploadFlyoutItem"
+                Title="Upload"
+                Icon="tab_upload.png">
+        <ShellContent ContentTemplate="{DataTemplate views:Upload}" />
+    </FlyoutItem>
+    <FlyoutItem x:Name="AccountFlyoutItem"
+                Title="Account"
+                Icon="tab_account.png">
         <ShellContent ContentTemplate="{DataTemplate views:Profile}" />
     </FlyoutItem>
-    <FlyoutItem Title="Map"
-                Icon="tab_map.png">
-        <ShellContent ContentTemplate="{DataTemplate views:About}" />
-    </FlyoutItem>
-    <FlyoutItem Route="settings"
+    <FlyoutItem x:Name="SettingsFlyoutItem"
+                Route="settings"
+                Icon="tab_settings.png"
                 FlyoutItemIsVisible="False">
         <ShellContent ContentTemplate="{DataTemplate views:Settings}" />
     </FlyoutItem>
 
     <!-- Phone -->
-    <TabBar x:Name="PhoneTabs">
-        <Tab Title="Home"
+    <TabBar x:Name="PhoneTabs" >
+        <Tab x:Name="HomeTab"
+             Title="Home"
              Icon="tab_home.png">
             <ShellContent ContentTemplate="{DataTemplate views:Home}" />
         </Tab>
-        <Tab Title="Favorites"
-             Icon="tab_favorites.png">
-            <ShellContent ContentTemplate="{DataTemplate views:Profile}" />
-        </Tab>
-        <Tab Title="Map"
-             Icon="tab_map.png">
+        <Tab x:Name="UploadTab"
+             Title="Upload"
+             Icon="tab_upload.png">
             <ShellContent ContentTemplate="{DataTemplate views:About}" />
         </Tab>
-        <Tab Title="Settings"
+        <Tab x:Name="AccountTab"
+             Title="Account"
+             Icon="tab_account.png">
+            <ShellContent ContentTemplate="{DataTemplate views:Profile}" />
+        </Tab>
+        <Tab x:Name="SettingsTab"
+             Title="Settings"
              Icon="tab_settings.png">
             <ShellContent ContentTemplate="{DataTemplate views:Settings}" />
         </Tab>

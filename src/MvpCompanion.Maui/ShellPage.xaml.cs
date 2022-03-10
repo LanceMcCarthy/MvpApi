@@ -4,33 +4,78 @@ using MvpApi.Services.Utilities;
 using MvpCompanion.Maui.ViewModels;
 using MvpCompanion.Maui.Views;
 using System.Text.Json;
+using MvpCompanion.Maui.Services;
 
 namespace MvpCompanion.Maui;
 
 public partial class ShellPage : Shell
 {
-    //private readonly WebView _webView;
     private readonly ShellViewModel _viewModel;
 
-	public ShellPage()
+    private readonly INotificationService notificationService;
+
+    public ShellPage()
 	{
 		InitializeComponent();
         _viewModel = new ShellViewModel();
         BindingContext = _viewModel;
 
+        notificationService = MvpCompanion.Maui.Services.ServiceProvider.Current.GetService<INotificationService>();
+        
         if (Device.Idiom == TargetIdiom.Phone)
         {
             CurrentItem = PhoneTabs;
+            SelectView("home");
         }
 
         Routing.RegisterRoute("login", typeof(Login));
-        //Routing.RegisterRoute("home", typeof(Views.Home));
+        Routing.RegisterRoute("home", typeof(Views.Home));
         Routing.RegisterRoute("home/detail", typeof(Detail));
         Routing.RegisterRoute("upload", typeof(Upload));
-        //Routing.RegisterRoute("profile", typeof(Profile));
+        Routing.RegisterRoute("account", typeof(Profile));
         Routing.RegisterRoute("help", typeof(Help));
         Routing.RegisterRoute("settings", typeof(Settings));
-        //Routing.RegisterRoute("about", typeof(About));
+        Routing.RegisterRoute("settings/about", typeof(About));
+    }
+
+    public void SelectView(string viewName)
+    {
+        if (Device.Idiom == TargetIdiom.Phone)
+        {
+            switch (viewName)
+            {
+                case "home":
+                    CurrentItem = HomeTab;
+                    break;
+                case "upload":
+                    CurrentItem = UploadTab;
+                    break;
+                case "account":
+                    CurrentItem = AccountTab;
+                    break;
+                case "settings":
+                    CurrentItem = SettingsTab;
+                    break;
+            }
+        }
+        else
+        {
+            switch (viewName)
+            {
+                case "home":
+                    CurrentItem = HomeFlyoutItem;
+                    break;
+                case "upload":
+                    CurrentItem = UploadFlyoutItem;
+                    break;
+                case "account":
+                    CurrentItem = AccountFlyoutItem;
+                    break;
+                case "settings":
+                    CurrentItem = SettingsFlyoutItem;
+                    break;
+            }
+        }
     }
 
     protected override async void OnAppearing()
@@ -41,10 +86,21 @@ public partial class ShellPage : Shell
 
         if (userAuthRefreshed)
         {
-            await GoToAsync("home");
+            notificationService.ShowNotification("Logged in...", "Logged in!");
+
+            if (Device.Idiom == TargetIdiom.Phone)
+            {
+                CurrentItem = HomeTab;
+            }
+            else
+            {
+                CurrentItem = HomeFlyoutItem;
+            }
         }
         else
         {
+            notificationService.ShowNotification("Logging in...", "You need to login.");
+
             await GoToAsync("login?operation=signin");
         }
     }
@@ -55,14 +111,14 @@ public partial class ShellPage : Shell
     }
     
     #region Authentication
-
     
-
     public async Task<bool> SignInAsync()
     {
         try
         {
-            var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
+            
+            var refreshToken = Preferences.Get("refresh_token", "");
+            //var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
 
             // If refresh token is available, the user has previously been logged in and we can get a refreshed access token immediately
             if (!string.IsNullOrEmpty(refreshToken))
@@ -103,8 +159,10 @@ public partial class ShellPage : Shell
 
             // Erase cached tokens
             _viewModel.IsBusyMessage = "deleting cache files...";
-            StorageHelpers.Instance.DeleteToken("access_token");
-            StorageHelpers.Instance.DeleteToken("refresh_token");
+            //StorageHelpers.Instance.DeleteToken("access_token");
+            //StorageHelpers.Instance.DeleteToken("refresh_token");
+            Preferences.Set("access_token", "");
+            Preferences.Set("refresh_token", "");
 
             // Delete profile photo file
             if (File.Exists((Current.BindingContext as ShellViewModel).ProfileImagePath))
@@ -206,8 +264,10 @@ public partial class ShellPage : Shell
 
             if (tokenData.ContainsKey("access_token"))
             {
-                StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
-                StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
+                //StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
+                //StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
+                Preferences.Set("access_token", tokenData["access_token"]);
+                Preferences.Set("refresh_token", tokenData["access_token"]);
 
                 // We need to prefix the access token with the token type for the auth header. 
                 // Currently this is always "bearer", doing this to be more future proof
