@@ -16,7 +16,7 @@ public class ActiveTabConverter : IValueConverter
             case "Upload":
                 return (target == "Upload") ? "tab_upload_on.png" : "tab_upload.png";
             case "Account":
-                return (target == "Account") ? "tab_account_on.png" : "tab_account.png";
+                return (target == "Account") ? "tab_briefcase_on.png" : "tab_briefcase.png";
             case "Settings":
                 return (target == "Settings") ? "tab_settings_on.png" : "tab_settings.png";
             default:

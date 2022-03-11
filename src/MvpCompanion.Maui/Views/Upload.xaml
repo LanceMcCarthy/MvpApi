@@ -4,7 +4,7 @@
              x:Class="MvpCompanion.Maui.Views.Upload"
              Title="Upload">
     <StackLayout>
-        <Label Text="Home Page"
+        <Label Text="Upload Page"
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
     </StackLayout>

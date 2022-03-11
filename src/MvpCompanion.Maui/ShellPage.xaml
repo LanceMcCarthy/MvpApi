@@ -41,11 +41,11 @@
         <Tab x:Name="UploadTab"
              Title="Upload"
              Icon="tab_upload.png">
-            <ShellContent ContentTemplate="{DataTemplate views:About}" />
+            <ShellContent ContentTemplate="{DataTemplate views:Upload}" />
         </Tab>
         <Tab x:Name="AccountTab"
              Title="Account"
-             Icon="tab_account.png">
+             Icon="tab_briefcase.png">
             <ShellContent ContentTemplate="{DataTemplate views:Profile}" />
         </Tab>
         <Tab x:Name="SettingsTab"
