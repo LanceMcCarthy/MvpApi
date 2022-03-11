@@ -15,6 +15,16 @@ public partial class Login : ContentPage, IQueryAttributable
 
     private string _operation;
 
+    public Login()
+    {
+		InitializeComponent();
+        _viewModel = new LoginViewModel();
+        BindingContext = _viewModel;
+        
+        //WebView1.Navigating += WebView1_Navigating;
+        WebView1.Navigated += WebView1_Navigated;
+    }
+
     public void ApplyQueryAttributes(IDictionary<string, object> query)
     {
         if (query["operation"] is string val)
@@ -23,13 +33,6 @@ public partial class Login : ContentPage, IQueryAttributable
         }
     }
 
-    public Login()
-    {
-		InitializeComponent();
-        _viewModel = new LoginViewModel();
-        BindingContext = _viewModel;
-    }
-    
     protected override void OnAppearing()
     {
         base.OnAppearing();
@@ -39,7 +42,40 @@ public partial class Login : ContentPage, IQueryAttributable
             : _signInUrl;
     }
 
-    public async void WebView_OnNavigated(object sender, WebNavigatedEventArgs e)
+    //private async void WebView1_Navigating(object sender, WebNavigatingEventArgs e)
+    //{
+    //    if (e.Url.Contains("code="))
+    //    {
+    //        // old
+    //        //var myUri = new Uri(e.Url);
+    //        //var authCode = myUri.ExtractQueryValue("code");
+
+    //        // cross platform safe
+    //        var queryString = e.Url.Split('?')[1];
+    //        var queryDictionary = System.Web.HttpUtility.ParseQueryString(queryString);
+    //        var authCode = queryDictionary["code"];
+
+    //        // 
+    //        var authorizationHeader = await (App.Current.MainPage as ShellPage).RequestAuthorizationAsync(authCode);
+
+    //        if (!string.IsNullOrEmpty(authorizationHeader))
+    //        {
+    //            await (App.Current.MainPage as ShellPage).InitializeMvpApiAsync(authorizationHeader);
+    //        }
+
+    //        (App.Current.MainPage as ShellPage).SelectView("home");
+
+    //        //await Shell.Current.GoToAsync("..");
+    //    }
+    //    else if (e.Url.Contains("lc="))
+    //    {
+    //        // Redirect to signin page if there's a bounce
+
+    //        (sender as WebView).Source = _signInUrl;
+    //    }
+    //}
+
+    public async void WebView1_Navigated(object sender, WebNavigatedEventArgs e)
     {
         switch (e.Result)
         {
