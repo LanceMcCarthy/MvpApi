@@ -1,5 +1,5 @@
+using System.Diagnostics;
 using System.Web;
-using MvpCompanion.Maui.Services;
 using MvpCompanion.Maui.ViewModels;
 
 namespace MvpCompanion.Maui.Views;
@@ -18,11 +18,8 @@ public partial class Login : ContentPage, IQueryAttributable
     public Login()
     {
 		InitializeComponent();
-        _viewModel = new LoginViewModel();
-        BindingContext = _viewModel;
-        
-        //WebView1.Navigating += WebView1_Navigating;
-        WebView1.Navigated += WebView1_Navigated;
+
+        BindingContext = _viewModel = new LoginViewModel();
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -36,44 +33,23 @@ public partial class Login : ContentPage, IQueryAttributable
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        
+
         WebView1.Source = _operation == "signout"
             ? _signOutUri
             : _signInUrl;
     }
 
-    //private async void WebView1_Navigating(object sender, WebNavigatingEventArgs e)
-    //{
-    //    if (e.Url.Contains("code="))
-    //    {
-    //        // old
-    //        //var myUri = new Uri(e.Url);
-    //        //var authCode = myUri.ExtractQueryValue("code");
+    private void WebView1_Navigating(object sender, WebNavigatingEventArgs e)
+    {
+        if (e.Url.Contains("code="))
+        {
 
-    //        // cross platform safe
-    //        var queryString = e.Url.Split('?')[1];
-    //        var queryDictionary = System.Web.HttpUtility.ParseQueryString(queryString);
-    //        var authCode = queryDictionary["code"];
+        }
+        else if (e.Url.Contains("lc="))
+        {
 
-    //        // 
-    //        var authorizationHeader = await (App.Current.MainPage as ShellPage).RequestAuthorizationAsync(authCode);
-
-    //        if (!string.IsNullOrEmpty(authorizationHeader))
-    //        {
-    //            await (App.Current.MainPage as ShellPage).InitializeMvpApiAsync(authorizationHeader);
-    //        }
-
-    //        (App.Current.MainPage as ShellPage).SelectView("home");
-
-    //        //await Shell.Current.GoToAsync("..");
-    //    }
-    //    else if (e.Url.Contains("lc="))
-    //    {
-    //        // Redirect to signin page if there's a bounce
-
-    //        (sender as WebView).Source = _signInUrl;
-    //    }
-    //}
+        }
+    }
 
     public async void WebView1_Navigated(object sender, WebNavigatedEventArgs e)
     {
@@ -88,8 +64,10 @@ public partial class Login : ContentPage, IQueryAttributable
 
                     // cross platform safe
                     var queryString = e.Url.Split('?')[1];
-                    var queryDictionary = System.Web.HttpUtility.ParseQueryString(queryString);
+                    var queryDictionary = HttpUtility.ParseQueryString(queryString);
                     var authCode = queryDictionary["code"];
+
+                    Debug.WriteLine($"Code Parsed: {authCode}");
 
                     // 
                     var authorizationHeader = await (App.Current.MainPage as ShellPage).RequestAuthorizationAsync(authCode);
@@ -111,11 +89,8 @@ public partial class Login : ContentPage, IQueryAttributable
                 }
                 break;
             case WebNavigationResult.Failure:
-                break;
             case WebNavigationResult.Timeout:
-                break;
             case WebNavigationResult.Cancel:
-                break;
             default:
                 break;
         }

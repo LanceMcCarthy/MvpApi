@@ -7,7 +7,9 @@
              Title="Login">
     
     <Grid>
-        <WebView x:Name="WebView1"/>
+        <WebView x:Name="WebView1"
+                 Navigating="WebView1_Navigating"
+                 Navigated="WebView1_Navigated"/>
 
         <primitives:RadBusyIndicator x:Name="BusyIndicator"
                                      IsVisible="{Binding IsBusy}"
