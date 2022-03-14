@@ -48,14 +48,14 @@
         </uap:DefaultTile >
         <uap:SplashScreen Image="appiconfgSplashScreen.png" />
       </uap:VisualElements>
+		<Extensions>
+			<uap:Extension Category="windows.protocol">
+				<uap:Protocol Name="mvpcompanion">
+					<uap:DisplayName>MVP Companion</uap:DisplayName>
+				</uap:Protocol>
+			</uap:Extension>
+		</Extensions>
     </Application>
-	  <Extensions>
-		  <uap:Extension Category="windows.protocol">
-			  <uap:Protocol Name="mvpcompanion">
-				  <uap:DisplayName>MVP Companion</uap:DisplayName>
-			  </uap:Protocol>
-		  </uap:Extension>
-	  </Extensions>
   </Applications>
 
   <Capabilities>
