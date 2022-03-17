@@ -152,6 +152,9 @@ public class HomeViewModel : ViewModelBase
 
     public async Task RefreshContributionsAsync()
     {
+        if (App.ApiService == null || !App.ApiService.IsLoggedIn)
+            return;
+
         var contributionsResult = await App.ApiService.GetContributionsAsync(0, 30);
 
         if (contributionsResult != null & contributionsResult?.Contributions.Count > 0)
