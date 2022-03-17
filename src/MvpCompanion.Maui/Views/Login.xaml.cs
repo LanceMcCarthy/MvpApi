@@ -39,18 +39,6 @@ public partial class Login : ContentPage, IQueryAttributable
             : _signInUrl;
     }
 
-    private void WebView1_Navigating(object sender, WebNavigatingEventArgs e)
-    {
-        if (e.Url.Contains("code="))
-        {
-
-        }
-        else if (e.Url.Contains("lc="))
-        {
-
-        }
-    }
-
     public async void WebView1_Navigated(object sender, WebNavigatedEventArgs e)
     {
         switch (e.Result)

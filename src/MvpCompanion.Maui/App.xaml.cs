@@ -10,7 +10,7 @@ public partial class App : Application
 	{
 		InitializeComponent();
         
-        UserAppTheme = Preferences.Get("IsDarkMode", false) ? OSAppTheme.Dark : OSAppTheme.Light;
+        UserAppTheme = Preferences.Get("IsDarkMode", false) ? AppTheme.Dark : AppTheme.Light;
 
 		MainPage = new ShellPage();
     }

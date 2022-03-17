@@ -46,7 +46,7 @@ namespace MvpCompanion.Maui.ViewModels
             set => SetProperty(ref isDarkMode, value, onChanged: () =>
             {
                 Preferences.Set(nameof(IsDarkMode), value);
-                App.Current.UserAppTheme = value ? OSAppTheme.Dark : OSAppTheme.Light;
+                App.Current.UserAppTheme = value ? AppTheme.Dark : AppTheme.Light;
             });
         }
 

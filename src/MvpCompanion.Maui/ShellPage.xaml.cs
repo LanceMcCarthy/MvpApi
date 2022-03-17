@@ -15,14 +15,14 @@ public partial class ShellPage : Shell
     private readonly INotificationService notificationService;
 
     public ShellPage()
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         _viewModel = new ShellViewModel();
         BindingContext = _viewModel;
 
         notificationService = MvpCompanion.Maui.Services.ServiceProvider.Current.GetService<INotificationService>();
-        
-        if (Device.Idiom == TargetIdiom.Phone)
+
+        if (DeviceInfo.Idiom == DeviceIdiom.Phone || DeviceInfo.Idiom == DeviceIdiom.Tablet)
         {
             CurrentItem = PhoneTabs;
             SelectView("home");
@@ -40,7 +40,14 @@ public partial class ShellPage : Shell
 
     public void SelectView(string viewName)
     {
-        if (Device.Idiom == TargetIdiom.Phone)
+        //DeviceIdiom.Phone – Phone
+        //DeviceIdiom.Tablet – Tablet
+        //DeviceIdiom.Desktop – Desktop
+        //DeviceIdiom.TV – TV
+        //DeviceIdiom.Watch – Watch
+        //DeviceIdiom.Unknown – Unknown
+
+        if (DeviceInfo.Idiom == DeviceIdiom.Phone || DeviceInfo.Idiom == DeviceIdiom.Tablet)
         {
             switch (viewName)
             {
@@ -88,7 +95,7 @@ public partial class ShellPage : Shell
         {
             notificationService.ShowNotification("Logged in...", "Logged in!");
 
-            if (Device.Idiom == TargetIdiom.Phone)
+            if (DeviceInfo.Idiom == DeviceIdiom.Phone || DeviceInfo.Idiom == DeviceIdiom.Tablet)
             {
                 CurrentItem = HomeTab;
             }
@@ -104,19 +111,19 @@ public partial class ShellPage : Shell
             await GoToAsync("login?operation=signin");
         }
     }
-    
+
     private void TapGestureRecognizer_Tapped(Object sender, EventArgs e)
     {
         GoToAsync("///settings");
     }
-    
+
     #region Authentication
-    
+
     public async Task<bool> SignInAsync()
     {
         try
         {
-            
+
             var refreshToken = Preferences.Get("refresh_token", "");
             //var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
 
@@ -193,7 +200,7 @@ public partial class ShellPage : Shell
             await GoToAsync("login?operation=signout");
         }
     }
-    
+
     public async Task InitializeMvpApiAsync(string authorizationHeader)
     {
         _viewModel.IsBusy = true;

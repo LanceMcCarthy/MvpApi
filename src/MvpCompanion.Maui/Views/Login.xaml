@@ -8,10 +8,9 @@
     
     <Grid>
         <WebView x:Name="WebView1"
-                 Navigating="WebView1_Navigating"
                  Navigated="WebView1_Navigated"/>
 
-        <primitives:RadBusyIndicator x:Name="BusyIndicator"
+        <!--<primitives:RadBusyIndicator x:Name="BusyIndicator"
                                      IsVisible="{Binding IsBusy}"
                                      IsBusy="{Binding IsBusy}"
                                      Style="{StaticResource TopPageBusyIndicatorStyle}">
@@ -20,6 +19,6 @@
                        TextColor="{StaticResource MediumTextColor}"
                        HorizontalTextAlignment="Center" />
             </primitives:RadBusyIndicator.BusyContent>
-        </primitives:RadBusyIndicator>
+        </primitives:RadBusyIndicator>-->
     </Grid>
 </ContentPage>
