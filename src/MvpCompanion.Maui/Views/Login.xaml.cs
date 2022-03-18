@@ -46,18 +46,11 @@ public partial class Login : ContentPage, IQueryAttributable
             case WebNavigationResult.Success:
                 if (e.Url.Contains("code="))
                 {
-                    // old
-                    //var myUri = new Uri(e.Url);
-                    //var authCode = myUri.ExtractQueryValue("code");
-
-                    // cross platform safe
                     var queryString = e.Url.Split('?')[1];
                     var queryDictionary = HttpUtility.ParseQueryString(queryString);
                     var authCode = queryDictionary["code"];
 
-                    Debug.WriteLine($"Code Parsed: {authCode}");
-
-                    // 
+                    // Use Microsoft OAuth code to authenticate with the MVP API portal 
                     var authorizationHeader = await (App.Current.MainPage as ShellPage).RequestAuthorizationAsync(authCode);
 
                     if (!string.IsNullOrEmpty(authorizationHeader))
@@ -65,14 +58,13 @@ public partial class Login : ContentPage, IQueryAttributable
                         await (App.Current.MainPage as ShellPage).InitializeMvpApiAsync(authorizationHeader);
                     }
 
-                    (App.Current.MainPage as ShellPage).SelectView("home");
+                    //(App.Current.MainPage as ShellPage).SelectView("home");
 
-                    //await Shell.Current.GoToAsync("..");
+                    await Shell.Current.GoToAsync("..");
                 }
                 else if (e.Url.Contains("lc="))
                 {
                     // Redirect to signin page if there's a bounce
-
                     (sender as WebView).Source = _signInUrl;
                 }
                 break;

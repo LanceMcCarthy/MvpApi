@@ -12,12 +12,16 @@ namespace MvpCompanion.Maui;
 public partial class ShellPage : Shell
 {
     private readonly ShellViewModel _viewModel;
-
     private readonly INotificationService notificationService;
+    private readonly string _redirectUrl = "https://login.live.com/oauth20_desktop.srf";
+    private readonly string _accessTokenUrl = "https://login.live.com/oauth20_token.srf";
+    private static readonly string _clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
 
     public ShellPage()
     {
         InitializeComponent();
+        RegisterRoutes();
+
         _viewModel = new ShellViewModel();
         BindingContext = _viewModel;
 
@@ -28,9 +32,13 @@ public partial class ShellPage : Shell
             CurrentItem = PhoneTabs;
             SelectView("home");
         }
+    }
 
+    private void RegisterRoutes()
+    {
         Routing.RegisterRoute("login", typeof(Login));
-        Routing.RegisterRoute("home", typeof(Views.Home));
+        Routing.RegisterRoute("home", typeof(Home));
+        Routing.RegisterRoute("home/login", typeof(Login));
         Routing.RegisterRoute("home/detail", typeof(Detail));
         Routing.RegisterRoute("upload", typeof(Upload));
         Routing.RegisterRoute("account", typeof(Profile));
@@ -227,20 +235,9 @@ public partial class ShellPage : Shell
         _viewModel.IsBusyMessage = "downloading profile image...";
         (Current.BindingContext as ShellViewModel).ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
 
-        // Navigation is now performed where ever the initialization request was called from.
-        // This allows for individually determining if navigation is needed
-        // await Shell.Current.GoToAsync("home");
-
         _viewModel.IsBusyMessage = "";
         _viewModel.IsBusy = false;
     }
-
-    // WebView logic
-
-
-    private readonly string _redirectUrl = "https://login.live.com/oauth20_desktop.srf";
-    private readonly string _accessTokenUrl = "https://login.live.com/oauth20_token.srf";
-    private static readonly string _clientId = "090fa1d9-3d6f-4f6f-a733-a8b8a3fe16ff";
 
     public async Task<string> RequestAuthorizationAsync(string authCode, bool isRefresh = false)
     {
@@ -270,22 +267,17 @@ public partial class ShellPage : Shell
             }
 
             // Deserialize the parameters from the response
-            //var tokenData = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(responseTxt);
             var tokenData = JsonSerializer.Deserialize<AuthResponse>(responseTxt, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (!string.IsNullOrEmpty(tokenData.AccessToken))
             {
                 //StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
                 //StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
-                //Preferences.Set("access_token", tokenData["access_token"]);
-                //Preferences.Set("refresh_token", tokenData["access_token"]);
                 Preferences.Set("access_token", tokenData.AccessToken);
                 Preferences.Set("refresh_token", tokenData.RefreshToken);
 
                 // We need to prefix the access token with the token type for the auth header. 
                 // Currently this is always "bearer", doing this to be more future proof
-                //var tokenType = tokenData["token_type"];
-                //var cleanedAccessToken = tokenData["access_token"].Split('&')[0];
                 var tokenType = tokenData.TokenType;
                 var cleanedAccessToken = tokenData.AccessToken.Split('&')[0];
 
