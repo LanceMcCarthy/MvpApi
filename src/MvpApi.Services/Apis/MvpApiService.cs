@@ -1750,6 +1750,13 @@ namespace MvpApi.Services.Apis
             return isDataValid;
         }
 
+        public void UpdateAuthorizationHeader(string authorizationHeaderContent)
+        {
+            client.DefaultRequestHeaders.Remove("Authorization");
+
+            client.DefaultRequestHeaders.Add("Authorization", authorizationHeaderContent);
+        }
+
         #endregion
 
         #region Events

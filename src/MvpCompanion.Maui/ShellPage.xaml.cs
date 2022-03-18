@@ -1,6 +1,4 @@
-﻿using MvpApi.Common.CustomEventArgs;
-using MvpApi.Services.Apis;
-using MvpApi.Services.Utilities;
+﻿using MvpApi.Services.Utilities;
 using MvpCompanion.Maui.Models.Authentication;
 using MvpCompanion.Maui.Services;
 using MvpCompanion.Maui.ViewModels;
@@ -30,7 +28,6 @@ public partial class ShellPage : Shell
         if (DeviceInfo.Idiom == DeviceIdiom.Phone || DeviceInfo.Idiom == DeviceIdiom.Tablet)
         {
             CurrentItem = PhoneTabs;
-            SelectView("home");
         }
     }
 
@@ -94,31 +91,40 @@ public partial class ShellPage : Shell
         }
     }
 
-    protected override async void OnAppearing()
+    protected override void OnAppearing()
     {
         base.OnAppearing();
 
-        var userAuthRefreshed = await SignInAsync();
-
-        if (userAuthRefreshed)
+        if (DeviceInfo.Idiom == DeviceIdiom.Phone || DeviceInfo.Idiom == DeviceIdiom.Tablet)
         {
-            //notificationService.ShowNotification("Logged in...", "Logged in!");
-
-            if (DeviceInfo.Idiom == DeviceIdiom.Phone || DeviceInfo.Idiom == DeviceIdiom.Tablet)
-            {
-                CurrentItem = HomeTab;
-            }
-            else
-            {
-                CurrentItem = HomeFlyoutItem;
-            }
+            CurrentItem = HomeTab;
         }
         else
         {
-            //notificationService.ShowNotification("Logging in...", "You need to login.");
-
-            await GoToAsync("login?operation=signin");
+            CurrentItem = HomeFlyoutItem;
         }
+
+        //var userAuthRefreshed = await SignInAsync();
+
+        //if (userAuthRefreshed)
+        //{
+        //    //notificationService.ShowNotification("Logged in...", "Logged in!");
+
+        //    if (DeviceInfo.Idiom == DeviceIdiom.Phone || DeviceInfo.Idiom == DeviceIdiom.Tablet)
+        //    {
+        //        CurrentItem = HomeTab;
+        //    }
+        //    else
+        //    {
+        //        CurrentItem = HomeFlyoutItem;
+        //    }
+        //}
+        //else
+        //{
+        //    //notificationService.ShowNotification("Logging in...", "You need to login.");
+
+        //    await GoToAsync("login?operation=signin");
+        //}
     }
 
     private void TapGestureRecognizer_Tapped(Object sender, EventArgs e)
@@ -128,42 +134,57 @@ public partial class ShellPage : Shell
 
     #region Authentication
 
-    public async Task<bool> SignInAsync()
-    {
-        try
-        {
-            // First, we check if the user has previously authenticated
-            var refreshToken = Preferences.Get("refresh_token", "");
-            //var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
+    //public async Task<bool> SignInAsync()
+    //{
+    //    try
+    //    {
+    //        // First, we check if the user has previously authenticated
+    //        var refreshToken = Preferences.Get("refresh_token", "");
+    //        //var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
 
-            // If refresh token is available, we can get a refreshed access token immediately
-            if (!string.IsNullOrEmpty(refreshToken))
-            {
-                _viewModel.IsBusy = true;
-                _viewModel.IsBusyMessage = "refreshing session...";
+    //        // If refresh token is available, we can get a refreshed access token immediately
+    //        if (!string.IsNullOrEmpty(refreshToken))
+    //        {
+    //            _viewModel.IsBusy = true;
+    //            _viewModel.IsBusyMessage = "refreshing session...";
 
-                var authorizationHeader = await RequestAuthorizationAsync(refreshToken, true);
+    //            var authorizationHeader = await RequestAuthorizationAsync(refreshToken, true);
 
-                if (!string.IsNullOrEmpty(authorizationHeader))
-                {
-                    await InitializeMvpApiAsync(authorizationHeader);
-                    return true;
-                }
-            }
+    //            if (!string.IsNullOrEmpty(authorizationHeader))
+    //            {
+    //                _viewModel.IsBusy = true;
+    //                _viewModel.IsBusyMessage = "authenticating...";
 
-            return false;
-        }
-        catch (Exception e)
-        {
-            await e.LogExceptionAsync();
-            throw;
-        }
-        finally
-        {
-            _viewModel.IsBusy = false;
-            _viewModel.IsBusyMessage = "";
-        }
-    }
+    //                App.StartupApiService(authorizationHeader);
+
+    //                _viewModel.IsLoggedIn = true;
+
+    //                _viewModel.IsBusyMessage = "downloading profile info...";
+    //                _viewModel.Mvp = await App.ApiService.GetProfileAsync();
+
+    //                _viewModel.IsBusyMessage = "downloading profile image...";
+    //                _viewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+
+    //                _viewModel.IsBusyMessage = "";
+    //                _viewModel.IsBusy = false;
+
+    //                return true;
+    //            }
+    //        }
+
+    //        return false;
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        await e.LogExceptionAsync();
+    //        throw;
+    //    }
+    //    finally
+    //    {
+    //        _viewModel.IsBusy = false;
+    //        _viewModel.IsBusyMessage = "";
+    //    }
+    //}
 
     public async Task SignOutAsync()
     {
@@ -183,14 +204,9 @@ public partial class ShellPage : Shell
             // Delete profile photo file
             if (File.Exists((Current.BindingContext as ShellViewModel).ProfileImagePath))
             {
-                (Current.BindingContext as ShellViewModel).IsBusyMessage = "deleting profile photo file...";
+                _viewModel.IsBusyMessage = "deleting profile photo file...";
                 File.Delete((Current.BindingContext as ShellViewModel).ProfileImagePath);
             }
-
-            // Clean up profile objects
-            _viewModel.IsBusyMessage = "resetting profile...";
-            (Current.BindingContext as ShellViewModel).Mvp = null;
-            (Current.BindingContext as ShellViewModel).ProfileImagePath = "";
         }
         catch (Exception ex)
         {
@@ -199,44 +215,15 @@ public partial class ShellPage : Shell
         }
         finally
         {
-            // Hide busy indicator
+            _viewModel.Mvp = null;
+            _viewModel.ProfileImagePath = string.Empty;
+            _viewModel.IsLoggedIn = false;
             _viewModel.IsBusy = false;
-            _viewModel.IsBusyMessage = "";
 
-            // Toggle flag
-            (Current.BindingContext as ShellViewModel).IsLoggedIn = false;
+            _viewModel.IsBusyMessage = "";
 
             await GoToAsync("login?operation=signout");
         }
-    }
-
-    public async Task InitializeMvpApiAsync(string authorizationHeader)
-    {
-        _viewModel.IsBusy = true;
-        _viewModel.IsBusyMessage = "authenticating...";
-
-        // remove any previously wired up event handlers
-        if (App.ApiService != null)
-        {
-            App.ApiService.AccessTokenExpired -= ApiService_AccessTokenExpired;
-            App.ApiService.RequestErrorOccurred -= ApiService_RequestErrorOccurred;
-        }
-
-        App.ApiService = new MvpApiService(authorizationHeader);
-
-        App.ApiService.AccessTokenExpired += ApiService_AccessTokenExpired;
-        App.ApiService.RequestErrorOccurred += ApiService_RequestErrorOccurred;
-
-        (Current.BindingContext as ShellViewModel).IsLoggedIn = true;
-
-        _viewModel.IsBusyMessage = "downloading profile info...";
-        (Current.BindingContext as ShellViewModel).Mvp = await App.ApiService.GetProfileAsync();
-
-        _viewModel.IsBusyMessage = "downloading profile image...";
-        (Current.BindingContext as ShellViewModel).ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
-
-        _viewModel.IsBusyMessage = "";
-        _viewModel.IsBusy = false;
     }
 
     public async Task<string> RequestAuthorizationAsync(string authCode, bool isRefresh = false)
@@ -256,15 +243,11 @@ public partial class ShellPage : Shell
             // Construct the Form content, this is where I add the OAuth token (could be access token or refresh token)
             var postContent = new FormUrlEncodedContent(postData);
 
-            // Variable to hold the response data
-            var responseTxt = "";
-
             // post the Form data
-            using (var response = await client.PostAsync(new Uri(_accessTokenUrl), postContent))
-            {
-                // Read the response
-                responseTxt = await response.Content.ReadAsStringAsync();
-            }
+            using var response = await client.PostAsync(new Uri(_accessTokenUrl), postContent);
+
+            // Read the response
+            var responseTxt = await response.Content.ReadAsStringAsync();
 
             // Deserialize the parameters from the response
             var tokenData = JsonSerializer.Deserialize<AuthResponse>(responseTxt, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -284,6 +267,10 @@ public partial class ShellPage : Shell
                 // set public property that is "returned"
                 return $"{tokenType} {cleanedAccessToken}";
             }
+            else
+            {
+                await Shell.Current.DisplayAlert("Unauthorized", "The account you signed in with did not provide an authorization code.", "ok");
+            }
         }
         catch (HttpRequestException e)
         {
@@ -297,35 +284,6 @@ public partial class ShellPage : Shell
         }
 
         return null;
-    }
-
-    private async void ApiService_AccessTokenExpired(object sender, ApiServiceEventArgs e)
-    {
-        if (e.IsTokenRefreshNeeded)
-        {
-            var userAuthRefreshed = await SignInAsync();
-
-            if (!userAuthRefreshed)
-            {
-                await GoToAsync("login?signin");
-            }
-        }
-    }
-
-    private async void ApiService_RequestErrorOccurred(object sender, ApiServiceEventArgs e)
-    {
-        var message = "Unknown Server Error";
-
-        if (e.IsBadRequest)
-        {
-            message = e.Message;
-        }
-        else if (e.IsServerError)
-        {
-            message = e.Message + "\r\n\nIf this continues to happen, please open a GitHub Issue and we'll investigate further (find the GitHub link on the About page).";
-        }
-
-        await DisplayAlert("MVP API Request Error", message, "ok");
     }
 
     #endregion

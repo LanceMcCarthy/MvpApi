@@ -1,6 +1,5 @@
-using System.Diagnostics;
-using System.Web;
 using MvpCompanion.Maui.ViewModels;
+using System.Web;
 
 namespace MvpCompanion.Maui.Views;
 
@@ -55,12 +54,24 @@ public partial class Login : ContentPage, IQueryAttributable
 
                     if (!string.IsNullOrEmpty(authorizationHeader))
                     {
-                        await (App.Current.MainPage as ShellPage).InitializeMvpApiAsync(authorizationHeader);
+                        _viewModel.IsBusy = true;
+                        _viewModel.IsBusyMessage = "authenticating...";
+
+                        App.StartupApiService(authorizationHeader);
+
+                        (Shell.Current.BindingContext as ShellViewModel).IsLoggedIn = true;
+
+                        _viewModel.IsBusyMessage = "downloading profile info...";
+                        (Shell.Current.BindingContext as ShellViewModel).Mvp = await App.ApiService.GetProfileAsync();
+
+                        _viewModel.IsBusyMessage = "downloading profile image...";
+                        (Shell.Current.BindingContext as ShellViewModel).ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+
+                        _viewModel.IsBusyMessage = "";
+                        _viewModel.IsBusy = false;
+
+                        await Shell.Current.GoToAsync("..");
                     }
-
-                    //(App.Current.MainPage as ShellPage).SelectView("home");
-
-                    await Shell.Current.GoToAsync("..");
                 }
                 else if (e.Url.Contains("lc="))
                 {
@@ -75,4 +86,5 @@ public partial class Login : ContentPage, IQueryAttributable
                 break;
         }
     }
+
 }
