@@ -1,10 +1,11 @@
 ﻿using MvpApi.Common.CustomEventArgs;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
+using MvpCompanion.Maui.Models.Authentication;
+using MvpCompanion.Maui.Services;
 using MvpCompanion.Maui.ViewModels;
 using MvpCompanion.Maui.Views;
 using System.Text.Json;
-using MvpCompanion.Maui.Services;
 
 namespace MvpCompanion.Maui;
 
@@ -20,7 +21,7 @@ public partial class ShellPage : Shell
         _viewModel = new ShellViewModel();
         BindingContext = _viewModel;
 
-        notificationService = MvpCompanion.Maui.Services.ServiceProvider.Current.GetService<INotificationService>();
+        notificationService = Services.ServiceProvider.Current.GetService<INotificationService>();
 
         if (DeviceInfo.Idiom == DeviceIdiom.Phone || DeviceInfo.Idiom == DeviceIdiom.Tablet)
         {
@@ -93,7 +94,7 @@ public partial class ShellPage : Shell
 
         if (userAuthRefreshed)
         {
-            notificationService.ShowNotification("Logged in...", "Logged in!");
+            //notificationService.ShowNotification("Logged in...", "Logged in!");
 
             if (DeviceInfo.Idiom == DeviceIdiom.Phone || DeviceInfo.Idiom == DeviceIdiom.Tablet)
             {
@@ -106,7 +107,7 @@ public partial class ShellPage : Shell
         }
         else
         {
-            notificationService.ShowNotification("Logging in...", "You need to login.");
+            //notificationService.ShowNotification("Logging in...", "You need to login.");
 
             await GoToAsync("login?operation=signin");
         }
@@ -123,11 +124,11 @@ public partial class ShellPage : Shell
     {
         try
         {
-
+            // First, we check if the user has previously authenticated
             var refreshToken = Preferences.Get("refresh_token", "");
             //var refreshToken = StorageHelpers.Instance.LoadToken("refresh_token");
 
-            // If refresh token is available, the user has previously been logged in and we can get a refreshed access token immediately
+            // If refresh token is available, we can get a refreshed access token immediately
             if (!string.IsNullOrEmpty(refreshToken))
             {
                 _viewModel.IsBusy = true;
@@ -247,14 +248,16 @@ public partial class ShellPage : Shell
         {
             using var client = new HttpClient();
 
-            // Construct the Form content, this is where I add the OAuth token (could be access token or refresh token)
-            var postContent = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
+            var postData = new List<KeyValuePair<string, string>>
             {
                 new("client_id", _clientId),
                 new("grant_type", isRefresh ? "refresh_token" : "authorization_code"),
                 new(isRefresh ? "refresh_token" : "code", authCode.Split('&')[0]),
                 new("redirect_uri", _redirectUrl)
-            });
+            };
+
+            // Construct the Form content, this is where I add the OAuth token (could be access token or refresh token)
+            var postContent = new FormUrlEncodedContent(postData);
 
             // Variable to hold the response data
             var responseTxt = "";
@@ -267,19 +270,24 @@ public partial class ShellPage : Shell
             }
 
             // Deserialize the parameters from the response
-            var tokenData = JsonSerializer.Deserialize<Dictionary<string, string>>(responseTxt);
+            //var tokenData = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(responseTxt);
+            var tokenData = JsonSerializer.Deserialize<AuthResponse>(responseTxt, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            if (tokenData.ContainsKey("access_token"))
+            if (!string.IsNullOrEmpty(tokenData.AccessToken))
             {
                 //StorageHelpers.Instance.StoreToken("access_token", tokenData["access_token"]);
                 //StorageHelpers.Instance.StoreToken("refresh_token", tokenData["refresh_token"]);
-                Preferences.Set("access_token", tokenData["access_token"]);
-                Preferences.Set("refresh_token", tokenData["access_token"]);
+                //Preferences.Set("access_token", tokenData["access_token"]);
+                //Preferences.Set("refresh_token", tokenData["access_token"]);
+                Preferences.Set("access_token", tokenData.AccessToken);
+                Preferences.Set("refresh_token", tokenData.RefreshToken);
 
                 // We need to prefix the access token with the token type for the auth header. 
                 // Currently this is always "bearer", doing this to be more future proof
-                var tokenType = tokenData["token_type"];
-                var cleanedAccessToken = tokenData["access_token"].Split('&')[0];
+                //var tokenType = tokenData["token_type"];
+                //var cleanedAccessToken = tokenData["access_token"].Split('&')[0];
+                var tokenType = tokenData.TokenType;
+                var cleanedAccessToken = tokenData.AccessToken.Split('&')[0];
 
                 // set public property that is "returned"
                 return $"{tokenType} {cleanedAccessToken}";
