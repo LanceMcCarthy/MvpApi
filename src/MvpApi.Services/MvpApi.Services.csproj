@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Memory" Version="4.5.4" />
     <PackageReference Include="Telerik.Documents.Core" Version="2022.1.106" />
     <PackageReference Include="Telerik.Documents.Spreadsheet" Version="2022.1.106" />
     <PackageReference Include="Telerik.Documents.Spreadsheet.FormatProviders.OpenXml" Version="2022.1.106" />
