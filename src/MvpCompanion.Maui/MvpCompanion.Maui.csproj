@@ -11,6 +11,7 @@
 		<!-- Display name, App Identifier, Versions -->
 		<ApplicationTitle>MVP Companion</ApplicationTitle>
 		<ApplicationId>com.LancelotSoftware.MvpCompanion</ApplicationId>
+		<ApplicationId Condition="$(TargetFramework.Contains('-windows'))">4D270732-4E49-42C9-9496-101D89AE98C2</ApplicationId>
 		<ApplicationVersion>1</ApplicationVersion>
 
 		<!-- Required for C# Hot Reload -->
@@ -29,8 +30,10 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
+		<MauiIcon Include="Resources\appicon.svg" ForegroundFile="Resources\appiconfg.svg" Color="#512BD4" />
 
 		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\appicon.svg" Color="#512BD4" BaseSize="128,128" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
@@ -40,26 +43,6 @@
 
 		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Remove="Resources\appicon.svg" />
-	  <None Remove="Resources\Images\tab_account.svg" />
-	  <None Remove="Resources\Images\tab_account_on.svg" />
-	  <None Remove="Resources\Images\tab_briefcase.svg" />
-	  <None Remove="Resources\Images\tab_briefcase_on.svg" />
-	  <None Remove="Resources\Images\tab_home.svg" />
-	  <None Remove="Resources\Images\tab_home_on.svg" />
-	  <None Remove="Resources\Images\tab_information.svg" />
-	  <None Remove="Resources\Images\tab_information_on.svg" />
-	  <None Remove="Resources\Images\tab_settings.svg" />
-	  <None Remove="Resources\Images\tab_settings_on.svg" />
-	  <None Remove="Resources\Images\tab_upload.svg" />
-	  <None Remove="Resources\Images\tab_upload_on.svg" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <MauiIcon Include="Resources\appicon.svg" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -74,12 +57,12 @@
 
 	<ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
 		<!-- Required - WinUI does not yet have buildTransitive for everything -->
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.1" />
 		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.0.30" />
 		<PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.0.1" />
 	</ItemGroup>
 
-	<!-- PUBLISHING Android 
+	<!-- ******** PUBLISHING Android ********
 	dotnet publish -f:net6.0-android -c:Release
 	I can replace some or all of the XML defined items with CLI params 
 	/p:AndroidKeyStore=True
@@ -95,8 +78,10 @@
 		<AndroidSigningKeyAlias>dvlup.alias</AndroidSigningKeyAlias>
 		<AndroidSigningKeyPass>$(android_keystore_alias_password)</AndroidSigningKeyPass>
 	</PropertyGroup>
+	
+	<!-- ******** END ANDROID ******** -->
 
-	<!-- PUBLISHING iOS 
+	<!-- ******** PUBLISHING iOS ********
 	dotnet publish -f:net6.0-ios -c:Release /p:ServerAddress=192.168.1.184 /p:ServerUser=$MACOS_USER_NAME /p:ServerPassword=$MACOS_USER_PASSWORD /p:TcpPort=58181 /p:ArchiveOnBuild=true /p:_DotNetRootRemoteDirectory=/Users/mccarthy/Library/Caches/Xamarin/XMA/SDKs/dotnet/ /p:EnableAssemblyILStripping=false
 	-->
 	<PropertyGroup Condition="$(TargetFramework.Contains('-ios')) and '$(Configuration)' == 'Release'">
@@ -110,8 +95,11 @@
 		<CodesignKey>Apple Development: Lance McCarthy (AJ9XMDH9A2)</CodesignKey>
 		<CodesignProvision>MvpCompanion_Dev_2022.mobileprovision</CodesignProvision>
 	</PropertyGroup>
+	
+	<!-- ******** END iOS ******** -->
 
-	<!-- PUBLISHING MacCatalyst -->
+	<!-- ******** PUBLISHING MacCatalyst ******** -->
+	
 	<!--<PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst')) and '$(Configuration)' == 'Release'">
 		<RuntimeIdentifier>maccatalyst-x64</RuntimeIdentifier>
 		<CodesignKey>Apple Distribution: Lancelot Software, LLC (L65255N3F7)</CodesignKey>$(apple_release_codesignIdentity)
@@ -123,10 +111,14 @@
 		<CodesignKey>Apple Development: Lance McCarthy (AJ9XMDH9A2)</CodesignKey>
 		<CodesignProvision>MvpCompanion_Dev_2022.mobileprovision</CodesignProvision>
 	</PropertyGroup>-->
+	
+	<!-- ******** END MacCatalyst ******** -->
 
-	<!-- PUBLISHING Windows
-	This is just like packaging WinUI projects	
+	<!-- ******** PUBLISHING Windows ******** -->
+	
+	<!-- This is just like packaging WinUI projects	
     msbuild /restore /t:Publish /p:TargetFramework=net6.0-windows10.0.19041 /p:configuration=release /p:GenerateAppxPackageOnBuild=true /p:AppxPackageSigningEnabled=true /p:PackageCertificateThumbprint=$PFX_THUMBPRINT /p:PackageCe
 rtificatePassword=$PFX_PASSWORD
     -->
+	<!-- ******** END Windows ******** -->
 </Project>

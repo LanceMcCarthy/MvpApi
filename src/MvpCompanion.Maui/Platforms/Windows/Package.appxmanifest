@@ -46,7 +46,7 @@
             <uap:ShowOn Tile="wide310x150Logo"/>
           </uap:ShowNameOnTiles>
         </uap:DefaultTile >
-        <!--<uap:SplashScreen Image="appiconSplashScreen.png" />-->
+        <uap:SplashScreen Image="appiconcgSplashScreen.png" />
       </uap:VisualElements>
 		<Extensions>
 			<uap:Extension Category="windows.protocol">
