@@ -1,5 +1,6 @@
 ﻿using MvpApi.Common.CustomEventArgs;
 using MvpApi.Services.Apis;
+using MvpCompanion.Maui.Models.Authentication;
 
 namespace MvpCompanion.Maui;
 
@@ -55,7 +56,7 @@ public partial class App : Application
             // If refresh token is available, we can get a refreshed access token immediately
             if (!string.IsNullOrEmpty(refreshToken))
             {
-                var authorizationHeader = await (App.Current.MainPage as ShellPage).RequestAuthorizationAsync(refreshToken, true);
+                var authorizationHeader = await AuthHelpers.RequestAuthorizationAsync(refreshToken, true);
 
                 if (!string.IsNullOrEmpty(authorizationHeader))
                 {

@@ -13,10 +13,8 @@ public class MainActivity : MauiAppCompatActivity
     protected override void OnCreate(Bundle savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
-        
-        Platform.Init(this, savedInstanceState);
 
-        //Platform.ActivityStateChanged += Platform_ActivityStateChanged;
+        Platform.Init(this, savedInstanceState);
     }
 
     protected override void OnResume()
@@ -31,18 +29,6 @@ public class MainActivity : MauiAppCompatActivity
         base.OnNewIntent(intent);
 
         Platform.OnNewIntent(intent);
-    }
-
-    protected override void OnDestroy()
-    {
-        base.OnDestroy();
-
-        Platform.ActivityStateChanged -= Platform_ActivityStateChanged;
-    }
-
-    void Platform_ActivityStateChanged(object sender, ActivityStateChangedEventArgs e)
-    {
-        Toast.MakeText(this, e.State.ToString(), ToastLength.Short)?.Show();
     }
 
     public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)

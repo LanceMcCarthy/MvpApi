@@ -1,3 +1,4 @@
+using MvpCompanion.Maui.Models.Authentication;
 using MvpCompanion.Maui.ViewModels;
 using System.Web;
 
@@ -50,7 +51,7 @@ public partial class Login : ContentPage, IQueryAttributable
                     var authCode = queryDictionary["code"];
 
                     // Use Microsoft OAuth code to authenticate with the MVP API portal 
-                    var authorizationHeader = await (App.Current.MainPage as ShellPage).RequestAuthorizationAsync(authCode);
+                    var authorizationHeader = await AuthHelpers.RequestAuthorizationAsync(authCode);
 
                     if (!string.IsNullOrEmpty(authorizationHeader))
                     {

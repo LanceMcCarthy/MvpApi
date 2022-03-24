@@ -1,5 +1,6 @@
 using MvpCompanion.Maui.ViewModels;
 using MvpApi.Services.Utilities;
+using MvpCompanion.Maui.Models.Authentication;
 
 namespace MvpCompanion.Maui.Views;
 
@@ -48,7 +49,7 @@ public partial class Home : ContentPage
                 _viewModel.IsBusy = true;
                 _viewModel.IsBusyMessage = "refreshing session...";
 
-                var authorizationHeader = await (App.Current.MainPage as ShellPage).RequestAuthorizationAsync(refreshToken, true);
+                var authorizationHeader = await AuthHelpers.RequestAuthorizationAsync(refreshToken, true);
 
                 if (!string.IsNullOrEmpty(authorizationHeader))
                 {
@@ -57,13 +58,13 @@ public partial class Home : ContentPage
 
                     App.StartupApiService(authorizationHeader);
 
-                    ((App.Current.MainPage as ShellPage).BindingContext as ShellViewModel).IsLoggedIn = true;
+                    (Shell.Current.BindingContext as ShellViewModel).IsLoggedIn = true;
 
                     _viewModel.IsBusyMessage = "downloading profile info...";
-                    ((App.Current.MainPage as ShellPage).BindingContext as ShellViewModel).Mvp = await App.ApiService.GetProfileAsync();
+                    (Shell.Current.BindingContext as ShellViewModel).Mvp = await App.ApiService.GetProfileAsync();
 
                     _viewModel.IsBusyMessage = "downloading profile photo...";
-                    ((App.Current.MainPage as ShellPage).BindingContext as ShellViewModel).ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+                    (Shell.Current.BindingContext as ShellViewModel).ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
 
                     _viewModel.IsBusyMessage = "";
                     _viewModel.IsBusy = false;
@@ -85,4 +86,5 @@ public partial class Home : ContentPage
             _viewModel.IsBusyMessage = "";
         }
     }
+
 }

@@ -32,8 +32,6 @@
                         Value="14,10" />
             </Style>
 
-            <x:String  x:Key="TelerikIconsFont">telerikfontexamples</x:String>
-
             <Color x:Key="LightTextColor">#FFFFFF</Color>
             <Color x:Key="MediumTextColor">#FF888888</Color>
             <Color x:Key="DarkTextColor">#FF444444</Color>
@@ -109,7 +107,7 @@
                 <Setter Property="HeightRequest"
                         Value="50" />
                 <Setter Property="FontFamily"
-                        Value="{StaticResource TelerikIconsFont}" />
+                        Value="telerikfontexamples" />
                 <Setter Property="FontSize">
                     <Setter.Value>
                         <OnPlatform x:TypeArguments="x:Double">
