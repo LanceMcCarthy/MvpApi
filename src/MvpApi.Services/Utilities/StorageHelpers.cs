@@ -268,32 +268,30 @@ namespace MvpApi.Services.Utilities
         private byte[] EncryptBytes(byte[] unencryptedData)
         {
             // I chose Rijndael instead of AES because of it's support for larger block size (AES only support 128)
-            using (var cipher = new RijndaelManaged { Key = _symmetricKey, IV = _initializationVector })
-            using (var cryptoTransform = cipher.CreateEncryptor())
-            using (var memoryStream = new MemoryStream())
-            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write))
-            {
-                cryptoStream.Write(unencryptedData, 0, unencryptedData.Length);
-                cryptoStream.FlushFinalBlock();
-                var encryptedBytes = memoryStream.ToArray();
-                Debug.WriteLine($"EncryptBytes complete: {encryptedBytes.Length} bytes");
-                return encryptedBytes;
-            }
+            using var cipher = new RijndaelManaged { Key = _symmetricKey, IV = _initializationVector };
+            using var cryptoTransform = cipher.CreateEncryptor();
+            using var memoryStream = new MemoryStream();
+            using var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write);
+
+            cryptoStream.Write(unencryptedData, 0, unencryptedData.Length);
+            cryptoStream.FlushFinalBlock();
+            var encryptedBytes = memoryStream.ToArray();
+            Debug.WriteLine($"EncryptBytes complete: {encryptedBytes.Length} bytes");
+            return encryptedBytes;
         }
 
         private byte[] DecryptBytes(byte[] encryptedBytes)
         {
-            using (var cipher = new RijndaelManaged())
-            using (var cryptoTransform = cipher.CreateDecryptor(_symmetricKey, _initializationVector))
-            using (var memoryStream = new MemoryStream(encryptedBytes))
-            using (var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Read))
-            {
-                byte[] decryptedBytes = new byte[encryptedBytes.Length];
-                int bytesRead = cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);
+            using var cipher = new RijndaelManaged();
+            using var cryptoTransform = cipher.CreateDecryptor(_symmetricKey, _initializationVector);
+            using var memoryStream = new MemoryStream(encryptedBytes);
+            using var cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Read);
 
-                // Note - I'm using Take() to clean up junk bytes at the end of the array
-                return decryptedBytes.Take(bytesRead).ToArray();
-            }
+            byte[] decryptedBytes = new byte[encryptedBytes.Length];
+            int bytesRead = cryptoStream.Read(decryptedBytes, 0, decryptedBytes.Length);
+
+            // Note - I'm using Take() to clean up junk bytes at the end of the array
+            return decryptedBytes.Take(bytesRead).ToArray();
         }
 
         #endregion
