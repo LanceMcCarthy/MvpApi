@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MvpCompanion.Maui.Views.Home"
-             xmlns:vms="clr-namespace:MvpCompanion.Maui.ViewModels"
+             xmlns:common="clr-namespace:CommonHelpers.Common;assembly=CommonHelpers"
              xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.Maui.Controls.Compatibility"
              Title="Home">
     <Grid>
@@ -18,16 +18,20 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
+        <!--<ActivityIndicator />-->
         <primitives:RadBusyIndicator x:Name="BusyIndicator"
                                      IsVisible="{Binding IsBusy}"
                                      IsBusy="{Binding IsBusy}"
                                      Style="{StaticResource TopPageBusyIndicatorStyle}">
-            <primitives:RadBusyIndicator.BusyContent>
-                <Label Text="{Binding IsBusyMessage, Source={RelativeSource AncestorType={x:Type vms:HomeViewModel}}}"
-                       TextColor="{StaticResource MediumTextColor}"
-                       HorizontalTextAlignment="Center" />
-            </primitives:RadBusyIndicator.BusyContent>
+            <!--<primitives:RadBusyIndicator.BusyContent>
+                <ContentPresenter>
+                    <ContentPresenter.Content>
+                        <Label Text="{Binding IsBusyMessage, Source={RelativeSource AncestorType={x:Type vms:ViewModelBase}}}"
+                               TextColor="{StaticResource MediumTextColor}"
+                               HorizontalTextAlignment="Center" />
+                    </ContentPresenter.Content>
+                </ContentPresenter>
+            </primitives:RadBusyIndicator.BusyContent>-->
         </primitives:RadBusyIndicator>
     </Grid>
 </ContentPage>

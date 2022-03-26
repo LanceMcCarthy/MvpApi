@@ -1,6 +1,7 @@
 ﻿<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MvpCompanion.Maui"
+             xmlns:common="clr-namespace:CommonHelpers.Common;assembly=CommonHelpers"
              xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.Maui.Controls.Compatibility"
              xmlns:telerikMauiControls="clr-namespace:Telerik.Maui.Controls;assembly=Telerik.Maui.Controls"
              x:Class="MvpCompanion.Maui.App">
@@ -167,8 +168,15 @@
                                 </Grid.RowDefinitions>
                                 <ContentPresenter Content="{TemplateBinding Path=AnimationContent}"
                                                   Grid.Row="1" />
-                                <ContentPresenter Content="{TemplateBinding Path=BusyContent}"
-                                                  Grid.Row="2" />
+                                <!--<ContentPresenter Content="{TemplateBinding Path=BusyContent}"
+                                                  Grid.Row="2" />-->
+                                <ContentPresenter Grid.Row="2">
+                                    <ContentPresenter.Content>
+                                        <Label Text="{Binding IsBusyMessage, Source={RelativeSource AncestorType={x:Type common:ViewModelBase}}}"
+                                               TextColor="{StaticResource MediumTextColor}"
+                                               HorizontalTextAlignment="Center" />
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>

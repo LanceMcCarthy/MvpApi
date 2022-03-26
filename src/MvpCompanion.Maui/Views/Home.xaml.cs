@@ -19,20 +19,25 @@ public partial class Home : ContentPage
     {
         base.OnAppearing();
 
+        if(App.ApiService != null && App.ApiService.IsLoggedIn && _viewModel.Contributions.Count == 0)
+        {
+            return;
+        }
+
         var userAuthRefreshed = await SignInAsync();
 
-        //if (userAuthRefreshed)
-        //{
-        //    //notificationService.ShowNotification("Logged in...", "Logged in!");
+        if (userAuthRefreshed)
+        {
+            //notificationService.ShowNotification("Logged in...", "Logged in!");
 
-        //    await _viewModel.RefreshContributionsAsync();
-        //}
-        //else
-        //{
-        //    //notificationService.ShowNotification("Logging in...", "You need to login.");
+            await _viewModel.RefreshContributionsAsync();
+        }
+        else
+        {
+            //notificationService.ShowNotification("Logging in...", "You need to login.");
 
-        //    await Shell.Current.GoToAsync("login?operation=signin");
-        //}
+            await Shell.Current.GoToAsync("login?operation=signin");
+        }
     }
 
     public async Task<bool> SignInAsync()
