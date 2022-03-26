@@ -11,8 +11,7 @@ public partial class Home : ContentPage
 	public Home()
 	{
 		InitializeComponent();
-        _viewModel = new HomeViewModel();
-        this.BindingContext = _viewModel;
+        this.BindingContext = _viewModel = new HomeViewModel();
     }
 
     protected override async void OnAppearing()
@@ -21,6 +20,7 @@ public partial class Home : ContentPage
 
         if(App.ApiService != null && App.ApiService.IsLoggedIn && _viewModel.Contributions.Count == 0)
         {
+            await _viewModel.RefreshContributionsAsync();
             return;
         }
 
