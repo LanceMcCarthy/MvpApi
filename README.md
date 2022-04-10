@@ -27,6 +27,8 @@ You can view [the Azure DevOps pipelines](https://dev.azure.com/lance/MVP%20Comp
 | Microsoft Store | Beta ![beta](https://vsrm.dev.azure.com/lance/_apis/public/Release/badge/343301de-d63e-46b2-8816-7da7ade8002d/2/2) Publish ![Publish](https://vsrm.dev.azure.com/lance/_apis/public/Release/badge/343301de-d63e-46b2-8816-7da7ade8002d/2/6) |
 | Google Play | Beta ![beta](https://vsrm.dev.azure.com/lance/_apis/public/Release/badge/343301de-d63e-46b2-8816-7da7ade8002d/3/4) Publish ![Publish](https://vsrm.dev.azure.com/lance/_apis/public/Release/badge/343301de-d63e-46b2-8816-7da7ade8002d/3/5) |
 
+> If you'd like to understand the architecture of this CI-CD implementation, see my post on how I set this up [Free Yourself with DevOps](https://dvlup.com/2022/03/04/free-yourself-with-devops/).
+
 ## Features
 
 The following feature provide you with powerful and fast management of your community contributions.
