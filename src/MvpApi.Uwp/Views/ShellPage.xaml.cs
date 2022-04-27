@@ -14,6 +14,7 @@ using MvpApi.Common.CustomEventArgs;
 using MvpApi.Common.Extensions;
 using MvpApi.Services.Apis;
 using MvpApi.Services.Utilities;
+using MvpApi.Uwp.Dialogs;
 using MvpApi.Uwp.ViewModels;
 using MvpCompanion.UI.Common.Helpers;
 using Newtonsoft.Json;
@@ -100,7 +101,7 @@ namespace MvpApi.Uwp.Views
             {
                 // get token
                 var authCode = e.Uri.ExtractQueryValue("code");
-
+                
                 var authorizationHeader = await RequestAuthorizationAsync(authCode);
 
                 await InitializeMvpApiAsync(authorizationHeader);
@@ -160,44 +161,50 @@ namespace MvpApi.Uwp.Views
 
         private async Task InitializeMvpApiAsync(string authorizationHeader)
         {
-            ViewModel.IsBusy = true;
-            ViewModel.IsBusyMessage = "refreshing session...";
+            ViewModel.IsBusyMessage = "riding off into the sunset...";
 
-            // Hide overlay if it's still visible
-            if (LoginOverlay.Visibility == Visibility.Visible)
-            {
-                LoginOverlay.Visibility = Visibility.Collapsed;
-            }
+            await new GoodbyeDialog().ShowAsync();
 
-            // remove any previously wired up event handlers
-            if (App.ApiService != null)
-            {
-                App.ApiService.AccessTokenExpired -= ApiService_AccessTokenExpired;
-                App.ApiService.RequestErrorOccurred -= ApiService_RequestErrorOccurred;
-            }
-
-            // New-up the service
-            App.ApiService = new MvpApiService(authorizationHeader);
+            Application.Current.Exit();
             
-            App.ApiService.AccessTokenExpired += ApiService_AccessTokenExpired;
-            App.ApiService.RequestErrorOccurred += ApiService_RequestErrorOccurred;
+            //ViewModel.IsBusy = true;
+            //ViewModel.IsBusyMessage = "refreshing session...";
 
-            // Trigger UI changes (e.g. hide the overlay)
-            ViewModel.IsLoggedIn = true;
+            //// Hide overlay if it's still visible
+            //if (LoginOverlay.Visibility == Visibility.Visible)
+            //{
+            //    LoginOverlay.Visibility = Visibility.Collapsed;
+            //}
 
-            // Get MVP profile
-            ViewModel.IsBusyMessage = "downloading profile info...";
-            ViewModel.Mvp = await App.ApiService.GetProfileAsync();
+            //// remove any previously wired up event handlers
+            //if (App.ApiService != null)
+            //{
+            //    App.ApiService.AccessTokenExpired -= ApiService_AccessTokenExpired;
+            //    App.ApiService.RequestErrorOccurred -= ApiService_RequestErrorOccurred;
+            //}
 
-            // Get MVP profile image
-            ViewModel.IsBusyMessage = "downloading profile image...";
-            ViewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
-            
-            //Navigate to the home page
-            await BootStrapper.Current.NavigationService.NavigateAsync(typeof(HomePage), null, new SuppressNavigationTransitionInfo());
+            //// New-up the service
+            //App.ApiService = new MvpApiService(authorizationHeader);
 
-            ViewModel.IsBusy = false;
-            ViewModel.IsBusyMessage = "";
+            //App.ApiService.AccessTokenExpired += ApiService_AccessTokenExpired;
+            //App.ApiService.RequestErrorOccurred += ApiService_RequestErrorOccurred;
+
+            //// Trigger UI changes (e.g. hide the overlay)
+            //ViewModel.IsLoggedIn = true;
+
+            //// Get MVP profile
+            //ViewModel.IsBusyMessage = "downloading profile info...";
+            //ViewModel.Mvp = await App.ApiService.GetProfileAsync();
+
+            //// Get MVP profile image
+            //ViewModel.IsBusyMessage = "downloading profile image...";
+            //ViewModel.ProfileImagePath = await App.ApiService.DownloadAndSaveProfileImage();
+
+            ////Navigate to the home page
+            //await BootStrapper.Current.NavigationService.NavigateAsync(typeof(HomePage), null, new SuppressNavigationTransitionInfo());
+
+            //ViewModel.IsBusy = false;
+            //ViewModel.IsBusyMessage = "";
         }
 
         public async Task SignOutAsync()
