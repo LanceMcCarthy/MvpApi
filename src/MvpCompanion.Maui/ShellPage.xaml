@@ -1,0 +1,86 @@
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       x:Class="MvpCompanion.Maui.ShellPage"
+       xmlns:views="clr-namespace:MvpCompanion.Maui.Views"
+       xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.Maui.Controls.Compatibility"
+       xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+       ios:Page.UseSafeArea="True"
+       FlyoutBehavior="{OnIdiom Phone=Disabled, Default=Locked}"
+       FlyoutWidth="50">
+
+    <!-- Desktop/Tablet-->
+    <FlyoutItem x:Name="HomeFlyoutItem"
+                Title="Home"
+                Icon="tab_home.png">
+        <ShellContent ContentTemplate="{DataTemplate views:Home}" />
+    </FlyoutItem>
+    <FlyoutItem x:Name="UploadFlyoutItem"
+                Title="Upload"
+                Icon="tab_upload.png">
+        <ShellContent ContentTemplate="{DataTemplate views:Upload}" />
+    </FlyoutItem>
+    <FlyoutItem x:Name="AccountFlyoutItem"
+                Title="Account"
+                Icon="tab_account.png">
+        <ShellContent ContentTemplate="{DataTemplate views:Profile}" />
+    </FlyoutItem>
+    <FlyoutItem x:Name="SettingsFlyoutItem"
+                Route="settings"
+                Icon="tab_settings.png"
+                FlyoutItemIsVisible="False">
+        <ShellContent ContentTemplate="{DataTemplate views:Settings}" />
+    </FlyoutItem>
+
+    <!-- Phone -->
+    <TabBar x:Name="PhoneTabs" >
+        <Tab x:Name="HomeTab"
+             Title="Home"
+             Icon="tab_home.png">
+            <ShellContent ContentTemplate="{DataTemplate views:Home}" />
+        </Tab>
+        <Tab x:Name="UploadTab"
+             Title="Upload"
+             Icon="tab_upload.png">
+            <ShellContent ContentTemplate="{DataTemplate views:Upload}" />
+        </Tab>
+        <Tab x:Name="AccountTab"
+             Title="Account"
+             Icon="tab_briefcase.png">
+            <ShellContent ContentTemplate="{DataTemplate views:Profile}" />
+        </Tab>
+        <Tab x:Name="SettingsTab"
+             Title="Settings"
+             Icon="tab_settings.png">
+            <ShellContent ContentTemplate="{DataTemplate views:Settings}" />
+        </Tab>
+    </TabBar>
+
+    <Shell.FlyoutFooterTemplate>
+        <DataTemplate>
+            <Grid RowDefinitions="68">
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" />
+                </Grid.GestureRecognizers>
+                <Image Source="tab_settings.png"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center"
+                       WidthRequest="40"
+                       HeightRequest="40" />
+
+            </Grid>
+        </DataTemplate>
+    </Shell.FlyoutFooterTemplate>
+
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid RowDefinitions="68"
+                  HeightRequest="68">
+                <Image Source="{Binding FlyoutIcon}"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center" />
+            </Grid>
+        </DataTemplate>
+
+    </Shell.ItemTemplate>
+
+</Shell>

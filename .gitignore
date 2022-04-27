@@ -244,3 +244,6 @@ ModelManifest.xml
 MvpApi.Uwp/Package.StoreAssociation.xml
 
 *.DotSettings
+
+# Mac file system stuff
+.DS_Store

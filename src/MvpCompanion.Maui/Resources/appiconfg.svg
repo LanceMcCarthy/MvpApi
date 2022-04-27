@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="500" height="500" viewBox="0 0 500 500" xml:space="preserve">
+<desc>Created with Fabric.js 3.6.3</desc>
+<defs>
+</defs>
+<g transform="matrix(3.55 0 0 3.55 250.38 244.37)"  >
+<circle style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1;"  cx="0" cy="0" r="65" />
+</g>
+<g transform="matrix(1.5 0 0 1.5 401.69 384.94)"  >
+<g style=""   >
+		<g transform="matrix(1 0 0 1 -101.31 -134.8)"  >
+<path style="stroke: rgb(0,0,0); stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,120,215); fill-rule: nonzero; opacity: 1;"  transform=" translate(-148.69, -115.2)" d="M 50.654 163.408 L 50.654 103.854 L 51.871 99.804 L 54.307 97.374 L 57.149 95.753 L 60.397 94.943 L 111.142 95.348 L 118.855 66.994 L 178.531 67.399 L 185.026 94.538 L 238.207 94.538 L 241.049 95.348 L 243.485 97.778 L 245.109 100.209 L 246.326 103.854 L 246.732 163.399 L 50.654 163.408 Z M 121.697 94.943 L 175.283 94.949 L 170.818 76.715 L 126.162 76.714 L 121.697 94.943 Z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(1 0 0 1 -101.3 -49.63)"  >
+<path style="stroke: rgb(0,0,0); stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,120,215); fill-rule: nonzero; opacity: 1;"  transform=" translate(-148.69, -200.37)" d="M 247.141 174.837 L 210.376 174.428 L 209.559 190.359 L 189.542 190.359 L 189.542 174.837 L 108.252 174.837 L 108.252 190.359 L 87.01 189.951 L 87.418 173.612 L 50.245 173.611 L 50.654 218.546 L 51.471 221.405 L 52.696 223.856 L 54.739 225.899 L 57.19 227.124 L 237.745 226.716 L 241.422 225.899 L 243.873 223.856 L 246.324 220.588 L 247.141 174.837 Z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(1 0 0 1 -98.93 -118.39)" style=""  >
+		<text xml:space="preserve" font-family="Arial, sans-serif" font-size="35" font-style="normal" font-weight="700" style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1; white-space: pre;" ><tspan x="-37.92" y="10.99" >MVP</tspan></text>
+</g>
+</g>
+</g>
+<g transform="matrix(1 0 0 1 14.5 180)"  >
+<path style="stroke: rgb(255,255,255); stroke-width: 1; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;"  transform=" translate(-14.5, -180)" d="M 14.499 180 L 14.501 180" stroke-linecap="round" />
+</g>
+<g transform="matrix(1 0 0 1 239.5 333)"  >
+<path style="stroke: rgb(255,255,255); stroke-width: 1; stroke-dasharray: none; stroke-linecap: round; stroke-dashoffset: 0; stroke-linejoin: round; stroke-miterlimit: 10; fill: none; fill-rule: nonzero; opacity: 1;"  transform=" translate(-239.5, -333)" d="M 239.499 333 L 239.501 333" stroke-linecap="round" />
+</g>
+</svg>

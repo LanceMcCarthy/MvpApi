@@ -294,6 +294,52 @@ namespace MvpApi.Services.Utilities
             return decryptedBytes.Take(bytesRead).ToArray();
         }
 
+        // TODO for move to .NET 6
+        //public static byte[] Encrypt(byte[] decryptedBytes, string password, int keySize, int blockSize, int iterations)
+        //{
+        //    if (blockSize != 128)
+        //        throw new ArgumentOutOfRangeException(nameof(blockSize), "Block size must be 128 bits.");
+
+        //    ReadOnlySpan<byte> salt = GenerateRandomEntropy(keySize / 8); // Generate salt based
+        //    ReadOnlySpan<byte> iv = GenerateRandomEntropy(blockSize / 8); // Generate iv, has to be the same as the block size
+
+        //    byte[] key = Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, HashAlgorithmName.SHA1, keySize / 8);
+
+        //    using Aes aes = Aes.Create();
+        //    aes.Key = key;
+
+        //    int encryptedSize = aes.GetCiphertextLengthCbc(decryptedBytes.Length);
+        //    byte[] cipher = new byte[salt.Length + iv.Length + encryptedSize];
+        //    Span<byte> cipherSpan = cipher;
+        //    salt.CopyTo(cipherSpan);
+        //    iv.CopyTo(cipherSpan.Slice(salt.Length));
+        //    int encrypted = aes.EncryptCbc(decryptedBytes, iv, cipherSpan.Slice(salt.Length + iv.Length));
+
+        //    Debug.Assert(encryptedSize == encrypted);
+        //    return cipher;
+        //}
+
+        //public static byte[] Decrypt(byte[] encryptedBytesWithSaltAndIV, string password, int keySize, int blockSize, int iterations)
+        //{
+        //    if (blockSize != 128)
+        //        throw new ArgumentOutOfRangeException(nameof(blockSize), "Block size must be 128 bits.");
+
+        //    ReadOnlySpan<byte> salt = encryptedBytesWithSaltAndIV.AsSpan(0, keySize / 8); // Take salt bytes
+        //    ReadOnlySpan<byte> iv = encryptedBytesWithSaltAndIV.AsSpan(keySize / 8, blockSize / 8); // Skip salt bytes, take iv bytes
+        //    ReadOnlySpan<byte> cipher = encryptedBytesWithSaltAndIV.AsSpan((keySize / 8) + (blockSize / 8));
+
+        //    byte[] key = Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, HashAlgorithmName.SHA1, keySize / 8);
+
+        //    using Aes aes = Aes.Create();
+        //    aes.Key = key;
+        //    return aes.DecryptCbc(cipher, iv);
+        //}
+
+        //private static byte[] GenerateRandomEntropy(int size)
+        //{
+        //    return RandomNumberGenerator.GetBytes(size);
+        //}
+
         #endregion
     }
 }
