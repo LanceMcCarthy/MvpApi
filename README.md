@@ -1,3 +1,13 @@
+## Important Notice
+
+Microsoft is sunsetting the MVP API on **April 29th, 2022**. This means after that date, the MVP Companion app will no longer work and I will need to hide it from the Microsoft Store.
+
+However, I will leave this repo as it is. It has been, and will continue to be, a developer community resource and a source of inspirpation. From API service classes to UI code, it has a plethora of different coding approaches that will be helpful for developers building their own applications and want to know how to do "X, Y, or Z" thing in their project.
+
+### Future Options
+
+Microsoft has stated that the web UI is the only way to submit your community contributions moving forward. Many MVPs have used MVP Companion to efficiently submit and manage their contributions, either through batch operations or the fast GUI capabilities of the app. There is the [SellMVP Powershell Module](https://github.com/ZanattaMichael/SelMVP) that doesn't rely on the API. It instead uses the Selenium web driver (which is normally used for UI tests) to interact with the website, and could be automated to handle your more arduous tasks.
+
 # MVP Companion 
 
 A client application to allow for faster contribution browsing, editing and upload to help renewing MVPs get up to date for renewal.
