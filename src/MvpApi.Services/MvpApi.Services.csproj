@@ -4,11 +4,19 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Telerik.Documents.Core" Version="2022.1.106" />
-    <PackageReference Include="Telerik.Documents.Spreadsheet" Version="2022.1.106" />
-    <PackageReference Include="Telerik.Documents.Spreadsheet.FormatProviders.OpenXml" Version="2022.1.106" />
-    <PackageReference Include="Telerik.Zip" Version="2022.1.106" />
+    <PackageReference Include="Telerik.Documents.Core" Version="2022.1.217" />
+    <PackageReference Include="Telerik.Documents.Spreadsheet" Version="2022.1.217" />
+    <PackageReference Include="Telerik.Documents.Spreadsheet.FormatProviders.OpenXml" Version="2022.1.217" />
+    <PackageReference Include="Telerik.Zip" Version="2022.1.217" />
   </ItemGroup>
 
   <ItemGroup>

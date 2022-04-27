@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MvpCompanion.Maui.Views.Login"
+             xmlns:vms="clr-namespace:MvpCompanion.Maui.ViewModels"
+             xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.Maui.Controls.Compatibility"
+             Title="Login">
+    
+    <Grid>
+        <WebView x:Name="WebView1"
+                 Navigated="WebView1_Navigated"/>
+
+        <primitives:RadBusyIndicator x:Name="BusyIndicator"
+                                     IsVisible="{Binding IsBusy}"
+                                     IsBusy="{Binding IsBusy}"
+                                     Style="{StaticResource TopPageBusyIndicatorStyle}">
+            <primitives:RadBusyIndicator.BusyContent>
+                <Label Text="{Binding IsBusyMessage, Source={RelativeSource AncestorType={x:Type vms:LoginViewModel}}}"
+                       TextColor="{StaticResource MediumTextColor}"
+                       HorizontalTextAlignment="Center" />
+            </primitives:RadBusyIndicator.BusyContent>
+        </primitives:RadBusyIndicator>
+    </Grid>
+</ContentPage>

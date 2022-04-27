@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MvpCompanion.Maui.Views.Home"
+             xmlns:common="clr-namespace:CommonHelpers.Common;assembly=CommonHelpers"
+             xmlns:primitives="clr-namespace:Telerik.XamarinForms.Primitives;assembly=Telerik.Maui.Controls.Compatibility"
+             xmlns:grid="clr-namespace:Telerik.XamarinForms.DataGrid;assembly=Telerik.Maui.Controls.Compatibility"
+             Title="Home">
+    <Grid>
+        <grid:RadDataGrid x:Name="dataGrid"
+                          ItemsSource="{Binding Contributions}"
+                          AutoGenerateColumns="False">
+            <grid:RadDataGrid.Columns>
+                <grid:DataGridDateColumn PropertyName="StartDate"
+                                         CellContentFormat="{}{0:d}"
+                                         HeaderText="Start Date" />
+                <grid:DataGridTextColumn PropertyName="Title"
+                                         HeaderText="Title"/>
+                <grid:DataGridTextColumn PropertyName="ContributionTypeName"
+                                         HeaderText="Contribution Type" />
+                <grid:DataGridTextColumn PropertyName="ReferenceUrl"
+                                         Width="100"
+                                         HeaderText="Url"/>
+            </grid:RadDataGrid.Columns>
+        </grid:RadDataGrid>
+
+        <primitives:RadBusyIndicator x:Name="BusyIndicator"
+                                     IsVisible="{Binding IsBusy}"
+                                     IsBusy="{Binding IsBusy}"
+                                     Style="{StaticResource TopPageBusyIndicatorStyle}"/>
+    </Grid>
+</ContentPage>

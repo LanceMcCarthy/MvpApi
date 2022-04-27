@@ -1,0 +1,46 @@
+﻿<ContentDialog x:Class="MvpApi.Uwp.Dialogs.GoodbyeDialog"
+               xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+               xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+               xmlns:local="using:MvpApi.Uwp.Dialogs"
+               xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+               mc:Ignorable="d"
+               Title="It's so hard to say goodbye..."
+               PrimaryButtonText="👋 Goodbye 👋"
+               PrimaryButtonClick="ContentDialog_PrimaryButtonClick">
+
+    <Grid Width="500"
+          Height="500">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Image Source="https://c.tenor.com/sPcCUS482AQAAAAd/i-guess-this-is-goodbye-kyle-broflovski.gif"/>
+
+
+
+        <StackPanel Grid.Row="1"
+                    Margin="0,10,0,0">
+            <TextBlock TextWrapping="Wrap"><Run Text="I have some bad news to share, Microsoft will be permanently disabling the MVP API on " /><Run Text="April 27th, 2022."
+                    FontWeight="SemiBold" /><Run Text=" This unfortunately means the app will stop working after that date and I need to say goodbye." /><LineBreak /><Run /><LineBreak /><Run Text="I will be leaving all of the code for this app open source on GitHub for developers to learn from. If a new MVP API becomes available, I will certainly publish another update to this app. " /><LineBreak /><Run /><LineBreak /><Run Text="Until then, farewell and thank you for all the support!" /><LineBreak /><Run />
+            </TextBlock>
+            <TextBlock Text="Check out some of my other apps in the Microsoft Store:"
+                       FontWeight="SemiBold"/>
+            <HyperlinkButton Content="👉 'Hacked?' | Automatically find data breaches containing your info!"
+                             NavigateUri="https://apps.microsoft.com/store/detail/hacked/9NBLGGH6850J"
+                             Padding="0"/>
+            <HyperlinkButton Content="👉 'Media File Manager' | Intelligent file reordering and renaming."
+                             NavigateUri="https://apps.microsoft.com/store/detail/media-file-manager/9PD3JFK7W5MB"
+                             Padding="0" />
+            <HyperlinkButton Content="👉 'Video Diary' | Over 800k users, popular among all ages."
+                             NavigateUri="https://apps.microsoft.com/store/detail/video-diary/9WZDNCRDMGBF"
+                             Padding="0" />
+            <HyperlinkButton Content="👉 All Public Apps"
+                             NavigateUri="https://apps.microsoft.com/store/search?publisher=Lancelot%20Software"
+                             Padding="0" />
+        </StackPanel>
+
+    </Grid>
+</ContentDialog>

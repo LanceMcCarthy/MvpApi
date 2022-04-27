@@ -159,6 +159,9 @@
     <Compile Include="Dialogs\AwardYearDateRangeEditorDialog.xaml.cs">
       <DependentUpon>AwardYearDateRangeEditorDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\GoodbyeDialog.xaml.cs">
+      <DependentUpon>GoodbyeDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\ImportContributionsDialog.xaml.cs">
       <DependentUpon>ImportContributionsDialog.xaml</DependentUpon>
     </Compile>
@@ -294,6 +297,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\AwardYearDateRangeEditorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\GoodbyeDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
