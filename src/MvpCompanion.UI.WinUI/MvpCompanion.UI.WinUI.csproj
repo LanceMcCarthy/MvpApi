@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net6.0-windows10.0.18362.0</TargetFramework>
+		<TargetFramework>net10.0-windows10.0.18362.0</TargetFramework>
 		<TargetPlatformMinVersion>10.0.18362.0</TargetPlatformMinVersion>
 		<RootNamespace>MvpCompanion.UI.WinUI</RootNamespace>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -12,41 +12,9 @@
 		<PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<ApplicationIcon>Images\MainIcon.ico</ApplicationIcon>
+        <LangVersion>latest</LangVersion>
 	</PropertyGroup>
-	<ItemGroup>
-	  <None Remove="Styles\CustomDataGridStyles.xaml" />
-	  <None Remove="Views\AboutView.xaml" />
-	  <None Remove="Views\AddContributionsView.xaml" />
-	  <None Remove="Views\ContributionDetailView.xaml" />
-	  <None Remove="Views\KudosView.xaml" />
-	  <None Remove="Views\ProfileView.xaml" />
-	</ItemGroup>
-	
-	<ItemGroup>
-		<AppxManifest Include="Package.appxmanifest">
-			<SubType>Designer</SubType>
-		</AppxManifest>
-	</ItemGroup>
-	
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm64'">
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm64'">
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-
+    
 	<ItemGroup>
 	  <Content Include="Images\4starStar.png" />
 	  <Content Include="Images\CoffeeKudo.png" />
@@ -129,65 +97,5 @@
 	<ItemGroup>
 		<ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj" />
 		<ProjectReference Include="..\MvpApi.Services\MvpApi.Services.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Page Update="Views\KudosView.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Page Update="Views\AboutView.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Page Update="Views\AddContributionsView.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Page Update="Views\ContributionDetailView.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Page Update="Views\ProfileView.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Page Update="Views\SettingsView.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Page Update="Dialogs\TutorialDialog.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</Page>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Page Update="Views\HomeView.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</Page>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Page Update="Dialogs\LoginDialog.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</Page>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Page Update="Styles\CustomDataGridStyles.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </Page>
 	</ItemGroup>
 </Project>

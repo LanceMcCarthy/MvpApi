@@ -8,14 +8,14 @@
     <MacCatalystOnly>false</MacCatalystOnly>
   </PropertyGroup>
   <PropertyGroup>
-    <OSXMauiPlatforms>net6.0-ios;net6.0-maccatalyst</OSXMauiPlatforms>
-    <WindowsMauiPlatforms>net6.0-windows10.0.19041.0</WindowsMauiPlatforms>
-    <MauiPlatforms>net6.0-android</MauiPlatforms>
+    <OSXMauiPlatforms>net10.0-ios;net10.0-maccatalyst</OSXMauiPlatforms>
+    <WindowsMauiPlatforms>net10.0-windows10.0.19041.0</WindowsMauiPlatforms>
+    <MauiPlatforms>net10.0-android</MauiPlatforms>
     <MauiPlatforms Condition="'$(IncludeOSXTargetFrameworks)' == 'true'">$(MauiPlatforms);$(OSXMauiPlatforms)</MauiPlatforms>
     <MauiPlatforms Condition="'$(IncludeWindowsTargetFrameworks)' == 'true'">$(MauiPlatforms);$(WindowsMauiPlatforms)</MauiPlatforms>
-    <MauiPlatforms Condition="'$(AndroidOnly)' == 'true'">net6.0-android</MauiPlatforms>
+    <MauiPlatforms Condition="'$(AndroidOnly)' == 'true'">net10.0-android</MauiPlatforms>
     <MauiPlatforms Condition="'$(WindowsOnly)' == 'true'">$(WindowsMauiPlatforms)</MauiPlatforms>
-    <MauiPlatforms Condition="'$(iOSOnly)' == 'true'">net6.0-ios</MauiPlatforms>
-    <MauiPlatforms Condition="'$(MacCatalystOnly)' == 'true'">net6.0-maccatalyst</MauiPlatforms>
+    <MauiPlatforms Condition="'$(iOSOnly)' == 'true'">net10.0-ios</MauiPlatforms>
+    <MauiPlatforms Condition="'$(MacCatalystOnly)' == 'true'">net10.0-maccatalyst</MauiPlatforms>
   </PropertyGroup>
 </Project>

@@ -1,14 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -22,5 +14,4 @@
   <ItemGroup>
     <ProjectReference Include="..\MvpApi.Common\MvpApi.Common.csproj" />
   </ItemGroup>
-
 </Project>

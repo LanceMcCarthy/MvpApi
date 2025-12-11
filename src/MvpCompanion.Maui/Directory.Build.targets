@@ -1,27 +1,19 @@
 <Project>
   <!-- platform version number information -->
   <PropertyGroup Condition="$(TargetFramework.Contains('-ios'))">
-    <SupportedOSPlatformVersion>10.0</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion>10.0</TargetPlatformMinVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.Contains('-tvos'))">
-    <SupportedOSPlatformVersion>10.0</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion>10.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion>15.0</TargetPlatformMinVersion>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.Contains('-maccatalyst'))">
-    <SupportedOSPlatformVersion>13.1</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion>13.1</TargetPlatformMinVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="$(TargetFramework.Contains('-macos'))">
-    <SupportedOSPlatformVersion>10.14</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion>10.14</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>15</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion>15</TargetPlatformMinVersion>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.Contains('-android'))">
-    <SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion>21.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion>24</TargetPlatformMinVersion>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework.Contains('-windows10'))">
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
   </PropertyGroup>
 </Project>
