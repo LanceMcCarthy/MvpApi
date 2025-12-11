@@ -132,10 +132,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommonHelpers">
-      <Version>1.2.0</Version>
+      <Version>1.5.1</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>6.2.13</Version>
+      <Version>6.2.14</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit">
       <Version>7.1.2</Version>
@@ -144,10 +144,10 @@
       <Version>7.1.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Connectivity">
-      <Version>7.1.2</Version>
+      <Version>7.1.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
-      <Version>7.1.2</Version>
+      <Version>7.1.3</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
