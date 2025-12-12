@@ -1,0 +1,24 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM" />
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="MvpApi.Common/MvpApi.Common.csproj" />
+  <Project Path="MvpApi.Services/MvpApi.Services.csproj" />
+  <Project Path="MvpApi.Tests/MvpApi.Tests.csproj" />
+  <Project Path="MvpCompanion.UI.WinUI/MvpCompanion.UI.WinUI.csproj">
+    <Platform Solution="*|Any CPU" Project="x64" />
+    <Platform Solution="*|ARM" Project="x86" />
+    <Platform Solution="*|ARM64" Project="arm64" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+    <Deploy Solution="*|ARM" />
+    <Deploy Solution="*|ARM64" />
+    <Deploy Solution="*|x64" />
+    <Deploy Solution="*|x86" />
+    <Deploy Solution="Debug|Any CPU" />
+  </Project>
+</Solution>

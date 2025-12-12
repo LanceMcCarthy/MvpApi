@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="MvpApi.Common/MvpApi.Common.csproj" />
+  <Project Path="MvpApi.Services/MvpApi.Services.csproj" />
+  <Project Path="MvpCompanion.Maui/MvpCompanion.Maui.csproj">
+    <Deploy />
+  </Project>
+</Solution>
