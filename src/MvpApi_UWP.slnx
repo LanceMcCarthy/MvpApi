@@ -9,7 +9,7 @@
   <Project Path="MvpApi.Common/MvpApi.Common.csproj" />
   <Project Path="MvpApi.Services/MvpApi.Services.csproj" />
   <Project Path="MvpApi.Tests/MvpApi.Tests.csproj" />
-  <Project Path="MvpApi.Uwp/MvpApi.Uwp.csproj">
+  <Project Path="MvpApi.Uwp/MvpApi.Uwp.csproj" Id="fa6c2b8c-c185-4152-ace1-a65a815a518e">
     <Platform Solution="*|Any CPU" Project="x86" />
     <Platform Solution="*|ARM" Project="ARM" />
     <Platform Solution="*|ARM64" Project="ARM64" />
@@ -21,13 +21,13 @@
     <Deploy Solution="*|x64" />
     <Deploy Solution="*|x86" />
   </Project>
-  <Project Path="MvpApi.UwpBackgroundTasks/MvpApi.UwpBackgroundTasks.csproj">
+  <Project Path="MvpApi.UwpBackgroundTasks/MvpApi.UwpBackgroundTasks.csproj" Id="9d7ff5ea-20d9-40e3-9704-e3e7b5e2dc25">
     <Platform Solution="*|ARM" Project="ARM" />
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
     <Platform Solution="*|x86" Project="x86" />
   </Project>
-  <Project Path="MvpCompanion.UI.Common/MvpCompanion.UI.Common.csproj">
+  <Project Path="MvpCompanion.UI.Common/MvpCompanion.UI.Common.csproj" Id="89abf6d8-e6b8-4f86-aaa3-10a23dd0dc19">
     <Platform Solution="*|ARM" Project="ARM" />
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
